@@ -110,6 +110,25 @@ class MODPuntoVenta extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
+
+	function obtenerOfficeID(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_punto_venta_sel';
+		$this->transaccion='VF_OFFID_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		//Define los parametros para la funcion
+		$this->setParametro('id_punto_venta','id_punto_venta','int4');
+		//Definicion de la lista del resultado del query
+		$this->captura('officeID','varchar');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 }
 ?>

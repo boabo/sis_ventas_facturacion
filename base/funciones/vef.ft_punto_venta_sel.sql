@@ -4,8 +4,8 @@ CREATE OR REPLACE FUNCTION vef.ft_punto_venta_sel (
   p_tabla varchar,
   p_transaccion varchar
 )
-  RETURNS varchar AS
-  $body$
+RETURNS varchar AS
+$body$
   /**************************************************************************
    SISTEMA:		Sistema de Ventas
    FUNCION: 		vef.ft_punto_venta_sel
@@ -61,7 +61,7 @@ CREATE OR REPLACE FUNCTION vef.ft_punto_venta_sel (
                         puve.codigo,
                         puve.habilitar_comisiones,
                         suc.formato_comprobante,
-                        puve.tipo	
+                        puve.tipo
 						from vef.tpunto_venta puve
 						inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
@@ -76,6 +76,27 @@ CREATE OR REPLACE FUNCTION vef.ft_punto_venta_sel (
         return v_consulta;
 
       end;
+
+    /*********************************
+     #TRANSACCION:  'VF_OFFID_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Gonzalo Sarmiento
+ 	#FECHA:		24-07-2017
+	***********************************/
+
+    elsif(p_transaccion='VF_OFFID_SEL')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+            v_consulta:='select ag.codigo_int as officeID
+						from vef.tpunto_venta pv
+						inner join obingresos.tagencia ag on pv.codigo=ag.codigo
+						and pv.id_punto_venta='||v_parametros.id_punto_venta||'';
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
 
     /*********************************
      #TRANSACCION:  'VF_PUVE_CONT'
@@ -118,7 +139,7 @@ CREATE OR REPLACE FUNCTION vef.ft_punto_venta_sel (
       v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
       raise exception '%',v_resp;
   END;
-  $body$
+$body$
 LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
