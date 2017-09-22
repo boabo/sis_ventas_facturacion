@@ -392,7 +392,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
     },
     loadValoresIniciales:function() 
     {                
-       Phx.vista.FormVenta.superclass.loadValoresIniciales.call(this);
+       Phx.vista.FormFormula.superclass.loadValoresIniciales.call(this);
     },
     onReset:function(o){
     	// Show a dialog using config options:
