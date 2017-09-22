@@ -18,13 +18,14 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.AperturaCierreCaja.superclass.constructor.call(this,config);
 		this.init();
 		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.cerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
-        this.addButton('reporte',{grupo:[0,1],text:'Reporte',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Genera reporte de la caja</b>'});
+		this.addButton('boletos',{grupo:[0],text: 'Actualizar Boletos',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
+		this.addButton('reporte',{grupo:[0,1],text:'Reporte',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Genera reporte de la caja</b>'});
 		this.finCons = true;
 		this.store.baseParams.pes_estado = 'abierto';    
 		this.load({params:{start:0, limit:this.tam_pag}});
 	},
-	bactGroups:  [0,1],    
-    bexcelGroups: [0,1], 
+	bactGroups:  [0,1],
+    bexcelGroups: [0,1],
     bdel : true,
 	gruposBarraTareas:[{name:'abierto',title:'<H1 align="center"><i class="fa fa-eye"></i> Abiertas</h1>',grupo:0,height:0},
                        {name:'cerrado',title:'<H1 align="center"><i class="fa fa-eye"></i> Cerradas</h1>',grupo:1,height:0}
@@ -286,7 +287,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
                 filters:{pfiltro:'ven.estado',type:'string'},                
                 grid:true,
                 form:false
-        },
+        }
 		
 	],
 	tam_pag:50,	
@@ -315,12 +316,40 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_punto_venta', type: 'string'},
+        {name:'id_entrega_brinks', type: 'numeric'}
 		
 	],
 	sortInfo:{
 		field: 'id_apertura_cierre_caja',
 		direction: 'ASC'
-	},	
+	},
+//c
+    tabsouth :[
+        {
+            url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/DepositoApertura.php',
+            title:'Deposito',
+            height:'40%',
+            cls:'DepositoApertura'
+        },
+        {
+            url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/VendedorComputarizadoApertura.php',
+            title:'Venta Computarizada',
+            height:'40%',
+            cls:'VendedorComputarizadoApertura'
+        },
+        {
+            url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/VendedorManualApertura.php',
+            title:'Venta Manual',
+            height:'40%',
+            cls:'VendedorManualApertura'
+        },
+        {
+            url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/AperturaBoletosVenta.php',
+            title:'Venta Boletos',
+            height:'40%',
+            cls:'AperturaBoletosVenta'
+        }
+    ],
 	onSubmit: function(o, x, force) {
 		if (!this.Cmp.id_punto_venta.getValue() && !this.Cmp.id_punto_venta.getValue()) {
 			alert('Debe elegir un punto de venta o sucursal para abrir');	
@@ -387,6 +416,31 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
             scope:this
         });
     },
+
+	onActualizarBoletos : function () {
+		var data=this.sm.getSelected().data;
+		Phx.CP.loadingShow();
+		Ext.Ajax.request({
+			url:'../../sis_obingresos/control/Boleto/traerBoletos',
+			params: {id_punto_venta: data.id_punto_venta, fecha: data.fecha_apertura_cierre, id_usuario_cajero: data.id_usuario_cajero},
+			success:this.successSinc,
+			failure: this.conexionFailure,
+			timeout:this.timeout,
+			scope:this
+		});
+	},
+
+	successSinc: function(resp) {
+		Phx.CP.loadingHide();
+		var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+		if (reg.ROOT.error) {
+			Ext.Msg.alert('Error','Boletos no actualizados: se ha producido un error inesperado. Comuníquese con el Administrador del Sistema.')
+		} else {
+			Ext.Msg.alert('Mensaje','Boletos actualizados')
+			this.reload();
+		}
+	},
+
 	preparaMenu:function()
     {   var rec = this.sm.getSelected();
         
@@ -395,19 +449,23 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
               this.getBoton('reporte').enable();
               this.getBoton('edit').enable(); 
               this.getBoton('del').enable();                                       
-        } 
+              this.getBoton('boletos').enable();
+        }
         
         if (rec.data.estado == 'cerrado') {              
               this.getBoton('cerrar').disable();
-            this.getBoton('reporte').disable();
+            this.getBoton('reporte').enable();
               this.getBoton('edit').disable(); 
               this.getBoton('del').disable();                                
-        } 
+              this.getBoton('boletos').disable();
+        }
         
         Phx.vista.AperturaCierreCaja.superclass.preparaMenu.call(this);
     },
     liberaMenu:function()
-    {   this.getBoton('cerrar').disable();      
+    {
+		this.getBoton('cerrar').disable();
+    	this.getBoton('boletos').disable();
         Phx.vista.AperturaCierreCaja.superclass.liberaMenu.call(this);
     }
 	
