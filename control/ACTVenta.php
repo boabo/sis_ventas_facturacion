@@ -14,7 +14,9 @@ class ACTVenta extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_venta');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
-        
+        if($this->objParam->getParametro('id_punto_venta') != '') {
+            $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta')/*."and ven.id_usuario_reg =".$this->objParam->getParametro('id_usuario_cajero')*/);
+        }
         
         
         
@@ -130,12 +132,17 @@ class ACTVenta extends ACTbase{
     }
     
     function siguienteEstadoVenta(){
-        $this->objFunc=$this->create('MODVenta');  
-        
-        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
-        
+        $this->objFunc=$this->create('MODVenta');
+        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
         $this->res=$this->objFunc->siguienteEstadoVenta($this->objParam);
-        $this->res->imprimirRespuesta($this->res->generarJson());
+		if($this->res->getTipo()=='ERROR'){
+			$this->res->imprimirRespuesta($this->res->generarJson());
+		}else{
+			$datos = $this->res->getDatos();
+			$this->objFunc=$this->create('MODVenta');
+			//$this->res=$this->objFunc->insertarVentaInformix($datos['id_venta']);
+			$this->res->imprimirRespuesta($this->res->generarJson());
+		}
     }
     
      function anteriorEstadoVenta(){

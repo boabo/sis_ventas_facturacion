@@ -439,11 +439,8 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             } else {
                 this.Cmp.nit.setValue(r.nit);
             }            
-        },this);      
-        
-        this.Cmp.nit.on('focus',function(c) {
-        	this.Cmp.id_cliente.reset();
-        },this);      
+        },this);
+
         
         this.Cmp.nit.on('blur',function(c) {
         
@@ -453,6 +450,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 		           callback : function (r) {
 		           		this.Cmp.id_cliente.store.baseParams.nit = '';
 		           		if (r.length == 1) {
+                            
 		           			this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
 		           			//this.Cmp.id_cliente.fireEvent('select',this.Cmp.id_cliente, this.Cmp.id_cliente.store.getById(r[0].data.id_cliente));
 		           		}          	                   
@@ -1310,68 +1308,66 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             type:'Field',
             form:true 
         },
-        {
-            config : {
-                name : 'id_cliente',
-                fieldLabel : 'Cliente',
-                allowBlank : false,
-                emptyText : 'Cliente...',
-                store : new Ext.data.JsonStore({
-                    url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
-                    id : 'id_cliente',
-                    root : 'datos',
-                    sortInfo : {
-                        field : 'nombres',
-                        direction : 'ASC'
-                    },
-                    totalProperty : 'total',
-                    fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
-                    remoteSort : true,
-                    baseParams : {
-                        par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
-                    }
-                }),
-                valueField : 'id_cliente',
-                displayField : 'nombre_factura',  
-                gdisplayField : 'nombre_factura',              
-                hiddenName : 'id_cliente',
-                forceSelection : false,
-                typeAhead : false,
-                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>NIT:</b> {nit}</p><p><b>Razon Social:</b> {nombre_factura}</p><p><b>Nombre:</b> {nombres} {primer_apellido} {segundo_apellido}</p> </div></tpl>',
-                triggerAction : 'all',
-                lazyRender : true,
-                mode : 'remote',
-                pageSize : 10,
-                queryDelay : 1000,
-                turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
-                ttitle:'Clientes',
-                // tconfig:{width:1800,height:500},
-                tasignacion : true,           
-                tname : 'id_cliente',
-                tdata:{},
-                tcls:'Cliente',
-                gwidth : 170,
-                minChars : 2
-            },
-            type : 'TrigguerCombo',
-            id_grupo : 0,            
-            form : true
-        },
-
+		{
+			config : {
+				name : 'id_cliente',
+				fieldLabel : 'Cliente',
+				allowBlank : false,
+				emptyText : 'Cliente...',
+				store : new Ext.data.JsonStore({
+					url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
+					id : 'id_cliente',
+					root : 'datos',
+					sortInfo : {
+						field : 'nombres',
+						direction : 'ASC'
+					},
+					totalProperty : 'total',
+					fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
+					remoteSort : true,
+					baseParams : {
+						par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
+					}
+				}),
+				valueField : 'id_cliente',
+				displayField : 'nombre_factura',
+				gdisplayField : 'nombre_factura',
+				hiddenName : 'id_cliente',
+				forceSelection : false,
+				typeAhead : false,
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>NIT:</b> {nit}</p><p><b>Razon Social:</b> {nombre_factura}</p><p><b>Nombre:</b> {nombres} {primer_apellido} {segundo_apellido}</p> </div></tpl>',
+				triggerAction : 'all',
+				lazyRender : true,
+				mode : 'remote',
+				pageSize : 10,
+				queryDelay : 1000,
+				turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
+				ttitle:'Clientes',
+				// tconfig:{width:1800,height:500},
+				tasignacion : true,
+				tname : 'id_cliente',
+				tdata:{},
+				tcls:'Cliente',
+				gwidth : 170,
+				minChars : 2
+			},
+			type : 'TrigguerCombo',
+			id_grupo : 0,
+			form : true
+		},
         {
             config:{
                 name: 'nit',
                 fieldLabel: 'NIT',
                 allowBlank: false,
-                anchor: '80%',                
+                anchor: '80%',
                 maxLength:20
             },
-                type:'NumberField',                
-                id_grupo:0,                
-                form:true,
-                valorInicial:'0'
+            type:'NumberField',
+            id_grupo:0,
+            form:true,
+            valorInicial:'0'
         },
-        
         {
             config : {
                 name : 'id_cliente_destino',
@@ -1761,13 +1757,9 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
     title: 'Formulario Venta',
     onEdit:function(){
         
-<<<<<<< HEAD
-    	this.accionFormulario = 'EDIT';   
 
-=======
-    	this.accionFormulario = 'EDIT';    	
->>>>>>> 234825f07c2923e911bc9f7f18d5a1f1a5d15dd0
-    	this.loadForm(this.data.datos_originales);    	
+    	this.accionFormulario = 'EDIT';
+    	this.loadForm(this.data.datos_originales);
     	
         //load detalle de conceptos
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();

@@ -8,9 +8,26 @@
 */
 
 class MODVenta extends MODbase{
-	
+
+	var $cone;
+	var $link;
+	var $informix;
+	var $tabla_factucom_informix;
+	var $tabla_factucomcon_informix;
+	var $tabla_factucompag_informix;
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
+
+		$this->cone = new conexion();
+		$this->informix = $this->cone->conectarPDOInformix();
+		// conexion a informix
+		$this->link = $this->cone->conectarpdo();
+		//conexion a pxp(postgres)
+
+		$this->tabla_factucom_informix = $_SESSION['tabla_factucom_informix'];
+		$this->tabla_factucomcon_informix = $_SESSION['tabla_factucomcon_informix'];
+		$this->tabla_factucompag_informix = $_SESSION['tabla_factucompag_informix'];
 	}
 			
 	function listarVenta(){
@@ -143,7 +160,9 @@ class MODVenta extends MODbase{
         //Abre conexion con PDO
         $cone = new conexion();
         $link = $cone->conectarpdo();
-        $copiado = false;           
+        $copiado = false;
+
+
         try {
             $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);     
             $link->beginTransaction();
@@ -192,7 +211,7 @@ class MODVenta extends MODbase{
 			} else {
 				$this->transaccion = 'VF_VEN_INS';
 			}
-            
+
             //Define los parametros para la funcion
             $this->setParametro('id_cliente','id_cliente','varchar');
 			$this->setParametro('nit','nit','varchar');
@@ -233,8 +252,8 @@ class MODVenta extends MODbase{
 			$this->setParametro('id_cliente_destino','id_cliente_destino','varchar');
 			$this->setParametro('hora_estimada_entrega','hora_estimada_entrega','varchar');
 			$this->setParametro('forma_pedido','forma_pedido','varchar');
-             
-            
+
+
             //Ejecuta la instruccion
             $this->armarConsulta();
             $stmt = $link->prepare($this->consulta);          
@@ -382,7 +401,7 @@ class MODVenta extends MODbase{
 
             //si todo va bien confirmamos y regresamos el resultado
             $link->commit();
-            $this->respuesta=new Mensaje();			
+            $this->respuesta=new Mensaje();
             $this->respuesta->setMensaje($resp_procedimiento['tipo_respuesta'],$this->nombre_archivo,$resp_procedimiento['mensaje'],$resp_procedimiento['mensaje_tec'],'base',$this->procedimiento,$this->transaccion,$this->tipo_procedimiento,$this->consulta);
             $this->respuesta->setDatos($respuesta);
         } 
@@ -401,7 +420,209 @@ class MODVenta extends MODbase{
         
         return $this->respuesta;
     }
-			
+
+	function insertarVentaInformix($id_venta)
+	{
+		$venta = $this->venta($id_venta);
+		$detallesVenta = $this->detalleVenta($id_venta);
+		$formasPago = $this->formaPagoVenta($id_venta);
+
+		$pais = $venta[0]['pais'];
+		$estacion = $venta[0]['estacion'];
+		$nroaut = $venta[0]['nroaut'];
+		$nroFactura = $venta[0]['nro_factura'];
+		$estado = $venta[0]['estado'];
+		$tipo_con = $venta[0]['tipo_con'];
+		$agt = $venta[0]['agt'];
+		$agtnoiata = $venta[0]['agtnoiata'];
+		$sucursal = $venta[0]['sucursal'];
+		$autoimpresor = $venta[0]['autoimpresor'];
+		$fecha = $venta[0]['fecha'];
+		$razon = $venta[0]['razon'];
+		$nit = $venta[0]['nit'];
+		$monto = $venta[0]['monto'];
+		$exento = $venta[0]['excento'];
+		$moneda = $venta[0]['moneda'];
+		$tcambio = $venta[0]['tcambio'];
+		$cod_control = $venta[0]['cod_control'];
+		$usuario = $venta[0]['usuario'];
+		$usuarioreg = $venta[0]['usuarioreg'];
+		$horareg = $venta[0]['horareg'];
+		$fechareg = $venta[0]['fechareg'];
+		$contablz = $venta[0]['contablz'];
+		$observacion = $venta[0]['observacion'];
+
+		try {
+			$this->informix->beginTransaction();
+
+			$sql_in_fac = "INSERT INTO ingresos:$this->tabla_factucom_informix
+						(pais, estacion, nroaut,
+						 nrofac, estado, tipocon,
+						  agt, agtnoiata, sucursal,
+						  autoimpresor, fecha, razon,
+						   nit, monto, exento,
+						   moneda, tcambio, codcontrol,
+						   usuario, usuarioreg, horareg,
+						   fechareg, contablz, observacion)
+					VALUES
+						('" . $pais . "', '" . $estacion . "', '" . $nroaut . "',
+						 '" . $nroFactura . "', '" .$estado. "', '" . $tipo_con . "',
+						 '" . $agt . "', '" . $agtnoiata . "', '" . $sucursal . "',
+						 '" . $autoimpresor . "', '" . $fecha . "', '" . $razon . "',
+						 '" . $nit . "', '" . $monto . "', '" . $exento . "',
+						 '" . $moneda . "', '" . $tcambio . "', '" .$cod_control. "',
+						  '" . $usuario . "', '" . $usuarioreg . "', '" .$horareg. "',
+						   '" . $fechareg . "', '" . $contablz . "', '" .$observacion. "');";
+
+			$info_factura_fac = $this->informix->prepare($sql_in_fac);
+			var_dump($sql_in_fac);
+			$info_factura_fac->execute();
+			$detalleCont=1;
+			foreach($detallesVenta as $detalle){
+				$sql_in_det = "INSERT INTO ingresos:$this->tabla_factucomcon_informix
+						(pais, estacion, nroaut,
+						 nrofac, renglon, tipocon,
+						  nroconce, cantidad, preciounit,
+						  importe)
+					VALUES
+						('" . $pais . "', '" . $estacion . "', '" . $nroaut . "',
+						 '" . $nroFactura . "', '" .$detalleCont. "', '" . $tipo_con . "',
+						 '', '" . $detalle['cantidad'] . "', '" . $detalle['preciounit'] . "',
+						 '" . $detalle['importe'] . "');";
+
+				$info_factura_det = $this->informix->prepare($sql_in_det);
+				var_dump($sql_in_det);
+				$info_factura_det->execute();
+				$detalleCont++;
+			}
+
+			$pagoCont=1;
+			foreach($formasPago as $pago){
+				$grupo='';
+				$observa='';
+				$nomaut='';
+				$autoriza='';
+				$cuotas=0;
+				$recargo=0;
+				$comprbnt=0;
+				$pagomco=0;
+				$sql_in_pag = "INSERT INTO ingresos:$this->tabla_factucompag_informix
+						(pais, estacion, nroaut,
+						 nrofac, renglon, forma,
+						  tarjeta, numero, importe,
+						  moneda, tcambio, agt,
+						  agtnoiata, grupo, estado,
+						  fecha, usuario, cuotas,
+						  recargo, autoriza, comprbnt,
+						  fecproc, ctacte, nomaut,
+						  pagomco, contablz, observa)
+					VALUES
+						('" . $pais . "', '" . $estacion . "', '" . $nroaut . "',
+						 '" . $nroFactura . "', '" .$pagoCont. "', '" . $pago['forma'] . "',
+						 '" . $pago['tarjeta'] . "', '" . $pago['numero'] . "','" . $pago['importe'] . "',
+						 '" . $moneda . "', '" . $tcambio . "','" . $agt . "',
+						 '" . $agtnoiata . "', '" .$grupo. "','" . $estado . "',
+						 '" . $fecha . "', '" . $usuario . "','".$cuotas."',
+						 '".$recargo."', '" .$autoriza. "','".$comprbnt."',
+						 '" . $fecha . "', '" . $pago['ctacte'] . "','" .$nomaut. "',
+						 '".$pagomco."', '" . $contablz . "','" .$observa. "'
+						 );";
+				//var_dump($sql_in); exit;
+				$info_factura_pag = $this->informix->prepare($sql_in_pag);
+				var_dump($sql_in_pag);
+				$info_factura_pag->execute();
+				$pagoCont++;
+			}
+			$this->informix->commit();
+			$this->respuesta = new Mensaje();
+			$this->respuesta->setMensaje('EXITO', $this->nombre_archivo, 'La consulta se ejecuto con exito generacion de factura', 'La consulta se ejecuto con exito', 'base', 'no tiene', 'no tiene', 'SEL', '$this->consulta', 'no tiene');
+			//$this->respuesta->setTotal(1);
+			//$this->respuesta->setDatos($temp);
+			return $this->respuesta;
+
+		} catch (Exception $e) {
+			$this->informix->rollBack();
+			$this->respuesta = new Mensaje();
+			throw new Exception($e->getMessage(), 2);
+		}
+		//var_dump($detallesVenta);
+		//var_dump($formasPago); exit;
+
+		//$nroliqui = $this->objParam->getParametro('liquidevolu');
+		//$estacion = $this->objParam->getParametro('sucursal');
+
+		/*$fecha_reg = $nota[0]['fecha_reg'];
+		$date = new DateTime($fecha_reg);
+		//var_dump($date->format('d-m-Y'));
+		$fecha_fac = new DateTime($nota[0]['fecha_fac']);
+		$fecha = new DateTime($nota[0]['fecha']);
+
+		$nro_factura_anterior = '';
+		$nro_autorizacion_anterior = '';
+
+		$observaciones = '';
+		$usuario = $_SESSION['_LOGIN'];
+		if ($nota[0]['tipo'] == 'FACTURA' || $nota[0]['tipo'] == 'FACTURA MANUAL') {
+			$nro_factura_anterior = $nota[0]['nrofac'];
+			$nro_autorizacion_anterior = $nota[0]['nroaut_anterior'];
+		} else {
+			$observaciones = 'LIQUIDACION NRO: ' . $nota[0]['nro_liquidacion'];
+
+		}*/
+
+		//$results = $info_nota_ins->fetchAll(PDO::FETCH_ASSOC); //cuando llamada es un select
+	}
+
+	function venta($id_venta)
+	{
+		$stmt2 = $this->link->prepare("select ps.codigo as pais, est.codigo as estacion, dos.nroaut, vta.nro_factura,
+										case when vta.estado='finalizado' then '1' else '9' end as estado,
+										'' as tipo_con, pv.codigo as agt, '' as agtnoiata, suc.codigo as sucursal,
+										'' as autoimpresor, vta.fecha, vta.nombre_factura as razon, vta.nit, vta.total_venta as monto, vta.excento,
+										 mon.codigo_internacional as moneda, tc.oficial as tcambio, vta.cod_control,
+										 coalesce(usu.cuenta, usreg.cuenta) as usuario, usreg.cuenta as usuarioreg,
+										 vta.hora_estimada_entrega as horareg, to_char(vta.fecha_reg,'YYYY-MM-DD') as fechareg,
+										 case when vta.contabilizable = 'no' then 'N' else 'S' end as contablz , vta.observaciones as observacion
+										from vef.tventa vta
+										inner join vef.tsucursal suc on suc.id_sucursal=vta.id_sucursal
+										inner join param.tlugar est on est.id_lugar=suc.id_lugar
+										inner join param.tlugar ps on ps.id_lugar=est.id_lugar_fk
+										inner join vef.tdosificacion dos on dos.id_dosificacion=vta.id_dosificacion
+										inner join param.tmoneda mon on mon.id_moneda=vta.id_moneda
+										inner join param.ttipo_cambio tc on tc.fecha=vta.fecha and tc.id_moneda in (select id_moneda from param.tmoneda where triangulacion='si')
+										left join segu.tusuario usu on usu.id_usuario=vta.id_usuario_cajero
+										inner join segu.tusuario usreg on usreg.id_usuario=vta.id_usuario_reg
+										inner join vef.tpunto_venta pv on pv.id_punto_venta=vta.id_punto_venta
+										where vta.id_venta= '$id_venta'");
+		$stmt2->execute();
+		$results = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+		return $results;
+	}
+
+	function detalleVenta($id_venta)
+	{
+		$stmt2 = $this->link->prepare("select vtadet.cantidad, vtadet.precio as preciounit, vtadet.cantidad*vtadet.precio as importe
+										from vef.tventa_detalle vtadet
+										where vtadet.id_venta= '$id_venta'");
+		$stmt2->execute();
+		$results = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+		return $results;
+	}
+
+	function formaPagoVenta($id_venta)
+	{
+		$stmt2 = $this->link->prepare("select fp.codigo as forma, vtafp.tipo_tarjeta as tarjeta,
+										case when fp.nombre like '%CTA-CTE%' then '' else vtafp.numero_tarjeta end as numero,
+										 vtafp.monto_mb_efectivo as importe,
+										case when fp.nombre like '%CTA-CTE%' then vtafp.numero_tarjeta else '' end as ctacte
+										from vef.tventa_forma_pago vtafp
+										inner join vef.tforma_pago fp on fp.id_forma_pago=vtafp.id_forma_pago
+										where vtafp.id_venta = '$id_venta'");
+		$stmt2->execute();
+		$results = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+		return $results;
+	}
+
 	function modificarVenta(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_venta_ime';
