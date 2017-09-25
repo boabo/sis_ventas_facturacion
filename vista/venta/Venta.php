@@ -205,7 +205,8 @@ Phx.vista.Venta=Ext.extend(Phx.gridInterfaz,{
 							                    	this.variables_globales.id_sucursal = combo2.getValue();
 							                    	this.store.baseParams.id_sucursal = this.variables_globales.id_sucursal;
 							                    }
-							                    
+
+												this.store.baseParams.tipo_usuario = this.tipo_usuario;
 							                    this.store.baseParams.tipo_factura = this.tipo_factura;
 							                    this.load({params:{start:0, limit:this.tam_pag}});
 						                	}
