@@ -127,7 +127,6 @@ $body$
       begin
         v_tiene_formula = 'no';
         --obtener correlativo
-
         select id_periodo into v_id_periodo from
           param.tperiodo per
         where per.fecha_ini <= now()::date
@@ -350,37 +349,37 @@ $body$
           v_nombre_factura = v_parametros.id_cliente;
 
         end if;
-        
+
         v_id_cliente_destino = null;
         --si tenemos cliente destino
         if v_tipo_factura = 'pedido' then
                  if (pxp.f_is_positive_integer(v_parametros.id_cliente_destino)) THEN
                     v_id_cliente_destino = v_parametros.id_cliente_destino::integer;
                   else
-                	
-                    INSERT INTO 
+
+                    INSERT INTO
                       vef.tcliente
                     (
-                      id_usuario_reg,              
-                      fecha_reg,              
-                      estado_reg, 
+                      id_usuario_reg,
+                      fecha_reg,
+                      estado_reg,
                       nombre_factura
                     )
                     VALUES (
                       p_id_usuario,
                       now(),
-                      'activo',              
+                      'activo',
                       v_parametros.id_cliente
                     ) returning id_cliente into v_id_cliente_destino;
-                    
-                	
+
+
                 end if;
-        end if; 
-        
-        
-        
-        
-        
+        end if;
+
+
+
+
+
         --obtener gestion a partir de la fecha actual
         select id_gestion into v_id_gestion
         from param.tgestion
@@ -534,7 +533,7 @@ $body$
 
 
         ) returning id_venta into v_id_venta;
-        
+
         if (v_parametros.id_forma_pago != 0 ) then
 
           insert into vef.tventa_forma_pago(
@@ -780,27 +779,27 @@ $body$
                     v_id_cliente_destino = v_parametros.id_cliente_destino::integer;
                   else
 
-                    INSERT INTO 
+                    INSERT INTO
                       vef.tcliente
                     (
-                      id_usuario_reg,              
-                      fecha_reg,              
-                      estado_reg, 
+                      id_usuario_reg,
+                      fecha_reg,
+                      estado_reg,
                       nombre_factura
                     )
                     VALUES (
                       p_id_usuario,
                       now(),
-                      'activo',              
+                      'activo',
                       v_parametros.id_cliente
                     ) returning id_cliente into v_id_cliente_destino;
-                    
-                	
+
+
                 end if;
-           end if; 
-	        
-	        
-	        
+           end if;
+
+
+
         --Sentencia de la modificacion
         update vef.tventa set
           id_cliente = v_id_cliente,
@@ -999,7 +998,6 @@ $body$
       begin
         vef_estados_validar_fp = pxp.f_get_variable_global('vef_estados_validar_fp');
         --obtener datos de la venta y la moneda base
-
         select
           v.* ,
           sm.id_moneda as id_moneda_base,
@@ -1064,9 +1062,24 @@ $body$
           raise exception 'El importe excento no puede ser mayor al total de la venta%,%',v_venta.excento,v_venta.total_venta;
         end if;
 
-        --si es un estado para validar la forma de pago
-        if (v_venta.estado =ANY(string_to_array(vef_estados_validar_fp,',')))then
+        --raise exception 'v_codigo_estado %', v_venta.estado;
 
+        if (pxp.f_existe_parametro(p_tabla,'codigo_estado'))then
+        	v_codigo_estado = v_parametros.codigo_estado;
+        else
+          select sig.codigo into v_codigo_estado
+          from vef.tventa v
+          inner join wf.testado_wf e on e.id_estado_wf=v.id_estado_wf
+          inner join wf.ttipo_estado te on te.id_tipo_estado=e.id_tipo_estado
+          inner join wf.testructura_estado es on es.id_tipo_estado_padre=te.id_tipo_estado
+          inner join wf.ttipo_estado sig on sig.id_tipo_estado=es.id_tipo_estado_hijo
+          where id_venta=v_venta.id_venta;
+          	--v_codigo_estado = v_venta.estado;
+        end if;
+
+        --si es un estado para validar la forma de pago
+        if ((v_codigo_estado) = ANY(string_to_array(vef_estados_validar_fp,',')))then
+		  --raise exception 'entra %', v_codigo_estado;
           select count(*) into v_cantidad_fp
           from vef.tventa_forma_pago
           where id_venta =   v_parametros.id_venta;
@@ -1125,8 +1138,6 @@ $body$
           IF v_parametros.tipo_factura != 'computarizadaexpo' THEN
             v_suma_det = COALESCE(v_suma_det,0) + COALESCE(v_venta.transporte_fob ,0)  + COALESCE(v_venta.seguros_fob ,0)+ COALESCE(v_venta.otros_fob ,0) + COALESCE(v_venta.transporte_cif ,0) +  COALESCE(v_venta.seguros_cif ,0) + COALESCE(v_venta.otros_cif ,0);
           END IF;
-
-
 
           if (v_suma_fp < v_venta.total_venta) then
             raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
@@ -1297,15 +1308,17 @@ $body$
 
 
         END IF;
+
         if (pxp.f_get_variable_global('vef_integracion_lcv') = 'si') then
           v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'INS',v_parametros.id_venta);
+
         end if;
 
         --Definicion de la respuesta
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Venta Validada');
         v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_parametros.id_venta::varchar);
 
-        if (v_venta.estado =ANY(string_to_array(vef_estados_validar_fp,',')) and v_suma_fp > 0)then
+        if (v_codigo_estado =ANY(string_to_array(vef_estados_validar_fp,',')) and v_suma_fp > 0)then
           v_resp = pxp.f_agrega_clave(v_resp,'cambio',(v_suma_fp::varchar || ' ' || v_venta.moneda)::varchar);
         end if;
 
@@ -1314,11 +1327,11 @@ $body$
 
       end;
 
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VEF_ANTEVE_IME'
  	#DESCRIPCION:	Transaccion utilizada  pasar a  estados anterior en la venta
                     segun la operacion definida
- 	#AUTOR:		JRR	
+ 	#AUTOR:		JRR
  	#FECHA:		17-10-2014 12:12:51
 	***********************************/
 
@@ -1392,10 +1405,10 @@ $body$
         --Devuelve la respuesta
         return v_resp;
       end;
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VEF_SIGEVE_IME'
  	#DESCRIPCION:	funcion que controla el cambio al Siguiente estado de las ventas, integrado  con el WF
- 	#AUTOR:		JRR	
+ 	#AUTOR:		JRR
  	#FECHA:		17-10-2014 12:12:51
 	***********************************/
 
@@ -1418,7 +1431,6 @@ $body$
         into
           v_id_tipo_estado,
           v_id_estado_wf
-
         from wf.testado_wf ew
           inner join wf.ttipo_estado te on te.id_tipo_estado = ew.id_tipo_estado
         where ew.id_estado_wf =  v_parametros.id_estado_wf_act;
@@ -1430,24 +1442,29 @@ $body$
           inner join vef.ttipo_venta tv on tv.codigo = v.tipo_factura and tv.estado_reg = 'activo'
         where v.id_proceso_wf = v_parametros.id_proceso_wf_act;
 
+        select te.codigo into v_codigo_estado
+        from wf.ttipo_estado te
+        where te.id_tipo_estado=v_parametros.id_tipo_estado;
+
         v_tabla = pxp.f_crear_parametro(ARRAY[	'_nombre_usuario_ai',
         '_id_usuario_ai',
         'id_venta',
-        'tipo_factura'],
+        'tipo_factura',
+        'codigo_estado'],
                                         ARRAY[	coalesce(v_parametros._nombre_usuario_ai,''),
                                         coalesce(v_parametros._id_usuario_ai::varchar,''),
                                         v_venta.id_venta::varchar,
-                                        v_venta.tipo_factura],
+                                        v_venta.tipo_factura,
+                                        v_codigo_estado],
                                         ARRAY[	'varchar',
                                         'integer',
                                         'integer',
+                                        'varchar',
                                         'varchar']
         );
+
+
         v_resp = vef.ft_venta_ime(p_administrador,p_id_usuario,v_tabla,'VF_VENVALI_MOD');
-
-
-
-
 
         -- obtener datos tipo estado
 
@@ -1528,7 +1545,7 @@ $body$
           --genera el numero de factura
 
           IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
-			
+
             select d.* into v_dosificacion
             from vef.tdosificacion d
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
@@ -1614,6 +1631,7 @@ $body$
                                   acc.id_sucursal = v_venta.id_sucursal))) then
             raise exception 'Antes de finalizar una venta debe realizar una apertura de caja';
           end if;
+
           update vef.tventa set id_usuario_cajero = p_id_usuario
           where id_venta = v_venta.id_venta;
         end if;
@@ -1623,10 +1641,15 @@ $body$
           v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'FIN',v_venta.id_venta);
         end if;
 
+
         -- si hay mas de un estado disponible  preguntamos al usuario
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado de la planilla)');
         v_resp = pxp.f_agrega_clave(v_resp,'operacion','cambio_exitoso');
         v_resp = pxp.f_agrega_clave(v_resp,'estado',v_codigo_estado_siguiente);
+
+        if (pxp.f_get_variable_global('sw_ventas_migrar_informix') = 'si' and pxp.f_get_variable_global('tipo_factura_migrar_ventas') = 'computarizada') then
+	      v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_venta.id_venta::varchar);
+        end if;
 
 
         -- Devuelve la respuesta
