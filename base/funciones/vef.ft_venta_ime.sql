@@ -343,7 +343,7 @@ $body$
             p_id_usuario,
             now(),
             'activo',
-            v_parametros.id_cliente,
+            upper(v_parametros.id_cliente),
             v_parametros.nit
           ) returning id_cliente into v_id_cliente;
 
@@ -506,7 +506,7 @@ $body$
           v_id_vendedor_medico,
           v_porcentaje_descuento,
           v_comision,
-          v_parametros.observaciones,
+          upper(v_parametros.observaciones),
           v_num_ven,
           v_tipo_factura,
           v_fecha,

@@ -18,7 +18,7 @@ Phx.vista.VentaCaja = {
     bnew:false,
     bedit:true,
     bdel:true,
-    tipo_factura: '',
+    tipo_factura: 'computarizada',
     tipo_usuario : 'cajero',
     constructor: function(config) {
         this.maestro=config.maestro;  

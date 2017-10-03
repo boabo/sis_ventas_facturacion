@@ -123,6 +123,7 @@ class MODPuntoVenta extends MODbase{
 		$this->setParametro('id_punto_venta','id_punto_venta','int4');
 		//Definicion de la lista del resultado del query
 		$this->captura('officeID','varchar');
+		$this->captura('id_agencia','integer');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

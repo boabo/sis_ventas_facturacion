@@ -40,6 +40,7 @@ class MODAperturaCierreCaja extends MODbase{
 		
 		$this->captura('arqueo_moneda_local','numeric');	
 		$this->captura('arqueo_moneda_extranjera','numeric');
+        $this->captura('id_entrega_brinks','int4');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -48,6 +49,41 @@ class MODAperturaCierreCaja extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+    function listarCierreCaja(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_sel';
+        $this->transaccion='VF_CIE_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        //$this->setCount(false);
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_apertura_cierre_caja','int4');
+        $this->captura('id_sucursal','int4');
+        $this->captura('id_punto_venta','int4');
+        $this->captura('nombre_punto_venta','varchar');
+        $this->captura('obs_cierre','text');
+        $this->captura('monto_inicial','numeric');
+        $this->captura('obs_apertura','text');
+        $this->captura('monto_inicial_moneda_extranjera','numeric');
+        $this->captura('estado','varchar');
+        $this->captura('fecha_apertura_cierre','date');
+        $this->captura('arqueo_moneda_local','numeric');
+        $this->captura('arqueo_moneda_extranjera','numeric');
+        $this->captura('monto_boleto_bs','numeric');
+        $this->captura('monto_boleto_usd','numeric');
+        $this->captura('monto_ca_boleto_bs','numeric');
+        $this->captura('monto_ca_boleto_usd','numeric');
+        $this->captura('monto_cc_boleto_bs','numeric');
+        $this->captura('monto_cc_boleto_usd','numeric');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
     function reporteAperturaCierreCaja(){
         //Definicion de variables para ejecucion del procedimientp
@@ -108,7 +144,7 @@ class MODAperturaCierreCaja extends MODbase{
         $this->ejecutarConsulta();
 
 
-
+        //var_dump($this->respuesta);exit;
         //Devuelve la respuesta
         return $this->respuesta;
     }
@@ -180,6 +216,54 @@ class MODAperturaCierreCaja extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+    function insertarFecha(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_APCIE_FECH';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('fecha','fecha','date');
+        $this->setParametro('id_entrega_brinks','id_entrega_brinks','int4');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function listarAperturaCierreCajaEntrega(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_sel';
+        $this->transaccion='VF_APENTRE_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //Definicion de la lista del resultado del query
+        $this->capturaCount('arqueo_moneda_local_total','numeric');
+        $this->capturaCount('arqueo_moneda_extranjera_total','numeric');
+        $this->captura('id_apertura_cierre_caja','int4');
+        $this->captura('id_punto_venta','int4');
+        $this->captura('id_usuario_cajero','int4');
+        $this->captura('id_entrega_brinks','int4');
+        $this->captura('id_usuario_reg','int4');
+        $this->captura('usr_reg','varchar');
+        $this->captura('usr_mod','varchar');
+        $this->captura('fecha_apertura_cierre','date');
+        $this->captura('nombre_punto_venta','varchar');
+        $this->captura('arqueo_moneda_local','numeric');
+        $this->captura('arqueo_moneda_extranjera','numeric');
+        $this->captura('obs_cierre','text');
+        $this->captura('cajero','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
 }
 ?>

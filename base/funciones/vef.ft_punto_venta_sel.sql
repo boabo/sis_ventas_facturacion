@@ -88,7 +88,7 @@ $body$
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-            v_consulta:='select ag.codigo_int as officeID
+            v_consulta:='select ag.codigo_int as officeID, ag.id_agencia
 						from vef.tpunto_venta pv
 						inner join obingresos.tagencia ag on pv.codigo=ag.codigo
 						and pv.id_punto_venta='||v_parametros.id_punto_venta||'';

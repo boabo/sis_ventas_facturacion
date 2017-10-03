@@ -15,6 +15,10 @@ class ACTPuntoVenta extends ACTbase{
             $this->objParam->addFiltro(" puve.id_sucursal = " .  $this->objParam->getParametro('id_sucursal'));
         }
 
+		if ($this->objParam->getParametro('id_punto_venta') != '') {
+			$this->objParam->addFiltro(" puve.id_punto_venta = " .  $this->objParam->getParametro('id_punto_venta'));
+		}
+
         if($this->objParam->getParametro('tipo_factura') != '') {
             $this->objParam->addFiltro(" ''".$this->objParam->getParametro('tipo_factura')."'' =ANY (suc.tipo_interfaz)");
         }
@@ -78,6 +82,12 @@ class ACTPuntoVenta extends ACTbase{
 	function eliminarPuntoVenta(){
 			$this->objFunc=$this->create('MODPuntoVenta');	
 		$this->res=$this->objFunc->eliminarPuntoVenta($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function obtenerOficinaID(){
+		$this->objFunc=$this->create('MODPuntoVenta');
+		$this->res=$this->objFunc->obtenerOficinaID($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 			

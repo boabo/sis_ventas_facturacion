@@ -74,28 +74,29 @@ BEGIN
                         pv.nombre as nombre_punto_venta,
                         suc.nombre as nombre_sucursal,
                         apcie.arqueo_moneda_local,
-                        apcie.arqueo_moneda_extranjera
+                        apcie.arqueo_moneda_extranjera,
+                        apcie.id_entrega_brinks
 						from vef.tapertura_cierre_caja apcie
 						inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
 				        left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
                         left join vef.tsucursal suc on suc.id_sucursal = apcie.id_sucursal
-                        
+
                         where  ';
-			
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_APCIE_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		jrivera	
+ 	#AUTOR:		jrivera
  	#FECHA:		07-07-2016 14:16:20
 	***********************************/
 
@@ -109,46 +110,124 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
 					    left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
                         left join vef.tsucursal suc on suc.id_sucursal = apcie.id_sucursal
-                        
+
                         where ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-    /*********************************    
+
+    /*********************************
+ 	#TRANSACCION:  'VF_CIE_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Gonzalo Sarmiento Sejas
+ 	#FECHA:		28-09-2017
+	***********************************/
+
+	elsif(p_transaccion='VF_CIE_SEL')then
+
+    	begin
+        	IF NOT EXISTS (select 1
+            			  from vef.tapertura_cierre_caja
+            			  where id_usuario_cajero=id_usuario_cajero
+            			  and fecha_apertura_cierre=CURRENT_DATE)THEN
+            	raise exception 'Debe realizar una apertura de caja para la fecha de hoy';
+            END IF;
+
+    		--Sentencia de la consulta
+			v_consulta:='select apcie.id_apertura_cierre_caja,
+                         apcie.id_sucursal,
+                         apcie.id_punto_venta,
+                         pv.nombre as nombre_punto_venta,
+                         apcie.obs_cierre,
+                         apcie.monto_inicial,
+                         apcie.obs_apertura,
+                         apcie.monto_inicial_moneda_extranjera,
+                         apcie.estado,
+                         apcie.fecha_apertura_cierre,
+                         apcie.arqueo_moneda_local,
+                         apcie.arqueo_moneda_extranjera,
+                         (select sum(bol.total)
+                         from obingresos.tboleto bol
+                         inner join param.tmoneda mon on mon.id_moneda=bol.id_moneda_boleto
+                         where bol.id_usuario_cajero ='||p_id_usuario||'
+                         and bol.fecha_emision=current_date
+                         and mon.codigo_internacional=''BOB'') as monto_boleto_bs,
+                         (select sum(bol.total)
+                         from obingresos.tboleto bol
+                         inner join param.tmoneda mon on mon.id_moneda=bol.id_moneda_boleto
+                         where bol.id_usuario_cajero ='||p_id_usuario||'
+                         and bol.fecha_emision=current_date
+                         and mon.codigo_internacional=''USD'') as monto_boleto_usd,
+                         obingresos.f_monto_forma_pago_amadeus(''CA'',''BOB'','||p_id_usuario||') as monto_ca_boleto_bs,
+                         obingresos.f_monto_forma_pago_amadeus(''CA'',''USD'','||p_id_usuario||') as monto_ca_boleto_usd,
+                         obingresos.f_monto_forma_pago_amadeus(''CC'',''BOB'','||p_id_usuario||') as monto_cc_boleto_bs,
+                         obingresos.f_monto_forma_pago_amadeus(''CC'',''USD'','||p_id_usuario||') as monto_cc_boleto_usd
+                  from vef.tapertura_cierre_caja apcie
+                  inner join obingresos.tboleto bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||p_id_usuario||'
+                  inner join vef.tpunto_venta pv on pv.id_punto_venta=apcie.id_punto_venta
+                  where apcie.id_usuario_cajero = '||p_id_usuario||' and
+                        apcie.fecha_apertura_cierre = current_date and
+                        bol.estado=''revisado'' and bol.fecha_emision=CURRENT_DATE and ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' group by apcie.id_apertura_cierre_caja,
+                                               apcie.id_sucursal,
+                                               apcie.id_punto_venta,
+                                               apcie.id_usuario_cajero,
+                                               apcie.id_moneda,
+                                               apcie.obs_cierre,
+                                               apcie.monto_inicial,
+                                               apcie.obs_apertura,
+                                               apcie.monto_inicial_moneda_extranjera,
+                                               apcie.estado,
+                                               apcie.fecha_apertura_cierre,
+                                               apcie.arqueo_moneda_local,
+                                               apcie.arqueo_moneda_extranjera,
+                                               pv.nombre
+                  						order by apcie.id_apertura_cierre_caja asc ';
+            v_consulta:=v_consulta||' limit 1 ';
+			raise notice 'v_consulta %', v_consulta;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+    /*********************************
  	#TRANSACCION:  'VF_REPAPCIE_SEL'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		jrivera	
+ 	#AUTOR:		jrivera
  	#FECHA:		07-07-2016 14:16:20
 	***********************************/
 
 	elsif(p_transaccion='VF_REPAPCIE_SEL')then
 
 		begin
-        
+
         	select acc.id_punto_venta,acc.id_sucursal,acc.id_moneda,acc.fecha_apertura_cierre into v_id_pv,v_id_sucursal,v_id_moneda_base, v_fecha
             from vef.tapertura_cierre_caja acc
             where acc.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
-            
+
             select m.id_moneda,m.codigo_internacional,m.moneda || ' (' || m.codigo_internacional || ')' into v_id_moneda_tri,v_cod_moneda_extranjera,v_moneda_extranjera
             from param.tmoneda m
             where m.estado_reg = 'activo' and m.triangulacion = 'si';
-            
+
             select m.codigo_internacional,m.moneda || ' (' || m.codigo_internacional || ')' into v_cod_moneda_local,v_moneda_local
             from param.tmoneda m
             where m.id_moneda = v_id_moneda_base ;
-            
+
             v_tiene_dos_monedas = 'no';
             v_tipo_cambio = 1;
             if (v_id_moneda_tri != v_id_moneda_base) then
             	v_tiene_dos_monedas = 'si';
                 v_tipo_cambio = param.f_get_tipo_cambio_v2(v_id_moneda_base, v_id_moneda_tri,v_fecha,'O');
             end if;
-            
+
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='with forma_pago as (
                           select fp.id_forma_pago,fp.id_moneda,
@@ -163,18 +242,18 @@ BEGIN
                           else
                               ''OTRO''
                           end)::varchar as codigo
-                          
+
                           from obingresos.tforma_pago fp
-                          
+
 
                       )
-                      select u.desc_persona::varchar, to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar, 
+                      select u.desc_persona::varchar, to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
                       coalesce(ppv.codigo,ps.codigo)::varchar as pais, COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
                       coalesce(pv.codigo || ''-'' || pv.nombre, s.codigo || ''-'' || s.nombre)::varchar as punto_venta,
                       acc.obs_cierre::varchar, acc.arqueo_moneda_local,acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera,
                       ' || v_tipo_cambio || '::numeric as tipo_cambio, ''' || v_tiene_dos_monedas || '''::varchar as tiene_dos_monedas,
                       ''' || v_moneda_local || '''::varchar as moneda_local,''' || v_moneda_extranjera || '''::varchar as moneda_extranjera,
-                       ''' || v_cod_moneda_local || '''::varchar as cod_moneda_local,''' || v_cod_moneda_extranjera || '''::varchar as cod_moneda_extranjera, 
+                       ''' || v_cod_moneda_local || '''::varchar as cod_moneda_local,''' || v_cod_moneda_extranjera || '''::varchar as cod_moneda_extranjera,
                       sum(case  when fp.codigo = ''CASH'' and fp.id_moneda = ' || v_id_moneda_base  || ' then
                               bfp.importe
                           else
@@ -225,8 +304,8 @@ BEGIN
                           else
                               0
                           end)as otro_boletos_me,
-                          
-                          
+
+
                       sum(case  when fp2.codigo = ''CASH'' and fp2.id_moneda = ' || v_id_moneda_base  || ' then
                               vfp.monto_mb_efectivo
                           else
@@ -277,31 +356,31 @@ BEGIN
                           else
                               0
                           end)as otro_ventas_me,
-                      (	select sum(ven.comision) from vef.tventa ven 
-                          where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_base  || ' and 
-                                  ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta  
+                      (	select sum(ven.comision) from vef.tventa ven
+                          where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_base  || ' and
+                                  ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                   and ven.id_usuario_cajero = acc.id_usuario_cajero and
                                   ven.estado = ''finalizado'') +
-                       
-                      (	select sum(bol.comision) from obingresos.tboleto bol 
-                          where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_base  || ' and 
-                                  bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta  
+
+                      (	select sum(bol.comision) from obingresos.tboleto bol
+                          where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_base  || ' and
+                                  bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
                                   and bol.id_usuario_cajero = acc.id_usuario_cajero and
                                   bol.estado = ''pagado'') as comisiones_ml,
 
-                      (	select sum(ven.comision) from vef.tventa ven 
-                          where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_tri  || ' and 
-                                  ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta  
+                      (	select sum(ven.comision) from vef.tventa ven
+                          where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_tri  || ' and
+                                  ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                   and ven.id_usuario_cajero = acc.id_usuario_cajero and
                                   ven.estado = ''finalizado'') +
-                       
-                      (	select sum(bol.comision) from obingresos.tboleto bol 
-                          where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_tri  || ' and 
-                                  bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta 
+
+                      (	select sum(bol.comision) from obingresos.tboleto bol
+                          where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_tri  || ' and
+                                  bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
                                    and bol.id_usuario_cajero = acc.id_usuario_cajero and
                                   bol.estado = ''pagado'')   as comisiones_me
-                         
-                      from vef.tapertura_cierre_caja acc 
+
+                      from vef.tapertura_cierre_caja acc
                       inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
                       left join vef.tsucursal s on acc.id_sucursal = s.id_sucursal
                       left join vef.tpunto_venta pv on pv.id_punto_venta = acc.id_punto_venta
@@ -321,21 +400,110 @@ BEGIN
                                                       v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
 
                       left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
-                      left join forma_pago fp2 on fp2.id_forma_pago = vfp.id_forma_pago     
+                      left join forma_pago fp2 on fp2.id_forma_pago = vfp.id_forma_pago
                       where acc.id_apertura_cierre_caja = ' || v_parametros.id_apertura_cierre_caja  || '
-                      group by u.desc_persona, acc.fecha_apertura_cierre, 
+                      group by u.desc_persona, acc.fecha_apertura_cierre,
                       ppv.codigo,ps.codigo,lpv.codigo,ls.codigo,
                       pv.codigo , pv.nombre, s.codigo ,s.nombre,acc.id_punto_venta,
                       acc.id_usuario_cajero,acc.obs_cierre, acc.arqueo_moneda_local,
                       acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera';
-			
-			--Definicion de la respuesta		    
-			
+
+			--Definicion de la respuesta
+
 			raise notice '%',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
+
+	/*********************************
+ 	#TRANSACCION:  'VF_APENTRE_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		MMV
+ 	#FECHA:
+	***********************************/
+
+	elsif(p_transaccion='VF_APENTRE_SEL')then
+
+    	begin
+    		--Sentencia de la consulta
+			v_consulta:='select
+						apcie.id_apertura_cierre_caja,
+						apcie.id_punto_venta,
+						apcie.id_usuario_cajero,
+                        apcie.id_entrega_brinks,
+                        apcie.id_usuario_reg,
+						usu1.cuenta as usr_reg,
+						usu2.cuenta as usr_mod,
+                        apcie.fecha_apertura_cierre,
+                        pv.nombre as nombre_punto_venta,
+                        COALESCE(apcie.arqueo_moneda_local,0) as arqueo_moneda_local ,
+                        COALESCE(apcie.arqueo_moneda_extranjera,0) as arqueo_moneda_extranjera,
+                        apcie.obs_cierre,
+                        p.nombre as cajero
+                        from vef.tapertura_cierre_caja apcie
+						inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
+                        inner join segu.tusuario u on u.id_usuario = apcie.id_usuario_cajero
+                        inner join segu.vpersona p on p.id_persona = u.id_persona
+						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
+				        left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
+                        where  ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+    /*********************************
+ 	#TRANSACCION:  'VF_APENTRE_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		MMV
+ 	#FECHA:
+	***********************************/
+
+	elsif(p_transaccion='VF_APENTRE_CONT')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='select count(id_apertura_cierre_caja),
+            					COALESCE(sum(apcie.arqueo_moneda_local),0)::numeric as arqueo_moneda_local_total,
+								COALESCE(sum(apcie.arqueo_moneda_extranjera),0)::numeric as arqueo_moneda_extranjera_total
+					    from vef.tapertura_cierre_caja apcie
+						inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
+                        inner join segu.tusuario u on u.id_usuario = apcie.id_usuario_cajero
+                        inner join segu.vpersona p on p.id_persona = u.id_persona
+						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
+				        left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
+                        where ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_CIE_CONT'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Gonzalo Sarmiento Sejas
+ 	#FECHA:		28-09-2017
+	***********************************/
+
+	elsif(p_transaccion='VF_CIE_CONT')then
+
+    	begin
+        	v_consulta:='select count(apcie.id_apertura_cierre_caja)
+                        from vef.tapertura_cierre_caja apcie
+                        where apcie.id_usuario_cajero = '||p_id_usuario||' and
+                              apcie.fecha_apertura_cierre = current_date and ';
+            v_consulta:=v_consulta||v_parametros.filtro;
+            return v_consulta;
+        end;
 					
 	else
 					     

@@ -14,12 +14,7 @@ class ACTVenta extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_venta');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
-        if($this->objParam->getParametro('id_punto_venta') != '') {
-            $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta')/*."and ven.id_usuario_reg =".$this->objParam->getParametro('id_usuario_cajero')*/);
-        }
-        
-        
-        
+
         if ($this->objParam->getParametro('pes_estado') != '') {
             if ($this->objParam->getParametro('pes_estado') == 'proceso_elaboracion') {
                 $this->objParam->addFiltro(" ven.estado in( ''revision'', ''elaboracion'') ");
@@ -41,20 +36,14 @@ class ACTVenta extends ACTbase{
 					else{
 					  $this->objParam->addFiltro(" ven.estado = ''". $this->objParam->getParametro('pes_estado') . "'' ");
                 	}	
-								
-                    	
-                    
-				
 				}
             }
-            
         } 
 		
-		 if ($this->objParam->getParametro('nombreVista') == 'VentaVbPedido') { 
+		if ($this->objParam->getParametro('nombreVista') == 'VentaVbPedido') {
               $this->objParam->addFiltro(" ven.estado not in ( ''borrador'') ");
         } 
 		 
-		
 		if ($this->objParam->getParametro('id_sucursal') != '') {
 			$this->objParam->addFiltro(" ven.id_sucursal = ". $this->objParam->getParametro('id_sucursal'));
 		}
@@ -135,13 +124,18 @@ class ACTVenta extends ACTbase{
         $this->objFunc=$this->create('MODVenta');
         $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
         $this->res=$this->objFunc->siguienteEstadoVenta($this->objParam);
+
 		if($this->res->getTipo()=='ERROR'){
 			$this->res->imprimirRespuesta($this->res->generarJson());
 		}else{
+			$respuesta = $this->res->generarJson();
 			$datos = $this->res->getDatos();
-			$this->objFunc=$this->create('MODVenta');
-			//$this->res=$this->objFunc->insertarVentaInformix($datos['id_venta']);
-			$this->res->imprimirRespuesta($this->res->generarJson());
+			if ($datos['estado'] == 'finalizado') {
+				//$this->objFunc = $this->create('MODVenta');
+				//$this->res = $this->objFunc->insertarVentaInformix($datos['id_venta']);
+				//$this->res->imprimirRespuesta($this->res->generarJson());
+			}
+			$this->res->imprimirRespuesta($respuesta);
 		}
     }
     
@@ -256,6 +250,39 @@ class ACTVenta extends ACTbase{
 		
 
 	}
+
+	function listarVentasDosificaciones (){
+
+        $this->objParam->defecto('ordenacion','id_venta');
+        $this->objParam->defecto('dir_ordenacion','asc');
+
+       /* if($this->objParam->getParametro('id_punto_venta') != '') {
+            $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta')." and ven.id_usuario_reg =".$this->objParam->getParametro('id_usuario_cajero')." and ven.fecha = ".$this->objParam->getParametro('fecha')."::date");
+        }*/
+        if ($this->objParam->getParametro('id_dosificacion') != '') {
+
+            $this->objParam->addFiltro("ven.id_dosificacion = " .  $this->objParam->getParametro('id_dosificacion'));
+        }
+
+        if ($this->objParam->getParametro('pes_estado') != '') {
+            if ($this->objParam->getParametro('pes_estado') == 'finalizado') {
+                $this->objParam->addFiltro(" ven.estado in(''finalizado'') ");
+            }elseif ($this->objParam->getParametro('pes_estado') == 'anulado') {
+                $this->objParam->addFiltro(" ven.estado in( ''anulado'') ");
+
+            }
+        }
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODVenta','listarVenta');
+        } else{
+            $this->objFunc=$this->create('MODVenta');
+
+            $this->res=$this->objFunc->listarVentaDotificacion($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
 			
 }
 

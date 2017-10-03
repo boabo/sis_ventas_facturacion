@@ -23,7 +23,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
     cantidadAllowDecimals: false,
     constructor:function(config)
     {   
-        Ext.apply(this,config);
+		Ext.apply(this,config);
         
         if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {  
         	
@@ -335,7 +335,6 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
     	
         this.Cmp.id_sucursal.store.load({params:{start:0,limit:this.tam_pag}, 
            callback : function (r) {
-           		
            		this.Cmp.id_sucursal.setValue(this.data.objPadre.variables_globales.id_sucursal);
            		if (this.data.objPadre.variables_globales.vef_tiene_punto_venta != 'true') {  
            			this.detCmp.id_producto.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
@@ -346,6 +345,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
         });
 	    
         if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
+			this.Cmp.id_punto_venta.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
 	        this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag}, 
 	           callback : function (r) {
 	           		
@@ -864,7 +864,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 	        });
 	     
 	     var params = {
-                		'id_sucursal' : this.Cmp.id_sucursal.getValue()                		
+                		'id_sucursal' : this.Cmp.id_sucursal.getValue()
 	                };
 	     
 	     if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') { 
@@ -1347,9 +1347,11 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 				tasignacion : true,
 				tname : 'id_cliente',
 				tdata:{},
+				cls:'uppercase',
 				tcls:'Cliente',
 				gwidth : 170,
-				minChars : 2
+				minChars : 2,
+				style:'text-transform:uppercase;'
 			},
 			type : 'TrigguerCombo',
 			id_grupo : 0,
@@ -1424,8 +1426,8 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 				name: 'observaciones',
 				fieldLabel: 'Observaciones',
 				allowBlank: true,
-				anchor: '80%'
-				
+				anchor: '90%',
+				style:'text-transform:uppercase;'
 			},
 				type:'TextArea',
 				id_grupo:0,				
