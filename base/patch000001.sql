@@ -954,3 +954,98 @@ ALTER TABLE vef.tcliente
 /************************************F-SCP-RAC-VEF-0-11/11/2016*************************************************/
 
 
+
+/************************************I-SCP-RAC-VEF-0-20/09/2017*************************************************/
+
+--------------- SQL ---------------
+
+ALTER TABLE vef.tforma_pago
+  ADD COLUMN gen_cuentas_por_cobrar VARCHAR(5) DEFAULT 'no' NOT NULL;
+
+COMMENT ON COLUMN vef.tforma_pago.gen_cuentas_por_cobrar
+IS 'Si esta bandera esta habilitada la formas de pago genera cuentas por cobrar en la tabla conta.tcobro_pago';
+
+
+/************************************F-SCP-RAC-VEF-0-20/09/2017*************************************************/
+
+
+
+/***********************************I-SCP-RAC-VEF-1-19/09/2017****************************************/
+ 
+--------------- SQL ---------------
+
+COMMENT ON COLUMN vef.tventa_forma_pago.monto
+IS 'importe entregado en la  moneda de la venta (puede tener cambios)';
+
+--------------- SQL ---------------
+
+COMMENT ON COLUMN vef.tventa_forma_pago.monto_transaccion
+IS 'monto entregado en la moneda de pago, correponde al id_moneda de la forma de pago (puede tener cambios)';
+
+
+--------------- SQL ---------------
+
+COMMENT ON COLUMN vef.tventa_forma_pago.cambio
+IS 'cambio a devolver en moneda de venta';
+
+
+--------------- SQL ---------------
+
+COMMENT ON COLUMN vef.tventa_forma_pago.monto_mb_efectivo
+IS 'monto realmente cobrado en la moneda de la venta, sirve para generar el cbte de la venta y determinar si el total cobrado cuadra con el total vendido';
+
+
+/***********************************F-SCP-RAC-VEF-1-19/09/2017****************************************/
+
+
+
+/***********************************I-SCP-RAC-VEF-1-26/09/2017****************************************/
+
+--------------- SQL ---------------
+
+ALTER TABLE vef.tsucursal
+  ADD COLUMN permite_externo VARCHAR(4) DEFAULT 'no' NOT NULL;
+
+COMMENT ON COLUMN vef.tsucursal.permite_externo
+IS 'si o no, si permite eterno, las facturas se inten mediante servicio, y las dosificacioens solo son refenreciales, no sirve para emitir facturas desde este sistema';
+
+
+--------------- SQL ---------------
+
+CREATE TABLE vef.tgrupo_factura (
+  id_grupo_factura SERIAL NOT NULL,
+  fecha_ini DATE NOT NULL,
+  fecha_fin DATE NOT NULL,
+  id_depto_conta INTEGER NOT NULL,
+  id_moneda INTEGER,
+  id_gestion INTEGER NOT NULL,
+  id_int_comprobante INTEGER,
+  PRIMARY KEY(id_grupo_factura)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+--------------- SQL ---------------
+
+ALTER TABLE vef.tventa
+  ADD COLUMN id_grupo_factura INTEGER;  
+
+COMMENT ON COLUMN vef.tventa.id_grupo_factura
+IS 'indetifica el grupo usado para la generacion del comprobante';
+
+
+/***********************************F-SCP-RAC-VEF-1-26/09/2017****************************************/
+
+/***********************************I-SCP-GSS-VEF-1-10/10/2017****************************************/
+
+ALTER TABLE vef.tventa_forma_pago
+  ADD COLUMN id_auxiliar INTEGER;
+
+ALTER TABLE vef.tforma_pago
+  ADD COLUMN sw_tipo_venta VARCHAR(50) [];
+
+ALTER TABLE vef.tforma_pago
+  ADD COLUMN orden NUMERIC(8,2);
+  
+/***********************************F-SCP-RAC-VEF-1-10/10/2017****************************************/

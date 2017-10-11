@@ -43,7 +43,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Total Boletos Bs',
+                                    title: 'Total Boletos',
                                     autoHeight: true,
                                     //layout:'hbox',
                                     items: [],
@@ -51,7 +51,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 },
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Total Boletos USD',
+                                    title: 'Total Ventas',
                                     autoHeight: true,
                                     //layout:'hbox',
                                     items: [],
@@ -302,7 +302,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid:true,
                 form:true
             },
-            {
+            /*{
                 config:{
                     name: 'monto_ca_boleto_bs',
                     fieldLabel: 'CA Amadeus Bs',
@@ -372,11 +372,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid:true,
                 form:true,
                 valorInicial :0.00
-            },
+            },*/
             {
                 config:{
-                    name: 'monto_boleto_bs',
-                    fieldLabel: 'Total Boletos Bs',
+                    name: 'monto_boleto_moneda_base',
+                    fieldLabel: 'Total Boletos Moneda Local',
                     allowBlank: true,
                     disabled:true,
                     anchor: '100%',
@@ -393,8 +393,44 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_boleto_usd',
-                    fieldLabel: 'Total Boletos USD',
+                    name: 'monto_boleto_moneda_ref',
+                    fieldLabel: 'Total Boletos Moneda Extranjera',
+                    allowBlank: true,
+                    disabled:true,
+                    anchor: '100%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2
+                },
+                type:'NumberField',
+                id_grupo:1,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_moneda_base_fp_facturacion',
+                    fieldLabel: 'Total Facturacion Moneda Local',
+                    allowBlank: true,
+                    disabled:true,
+                    anchor: '100%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2
+                },
+                type:'NumberField',
+                id_grupo:2,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_moneda_ref_fp_facturacion',
+                    fieldLabel: 'Total Facturacion Moneda Extranjera',
                     allowBlank: true,
                     disabled:true,
                     anchor: '100%',
@@ -491,15 +527,11 @@ header("content-type: text/javascript; charset=UTF-8");
         title:'Cierre Caja',
 
         obtenerCaja:function(x){
-            var dateToday = new Date();
-            var dd = dateToday.getDate();
-            var mm = dateToday.getMonth()+1;
-            var yyyy = dateToday.getFullYear();
             Phx.CP.loadingShow();
             Ext.Ajax.request({
                 // form:this.form.getForm().getEl(),
                 url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/listarCierreCaja',
-                params:{fecha:dd+'/'+mm+'/'+yyyy,id_punto_venta:this.data.id_punto_venta},
+                params:{fecha:this.data.fecha_apertura_cierre.dateFormat('d/m/Y'),id_punto_venta:this.data.id_punto_venta},
                 success:this.successCaja,
                 failure: this.conexionFailure,
                 timeout:this.timeout,
@@ -515,12 +547,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.id_punto_venta.setValue(reg.datos[0]['id_punto_venta']);
                 this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
                 this.Cmp.nombre_punto_venta.setValue(reg.datos[0]['nombre_punto_venta']);
-                this.Cmp.monto_boleto_bs.setValue(reg.datos[0]['monto_boleto_bs']);
-                this.Cmp.monto_boleto_usd.setValue(reg.datos[0]['monto_boleto_usd']);
-                this.Cmp.monto_ca_boleto_bs.setValue(reg.datos[0]['monto_ca_boleto_bs']);
-                this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['monto_ca_boleto_usd']);
-                this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['monto_cc_boleto_bs']);
-                this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['monto_cc_boleto_usd']);
+                this.Cmp.monto_boleto_moneda_base.setValue(reg.datos[0]['monto_base_fp_boleto']);
+                this.Cmp.monto_boleto_moneda_ref.setValue(reg.datos[0]['monto_ref_fp_boleto']);
+                this.Cmp.monto_moneda_base_fp_facturacion.setValue(reg.datos[0]['monto_base_fp_ventas']);
+                this.Cmp.monto_moneda_ref_fp_facturacion.setValue(reg.datos[0]['monto_ref_fp_ventas']);
+                //this.Cmp.monto_ca_boleto_bs.setValue(reg.datos[0]['monto_ca_boleto_bs']);
+                //this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['monto_ca_boleto_usd']);
+                //this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['monto_cc_boleto_bs']);
+                //this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['monto_cc_boleto_usd']);
                 this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
                 this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
             }else{
@@ -530,6 +564,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         onSubmit:function(){
             //TODO passar los datos obtenidos del wizard y pasar  el evento save
+
             if (this.form.getForm().isValid()) {
                 this.fireEvent('beforesave',this,this.getValues());
                 this.getValues();

@@ -100,7 +100,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         value : 0
                     },
                     type:'NumberField',
-                    id_grupo:2,
+                    id_grupo:0,
                     form:true,
                     valorInicial:'0'
                 });
@@ -246,7 +246,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             direction: 'ASC'
                         },
                         totalProperty: 'total',
-                        fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida'],
+                        fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida','excento'],
                         remoteSort: true,
                         baseParams: {par_filtro: 'todo.nombre'}
                     }),
@@ -325,6 +325,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 } else {
                     this.habilitarDescripcion(false);
                 }
+                if (r.data.excento == 'si') {
+                    this.mostrarComponente(this.Cmp.excento);
+                }
             },this);
 
         },
@@ -335,9 +338,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.id_sucursal.store.load({params:{start:0,limit:this.tam_pag},
                 callback : function (r) {
-                    console.log('gonzalo');
-                    console.log(r);
-                    console.log(this.data.objPadre.variables_globales.id_sucursal);
                     this.Cmp.id_sucursal.setValue(this.data.objPadre.variables_globales.id_sucursal);
                     if (this.data.objPadre.variables_globales.vef_tiene_punto_venta != 'true') {
                         this.detCmp.id_producto.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
@@ -473,6 +473,8 @@ header("content-type: text/javascript; charset=UTF-8");
             this.detCmp.precio_unitario.on('keyup',function() {
                 this.detCmp.precio_total.setValue(this.roundTwo(Number(this.detCmp.precio_unitario.getValue()) * Number(this.detCmp.cantidad.getValue())));
             },this);
+
+            this.ocultarComponente(this.Cmp.excento);
         },
 
         roundTwo: function(can){
@@ -1309,6 +1311,17 @@ header("content-type: text/javascript; charset=UTF-8");
                     inputType:'hidden',
                     name: 'id_venta'
                 },
+                type:'Field',
+                form:true
+            },
+            {
+                //configuracion del componente
+                config:{
+                    labelSeparator:'',
+                    inputType:'hidden',
+                    name: 'forma_pedido'
+                },
+                valorInicial:'vendedor',
                 type:'Field',
                 form:true
             },

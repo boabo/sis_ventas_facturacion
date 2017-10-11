@@ -57,6 +57,7 @@ class MODAperturaCierreCaja extends MODbase{
         $this->tipo_procedimiento='SEL';//tipo de transaccion
         //$this->setCount(false);
 
+        $this->setParametro('fecha','fecha','date');
         //Definicion de la lista del resultado del query
         $this->captura('id_apertura_cierre_caja','int4');
         $this->captura('id_sucursal','int4');
@@ -70,12 +71,14 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('fecha_apertura_cierre','date');
         $this->captura('arqueo_moneda_local','numeric');
         $this->captura('arqueo_moneda_extranjera','numeric');
-        $this->captura('monto_boleto_bs','numeric');
-        $this->captura('monto_boleto_usd','numeric');
-        $this->captura('monto_ca_boleto_bs','numeric');
-        $this->captura('monto_ca_boleto_usd','numeric');
-        $this->captura('monto_cc_boleto_bs','numeric');
-        $this->captura('monto_cc_boleto_usd','numeric');
+        //$this->captura('monto_boleto_moneda_base','numeric');
+        //$this->captura('monto_boleto_moneda_ref','numeric');
+        $this->captura('monto_base_fp_boleto','numeric');
+        $this->captura('monto_ref_fp_boleto','numeric');
+        $this->captura('monto_base_fp_ventas','numeric');
+        $this->captura('monto_ref_fp_ventas','numeric');
+        //$this->captura('monto_cc_boleto_bs','numeric');
+        //$this->captura('monto_cc_boleto_usd','numeric');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

@@ -103,10 +103,11 @@ class MODVenta extends MODbase{
 		$this->captura('cliente_destino','varchar');
 		
 		
+		
       
 		
 		//Ejecuta la instruccion
-		$this->armarConsulta();		
+		$this->armarConsulta();
 		$this->ejecutarConsulta();
 		
 		//Devuelve la respuesta
@@ -161,7 +162,6 @@ class MODVenta extends MODbase{
         $cone = new conexion();
         $link = $cone->conectarpdo();
         $copiado = false;
-
 
         try {
             $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);     
@@ -223,7 +223,8 @@ class MODVenta extends MODbase{
 			$this->setParametro('id_punto_venta','id_punto_venta','int4'); 
 			$this->setParametro('id_forma_pago','id_forma_pago','int4');
 			$this->setParametro('monto_forma_pago','monto_forma_pago','numeric'); 
-			
+			$this->setParametro('id_auxiliar','id_auxiliar','integer');
+
 			$this->setParametro('numero_tarjeta','numero_tarjeta','varchar'); 
 			$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar'); 
 			$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar'); 
@@ -333,6 +334,7 @@ class MODVenta extends MODbase{
                 }
                         
             }
+
 			if ($this->aParam->getParametro('id_forma_pago') == '0') {
 				//decodifica JSON  de forma de pago 
 	            $json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('formas_pago'));           
@@ -351,7 +353,8 @@ class MODVenta extends MODbase{
 					$this->arreglo['numero_tarjeta'] = $f['numero_tarjeta'];  
 					$this->arreglo['codigo_tarjeta'] = $f['codigo_tarjeta'];  
 					$this->arreglo['tipo_tarjeta'] = $f['tipo_tarjeta'];                
-	                $this->arreglo['id_venta'] = $id_venta;                
+					$this->arreglo['id_auxiliar'] = $f['id_auxiliar'];
+	                $this->arreglo['id_venta'] = $id_venta;
 	                
 	                //Define los parametros para la funcion
 	                $this->setParametro('id_venta','id_venta','int4');
@@ -360,7 +363,8 @@ class MODVenta extends MODbase{
 					$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar'); 
 					$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar'); 
 	                $this->setParametro('valor','valor','numeric');
-					$this->setParametro('tipo_factura','tipo_factura','varchar');                                
+	                $this->setParametro('id_auxiliar','id_auxiliar','int4');
+					$this->setParametro('tipo_factura','tipo_factura','varchar');
 	                
 	                //Ejecuta la instruccion
 	                $this->armarConsulta();
@@ -377,27 +381,28 @@ class MODVenta extends MODbase{
 	            }
 	        }
 
-			$this->resetParametros();
-			//Validar que todo este ok
-			$this->procedimiento = 'vef.ft_venta_ime';
-			$this->transaccion = 'VF_VENVALI_MOD';
-			$this->setParametro('id_venta','id_venta','int4');
-			$this->setParametro('tipo_factura','tipo_factura','varchar'); 
-			//Ejecuta la instruccion
-            $this->armarConsulta();
-            $stmt = $link->prepare($this->consulta);          
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);               
-            
-            //recupera parametros devuelto depues de insertar ... (id_formula)
-            $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
-			$respuesta = $resp_procedimiento['datos'];            
-            
-			
-            if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
-                throw new Exception("Error al ejecutar en la bd", 3);
-            }
-			
+			if($this->aParam->getParametro('nombre_vista')!='FormVentaCounter') {
+				$this->resetParametros();
+				//Validar que todo este ok
+				$this->procedimiento = 'vef.ft_venta_ime';
+				$this->transaccion = 'VF_VENVALI_MOD';
+				$this->setParametro('id_venta', 'id_venta', 'int4');
+				$this->setParametro('tipo_factura', 'tipo_factura', 'varchar');
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$stmt = $link->prepare($this->consulta);
+				$stmt->execute();
+				$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+				//recupera parametros devuelto depues de insertar ... (id_formula)
+				$resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+				$respuesta = $resp_procedimiento['datos'];
+
+
+				if ($resp_procedimiento['tipo_respuesta'] == 'ERROR') {
+					throw new Exception("Error al ejecutar en la bd", 3);
+				}
+			}
 
             //si todo va bien confirmamos y regresamos el resultado
             $link->commit();
@@ -475,7 +480,6 @@ class MODVenta extends MODbase{
 						   '" . $fechareg . "', '" . $contablz . "', '" .$observacion. "');";
 
 			$info_factura_fac = $this->informix->prepare($sql_in_fac);
-			var_dump($sql_in_fac);
 			$info_factura_fac->execute();
 			$detalleCont=1;
 			foreach($detallesVenta as $detalle){
@@ -490,9 +494,8 @@ class MODVenta extends MODbase{
 						 '', '" . $detalle['cantidad'] . "', '" . $detalle['preciounit'] . "',
 						 '" . $detalle['importe'] . "');";
 
-				$info_factura_det = $this->informix->prepare($sql_in_det);
-				var_dump($sql_in_det);
-				$info_factura_det->execute();
+				$info_factura_fac = $this->informix->prepare($sql_in_det);
+				$info_factura_fac->execute();
 				$detalleCont++;
 			}
 
@@ -528,12 +531,12 @@ class MODVenta extends MODbase{
 						 '".$pagomco."', '" . $contablz . "','" .$observa. "'
 						 );";
 				//var_dump($sql_in); exit;
-				$info_factura_pag = $this->informix->prepare($sql_in_pag);
-				var_dump($sql_in_pag);
-				$info_factura_pag->execute();
+				$info_factura_fac = $this->informix->prepare($sql_in_pag);
+				$info_factura_fac->execute();
 				$pagoCont++;
 			}
-			$this->informix->commit();
+			$respues  = $this->informix->commit();
+			var_dump($respues);
 			$this->respuesta = new Mensaje();
 			$this->respuesta->setMensaje('EXITO', $this->nombre_archivo, 'La consulta se ejecuto con exito generacion de factura', 'La consulta se ejecuto con exito', 'base', 'no tiene', 'no tiene', 'SEL', '$this->consulta', 'no tiene');
 			//$this->respuesta->setTotal(1);
@@ -589,7 +592,7 @@ class MODVenta extends MODbase{
 										inner join param.tlugar ps on ps.id_lugar=est.id_lugar_fk
 										inner join vef.tdosificacion dos on dos.id_dosificacion=vta.id_dosificacion
 										inner join param.tmoneda mon on mon.id_moneda=vta.id_moneda
-										inner join param.ttipo_cambio tc on tc.fecha=vta.fecha and tc.id_moneda in (select id_moneda from param.tmoneda where triangulacion='si')
+										left join param.ttipo_cambio tc on tc.fecha=vta.fecha and tc.id_moneda in (select id_moneda from param.tmoneda where triangulacion='si')
 										left join segu.tusuario usu on usu.id_usuario=vta.id_usuario_cajero
 										inner join segu.tusuario usreg on usreg.id_usuario=vta.id_usuario_reg
 										inner join vef.tpunto_venta pv on pv.id_punto_venta=vta.id_punto_venta
@@ -1005,6 +1008,68 @@ class MODVenta extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function listarVentaDotificacion(){
+        $this->procedimiento='vef.ft_venta_sel';
+        $this->transaccion='VF_VEND_SEL';
+        $this->tipo_procedimiento='SEL';
+        $this->setParametro('pes_estado','pes_estado','varchar');
+        $this->setParametro('punto','punto','varchar');
+        $this->setParametro('id_punto_venta','id_punto_venta','integer');
+        $this->captura('id_venta','int4');
+        $this->captura('id_cliente','int4');
+        $this->captura('id_dosificacion','int4');
+        $this->captura('id_punto_venta','int4');
+        $this->captura('nro_factura','int4');
+        $this->captura('nombre_completo','text');
+        $this->captura('nit','varchar');
+        $this->captura('total_venta','numeric');
+        $this->captura('fecha_doc','date');
+        $this->captura('sucursal','varchar');
+        $this->captura('id_forma_pago','int4');
+        $this->captura('forma_pago','varchar');
+        $this->captura('observaciones','text');
+        $this->captura('monto_forma_pago','numeric');
+        $this->captura('comision','numeric');
+        $this->captura('estado','varchar');
+        $this->captura('cod_control','varchar');
+        $this->captura('tipo_factura','varchar');
+        $this->captura('usuario_ai','varchar');
+        $this->captura('fecha_reg','timestamp');
+        $this->captura('id_usuario_reg','int4');
+        $this->captura('id_usuario_ai','int4');
+        $this->captura('id_usuario_mod','int4');
+        $this->captura('fecha_mod','timestamp');
+        $this->captura('estado_reg','varchar');
+        $this->captura('usr_reg','varchar');
+        $this->captura('usr_mo','varchar');
+        $this->captura('nroaut','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function insertarFacturaExterna(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.f_inserta_factura_manual';
+        $this->transaccion='VEF_INSFACEXT_IME';
+        $this->tipo_procedimiento='IME';
+                
+        //Define los parametros para la funcion
+        $this->setParametro('v_factura','v_factura','text');
+        
+        
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
 			
 }
 ?>

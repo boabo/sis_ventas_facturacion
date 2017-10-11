@@ -17,9 +17,9 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.AperturaCierreCaja.superclass.constructor.call(this,config);
 		this.init();
-		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.cerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
+		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
 		this.addButton('boletos',{grupo:[0],text: 'Actualizar Boletos',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
-		this.addButton('reporte',{grupo:[0,1],text:'Reporte',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Genera reporte de la caja</b>'});
+		this.addButton('reporte',{grupo:[0,1],text:'Declaracion de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración Diarias de Ventas</b>'});
 		this.finCons = true;
 		this.store.baseParams.pes_estado = 'abierto';    
 		this.load({params:{start:0, limit:this.tam_pag}});
@@ -58,7 +58,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
             },
                 type:'DateField',
-                filters: { pfiltro:'apcie.fecha', type:'date'},              
+                filters: { pfiltro:'apcie.fecha_apertura_cierre', type:'date'},
                 grid:true,
                 form:false
         },
@@ -168,7 +168,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:4,
+				maxLength:10,
 				allowDecimals: true,
 				decimalPrecision : 2
 			},
@@ -186,7 +186,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:4,
+				maxLength:10,
 				allowDecimals: true,
 				decimalPrecision : 2
 			},
@@ -389,6 +389,89 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.AperturaCierreCaja.superclass.onButtonEdit.call(this);
 		
 	},
+
+	preparaCerrarCaja:function(){
+		var data=this.sm.getSelected().data;
+		Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/apertura_cierre_caja/FormCierreCaja.php',
+				'Cerrar Caja',
+				{
+					modal:true,
+					width:1000,
+					height:400
+				}, {data:data}, this.idContenedor,'FormCierreCaja',
+				{
+					config:[{
+						event:'beforesave',
+						delegate: this.cerrarCaja,
+					}
+					],
+					scope:this
+				})
+	},
+
+	cerrarCaja:function(wizard,resp){
+		var me=this;
+		Phx.CP.loadingShow();
+		Ext.Ajax.request({
+			url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/insertarAperturaCierreCaja',
+			params:{
+				id_apertura_cierre_caja: resp.id_apertura_cierre_caja,
+				id_sucursal: resp.id_sucursal,
+				id_punto_venta: resp.id_punto_venta,
+				obs_cierre: resp.obs_cierre,
+				arqueo_moneda_local: resp.arqueo_moneda_local,
+				arqueo_moneda_extranjera: resp.arqueo_moneda_extranjera,
+				accion :'cerrar',
+				monto_inicial: resp.monto_inicial,
+				obs_apertura: resp.obs_apertura,
+				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera
+			},
+			argument:{wizard:wizard},
+			success:this.successWizard,
+			failure: this.conexionFailure,
+			timeout:this.timeout,
+			scope:this
+		});
+
+	},
+
+	successWizard:function(resp){
+		Phx.CP.loadingHide();
+		resp.argument.wizard.panel.destroy()
+		this.reload();
+	},
+
+	/*cerrarCaja:function(wizard,resp){
+		var me=this;
+		Phx.CP.loadingShow();
+		Ext.Ajax.request({
+			url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/insertarAperturaCierreCaja',
+			params:{
+				id_apertura_cierre_caja: resp.id_apertura_cierre_caja,
+				id_sucursal: resp.id_sucursal,
+				id_punto_venta: resp.id_punto_venta,
+				obs_cierre: resp.obs_cierre,
+				arqueo_moneda_local: resp.arqueo_moneda_local,
+				arqueo_moneda_extranjera: resp.arqueo_moneda_extranjera,
+				accion :'cerrar',
+				monto_inicial: resp.monto_inicial,
+				obs_apertura: resp.obs_apertura,
+				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera
+			},
+			argument:{wizard:wizard},
+			success:this.successWizard,
+			failure: this.conexionFailure,
+			timeout:this.timeout,
+			scope:this
+		});
+
+	},
+
+	successWizard:function(resp){
+		Phx.CP.loadingHide();
+		resp.argument.wizard.panel.destroy()
+		this.reload();
+	},
 	
 	cerrarCaja : function () {
 		this.mostrarComponente(this.Cmp.obs_cierre);
@@ -402,7 +485,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		this.ocultarComponente(this.Cmp.obs_apertura);
 		this.argumentExtraSubmit = {'accion' :'cerrar'};
 		Phx.vista.AperturaCierreCaja.superclass.onButtonEdit.call(this);
-	},
+	},*/
 
     generarReporte : function () {
         var data=this.sm.getSelected().data;

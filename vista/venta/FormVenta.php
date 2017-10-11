@@ -100,7 +100,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 		                value : 0
 		            },
 		                type:'NumberField',                
-		                id_grupo:2,                
+		                id_grupo:0,
 		                form:true,
 		                valorInicial:'0'
 		      });
@@ -372,15 +372,19 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             	this.mostrarComponente(this.Cmp.numero_tarjeta);
             	this.Cmp.numero_tarjeta.allowBlank = false;
             	if (r.data.registrar_tarjeta == 'si') {
+					this.mostrarComponente(this.Cmp.numero_tarjeta);
 	            	this.mostrarComponente(this.Cmp.codigo_tarjeta);
-	            	this.mostrarComponente(this.Cmp.tipo_tarjeta);            	
-	            	this.Cmp.codigo_tarjeta.allowBlank = false;
+	            	this.mostrarComponente(this.Cmp.tipo_tarjeta);
+					this.ocultarComponente(this.Cmp.id_auxiliar);
+					this.Cmp.codigo_tarjeta.allowBlank = false;
 	            	this.Cmp.tipo_tarjeta.allowBlank = false;
 	            } else {
 	            	this.Cmp.codigo_tarjeta.allowBlank = true;
             		this.Cmp.tipo_tarjeta.allowBlank = true;
+					this.ocultarComponente(this.Cmp.numero_tarjeta);
             		this.ocultarComponente(this.Cmp.codigo_tarjeta);
             		this.ocultarComponente(this.Cmp.tipo_tarjeta);
+					this.mostrarComponente(this.Cmp.id_auxiliar);
             		this.Cmp.codigo_tarjeta.reset();
             		this.Cmp.tipo_tarjeta.reset();
 	            }
@@ -388,6 +392,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             	this.ocultarComponente(this.Cmp.numero_tarjeta);
             	this.ocultarComponente(this.Cmp.codigo_tarjeta);
             	this.ocultarComponente(this.Cmp.tipo_tarjeta);
+				this.ocultarComponente(this.Cmp.id_auxiliar);
             	this.Cmp.numero_tarjeta.allowBlank = true;
             	this.Cmp.codigo_tarjeta.allowBlank = true;
             	this.Cmp.tipo_tarjeta.allowBlank = true;
@@ -1206,7 +1211,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 	                                })
 		            },
 		            {
-		                header     : 'No Tarjeta / Cuenta Corriente',
+		                header     : 'No Tarjeta',
 		                width    : 170,	                
 		                dataIndex: 'numero_tarjeta',		                
 		                editable : true,
@@ -1214,8 +1219,8 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 	                                        name: 'numero_tarjeta',                                        
 	                                        fieldLabel: 'Numero Tarjeta',
 	                                        allowBlank: true,	                                        
-	                                        maxLength:24,
-	                                        minLength:15                                     
+	                                        maxLength:20,
+	                                        minLength:14
 	                                })
 		            },
 		            {
@@ -1227,8 +1232,8 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 	                                        name: 'codigo_tarjeta',                                        
 	                                        fieldLabel: 'Codigo de Autorizacion',
 	                                        allowBlank: true,	                                        
-	                                        maxLength:24,
-	                                        minLength:15
+	                                        maxLength:6,
+	                                        minLength:6
 	                                                                               
 	                                })
 		            }
@@ -1524,13 +1529,13 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
                     id: 'id_forma_pago',
                     root: 'datos',
                     sortInfo: {
-                        field: 'nombre',
+                        field: 'orden',
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
                     fields: ['id_forma_pago', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'forpa.nombre#mon.codigo'}
+                    baseParams: {par_filtro: 'forpa.nombre#mon.codigo#forpa.codigo',sw_tipo_venta:'computarizada'}
                 }),
                 valueField: 'id_forma_pago',
                 displayField: 'nombre',
@@ -1594,15 +1599,59 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             type:'ComboBox',            
             id_grupo:2,            
             form:true
-        },        
+        },
+		{
+			config: {
+				name: 'id_auxiliar',
+				fieldLabel: 'Cuenta Corriente',
+				allowBlank: true,
+				emptyText: 'Cuenta Corriente...',
+				store: new Ext.data.JsonStore({
+					url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
+					id: 'id_auxiliar',
+					root: 'datos',
+					sortInfo: {
+						field: 'codigo_auxiliar',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
+					remoteSort: true,
+					baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si'}
+				}),
+				valueField: 'id_auxiliar',
+				displayField: 'nombre_auxiliar',
+				gdisplayField: 'codigo_auxiliar',
+				hiddenName: 'id_auxiliar',
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+				forceSelection: true,
+				typeAhead: false,
+				triggerAction: 'all',
+				lazyRender: true,
+				mode: 'remote',
+				pageSize: 15,
+				queryDelay: 1000,
+				gwidth: 150,
+				listWidth:350,
+				resizable:true,
+				minChars: 2,
+				renderer : function(value, p, record) {
+					return String.format('{0}', record.data['nombre_auxiliar']);
+				}
+			},
+			type: 'ComboBox',
+			id_grupo: 2,
+			grid: true,
+			form: true
+		},
         {
             config:{
                 name: 'numero_tarjeta',
-                fieldLabel: 'No Tarjeta/Cuenta Corriente',
+                fieldLabel: 'No Tarjeta',
                 allowBlank: true,
                 anchor: '80%',                
-                maxLength:24,
-	            minLength:15
+                maxLength:20,
+	            minLength:14
                 
             },
                 type:'TextField',                
@@ -1615,7 +1664,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
                 fieldLabel: 'Codigo de Autorización',
                 allowBlank: true,
                 anchor: '80%',                
-                maxLength:20
+                maxLength:6
                 
             },
                 type:'TextField',                

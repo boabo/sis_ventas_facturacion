@@ -99,7 +99,7 @@ $body$
     v_valor_bruto			numeric;
     v_descripcion_bulto		varchar;
     v_nombre_factura		varchar;
-    v_id_cliente_destino    integer;	
+    v_id_cliente_destino    integer;
 
     v_tabla					varchar;
     v_ventas				varchar;
@@ -764,7 +764,7 @@ $body$
             p_id_usuario,
             now(),
             'activo',
-            v_parametros.id_cliente,
+            upper(v_parametros.id_cliente),
             v_parametros.nit
           ) returning id_cliente into v_id_cliente;
 
@@ -791,7 +791,7 @@ $body$
                       p_id_usuario,
                       now(),
                       'activo',
-                      v_parametros.id_cliente
+                      upper(v_parametros.id_cliente)
                     ) returning id_cliente into v_id_cliente_destino;
 
 
@@ -816,7 +816,7 @@ $body$
           porcentaje_descuento = v_porcentaje_descuento,
           comision = v_comision,
           tiene_formula = v_tiene_formula,
-          observaciones = v_parametros.observaciones,
+          observaciones = upper(v_parametros.observaciones),
           forma_pedido = v_forma_pedido,
           fecha = (case when v_fecha is null then
             fecha
@@ -863,6 +863,7 @@ $body$
             monto_mb_efectivo,
             numero_tarjeta,
             codigo_tarjeta,
+            id_auxiliar,
             tipo_tarjeta
           )
           values(
@@ -879,6 +880,7 @@ $body$
             0,
             v_parametros.numero_tarjeta,
             v_parametros.codigo_tarjeta,
+            v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta
           );
         end if;
@@ -1657,10 +1659,10 @@ $body$
 
       end;
 
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_VENANU_MOD'
  	#DESCRIPCION:	Anulacion de Venta
- 	#AUTOR:		RAC	
+ 	#AUTOR:		RAC
  	#FECHA:		19-02-2013 12:12:51
 	***********************************/
 
@@ -1713,10 +1715,10 @@ $body$
         return v_resp;
 
       end;
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_VENCONTA_MOD'
  	#DESCRIPCION:	Vuelve contabilizable una venta no contabilizable
- 	#AUTOR:		JRR	
+ 	#AUTOR:		JRR
  	#FECHA:		19-02-2013 12:12:51
 	***********************************/
 
@@ -1736,10 +1738,10 @@ $body$
         return v_resp;
 
       end;
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_VENVERELA_MOD'
  	#DESCRIPCION:	Vuelve contabilizable una venta no contabilizable
- 	#AUTOR:		JRR	
+ 	#AUTOR:		JRR
  	#FECHA:		19-02-2013 12:12:51
 	***********************************/
 
@@ -1752,7 +1754,7 @@ $body$
         select pxp.list_unique(v.correlativo_venta || '<br>') into v_ventas
         from vef.tventa_detalle vd
           inner join vef.tventa v on v.id_venta = vd.id_venta
-        where vd.descripcion is not null and vd.id_boleto is null 
+        where vd.descripcion is not null and vd.id_boleto is null
         		and pxp.f_is_positive_integer(vd.descripcion) and
               v.estado = 'finalizado' and vd.descripcion != ''  and vd.estado_reg = 'activo' and v.id_punto_venta = v_parametros.id_punto_venta
               and v.tipo_factura = v_parametros.tipo_factura;

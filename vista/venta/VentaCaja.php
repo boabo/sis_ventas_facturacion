@@ -32,7 +32,7 @@ Phx.vista.VentaCaja = {
         
         
         this.addButton('anular',{grupo:[1],text:'Anular',iconCls: 'bdel',disabled:true,handler:this.anular,tooltip: '<b>Anular la venta</b>',hidden:true});
-        this.addButton('sig_estado',{grupo:[0],text:'Siguiente',iconCls: 'badelante',disabled:true,handler:this.sigEstado,tooltip: '<b>Pasar al Siguiente Estado</b>'});
+        this.addButton('sig_estado',{grupo:[0],text:'Generar Factura',iconCls: 'bprintcheck',disabled:true,handler:this.sigEstado,tooltip: '<b>Generar Factura</b>'});
         this.addButton('diagrama_gantt',{grupo:[0,1],text:'Gant',iconCls: 'bgantt',disabled:true,handler:this.diagramGantt,tooltip: '<b>Diagrama Gantt de la venta</b>'});
         this.addButton('btnImprimir',
             {   grupo:[0,1],

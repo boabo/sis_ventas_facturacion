@@ -19,26 +19,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.vista.AperturaBoletosVenta.superclass.constructor.call(this,config);
                 this.init();
                 this.store.baseParams.estado = 'borrador';
-                this.iniciarEventos();
-
-                this.addButton('btnCaja',
-                    {
-                        text: 'Caja',
-                        iconCls: 'btransfer',
-                        disabled: true,
-                        handler: this.onCaja,
-                        tooltip: 'Envia el boleto para pago en caja'
-                    }
-                );
-                this.addButton('btnPagado',
-                    {
-                        text: 'Pagado',
-                        iconCls: 'bmoney',
-                        disabled: true,
-                        handler: this.onPagado,
-                        tooltip: 'Marca el boleto como pagado'
-                    }
-                );
+                var dataPadre = Phx.CP.getPagina(this.idContenedorPadre).getSelectedData();
+                if(dataPadre){
+                    this.onEnablePanel(this, dataPadre);
+                }
+                else {
+                    this.bloquearMenus();
+                }
+                /*
                 this.addButton('btnImprimir',
                     {
                         text: 'Imprimir',
@@ -47,9 +35,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         handler: this.imprimirBoleto,
                         tooltip: '<b>Imprimir Boleto</b><br/>Imprime el boleto'
                     }
-                );
+                );*/
             },
-            imprimirBoleto: function(){
+            /*imprimirBoleto: function(){
                 //Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
                 var rec = this.sm.getSelected();
                 var data = rec.data;
@@ -66,8 +54,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         scope : this
                     });
                 }
-            },
-            successExport: function (resp) {
+            },*/
+            /*successExport: function (resp) {
 
                 Phx.CP.loadingHide();
                 var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
@@ -81,7 +69,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     wnd.document.write(objetoDatos.html);
                 }
 
-            },
+            },*/
 
 
 
@@ -174,7 +162,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'voided',
                         fieldLabel: 'Anulado',
                         anchor: '60%',
-                        gwidth: 80,
+                        gwidth: 60,
                         readOnly:true,
                         renderer : function(value, p, record) {
                             if (record.data['voided'] != 'si') {
@@ -210,7 +198,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'localizador',
                         fieldLabel: 'Pnr',
                         anchor: '40%',
-                        gwidth: 130
+                        gwidth: 70
                     },
                     type:'TextField',
                     filters:{pfiltro:'bol.localizador',type:'string'},
@@ -225,7 +213,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Billete: 930-',
                         allowBlank: false,
                         anchor: '80%',
-                        gwidth: 120,
+                        gwidth: 90,
                         maxLength:10,
                         minLength:10,
                         enableKeyEvents:true,
@@ -274,7 +262,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type:'TextField',
                     id_grupo:0,
-                    grid:true,
+                    grid:false,
                     form:true
                 },
 
@@ -298,7 +286,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'total',
                         fieldLabel: 'Total Boleto',
                         anchor: '80%',
-                        gwidth: 125	,
+                        gwidth: 80,
                         readOnly:true
                     },
                     type:'NumberField',
@@ -312,7 +300,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'moneda',
                         fieldLabel: 'Moneda de Emision',
                         anchor: '80%',
-                        gwidth: 150,
+                        gwidth: 120,
                         readOnly:true
 
                     },
@@ -347,7 +335,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     type:'TextField',
                     filters:{pfiltro:'bol.ruta_completa',type:'string'},
                     id_grupo:0,
-                    grid:true,
+                    grid:false,
                     form:true
                 },
 
@@ -391,7 +379,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'ComboBox',
                     id_grupo: 0,
-                    grid: true,
+                    grid: false,
                     form: true
                 },
 
@@ -865,7 +853,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'monto_forma_pago', type: 'numeric'},
                 {name:'codigo_tarjeta', type: 'string'},
                 {name:'mensaje_error', type: 'string'},
-
                 {name:'id_forma_pago2', type: 'numeric'},
                 {name:'forma_pago2', type: 'string'},
                 {name:'numero_tarjeta2', type: 'string'},
@@ -880,7 +867,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'moneda_fp1', type: 'string'},
                 {name:'moneda_fp2', type: 'string'},
                 {name:'voided', type: 'string'}
-
             ],
             sortInfo:{
                 field: 'id_boleto',
@@ -905,551 +891,21 @@ header("content-type: text/javascript; charset=UTF-8");
                     '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Modificado por:&nbsp;&nbsp;</b> {usr_mod}</p><br>'
                 )
             }),
-            bdel:true,
+            bdel:false,
             bsave:false,
-            iniciarEventos : function () {
-
-                this.Cmp.tiene_conjuncion.on('check',function(c,checked){
-                    if (checked) {
-                        this.Cmp.nro_boleto_conjuncion.setDisabled(false);
-                        this.Cmp.nro_boleto_conjuncion.allowBlank = false;
-                        this.Cmp.nro_boleto_conjuncion.setValue(parseInt(this.Cmp.nro_boleto.getValue()) + 1);
-                    } else {
-                        this.Cmp.nro_boleto_conjuncion.setDisabled(true);
-                        this.Cmp.nro_boleto_conjuncion.allowBlank = true;
-                        this.Cmp.nro_boleto_conjuncion.reset();
-                    }
-                },this);
-
-
-                this.Cmp.nro_boleto.on('keyup',function(){
-                    console.log('llega');
-                    if (this.Cmp.nro_boleto.getValue().length == 10 && this.Cmp.localizador.getValue().length == 6) {
-                        Phx.CP.loadingShow();
-
-                        Ext.Ajax.request({
-                            url:'../../sis_obingresos/control/Boleto/getBoletoServicio',
-                            params: {'nro_boleto':this.Cmp.nro_boleto.getValue(),
-                                'id_punto_venta':this.id_punto_venta,
-                                'pnr':this.Cmp.localizador.getValue()
-                            },
-                            success:this.successGetBoletoServicio,
-                            failure: this.conexionFailure,
-                            timeout:this.timeout,
-                            scope:this
-                        });
-                    }
-
-                },this);
-
-                this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-                    if (newValue < oldValue) {
-                        this.Cmp.id_forma_pago2.setDisabled(false);
-                        this.Cmp.monto_forma_pago2.setDisabled(false);
-                    }
-                },this);
-
-                this.Cmp.comision.on('change',function(field,newValue,oldValue) {
-
-
-                    if (this.Cmp.id_forma_pago2.getValue() && this.getMontoMonBol(this.Cmp.monto_forma_pago2.getValue(),this.Cmp.moneda_fp2.getValue()) > newValue) {
-
-                        this.Cmp.id_forma_pago2.fireEvent('select', {   combo:this.Cmp.id_forma_pago2});
-
-                    } else if (this.Cmp.id_forma_pago.getValue() && this.getMontoMonBol(this.Cmp.monto_forma_pago.getValue(),this.Cmp.moneda_fp1.getValue()) > newValue) {
-
-                        this.Cmp.id_forma_pago.fireEvent('select', {   combo:this.Cmp.id_forma_pago});
-                    }
-
-                },this);
-
-                this.Cmp.id_forma_pago.on('select', function (combo,record){
-                    if (record) {
-                        this.Cmp.moneda_fp1.setValue(record.data.desc_moneda);
-                        this.manejoComponentesFp1(record.data.id_forma_pago,record.data.codigo);
-                    } else {
-                        this.manejoComponentesFp1(this.Cmp.id_forma_pago.getValue(),this.Cmp.codigo_forma_pago.getValue());
-                    }
-
-
-                    if (this.grupo == 'no') {
-                        var monto_pagado_fp2 = this.getMontoMonBol(this.Cmp.monto_forma_pago2.getValue(),this.Cmp.moneda_fp2.getValue());
-
-                        if (monto_pagado_fp2 > -1) {
-
-                            //Si la forma de pago y el boleto estan en la misma moneda
-                            if (this.Cmp.moneda.getValue() == this.Cmp.moneda_fp1.getValue()){
-                                this.Cmp.monto_forma_pago.setValue(this.Cmp.total.getValue() - monto_pagado_fp2 - this.Cmp.comision.getValue());
-
-                            }
-                            //Si el boleto esta en usd y la forma de pago es distinta a usd y la forma de pago es igual a la moneda de la sucursal
-                            else if (this.Cmp.moneda.getValue() == 'USD' && this.Cmp.moneda_fp1.getValue() == this.Cmp.moneda_sucursal.getValue()) {
-                                //convertir de  dolares a moneda sucursal(multiplicar)
-                                this.Cmp.monto_forma_pago.setValue(this.round(((this.Cmp.total.getValue()- monto_pagado_fp2 - this.Cmp.comision.getValue())*this.Cmp.tc.getValue()),2));
-
-                                //Si el boleto esta en moneda sucursal y la forma de pago es usd y la moneda de la sucursales distinta a usd
-                            } else if (this.Cmp.moneda.getValue() == this.Cmp.moneda_sucursal.getValue() && this.Cmp.moneda_fp1.getValue() == 'USD') {
-                                //convertir de  moneda sucursal a dolares(dividir)
-                                this.Cmp.monto_forma_pago.setValue(this.round(((this.Cmp.total.getValue()- monto_pagado_fp2 - this.Cmp.comision.getValue())/this.Cmp.tc.getValue()),2));
-
-                            } else {
-                                this.Cmp.monto_forma_pago.setValue(0);
-
-                            }
-                        } else {
-                            this.Cmp.monto_forma_pago.setValue(0);
-                        }
-                    } else {
-                        this.calculoFp1Grupo(record);
-                    }
-                },this);
-
-                this.Cmp.id_forma_pago2.on('select', function (combo,record) {
-                    if (record) {
-                        this.Cmp.moneda_fp2.setValue(record.data.desc_moneda);
-                        this.manejoComponentesFp2(record.data.id_forma_pago,record.data.codigo);
-                    } else {
-                        this.manejoComponentesFp2(this.Cmp.id_forma_pago2.getValue(),this.Cmp.codigo_forma_pago2.getValue());
-                    }
-
-                    if (this.grupo == 'no') {
-                        var monto_pagado_fp1 = this.getMontoMonBol(this.Cmp.monto_forma_pago.getValue(),this.Cmp.moneda_fp1.getValue());
-
-                        if (monto_pagado_fp1 > -1) {
-                            //Si la forma de pago y el boleto estan en la misma moneda
-                            if (this.Cmp.moneda.getValue() == this.Cmp.moneda_fp2.getValue()){
-                                this.Cmp.monto_forma_pago2.setValue(this.Cmp.total.getValue() - this.Cmp.comision.getValue()- monto_pagado_fp1);
-                            }
-                            //Si el boleto esta en usd y la forma de pago es distinta a usd y la forma de pago es igual a la moneda de la sucursal
-                            else if (this.Cmp.moneda.getValue() == 'USD' && this.Cmp.moneda_fp2.getValue() == this.Cmp.moneda_sucursal.getValue()) {
-                                //convertir de  dolares a moneda sucursal(multiplicar)
-                                this.Cmp.monto_forma_pago2.setValue(this.round(((this.Cmp.total.getValue()- monto_pagado_fp1 - this.Cmp.comision.getValue())*this.Cmp.tc.getValue()),2));
-                                //Si el boleto esta en moneda sucursal y la forma de pago es usd y la moneda de la sucursales distinta a usd
-                            } else if (this.Cmp.moneda.getValue() == this.Cmp.moneda_sucursal.getValue() && this.Cmp.moneda_fp2.getValue() == 'USD') {
-                                //convertir de  moneda sucursal a dolares(dividir)
-                                this.Cmp.monto_forma_pago2.setValue(this.round(((this.Cmp.total.getValue()-monto_pagado_fp1 - this.Cmp.comision.getValue())/this.Cmp.tc.getValue()),2));
-                            } else {
-                                this.Cmp.monto_forma_pago2.setValue(0);
-                            }
-                        } else {
-                            this.Cmp.monto_forma_pago2.setValue(0);
-                        }
-                    } else {
-                        this.calculoFp2Grupo(record);
-                    }
-                },this);
-
-
-            },
-            //devuelve el monto en la moenda del boleto
-            getMontoMonBol : function (monto, moneda_fp) {
-                //Si la forma de pago y el boleto estan en la misma moneda
-                if (monto == 0) {
-                    return 0;
-                } else if (this.Cmp.moneda.getValue() == moneda_fp){
-                    return monto;
-                } //Si el boleto esta en usd y la forma de pago es distinta a usd y la forma de pago es igual a la moneda de la sucursal
-                else if (this.Cmp.moneda.getValue() == 'USD' && moneda_fp == this.Cmp.moneda_sucursal.getValue()) {
-                    //convertir a dolares(dividir)
-                    return this.roundMenor(monto/this.Cmp.tc.getValue(),2);
-                    //Si el boleto esta en moneda sucursal y la forma de pago es usd y la moneda de la sucursales distinta a usd
-                } else if (this.Cmp.moneda.getValue() == this.Cmp.moneda_sucursal.getValue() && moneda_fp == 'USD') {
-                    //convertir a moneda sucursal(mutiplicar)
-                    return this.roundMenor(monto*this.Cmp.tc.getValue(),2);
-                } else {
-                    return -1;
-                }
-            },
-            successGetBoletoServicio : function (response,request) {
-
-
-                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(response.responseText));
-
-                if (objRes.ROOT) {
-                    if (objRes.ROOT.error == true){
-                        this.conexionFailure(response);
-                    }
-                    //alert (objRes.ROOT.detalle.mensaje);
-                } else {
-                    Phx.CP.loadingHide();
-                    this.Cmp.id_boleto.setValue(objRes.datos[0].id_boleto);
-                    this.Cmp.total.setValue(objRes.datos[0].total);
-                    this.Cmp.pasajero.setValue(objRes.datos[0].pasajero);
-                    this.Cmp.moneda.setValue(objRes.datos[0].moneda);
-                    this.Cmp.ruta_completa.setValue(objRes.datos[0].ruta_completa);
-                    this.Cmp.comision.setValue(objRes.datos[0].comision);
-
-                    this.Cmp.id_forma_pago.setValue(objRes.datos[0].id_forma_pago);
-                    this.Cmp.id_forma_pago.setRawValue(objRes.datos[0].forma_pago);
-                    this.Cmp.monto_forma_pago.setValue(objRes.datos[0].monto_forma_pago);
-                    this.Cmp.codigo_forma_pago.setValue(objRes.datos[0].codigo_forma_pago);
-                    this.Cmp.moneda_fp1.setValue(objRes.datos[0].moneda_fp1);
-
-                    this.Cmp.id_forma_pago2.setValue(objRes.datos[0].id_forma_pago2);
-                    this.Cmp.id_forma_pago2.setRawValue(objRes.datos[0].forma_pago2);
-                    this.Cmp.monto_forma_pago2.setValue(objRes.datos[0].monto_forma_pago2);
-                    this.Cmp.codigo_forma_pago2.setValue(objRes.datos[0].codigo_forma_pago2);
-                    this.Cmp.moneda_fp2.setValue(objRes.datos[0].moneda_fp2);
-                    this.Cmp.id_boleto_vuelo.setValue(objRes.datos[0].id_boleto_vuelo);
-                    this.Cmp.id_boleto_vuelo.setRawValue(objRes.datos[0].vuelo_retorno);
-
-                    this.Cmp.codigo_tarjeta.setValue(objRes.datos[0].codigo_tarjeta);
-                    this.Cmp.numero_tarjeta.setValue(objRes.datos[0].numero_tarjeta);
-                    this.Cmp.codigo_tarjeta2.setValue(objRes.datos[0].codigo_tarjeta2);
-                    this.Cmp.numero_tarjeta2.setValue(objRes.datos[0].numero_tarjeta2);
-
-                    this.Cmp.id_boleto_vuelo.store.baseParams.id_boleto = objRes.datos[0].id_boleto;
-
-                    this.Cmp.moneda_sucursal.setValue(objRes.datos[0].moneda_sucursal);
-                    this.Cmp.tc.setValue(objRes.datos[0].tc);
-                    this.Cmp.comision.setDisabled(false);
-
-                    if (objRes.countData.cantidad_vuelos > 4) {
-                        this.Cmp.tiene_conjuncion.setValue(true);
-                    }
-
-                    this.manejoComponentesFp1(objRes.datos[0].id_forma_pago,objRes.datos[0].codigo_forma_pago);
-                    this.manejoComponentesFp2(objRes.datos[0].id_forma_pago2,objRes.datos[0].codigo_forma_pago2);
-
-                }
-            },
-            onButtonEdit : function () {
-                Phx.vista.AperturaBoletosVenta.superclass.onButtonEdit.call(this);
-                this.Cmp.ids_seleccionados.reset();
-                this.ocultarGrupo(2);
-                this.mostrarGrupo(0);
-                this.grupo = 'no';
-                this.Cmp.nro_boleto.allowBlank = false;
-                this.Cmp.comision.setDisabled(false);
-                this.Cmp.nro_boleto.setDisabled(true);
-                this.Cmp.id_boleto_vuelo.store.baseParams.id_boleto = this.sm.getSelected().data['id_boleto'];
-
-
-                this.manejoComponentesFp1(this.sm.getSelected().data['id_forma_pago'],this.sm.getSelected().data['codigo_forma_pago']);
-                this.manejoComponentesFp2(this.sm.getSelected().data['id_forma_pago2'],this.sm.getSelected().data['codigo_forma_pago2']);
-                //para manejo de conjuncion
-                if (!this.Cmp.tiene_conjuncion.getValue()) {
-                    this.Cmp.nro_boleto_conjuncion.setDisabled(true);
-                    this.Cmp.nro_boleto_conjuncion.allowBlank = true;
-                } else {
-                    this.Cmp.nro_boleto_conjuncion.setDisabled(false);
-                    this.Cmp.nro_boleto_conjuncion.allowBlank = false;
-                }
-
-                if (this.sm.getSelected().data['monto_total_fp'] < (this.sm.getSelected().data['total'] - this.sm.getSelected().data['comision']) ) {
-                    this.Cmp.id_forma_pago2.setDisabled(false);
-                    this.Cmp.monto_forma_pago2.setDisabled(false);
-                }
-
-            },
-            onButtonNew : function () {
-                Phx.vista.AperturaBoletosVenta.superclass.onButtonNew.call(this);
-                this.Cmp.ids_seleccionados.reset();
-                this.grupo = 'no';
-                this.Cmp.comision.setDisabled(true);
-
-                this.Cmp.nro_boleto.allowBlank = false;
-                this.ocultarGrupo(2);
-                this.mostrarGrupo(0);
-                this.Cmp.nro_boleto.setDisabled(false);
-                this.ocultarComponente(this.Cmp.numero_tarjeta);
-                this.ocultarComponente(this.Cmp.ctacte);
-                this.Cmp.nro_boleto_conjuncion.disable();
-                this.Cmp.nro_boleto_conjuncion.allowBlank = true;
-
-            },
-
-            onPagado : function () {
-                var rec = this.sm.getSelected();
-                Phx.CP.loadingShow();
-                Ext.Ajax.request({
-                    url:'../../sis_obingresos/control/Boleto/cambiaEstadoBoleto',
-                    params: {'id_boleto':rec.data.id_boleto,
-                        'accion':'pagado'},
-                    success:this.successSave,
-                    failure: this.conexionFailure,
-                    timeout:this.timeout,
-                    scope:this
-                });
-
-            },
-            successSave:function(resp){
-                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-
-                Phx.vista.AperturaBoletosVenta.superclass.successSave.call(this, resp);
-                if (objRes.ROOT.datos.alertas) {
-                    Ext.Msg.alert('Error en boleto', objRes.ROOT.datos.alertas);
-                }
-
-            },
-            onGrupo : function () {
-                Phx.vista.AperturaBoletosVenta.superclass.onButtonNew.call(this);
-                this.grupo = 'si';
-                var seleccionados = this.sm.getSelections();
-                this.total_grupo = new Object;
-                this.total_grupo['USD'] = 0;
-                this.total_grupo[seleccionados[0].data.moneda_sucursal] = 0;
-
-
-                for (var i = 0 ; i< seleccionados.length;i++) {
-                    if (i == 0) {
-                        this.Cmp.ids_seleccionados.setValue(seleccionados[i].data.id_boleto);
-                        this.Cmp.boletos.setValue('930' + seleccionados[i].data.nro_boleto);
-                    } else {
-                        this.Cmp.ids_seleccionados.setValue(this.Cmp.ids_seleccionados.getValue() + ',' + seleccionados[i].data.id_boleto);
-                        this.Cmp.boletos.setValue(this.Cmp.boletos.getValue() + ', 930' + seleccionados[i].data.nro_boleto);
-                    }
-                    if (seleccionados[i].data.moneda_sucursal == seleccionados[i].data.moneda) {
-                        this.total_grupo[seleccionados[0].data.moneda_sucursal] += (parseFloat(seleccionados[i].data.total) - parseFloat(seleccionados[i].data.comision));
-                        this.total_grupo['USD'] += this.round((seleccionados[i].data.total - seleccionados[i].data.comision) / seleccionados[i].data.tc , 2);
-                    } else if (seleccionados[i].data.moneda == 'USD') {
-
-                        this.total_grupo[seleccionados[0].data.moneda_sucursal] += this.round((seleccionados[i].data.total - seleccionados[i].data.comision)* seleccionados[i].data.tc , 2);
-                        this.total_grupo['USD'] += (parseFloat(seleccionados[i].data.total) - parseFloat(seleccionados[i].data.comision));
-                    } else {
-                        alert('No se puede calcular la forma de pago ya que la moneda de un boleto no es la moenda de la sucursal ni dolares americanos');
-                        return;
-                    }
-                }
-
-                //habilitamos el formulario
-                this.mostrarGrupo(2);
-                this.ocultarGrupo(0);
-                this.Cmp.id_forma_pago.setDisabled(false);
-                this.Cmp.monto_forma_pago.setDisabled(false);
-                this.Cmp.nro_boleto.allowBlank = true;
-                this.moneda_grupo_fp1 = '';
-                this.moneda_grupo_fp2 = '';
-                this.tc_grupo = seleccionados[0].data.tc;
-
-            },
-            calculoFp1Grupo : function (record) {
-                this.moneda_grupo_fp1 = record.data.desc_moneda;
-
-                if (this.moneda_grupo_fp2 == '') {
-                    this.Cmp.monto_forma_pago.setValue(this.total_grupo[record.data.desc_moneda]);
-                } else if (this.moneda_grupo_fp2 == this.moneda_grupo_fp1) {
-                    this.Cmp.monto_forma_pago.setValue(this.total_grupo[record.data.desc_moneda] - this.Cmp.monto_forma_pago2.getValue());
-                } else {
-                    if (this.moneda_grupo_fp2 == 'USD') {
-                        this.Cmp.monto_forma_pago.setValue(this.total_grupo[record.data.desc_moneda] - this.roundMenor(this.Cmp.monto_forma_pago2.getValue() * this.tc_grupo , 2));
-                    } else {
-                        this.Cmp.monto_forma_pago.setValue(this.total_grupo[record.data.desc_moneda] - this.roundMenor(this.Cmp.monto_forma_pago2.getValue() / this.tc_grupo , 2));
-                    }
-                }
-
-            },
-            calculoFp2Grupo : function (record) {
-
-                this.moneda_grupo_fp2 = record.data.desc_moneda;
-                if (this.moneda_grupo_fp1 == '') {
-                    this.Cmp.monto_forma_pago2.setValue(this.total_grupo[record.data.desc_moneda]);
-                } else if (this.moneda_grupo_fp2 == this.moneda_grupo_fp1) {
-                    this.Cmp.monto_forma_pago2.setValue(this.total_grupo[record.data.desc_moneda] - this.Cmp.monto_forma_pago.getValue());
-                } else {
-                    if (this.moneda_grupo_fp1 == 'USD') {
-                        this.Cmp.monto_forma_pago2.setValue(this.total_grupo[record.data.desc_moneda] - this.roundMenor(this.Cmp.monto_forma_pago.getValue() * this.tc_grupo , 2));
-                    } else {
-                        alert(this.total_grupo[record.data.desc_moneda]);
-                        this.Cmp.monto_forma_pago2.setValue(this.total_grupo[record.data.desc_moneda] - this.roundMenor(this.Cmp.monto_forma_pago.getValue() / this.tc_grupo , 2));
-                    }
-                }
-            },
-            onCaja : function () {
-                var rec = this.sm.getSelected();
-                Phx.CP.loadingShow();
-                Ext.Ajax.request({
-                    url:'../../sis_obingresos/control/Boleto/cambiaEstadoBoleto',
-                    params: {'id_boleto':rec.data.id_boleto,
-                        'accion':'caja'},
-                    success:this.successSave,
-                    failure: this.conexionFailure,
-                    timeout:this.timeout,
-                    scope:this
-                });
-
-            },
-            Grupos:[{
-                layout: 'column',
-                items:[
-                    {
-                        xtype:'fieldset',
-                        layout: 'form',
-                        border: true,
-                        title: 'Datos Boleto/Comision',
-                        bodyStyle: 'padding:0 10px 0;',
-                        columnWidth: 0.5,
-                        items:[],
-                        id_grupo:0,
-                        collapsible:true
-                    },
-                    {
-                        xtype:'fieldset',
-                        layout: 'form',
-                        border: true,
-                        title: 'Boletos',
-                        bodyStyle: 'padding:0 10px 0;',
-                        columnWidth: 0.5,
-                        items:[],
-                        id_grupo:2,
-                        collapsible:true
-                    },
-                    {
-                        xtype:'fieldset',
-                        layout: 'form',
-                        border: true,
-                        title: 'Formas de Pago',
-                        bodyStyle: 'padding:0 10px 0;',
-                        columnWidth: 0.5,
-                        items:[],
-                        id_grupo:1,
-                        collapsible:true,
-                        collapsed:false
-                    }
-                ]
-            }],
-            preparaMenu:function()
-            {	var rec = this.sm.getSelected();
-
+            bedit:false,
+            bnew:false,
+            preparaMenu:function() {
                 Phx.vista.AperturaBoletosVenta.superclass.preparaMenu.call(this);
-                if (rec.data.estado == 'borrador') {
-                    this.getBoton('btnCaja').enable();
-                } else {
-                    this.getBoton('btnCaja').disable();
-                }
-
-                this.getBoton('btnImprimir').enable();
-                this.getBoton('btnPagado').enable();
-
+                //this.getBoton('btnImprimir').enable();
             },
-            liberaMenu:function()
-            {
-
+            liberaMenu:function() {
                 Phx.vista.AperturaBoletosVenta.superclass.liberaMenu.call(this);
-                this.getBoton('btnPagado').disable();
-                this.getBoton('btnCaja').disable();
-                this.getBoton('btnImprimir').disable();
-            },
-            round : function(value, decimals) {
-                return Math.ceil(value*100)/100;
-            },
-            roundMenor : function(value, decimals) {
-                return Math.floor(value*100)/100;
-            },
-            manejoComponentesFp1 : function (id_fp1,codigo_fp1){
-
-                //forma de pago 1
-                if (id_fp1 == 0) {
-                    this.Cmp.id_forma_pago.setDisabled(true);
-                    this.Cmp.monto_forma_pago.setDisabled(true);
-                    this.ocultarComponente(this.Cmp.numero_tarjeta);
-                    this.ocultarComponente(this.Cmp.codigo_tarjeta);
-                    this.ocultarComponente(this.Cmp.ctacte);
-                    this.Cmp.numero_tarjeta.allowBlank = true;
-                    this.Cmp.codigo_tarjeta.allowBlank = true;
-                    this.Cmp.ctacte.allowBlank = true;
-                } else {
-                    this.Cmp.id_forma_pago.setDisabled(false);
-                    this.Cmp.monto_forma_pago.setDisabled(false);
-                    if (codigo_fp1.startsWith("CC") ||
-                        codigo_fp1.startsWith("SF")) {
-                        this.ocultarComponente(this.Cmp.ctacte);
-                        this.Cmp.ctacte.reset();
-                        this.mostrarComponente(this.Cmp.numero_tarjeta);
-                        this.mostrarComponente(this.Cmp.codigo_tarjeta);
-                        this.Cmp.numero_tarjeta.allowBlank = false;
-                        this.Cmp.codigo_tarjeta.allowBlank = false;
-                        this.Cmp.ctacte.allowBlank = true;
-                        //tarjeta de credito
-                    } else if (codigo_fp1.startsWith("CT")) {
-                        //cuenta corriente
-                        this.ocultarComponente(this.Cmp.numero_tarjeta);
-                        this.ocultarComponente(this.Cmp.codigo_tarjeta);
-                        this.Cmp.numero_tarjeta.reset();
-                        this.Cmp.codigo_tarjeta.reset();
-                        this.mostrarComponente(this.Cmp.ctacte);
-                        this.Cmp.numero_tarjeta.allowBlank = true;
-                        this.Cmp.codigo_tarjeta.allowBlank = true;
-                        this.Cmp.ctacte.allowBlank = false;
-                    } else {
-                        this.ocultarComponente(this.Cmp.numero_tarjeta);
-                        this.ocultarComponente(this.Cmp.codigo_tarjeta);
-                        this.ocultarComponente(this.Cmp.ctacte);
-                        this.Cmp.numero_tarjeta.reset();
-                        this.Cmp.codigo_tarjeta.reset();
-                        this.Cmp.ctacte.reset();
-                        this.Cmp.numero_tarjeta.allowBlank = true;
-                        this.Cmp.codigo_tarjeta.allowBlank = true;
-                        this.Cmp.ctacte.allowBlank = true;
-                    }
-                }
-            },
-            manejoComponentesFp2 : function (id_fp2,codigo_fp2){
-                if (id_fp2) {
-                    //forma de pago 2
-                    if (id_fp2 == 0) {
-                        this.Cmp.id_forma_pago2.setDisabled(true);
-                        this.Cmp.monto_forma_pago2.setDisabled(true);
-                        this.ocultarComponente(this.Cmp.numero_tarjeta2);
-                        this.ocultarComponente(this.Cmp.codigo_tarjeta2);
-                        this.ocultarComponente(this.Cmp.ctacte2);
-                        this.Cmp.numero_tarjeta2.allowBlank = true;
-                        this.Cmp.codigo_tarjeta2.allowBlank = true;
-                        this.Cmp.ctacte2.allowBlank = true;
-                        this.Cmp.numero_tarjeta2.reset();
-                        this.Cmp.codigo_tarjeta2.reset();
-                        this.Cmp.ctacte2.reset();
-                    } else {
-                        this.Cmp.id_forma_pago2.setDisabled(false);
-                        this.Cmp.monto_forma_pago2.setDisabled(false);
-                        if (codigo_fp2.startsWith("CC") ||
-                            codigo_fp2.startsWith("SF")) {
-                            //tarjeta de credito
-                            this.ocultarComponente(this.Cmp.ctacte2);
-                            this.Cmp.ctacte2.reset();
-                            this.mostrarComponente(this.Cmp.numero_tarjeta2);
-                            this.mostrarComponente(this.Cmp.codigo_tarjeta2);
-                            this.Cmp.numero_tarjeta2.allowBlank = false;
-                            this.Cmp.codigo_tarjeta2.allowBlank = false;
-                            this.Cmp.ctacte2.allowBlank = true;
-
-                        } else if (codigo_fp2.startsWith("CT")) {
-                            //cuenta corriente
-                            this.ocultarComponente(this.Cmp.numero_tarjeta2);
-                            this.ocultarComponente(this.Cmp.numero_tarjeta2);
-                            this.Cmp.numero_tarjeta2.reset();
-                            this.Cmp.numero_tarjeta2.reset();
-                            this.mostrarComponente(this.Cmp.ctacte2);
-                            this.Cmp.numero_tarjeta2.allowBlank = true;
-                            this.Cmp.numero_tarjeta2.allowBlank = true;
-                            this.Cmp.ctacte2.allowBlank = false;
-                        } else {
-                            this.ocultarComponente(this.Cmp.numero_tarjeta2);
-                            this.ocultarComponente(this.Cmp.codigo_tarjeta2);
-                            this.ocultarComponente(this.Cmp.ctacte2);
-                            this.Cmp.numero_tarjeta2.allowBlank = true;
-                            this.Cmp.codigo_tarjeta2.allowBlank = true;
-                            this.Cmp.ctacte2.allowBlank = true;
-                            this.Cmp.numero_tarjeta2.reset();
-                            this.Cmp.codigo_tarjeta2.reset();
-                            this.Cmp.ctacte2.reset();
-                        }
-                    }
-                } else {
-                    this.ocultarComponente(this.Cmp.numero_tarjeta2);
-                    this.ocultarComponente(this.Cmp.codigo_tarjeta2);
-                    this.ocultarComponente(this.Cmp.ctacte2);
-                    this.Cmp.numero_tarjeta2.allowBlank = true;
-                    this.Cmp.codigo_tarjeta2.allowBlank = true;
-                    this.Cmp.ctacte2.allowBlank = true;
-                    this.Cmp.id_forma_pago2.setDisabled(true);
-                    this.Cmp.monto_forma_pago2.setDisabled(true);
-                }
-
+                //this.getBoton('btnImprimir').disable();
             },
         onReloadPage: function (m) {
             this.maestro = m;
-            this.store.baseParams = {id_punto_venta: this.maestro.id_punto_venta, tipo_factura: this.tipo_factura, id_usuario_cajero:this.maestro.id_usuario_cajero,};
+            this.store.baseParams = {id_punto_venta: this.maestro.id_punto_venta, tipo_factura: this.tipo_factura, id_usuario_cajero:this.maestro.id_usuario_cajero, estado:'revisado', fecha_emision:this.maestro.fecha_apertura_cierre};
             this.store.baseParams.tipo_usuario = this.tipo_usuario;
             this.load({params: {start: 0, limit: 50}});
         }

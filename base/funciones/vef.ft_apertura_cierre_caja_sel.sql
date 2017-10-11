@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'vef.tapertura_cierre_caja'
  AUTOR: 		 (jrivera)
  FECHA:	        07-07-2016 14:16:20
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -38,22 +38,23 @@ DECLARE
     v_moneda_local				varchar;
     v_cod_moneda_extranjera		varchar;
     v_cod_moneda_local			varchar;
-    
-			    
+    v_moneda_base				varchar;
+    v_moneda_ref				varchar;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_apertura_cierre_caja_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_APCIE_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		jrivera	
+ 	#AUTOR:		jrivera
  	#FECHA:		07-07-2016 14:16:20
 	***********************************/
 
 	if(p_transaccion='VF_APCIE_SEL')then
-     				
+
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -131,12 +132,19 @@ BEGIN
 	elsif(p_transaccion='VF_CIE_SEL')then
 
     	begin
-        	IF NOT EXISTS (select 1
+        	/*IF NOT EXISTS (select 1
             			  from vef.tapertura_cierre_caja
             			  where id_usuario_cajero=id_usuario_cajero
-            			  and fecha_apertura_cierre=CURRENT_DATE)THEN
+            			  and fecha_apertura_cierre=v_parametros.fecha)THEN
             	raise exception 'Debe realizar una apertura de caja para la fecha de hoy';
-            END IF;
+            END IF;*/
+            select codigo_internacional into v_moneda_base
+            from param.tmoneda
+        	where tipo_moneda='base';
+
+            select codigo_internacional into v_moneda_ref
+            from param.tmoneda
+        	where tipo_moneda='ref';
 
     		--Sentencia de la consulta
 			v_consulta:='select apcie.id_apertura_cierre_caja,
@@ -151,28 +159,16 @@ BEGIN
                          apcie.fecha_apertura_cierre,
                          apcie.arqueo_moneda_local,
                          apcie.arqueo_moneda_extranjera,
-                         (select sum(bol.total)
-                         from obingresos.tboleto bol
-                         inner join param.tmoneda mon on mon.id_moneda=bol.id_moneda_boleto
-                         where bol.id_usuario_cajero ='||p_id_usuario||'
-                         and bol.fecha_emision=current_date
-                         and mon.codigo_internacional=''BOB'') as monto_boleto_bs,
-                         (select sum(bol.total)
-                         from obingresos.tboleto bol
-                         inner join param.tmoneda mon on mon.id_moneda=bol.id_moneda_boleto
-                         where bol.id_usuario_cajero ='||p_id_usuario||'
-                         and bol.fecha_emision=current_date
-                         and mon.codigo_internacional=''USD'') as monto_boleto_usd,
-                         obingresos.f_monto_forma_pago_amadeus(''CA'',''BOB'','||p_id_usuario||') as monto_ca_boleto_bs,
-                         obingresos.f_monto_forma_pago_amadeus(''CA'',''USD'','||p_id_usuario||') as monto_ca_boleto_usd,
-                         obingresos.f_monto_forma_pago_amadeus(''CC'',''BOB'','||p_id_usuario||') as monto_cc_boleto_bs,
-                         obingresos.f_monto_forma_pago_amadeus(''CC'',''USD'','||p_id_usuario||') as monto_cc_boleto_usd
+                         obingresos.f_monto_forma_pago_boletos('''||v_moneda_base::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_base_fp_boleto,
+                         obingresos.f_monto_forma_pago_boletos('''||v_moneda_ref::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_ref_fp_boleto,
+                         vef.f_monto_forma_pago('''||v_moneda_base::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_base_fp_ventas,
+                         vef.f_monto_forma_pago('''||v_moneda_ref::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_ref_fp_ventas
                   from vef.tapertura_cierre_caja apcie
                   inner join obingresos.tboleto bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||p_id_usuario||'
                   inner join vef.tpunto_venta pv on pv.id_punto_venta=apcie.id_punto_venta
                   where apcie.id_usuario_cajero = '||p_id_usuario||' and
-                        apcie.fecha_apertura_cierre = current_date and
-                        bol.estado=''revisado'' and bol.fecha_emision=CURRENT_DATE and ';
+                  		apcie.fecha_apertura_cierre='''||v_parametros.fecha||''' and
+                        bol.estado=''revisado'' and ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -504,15 +500,15 @@ BEGIN
             v_consulta:=v_consulta||v_parametros.filtro;
             return v_consulta;
         end;
-					
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
