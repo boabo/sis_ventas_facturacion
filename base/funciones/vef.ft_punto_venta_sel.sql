@@ -88,11 +88,14 @@ $body$
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-            v_consulta:='select ag.codigo_int as officeID, ag.id_agencia
+            v_consulta:='select ag.codigo_int as officeID, ag.id_agencia,
+            COALESCE(pvr.identificador_reporte,''0'') AS identificador_reporte
 						from vef.tpunto_venta pv
 						inner join obingresos.tagencia ag on pv.codigo=ag.codigo
-						and pv.id_punto_venta='||v_parametros.id_punto_venta||'';
-
+						and pv.id_punto_venta='||v_parametros.id_punto_venta||'
+                        left join vef.tpunto_venta_reporte pvr on pvr.id_punto_venta=pv.id_punto_venta
+     					and pvr.fecha='''||v_parametros.fecha||''' and pvr.moneda='''||v_parametros.moneda||'''';
+            raise notice 'v_consulta %', v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 

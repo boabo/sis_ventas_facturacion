@@ -121,9 +121,12 @@ class MODPuntoVenta extends MODbase{
 
 		//Define los parametros para la funcion
 		$this->setParametro('id_punto_venta','id_punto_venta','int4');
+		$this->setParametro('fecha','fecha','date');
+		$this->setParametro('moneda','moneda','varchar');
 		//Definicion de la lista del resultado del query
 		$this->captura('officeID','varchar');
 		$this->captura('id_agencia','integer');
+		$this->captura('identificador_reporte','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
