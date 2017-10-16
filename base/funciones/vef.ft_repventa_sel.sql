@@ -4,8 +4,8 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
   p_tabla varchar,
   p_transaccion varchar
 )
-  RETURNS varchar AS
-  $body$
+RETURNS varchar AS
+$body$
   /**************************************************************************
    SISTEMA:		Sistema de Ventas
    FUNCION: 		vef.ft_repventa_sel
@@ -80,13 +80,13 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                 			UNION ALL
                 			select cig.desc_ingas,''3CONCEPTO''::varchar as tipo
                 			 from vef.tventa v
-                             inner join vef.tventa_detalle vd 
+                             inner join vef.tventa_detalle vd
                              	on vd.id_venta = v.id_venta
-                             inner join vef.tsucursal_producto sp 
+                             inner join vef.tsucursal_producto sp
                              	on vd.id_sucursal_producto = sp.id_sucursal_producto
                              inner join param.tconcepto_ingas cig
                              	on cig.id_concepto_ingas = sp.id_concepto_ingas
-                             where v.id_punto_venta = ' || v_parametros.id_punto_venta || ' and 
+                             where v.id_punto_venta = ' || v_parametros.id_punto_venta || ' and
              			(v.fecha between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                         group by cig.desc_ingas';
         ELSE
@@ -109,13 +109,13 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                 			UNION ALL
                 			select cig.desc_ingas,''3CONCEPTO''::varchar as tipo
                 			 from vef.tventa v
-                             inner join vef.tventa_detalle vd 
+                             inner join vef.tventa_detalle vd
                              	on vd.id_venta = v.id_venta
-                             inner join vef.tsucursal_producto sp 
+                             inner join vef.tsucursal_producto sp
                              	on vd.id_sucursal_producto = sp.id_sucursal_producto
                              inner join param.tconcepto_ingas cig
                              	on cig.id_concepto_ingas = sp.id_concepto_ingas
-                             where v.id_sucursal = ' || v_parametros.id_sucursal || ' and 
+                             where v.id_sucursal = ' || v_parametros.id_sucursal || ' and
              			(v.fecha between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                         group by cig.desc_ingas';
         END IF;
@@ -126,8 +126,8 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                  from  obingresos.tboleto_impuesto bimp
                  inner join obingresos.tboleto b on b.id_boleto = bimp.id_boleto
                  inner join obingresos.timpuesto imp on imp.id_impuesto = bimp.id_impuesto
-                where ' || v_filtro || ' and 
-             			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') 
+                where ' || v_filtro || ' and
+             			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                 group by imp.codigo
                 order by imp.codigo)
                 order by 2,1';
@@ -171,13 +171,13 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' forma_pago_usd  AS(
                       select vfp.id_venta,
-                      round(sum(	case when fp.codigo = ''CA'' then 
+                      round(sum(	case when fp.codigo = ''CA'' then
                                           vfp.monto_transaccion -(vfp.cambio /
                                            param.f_get_tipo_cambio(fp.id_moneda, v.fecha::date, ''O''))
                              			ELSE
                                         	0
                              			end), 2) as monto_cash_usd,
-                             round(sum(	case when fp.codigo != ''CA'' then 
+                             round(sum(	case when fp.codigo != ''CA'' then
                                           vfp.monto_transaccion -(vfp.cambio /
                                            param.f_get_tipo_cambio(fp.id_moneda, v.fecha::date, ''O''))
                              			ELSE
@@ -194,16 +194,16 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
 
         v_consulta = v_consulta || ' forma_pago_mb AS(
                       select vfp.id_venta,
-                      sum(CASE when fp.codigo = ''CA'' then 
+                      sum(CASE when fp.codigo = ''CA'' then
                              		vfp.monto_transaccion - vfp.cambio
                              	 ELSE
                                  	0
                                  END) as monto_cash_mb,
-                             sum(CASE when fp.codigo != ''CA'' then 
+                             sum(CASE when fp.codigo != ''CA'' then
                              		vfp.monto_transaccion - vfp.cambio
                              	 ELSE
                                  	0
-                                 END) as monto_otro_mb,  
+                                 END) as monto_otro_mb,
                       pxp.list(fp.nombre) as forma_pago
                       from  vef.tventa_forma_pago vfp
                       inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
@@ -231,13 +231,13 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                   string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
                   NULL::varchar as mensaje_error
                   from vef.tventa v
-                  inner join vef.tventa_detalle vd 
+                  inner join vef.tventa_detalle vd
                       on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
-                  inner join vef.tsucursal_producto sp 
+                  inner join vef.tsucursal_producto sp
                       on sp.id_sucursal_producto = vd.id_sucursal_producto
-                  inner join param.tconcepto_ingas cig 
+                  inner join param.tconcepto_ingas cig
                       on cig.id_concepto_ingas = sp.id_concepto_ingas
-                  inner join vef.tcliente cli 
+                  inner join vef.tcliente cli
                       on cli.id_cliente = v.id_cliente';
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' left join forma_pago_usd fpusd
@@ -250,19 +250,19 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                   where v.estado = ''finalizado'' and ' || v_filtro || ' and
                   	(v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                   group by v.fecha,v.correlativo_venta,cli.nombre_factura,v.observaciones,
-                  			fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || ' 
+                  			fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
                   )
 		union ALL
 	 		(WITH ';
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' bol_forma_pago_usd  AS(
         			select bfp.id_boleto,
-                    sum(case when fp.codigo = ''CA'' then 
+                    sum(case when fp.codigo = ''CA'' then
                            			bfp.importe
                            		ELSE
                                 	0
                                 END) as monto_cash_usd,
-                           sum(case when fp.codigo != ''CA'' then 
+                           sum(case when fp.codigo != ''CA'' then
                            			bfp.importe
                            		ELSE
                                 	0
@@ -271,7 +271,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                     from  obingresos.tboleto_forma_pago bfp
                     inner join obingresos.tboleto b on b.id_boleto = bfp.id_boleto
                     inner join obingresos.tforma_pago fp on bfp.id_forma_pago = fp.id_forma_pago
-                    where ' || v_filtro || ' and 
+                    where ' || v_filtro || ' and
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') and fp.id_moneda = ' || v_id_moneda_usd || '
                     group by bfp.id_boleto
         			),';
@@ -279,12 +279,12 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
 
         v_consulta = v_consulta || 'bol_forma_pago_mb AS(
                 select bfp.id_boleto,
-                sum(case when fp.codigo = ''CA'' then 
+                sum(case when fp.codigo = ''CA'' then
                            			bfp.importe
                            		ELSE
                                 	0
                                 END) as monto_cash_mb,
-                           sum(case when fp.codigo != ''CA'' then 
+                           sum(case when fp.codigo != ''CA'' then
                            			bfp.importe
                            		ELSE
                                 	0
@@ -293,7 +293,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                  from  obingresos.tboleto_forma_pago bfp
                  inner join obingresos.tboleto b on b.id_boleto = bfp.id_boleto
                  inner join obingresos.tforma_pago fp on bfp.id_forma_pago = fp.id_forma_pago
-                where ' || v_filtro || ' and 
+                where ' || v_filtro || ' and
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') and fp.id_moneda = ' || v_id_moneda || '
                 group by bfp.id_boleto
             ), bol_impuesto AS(
@@ -301,8 +301,8 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                  from  obingresos.tboleto_impuesto bimp
                  inner join obingresos.tboleto b on b.id_boleto = bimp.id_boleto
                  inner join obingresos.timpuesto imp on imp.id_impuesto = bimp.id_impuesto
-                where ' || v_filtro || ' and 
-             			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') 
+                where ' || v_filtro || ' and
+             			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                 group by bimp.id_boleto
             )
              SELECT b.moneda::varchar as moneda_emision,''boleto''::varchar as tipo ,b.fecha_emision, ''''::varchar as correlativo_venta,b.pasajero::varchar as nombre_factura,b.nro_boleto as boleto,b.ruta_completa as ruta ,
@@ -337,11 +337,11 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                 on fpmb.id_boleto = b.id_boleto
              left join bol_impuesto imp
                 on imp.id_boleto = b.id_boleto
-             
-             
-             where b.estado_reg = ''activo'' and ' || v_filtro || ' and 
-             (b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
-             
+
+
+             where b.estado_reg = ''activo'' and b.estado=''revisado'' and ' || v_filtro || ' and
+             (b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' ||v_parametros.fecha_hasta || ''')
+
              group by b.fecha_emision,b.pasajero, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.neto,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_otro_mb '|| v_group_by || ')
              order by fecha,boleto';
@@ -350,10 +350,10 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
         return v_consulta;
 
       end;
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_REPRESBOA_SEL'
  	#DESCRIPCION:	Reporte de Boa para resumen de ventas
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
@@ -383,15 +383,15 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                   )
                   select v.fecha_reg::date as fecha,cig.desc_ingas,
                   sum(round(((coalesce(fpcc.monto_tarjeta,0)/v.total_venta)*vd.cantidad*vd.precio),2)) as precio_cc,
-                  sum(round(((coalesce(fpcash.monto_efectivo,0)/v.total_venta)*vd.cantidad*vd.precio),2)) as precio_cash,                 
+                  sum(round(((coalesce(fpcash.monto_efectivo,0)/v.total_venta)*vd.cantidad*vd.precio),2)) as precio_cash,
                   sum(vd.cantidad*vd.precio) as monto
                   from vef.tventa v
-                  inner join vef.tventa_detalle vd 
+                  inner join vef.tventa_detalle vd
                       on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
-                  inner join vef.tsucursal_producto sp 
+                  inner join vef.tsucursal_producto sp
                       on sp.id_sucursal_producto = vd.id_sucursal_producto
-                  inner join param.tconcepto_ingas cig 
-                      on cig.id_concepto_ingas = sp.id_concepto_ingas                  
+                  inner join param.tconcepto_ingas cig
+                      on cig.id_concepto_ingas = sp.id_concepto_ingas
                   left join forma_pago_cc fpcc
                       on v.id_venta = fpcc.id_venta
                   left join forma_pago_cash fpcash
@@ -412,18 +412,18 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                 inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
                 where fp.codigo = ''EFESUS''
             )
-             SELECT b.fecha, 
+             SELECT b.fecha,
              ''TARIFA NETA''::varchar as concepto,
              sum(coalesce(fpcc.monto_tarjeta,0)) as precio_tarjeta,
              sum(coalesce(fpcash.monto_efectivo,0)) as precio_cash,
              sum(coalesce(fpcc.monto_tarjeta,0) + coalesce(fpcash.monto_efectivo,0)) as monto
-             
+
              from vef.tboleto b
-             left join bol_forma_pago_cc fpcc 
+             left join bol_forma_pago_cc fpcc
                 on fpcc.id_boleto = b.id_boleto
-             left join bol_forma_pago_cash fpcash 
+             left join bol_forma_pago_cash fpcash
                 on fpcash.id_boleto = b.id_boleto
-             where ' || v_filtro || ' and 
+             where ' || v_filtro || ' and
              (b.fecha between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
              group by b.fecha)
              order by fecha';
@@ -446,15 +446,15 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
         --Sentencia de la consulta de conteo de registros
         v_consulta:='	select variable, valor
 						 	from pxp.variable_global
-						 	where variable like ''vef_%'' 
+						 	where variable like ''vef_%''
 						 union all
 						 	select ''sucursales''::varchar,pxp.list(id_sucursal::text)::varchar
-						 	from vef.tsucursal_usuario 
+						 	from vef.tsucursal_usuario
 						 	where estado_reg = ''activo'' and id_usuario = ' || p_id_usuario || '
 						 	and id_sucursal is not null and id_punto_venta is null
 						 union all
 						 	select ''puntos_venta''::Varchar,pxp.list(id_punto_venta::text)::varchar
-						 	from vef.tsucursal_usuario 
+						 	from vef.tsucursal_usuario
 						 	where estado_reg = ''activo'' and id_usuario = ' || p_id_usuario || '
 						 	and id_sucursal is null and id_punto_venta is not null
                          union all
@@ -467,10 +467,10 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
 
       end;
 
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_REPXPROD_SEL'
  	#DESCRIPCION:	Detalle de ventas para una lista de productos
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
@@ -483,9 +483,9 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
 
         --Sentencia de la consulta de conteo de registros
         v_consulta:='	select
-                            
-                            (tdcv.codigo||'' - ''||tdcv.nombre)::varchar as desc_tipo_doc_compra_venta,                           
-                            pla.desc_plantilla::varchar,                           
+
+                            (tdcv.codigo||'' - ''||tdcv.nombre)::varchar as desc_tipo_doc_compra_venta,
+                            pla.desc_plantilla::varchar,
                             to_char(dcv.fecha,''DD/MM/YYYY'')::varchar as fecha,
                             dcv.nro_autorizacion::varchar,
                             dcv.nit::varchar,
@@ -494,23 +494,23 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                             dcv.nro_documento,
                             COALESCE(dcv.importe_doc,0)::numeric as importe_doc,
                             COALESCE(dcv.importe_neto,0)::numeric as importe_neto,
-                            
+
                             COALESCE(dcv.importe_iva,0)::numeric as importe_iva,
                             COALESCE(dcv.importe_it,0)::numeric as importe_it,
                             COALESCE(dcv.importe_neto,0)::numeric - COALESCE(dcv.importe_iva,0) as ingreso
-                                                  
-                        
-						from vef.tventa v 
+
+
+						from vef.tventa v
                         inner join vef.tventa_detalle vd on vd.id_venta = v.id_venta
                         inner join vef.tsucursal_producto sp on sp.id_sucursal_producto = vd.id_sucursal_producto
                         inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = sp.id_concepto_ingas
                         inner join conta.tdoc_compra_venta dcv on dcv.id_origen = v.id_venta and dcv.tabla_origen = ''vef.tventa''
-                          
-                          inner join param.tplantilla pla on pla.id_plantilla = dcv.id_plantilla                          
+
+                          inner join param.tplantilla pla on pla.id_plantilla = dcv.id_plantilla
                           inner join conta.ttipo_doc_compra_venta tdcv on tdcv.id_tipo_doc_compra_venta = dcv.id_tipo_doc_compra_venta
                           where ' || v_filtro || '
-                          group by dcv.estado,                            
-                            pla.desc_plantilla,                           
+                          group by dcv.estado,
+                            pla.desc_plantilla,
                             dcv.fecha,
                             dcv.nro_autorizacion,
                             dcv.nit,
@@ -518,7 +518,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                             dcv.nro_documento,
                             dcv.importe_doc,
                             dcv.importe_neto,
-                            
+
                             dcv.importe_iva,
                             dcv.importe_it,
                             tdcv.codigo,
@@ -548,7 +548,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
       begin
         --Sentencia de la consulta
         v_consulta:='select
-						 
+
                               vd.id_venta,
                               vd.id_venta_detalle,
                               COALESCE(vd.precio,0) as precio,
@@ -558,7 +558,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                               i.codigo as codigo_nombre,
                               i.nombre as item_nombre,
                               sp.nombre_producto,
-                              fo.id_formula,	
+                              fo.id_formula,
                               fd.id_formula_detalle,
                               fd.cantidad as cantidad_df,
                               ifo.nombre as item_nombre_df,
@@ -573,7 +573,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                             left join vef.tformula_detalle fd on fd.id_formula = fo.id_formula
                             left join alm.titem ifo on ifo.id_item = fd.id_item
                             left join vef.tsucursal_producto sp on sp.id_sucursal_producto = vd.id_sucursal_producto
-                        where  
+                        where
                                vd.estado_reg = ''activo'' and
                                vd.id_venta = '||v_parametros.id_venta::varchar;
 
@@ -584,10 +584,10 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
         return v_consulta;
 
       end;
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_NOTAVEND_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
@@ -599,7 +599,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                             count(vd.id_venta_detalle) as total,
                             SUM(vd.cantidad*COALESCE(vd.precio,0)) as suma_total
                          from vef.tventa_detalle vd
-                         where  id_venta = '||v_parametros.id_venta::varchar||' 
+                         where  id_venta = '||v_parametros.id_venta::varchar||'
                               and vd.estado_reg = ''activo''
                           group by vd.id_venta ';
 
@@ -610,10 +610,10 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
         return v_consulta;
 
       end;
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_NOTVEN_SEL'
  	#DESCRIPCION:   Lista de la cabecera de la nota de venta
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
@@ -647,7 +647,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
                         suc.correo,
                         suc.telefono,
                         pxp.f_convertir_num_a_letra(ven.total_venta) as total_string
-                        	
+
 						from vef.tventa ven
 						inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
@@ -676,7 +676,7 @@ CREATE OR REPLACE FUNCTION vef.ft_repventa_sel (
       v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
       raise exception '%',v_resp;
   END;
-  $body$
+$body$
 LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
