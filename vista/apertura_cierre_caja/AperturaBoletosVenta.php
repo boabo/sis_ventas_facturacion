@@ -869,7 +869,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'voided', type: 'string'}
             ],
             sortInfo:{
-                field: 'id_boleto',
+                field: 'nro_boleto',
                 direction: 'DESC'
             },
             arrayDefaultColumHidden:['estado_reg','usuario_ai',
