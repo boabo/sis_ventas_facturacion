@@ -208,6 +208,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 
 			if (this.data.objPadre.mycls == 'VentaCaja'){
 				this.readOnlyGroup(2,false);
+				this.blockGroup(0);
 			}
 
 			this.megrid.getTopToolbar().disable();
