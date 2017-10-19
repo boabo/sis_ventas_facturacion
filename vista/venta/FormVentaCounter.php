@@ -1342,12 +1342,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'NumberField',
                 id_grupo:0,
                 form:true,
-                valorInicial:'0'
+                //valorInicial:'0'
             },
             {
                 config : {
                     name : 'id_cliente',
-                    fieldLabel : 'Cliente',
+                    fieldLabel : 'Razón Social Cliente',
                     allowBlank : false,
                     emptyText : 'Cliente...',
                     store : new Ext.data.JsonStore({

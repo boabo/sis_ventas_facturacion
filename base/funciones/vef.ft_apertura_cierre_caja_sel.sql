@@ -362,7 +362,7 @@ BEGIN
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_base  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
                                   and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''pagado'') as comisiones_ml,
+                                  bol.estado = ''revisado'') as comisiones_ml,
 
                       (	select sum(ven.comision) from vef.tventa ven
                           where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_tri  || ' and
@@ -374,7 +374,7 @@ BEGIN
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_tri  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
                                    and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''pagado'')   as comisiones_me
+                                  bol.estado = ''revisado'')   as comisiones_me
 
                       from vef.tapertura_cierre_caja acc
                       inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
@@ -387,7 +387,7 @@ BEGIN
                       left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
                       left join obingresos.tboleto b on b.id_usuario_cajero = u.id_usuario
                                                       and b.fecha_reg::date = acc.fecha_apertura_cierre and
-                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''pagado''
+                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
 
                       left join obingresos.tboleto_forma_pago bfp on bfp.id_boleto = b.id_boleto
                       left join forma_pago fp on fp.id_forma_pago = bfp.id_forma_pago

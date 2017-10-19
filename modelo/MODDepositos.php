@@ -25,16 +25,13 @@ class MODDepositos extends MODbase{
         $this->captura('id_sucursal','int4');
         $this->captura('id_entrega_brinks','int4');
         $this->captura('id_usuario_cajero','int4');
-        $this->captura('id_deposito','int4');
         $this->captura('cajero','text');
         $this->captura('codigo','varchar');
-        $this->captura('nro_deposito','varchar');
         $this->captura('nombre_punto_venta','varchar');
 		$this->captura('nombre_sucursal','varchar');
         $this->captura('codigo_lugar','varchar');
         $this->captura('fecha_venta','date');
         $this->captura('fecha_recojo','date');
-		$this->captura('fecha_hora_cierre','date');
         $this->captura('arqueo_moneda_local','numeric');
         $this->captura('arqueo_moneda_extranjera','numeric');
         $this->captura('deposito_bs','numeric');

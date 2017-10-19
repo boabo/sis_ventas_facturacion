@@ -107,7 +107,7 @@ class MODEntrega extends MODbase{
         $this->setCount(false);
 
         //Definicion de la lista del resultado del query
-        $this->captura('fecha_apertura_cierre','text');
+        $this->captura('fecha_cierre','text');
         $this->captura('id_punto_venta','int4');
 
         //Ejecuta la instruccion

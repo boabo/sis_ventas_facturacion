@@ -96,6 +96,11 @@ class ACTAperturaCierreCaja extends ACTbase{
     $this->res=$this->objFunc->insertarFecha($this->objParam);
     $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    function eleminarFecha(){
+    $this->objFunc=$this->create('MODAperturaCierreCaja');
+    $this->res=$this->objFunc->eleminarFecha($this->objParam);
+    $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
     function listarAperturaCierreCajaEntrega(){
         $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');

@@ -46,11 +46,11 @@ header("content-type: text/javascript; charset=UTF-8");
         Phx.vista.Entrega.superclass.constructor.call(this,request.arguments);
         this.addButton('Report',{
             grupo:[0,1],
-            text :'Reporte',
+            text :'Entrega de Remesas',
             iconCls : 'bpdf32',
             disabled: true,
             handler : this.onButtonReporte,
-            tooltip : '<b>Reporte Formulario de Entrega de Efectivo</b>'
+            tooltip : '<b>Reporte Formulario de Entrega de Remesas</b>'
         });
         this.init();
         this.getBoton('Report').enable();
@@ -197,48 +197,6 @@ header("content-type: text/javascript; charset=UTF-8");
 				grid:true,
 				form:true
 		},
-        {
-            config: {
-                name: 'id_punto_venta_2',
-                fieldLabel: 'Punto de Venta',
-                allowBlank: false,
-                emptyText: 'Elija un Pun...',
-                store: new Ext.data.JsonStore({
-                    url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
-                    id: 'id_punto_venta',
-                    root: 'datos',
-                    sortInfo: {
-                        field: 'nombre',
-                        direction: 'ASC'
-                    },
-                    totalProperty: 'total',
-                    fields: ['id_punto_venta', 'nombre', 'codigo'],
-                    remoteSort: true,
-                    baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
-                }),
-                valueField: 'id_punto_venta',
-                displayField: 'nombre',
-                gdisplayField: 'nombre_punto_venta',
-                hiddenName: 'id_punto_venta',
-                forceSelection: true,
-                typeAhead: false,
-                triggerAction: 'all',
-                lazyRender: true,
-                mode: 'remote',
-                pageSize: 15,
-                queryDelay: 1000,
-                gwidth: 170,
-                minChars: 2,
-                renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['nombre_punto_venta']);
-                }
-            },
-            type: 'ComboBox',
-            id_grupo: 0,
-            filters: {pfiltro: 'puve.nombre',type: 'string'},
-            grid: true,
-            form: false
-        },
         {
             config:{
                 name: 'arqueo_moneda_local',
@@ -424,8 +382,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
     cmbPuntoV: new Ext.form.ComboBox({
         name: 'punto_venta',
-        id: 'gestion_reg',
-        fieldLabel: 'Gestion',
+        id: 'id_punto_venta',
+        fieldLabel: 'Punto Venta',
         allowBlank: true,
         emptyText:'Punto de Venta...',
         blankText: 'Año',
@@ -438,9 +396,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 direction: 'ASC'
             },
             totalProperty: 'total',
-            fields: ['id_punto_venta', 'nombre', 'codigo'],
+            fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
             remoteSort: true,
-            baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
+            baseParams: {tipo_usuario: 'vendedor',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
         }),
         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
         valueField: 'id_punto_venta',

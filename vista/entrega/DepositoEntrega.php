@@ -17,6 +17,7 @@ header("content-type: text/javascript; charset=UTF-8");
                  this.maestro=config.maestro;
                  Phx.vista.DepositoEntrega.superclass.constructor.call(this,config);
                  this.init();
+
              },
              bdel : true,
              Atributos:[
@@ -61,18 +62,18 @@ header("content-type: text/javascript; charset=UTF-8");
                              id: 'fecha',
                              root: 'datos',
                              sortInfo: {
-                                 field: 'fecha_apertura_cierre',
+                                 field: 'fecha_cierre',
                                  direction: 'ASC'
                              },
 
                              totalProperty: 'total',
-                             fields: ['fecha_apertura_cierre','id_punto_venta'],
+                             fields: ['fecha_cierre','id_punto_venta'],
                              remoteSort: true,
                              baseParams: {id_punto_venta:'si'}
                          }),
 
-                         valueField: 'fecha_apertura_cierre',
-                         displayField: 'fecha_apertura_cierre',
+                         valueField: 'fecha_cierre',
+                         displayField: 'fecha_cierre',
                          gdisplayField: 'fecha_apertura_cierre',
                          hiddenName: 'fecha',
                          forceSelection: true,
@@ -86,16 +87,15 @@ header("content-type: text/javascript; charset=UTF-8");
                          listWidth: 450,
                          resizable: true,
                          minChars: 2,
-                         renderer: function (value, p, record) {
-                             return String.format('{0}', record.data['fecha_apertura_cierre']);
-                         }
+                         renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
                      },
                      type: 'ComboBox',
+                     filters: {pfiltro:'ap.fecha_apertura_cierre', type:'date'},
                      id_grupo: 1,
-                     grid: false,
+                     grid: true,
                      form: true
                  },
-                 {
+                /* {
                      config:{
                          name: 'fecha_apertura_cierre',
                          fieldLabel: 'Fecha ',
@@ -107,7 +107,7 @@ header("content-type: text/javascript; charset=UTF-8");
                      filters: { pfiltro:'apcie.fecha', type:'date'},
                      grid:true,
                      form:false
-                 },
+                 },*/
                  {
                      config:{
                          name: 'nombre_punto_venta',
@@ -221,7 +221,7 @@ header("content-type: text/javascript; charset=UTF-8");
              tam_pag:50,
              title:'Apertura de Caja',
              ActSave:'../../sis_ventas_facturacion/control/AperturaCierreCaja/insertarFecha',
-             ActDel:'../../sis_ventas_facturacion/control/AperturaCierreCaja/eliminarAperturaCierreCaja',
+             ActDel:'../../sis_ventas_facturacion/control/AperturaCierreCaja/eleminarFecha',
              ActList:'../../sis_ventas_facturacion/control/AperturaCierreCaja/listarAperturaCierreCajaEntrega',
              id_store:'id_apertura_cierre_caja',
              fields: [
@@ -246,19 +246,21 @@ header("content-type: text/javascript; charset=UTF-8");
                  field: 'id_apertura_cierre_caja',
                  direction: 'ASC'
              },
+         bedit:false,
          onReloadPage: function (m) {
              this.maestro = m;
              this.store.baseParams = {id_entrega_brinks: this.maestro.id_entrega_brinks};
              this.load({params: {start: 0, limit: 50}});
          },
+         loadValoresIniciales:function() {
+             Phx.vista.DepositoEntrega.superclass.loadValoresIniciales.call(this);
+             this.getComponente('id_entrega_brinks').setValue(this.maestro.id_entrega_brinks);
+         },
          onButtonNew:function(){
              console.log('fecha',this.Cmp.fecha);
              Phx.vista.DepositoEntrega.superclass.onButtonNew.call(this);
              this.iniciarEvento();
-             this.getComponente('id_entrega_brinks').setValue(this.maestro.id_entrega_brinks);
              this.Cmp.fecha.store.baseParams ={id_punto_venta:this.maestro.id_punto_venta};
-            // this.getComponente('id_punto_venta').setValue(this.maestro.id_entrega_brinks);
-
          },
 
          successSave:function(resp){
@@ -268,6 +270,12 @@ header("content-type: text/javascript; charset=UTF-8");
 
          iniciarEvento:function () {
              this.Cmp.fecha.lastQuery = null;
+         },
+         onButtonDel:function(){
+             var rec=this.sm.getSelected();
+             console.log ('Data',rec.data.id_apertura_cierre_caja);
+             this.store.baseParams.id_apertura_cierre_caja =  rec.data.id_apertura_cierre_caja;
+             Phx.vista.DepositoEntrega.superclass.onButtonDel.call(this);
          }
 
 

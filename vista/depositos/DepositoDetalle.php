@@ -204,8 +204,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 filters: {pfiltro: 'dep.nro_deposito', type: 'string'},
                 id_grupo: 1,
                 grid: true,
-                form: true,
-                bottom_filter: true
+                form: true
             },
             {
                 config: {
@@ -447,10 +446,25 @@ header("content-type: text/javascript; charset=UTF-8");
             this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja};
             this.load({params: {start: 0, limit: 50}});
         },
-        onButtonNew:function(){
-            console.log('id:',this.maestro.id_apertura_cierre_caja);
-            Phx.vista.DepositoDetalle.superclass.onButtonNew.call(this);
+        loadValoresIniciales:function() {
+            Phx.vista.DepositoDetalle.superclass.loadValoresIniciales.call(this);
             this.getComponente('id_apertura_cierre_caja').setValue(this.maestro.id_apertura_cierre_caja);
+        },
+        onButtonNew:function(){
+            Phx.vista.DepositoDetalle.superclass.onButtonNew.call(this);
+            Ext.Ajax.request({
+                url:'../../sis_ventas_facturacion/control/Entrega/getPuntoVen',
+                params:{id_punto_venta : this.variables_globales.id_punto_venta},
+                success:function(resp){
+                    var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                    console.log('datos',reg);
+
+                },
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+
         },
         successSave:function(resp){
             Phx.vista.DepositoDetalle.superclass.successSave.call(this,resp);

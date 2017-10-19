@@ -54,6 +54,36 @@ class ACTDosificacion extends ACTbase{
 		$this->res=$this->objFunc->eliminarDosificacion($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+    function listarDosificacionInte(){
+        $this->objParam->defecto('ordenacion','id_dosificacion');
+
+        $this->objParam->defecto('dir_ordenacion','asc');
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODDosificacion','listarDosificacionInter');
+
+        } else{
+            $this->objFunc=$this->create('MODDosificacion');
+            $this->res=$this->objFunc->listarDosificacionInter($this->objParam);
+
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function insertarDosificacionExter(){
+        $this->objFunc=$this->create('MODDosificacion');
+        if($this->objParam->insertar('id_dosificacion')){
+            $this->res=$this->objFunc->insertarDosificacionExter($this->objParam);
+        } else{
+            $this->res=$this->objFunc->modificarDosificacionExter($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function alertarDosificacion(){
+        $this->objFunc=$this->create('MODDosificacion');
+        $this->res=$this->objFunc->alertarDosificacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 			
 }
 

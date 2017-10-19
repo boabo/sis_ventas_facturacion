@@ -505,7 +505,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		Phx.CP.loadingShow();
 		Ext.Ajax.request({
 			url:'../../sis_obingresos/control/Boleto/traerBoletos',
-			params: {id_punto_venta: data.id_punto_venta, fecha: data.fecha_apertura_cierre, id_usuario_cajero: data.id_usuario_cajero},
+			params: {id_punto_venta: data.id_punto_venta, fecha: data.fecha_apertura_cierre.dateFormat('Ymd'), id_usuario_cajero: data.id_usuario_cajero},
 			success:this.successSinc,
 			failure: this.conexionFailure,
 			timeout:this.timeout,

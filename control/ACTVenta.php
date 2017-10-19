@@ -229,7 +229,7 @@ class ACTVenta extends ACTbase{
 		
 		$datos = $this->res->getDatos();
 		$datos = $datos[0];
-		
+
 		if ($datos['cantidad_descripciones'] > 0){
 			$this->objFunc = $this->create('MODVenta');
 			$this->res = $this->objFunc->listarReciboFacturaDescripcion($this->objParam);
@@ -243,7 +243,6 @@ class ACTVenta extends ACTbase{
 		
 		$reporte = new RFacturaRecibo();
 		$temp = array();
-		
 		$temp['html'] = $reporte->generarHtml($this->objParam->getParametro('formato_comprobante'),$datos);
 		$this->res->setDatos($temp);
 		$this->res->imprimirRespuesta($this->res->generarJson());
@@ -256,21 +255,39 @@ class ACTVenta extends ACTbase{
         $this->objParam->defecto('ordenacion','id_venta');
         $this->objParam->defecto('dir_ordenacion','asc');
 
+        if ($this->objParam->getParametro('tipo_interfaz') == 'VentaComputarizada'){
+
+           if ($this->objParam->getParametro('id_punto_venta')  != '') {
+               if($this->objParam->getParametro('id_punto_venta') != '') {
+                   $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta'));
+               }
+                if ($this->objParam->getParametro('pes_estado') == 'finalizado') {
+                    $this->objParam->addFiltro(" ven.estado in(''finalizado'') ");
+                }elseif ($this->objParam->getParametro('pes_estado') == 'anulado') {
+                    $this->objParam->addFiltro(" ven.estado in( ''anulado'') ");
+                }
+               $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta')." and ven.fecha = ".$this->objParam->getParametro('fecha')."::date"." and ven.tipo_factura = ".$this->objParam->getParametro('tipo_factura')."and ven.id_usuario_reg =".$this->objParam->getParametro('id_usuario_cajero'));
+           }
+        }elseif ($this->objParam->getParametro('tipo_interfaz') == 'VentaManueal'){
+
+            if ($this->objParam->getParametro('id_punto_venta')  != '') {
+                if($this->objParam->getParametro('id_punto_venta') != '') {
+                    $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta'));
+                }
+                if ($this->objParam->getParametro('pes_estado') == 'finalizado') {
+                    $this->objParam->addFiltro(" ven.estado in(''finalizado'') ");
+                }elseif ($this->objParam->getParametro('pes_estado') == 'anulado') {
+                    $this->objParam->addFiltro(" ven.estado in( ''anulado'') ");
+                }
+                $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta')." and ven.fecha = ".$this->objParam->getParametro('fecha')."::date"." and ven.tipo_factura = ".$this->objParam->getParametro('tipo_factura')."and ven.id_usuario_reg =".$this->objParam->getParametro('id_usuario_cajero'));
+            }
+        }
+
        /* if($this->objParam->getParametro('id_punto_venta') != '') {
             $this->objParam->addFiltro(" puve.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta')." and ven.id_usuario_reg =".$this->objParam->getParametro('id_usuario_cajero')." and ven.fecha = ".$this->objParam->getParametro('fecha')."::date");
         }*/
         if ($this->objParam->getParametro('id_dosificacion') != '') {
-
             $this->objParam->addFiltro("ven.id_dosificacion = " .  $this->objParam->getParametro('id_dosificacion'));
-        }
-
-        if ($this->objParam->getParametro('pes_estado') != '') {
-            if ($this->objParam->getParametro('pes_estado') == 'finalizado') {
-                $this->objParam->addFiltro(" ven.estado in(''finalizado'') ");
-            }elseif ($this->objParam->getParametro('pes_estado') == 'anulado') {
-                $this->objParam->addFiltro(" ven.estado in( ''anulado'') ");
-
-            }
         }
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
             $this->objReporte = new Reporte($this->objParam,$this);
@@ -283,6 +300,13 @@ class ACTVenta extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
 
     }
+    
+	
+	function insertarFacturaExterna(){
+		$this->objFunc=$this->create('MODVenta');	
+		$this->res=$this->objFunc->insertarFacturaExterna($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 			
 }
 

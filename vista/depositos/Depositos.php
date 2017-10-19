@@ -16,8 +16,8 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Depositos.superclass.constructor.call(this,config);
-        this.addButton('reporte',{grupo:[0,1],text:'Reporte',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Genera reporte de la caja</b>'});
-        this.addButton('rventas',{grupo:[0,1],text:'Reporte Detalle ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporteVentas,tooltip: '<b>Genera reporte de la caja</b>'});
+        this.addButton('reporte',{grupo:[0,1],text:'Declaración de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración de Ventas Diarias/b>'});
+        this.addButton('rventas',{grupo:[0,1],text:'Detalle de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporteVentas,tooltip: '<b>Reporte Detalle de Ventas</b>'});
 
         this.getBoton('reporte').enable();
         this.getBoton('rventas').enable();

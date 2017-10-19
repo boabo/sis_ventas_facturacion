@@ -15,11 +15,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
         constructor: function (config) {
 
-            //llama al constructor de la clase padre
             Phx.vista.DepositoApertura.superclass.constructor.call(this, config);
-
             this.init();
-
             this.addButton('archivo', {
                 grupo: [0,1],
                 argument: {imprimir: 'archivo'},
@@ -28,7 +25,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 disabled: false,
                 handler: this.archivo
             });
-
             this.addButton('btnValidar',
                 {
                     grupo: [0],
@@ -42,31 +38,20 @@ header("content-type: text/javascript; charset=UTF-8");
             this.finCons = true;
             this.store.baseParams.tipo = 'agencia';
             this.store.baseParams.estado = 'borrador';
-            //this.load({params: {start: 0, limit: this.tam_pag}});
-            this.iniciarEventos();
 
         },
-       /* gruposBarraTareas: [{
-            name: 'borrador',
-            title: '<H1 align="center"><i class="fa fa-eye"></i> Registrados</h1>',
-            grupo: 0,
-            height: 0
-        },
-            {
-                name: 'validado',
-                title: '<H1 align="center"><i class="fa fa-eye"></i> Validados</h1>',
-                grupo: 1,
-                height: 0
-            }
-
+        gruposBarraTareas: [
+            {name: 'borrador', title: '<H1 align="center"><i class="fa fa-eye"></i> Registrados</h1>', grupo: 0, height: 0},
+            {name: 'validado', title: '<H1 align="center"><i class="fa fa-eye"></i> Validados</h1>', grupo: 1, height: 0}
         ],
+        bactGroups: [0, 1],
+        bexcelGroups: [0, 1],
         actualizarSegunTab: function (name, indice) {
             if (this.finCons) {
                 this.store.baseParams.estado = name;
                 this.load({params: {start: 0, limit: this.tam_pag}});
             }
-        },*/
-
+        },
         onValidar: function () {
             var rec = this.sm.getSelected();
             Phx.CP.loadingShow();
@@ -101,9 +86,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     height: 400
                 }, rec, this.idContenedor, 'Archivo');
         },
-        bactGroups: [0, 1],
-        bexcelGroups: [0, 1],
-
         Atributos: [
             {
                 //configuracion del componente
@@ -147,50 +129,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 form: true,
                 valorInicial : 'agencia'
             },
-           /* {
-                config: {
-                    name: 'id_agencia',
-                    fieldLabel: 'Agencia',
-                    allowBlank: false,
-                    emptyText: 'Agencia...',
-                    store: new Ext.data.JsonStore({
-                        url: '../../sis_obingresos/control/Agencia/listarAgencia',
-                        id: 'id_agencia',
-                        root: 'datos',
-                        sortInfo: {
-                            field: 'id_agencia',
-                            direction: 'ASC'
-                        },
-                        totalProperty: 'total',
-                        fields: ['id_agencia', 'codigo', 'codigo_int', 'nombre'],
-                        remoteSort: true,
-                        baseParams: {par_filtro: 'age.codigo#age.codigo_int#age.nombre'}
-                    }),
-                    valueField: 'id_agencia',
-                    displayField: 'nombre',
-                    gdisplayField: 'nombre_agencia',
-                    hiddenName: 'id_agencia',
-                    forceSelection: true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender: true,
-                    mode: 'remote',
-                    pageSize: 15,
-                    queryDelay: 1000,
-                    gwidth: 150,
-                    listWidth: 450,
-                    resizable: true,
-                    minChars: 2,
-                    renderer: function (value, p, record) {
-                        return String.format('{0}', record.data['nombre_agencia']);
-                    }
-                },
-                type: 'ComboBox',
-                id_grupo: 1,
-                filters: {pfiltro: 'age.nombre', type: 'string'},
-                grid: false,
-                form: false
-            },*/
+
             {
                 config: {
                     name: 'nro_deposito',
@@ -204,8 +143,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 filters: {pfiltro: 'dep.nro_deposito', type: 'string'},
                 id_grupo: 1,
                 grid: true,
-                form: true,
-                bottom_filter: true
+                form: true
             },
             {
                 config: {
@@ -263,54 +201,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: true,
                 form: true
             },
-
-            /*{
-                config: {
-                    name: 'id_periodo_venta',
-                    fieldLabel: 'Periodo Venta',
-                    allowBlank: true,
-                    emptyText: 'Periodo...',
-                    store: new Ext.data.JsonStore({
-                        url: '../../sis_obingresos/control/PeriodoVenta/listarPeriodoVenta',
-                        id: 'id_periodo_venta',
-                        root: 'datos',
-                        sortInfo: {
-                            field: 'fecha_fin',
-                            direction: 'DESC'
-                        },
-                        totalProperty: 'total',
-                        fields: ['mes', 'fecha_ini', 'fecha_fin', 'tipo_periodo','tipo_cc','medio_pago', 'desc_periodo'],
-                        remoteSort: true,
-                        baseParams: {   tipo_periodo:'portal',
-                            medio_pago : 'cuenta_corriente'
-                        }
-                    }),
-                    valueField: 'id_periodo_venta',
-                    displayField: 'desc_periodo',
-                    gdisplayField: 'desc_periodo',
-                    hiddenName: 'id_periodo_venta',
-                    forceSelection: true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender: true,
-                    mode: 'remote',
-                    pageSize: 15,
-                    queryDelay: 1000,
-                    gwidth: 150,
-                    listWidth: 450,
-                    resizable: true,
-                    minChars: 2,
-                    renderer: function (value, p, record) {
-                        return String.format('{0}', record.data['desc_periodo']);
-                    }
-                },
-                type: 'ComboBox',
-                id_grupo: 1,
-                grid: false,
-                form: false
-            },*/
-
-
             {
                 config: {
                     name: 'estado_reg',
@@ -326,8 +216,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: true,
                 form: false
             },
-
-
             {
                 config: {
                     name: 'usr_reg',
@@ -427,7 +315,7 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
         tam_pag: 50,
         title: 'Depositos',
-        ActSave: '../../sis_obingresos/control/Deposito/insertarDeposito',
+        ActSave: '../../sis_obingresos/control/Deposito/completarDeposito',
         ActDel:'../../sis_obingresos/control/Deposito/eliminarDepositoPortal',
         ActList: '../../sis_obingresos/control/Deposito/listarDeposito',
         id_store: 'id_deposito',
@@ -460,9 +348,6 @@ header("content-type: text/javascript; charset=UTF-8");
         sortInfo: {
             field: 'id_deposito',
             direction: 'DESC'
-        },
-        iniciarEventos: function () {
-
         },
         bdel: true,
         bsave: false,
@@ -502,13 +387,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja};
             this.load({params: {start: 0, limit: 50}});
         },
-        onButtonNew:function(){
-
-            console.log('id:',this.maestro.id_apertura_cierre_caja);
-            Phx.vista.DepositoApertura.superclass.onButtonNew.call(this);
+        loadValoresIniciales:function(){
+            Phx.vista.DepositoApertura.superclass.loadValoresIniciales.call(this);
             this.getComponente('id_apertura_cierre_caja').setValue(this.maestro.id_apertura_cierre_caja);
-
         }
+
 
     })
 

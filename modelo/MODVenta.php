@@ -931,22 +931,25 @@ class MODVenta extends MODbase{
 		$this->captura('lugar_cliente','varchar');	
 		$this->captura('cliente_destino','varchar');
 		$this->captura('lugar_destino','varchar');
-		
-		
-		
+        $this->captura('codigo_sucursal','varchar');//nuevo mvm
+		$this->captura('leyenda','varchar');//nuevo mvm
 
 
 
-		
-		
-		//Ejecuta la instruccion
+
+
+
+
+
+
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		
 	     
 		$this->ejecutarConsulta();
 		
-		
-		
+
+		//var_dump($this->respuesta); exit;
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

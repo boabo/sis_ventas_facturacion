@@ -143,7 +143,6 @@ class MODAperturaCierreCaja extends MODbase{
         
         //Ejecuta la instruccion
         $this->armarConsulta();
-        
         $this->ejecutarConsulta();
 
 
@@ -263,6 +262,25 @@ class MODAperturaCierreCaja extends MODbase{
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function eleminarFecha(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_APCIE_BOR';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+
+        $this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
+
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
         //Devuelve la respuesta
         return $this->respuesta;
     }

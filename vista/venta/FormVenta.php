@@ -462,7 +462,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
         
         	if (this.Cmp.nit.getValue() != '') {        		
         		this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
-            	this.Cmp.id_cliente.store.load({params:{start:0,limit:this.tam_pag}, 
+            	this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
 		           callback : function (r) {
 		           		this.Cmp.id_cliente.store.baseParams.nit = '';
 		           		if (r.length == 1) {
@@ -1348,12 +1348,12 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 			type:'NumberField',
 			id_grupo:0,
 			form:true,
-			valorInicial:'0'
+			//valorInicial:'0'
 		},
 		{
 			config : {
 				name : 'id_cliente',
-				fieldLabel : 'Cliente',
+				fieldLabel : 'Razón Social Cliente',
 				allowBlank : false,
 				emptyText : 'Cliente...',
 				store : new Ext.data.JsonStore({

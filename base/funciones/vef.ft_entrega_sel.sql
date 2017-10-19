@@ -113,7 +113,8 @@ BEGIN
     elsif(p_transaccion='VF_ENG_FECH')then
 
 		begin
-        v_consulta:='select  to_char( ap.fecha_apertura_cierre,''DD/MM/YYYY'') as fecha_apertura_cierre,
+
+        v_consulta:='select  to_char( ap.fecha_apertura_cierre,''DD/MM/YYYY'') as fecha_cierre,
         			ap.id_punto_venta
                     from vef.tapertura_cierre_caja ap
                     where ap.id_entrega_brinks is null and ap.estado =''cerrado'' and';
@@ -121,7 +122,7 @@ BEGIN
 
         v_consulta:=v_consulta||v_parametros.filtro;
 		v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+		RAISE NOTICE 'CONUSLA...... %',v_consulta;
 		--Devuelve la respuesta
 		return v_consulta;
 
