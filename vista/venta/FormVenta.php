@@ -205,7 +205,11 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 					    	 this.Cmp[index].setReadOnly(true);
 					   }
 			}
-			
+
+			if (this.data.objPadre.mycls == 'VentaCaja'){
+				this.readOnlyGroup(2,false);
+			}
+
 			this.megrid.getTopToolbar().disable();
 					
         }
@@ -480,8 +484,8 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
     roundTwo: function(can){
     	 return  Math.round(can*Math.pow(10,2))/Math.pow(10,2);
     },
-    
-    habilitarDescripcion : function(opcion) {
+
+	habilitarDescripcion : function(opcion) {
     	
     	if(this.detCmp.descripcion){
 	    	if (opcion) {
@@ -548,7 +552,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 		            }, scope : this
 		        });
 		}
-    },    
+    },
     
     onCancelAdd: function(re,save){
         if(this.sw_init_add){
@@ -1533,7 +1537,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_forma_pago', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc'],
+                    fields: ['id_forma_pago', 'codigo', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc'],
                     remoteSort: true,
                     baseParams: {par_filtro: 'forpa.nombre#mon.codigo#forpa.codigo',sw_tipo_venta:'computarizada'}
                 }),
@@ -1541,7 +1545,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
                 displayField: 'nombre',
                 gdisplayField: 'forma_pago',
                 hiddenName: 'id_forma_pago',
-                tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre}</p><p>Moneda:{desc_moneda}</p> </div></tpl>',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre}</p><p>Codigo:{codigo}</p><p>Moneda:{desc_moneda}</p> </div></tpl>',
                 forceSelection: true,
                 typeAhead: false,
                 triggerAction: 'all',
@@ -1815,7 +1819,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
         //load detalle de conceptos
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
         this.mestore.load();  
-        this.crearStoreFormaPago();    	
+        this.crearStoreFormaPago();
         
     },    
     onNew: function(){    	
