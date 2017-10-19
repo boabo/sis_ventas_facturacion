@@ -3,7 +3,6 @@ require_once(dirname(__FILE__).'/../../lib/tcpdf/tcpdf_barcodes_2d.php');
 class RFacturaRecibo
 {
 	function generarHtml ($codigo_reporte,$datos) {
-			
 		if ($codigo_reporte == 'RECPAPELTERM' || $codigo_reporte == 'RECPAPELMATRI') {	
 			setlocale(LC_ALL,"es_ES@euro","es_ES","esp");
 				
@@ -121,6 +120,8 @@ class RFacturaRecibo
 			}
 
 			elseif ($codigo_reporte == 'FACPAPELTERM' || $codigo_reporte == 'FACPAPELMATRI') {
+
+
 				$cadena_qr = 	$datos['nit_entidad'] . '|' . 
 						$datos['numero_factura'] . '|' . 
 						$datos['autorizacion'] . '|' . 
@@ -155,14 +156,15 @@ class RFacturaRecibo
 				}	
 					
 				$html .= '<center>
-					<table style="width:295px;">
+					<table style="width:295px;" >
 				<thead>
 				<tr   >
 						<td colspan="2" style=" text-align: center;" align="center" >
 							' . $datos['nombre_entidad'] . '<br />
-							Sucursal ' . $datos['nombre_sucursal'] . '<br />
+							SUCURSAL ' . $datos['codigo_sucursal'] . '<br />
+							' . $datos['nombre_sucursal'] . '<br />
 							' . $datos['direccion_sucursal'].'<br />
-							Telf: ' . $datos['telefono_sucursal'].'<br />
+							TELF: ' . $datos['telefono_sucursal'].'<br />
 							' . $datos['lugar_sucursal'].'<br />
 						<hr/>
 						</td>
@@ -174,9 +176,9 @@ class RFacturaRecibo
 				
 				<tr>
 					<td style="width: 200px;" colspan="2"  align="center">
-						NIT : ' . $datos['nit_entidad'] . '<br/>
-						FACTURA : '.$datos['numero_factura'] . '<br/> 
-						N&#176; AUTORIZACION : ' . $datos['autorizacion'] . '<hr/>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NIT : ' . $datos['nit_entidad'] . '<br/>
+						N° FACTURA : '.$datos['numero_factura'] . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/> 
+						N° AUTORIZACION : ' . $datos['autorizacion'] . '&nbsp;&nbsp;&nbsp;<hr/>
 					</td>
 				</tr>
 				<tr>
@@ -186,37 +188,35 @@ class RFacturaRecibo
 				</tr>
 				<tr>
 					<td colspan="2">						
- 						Fecha: '.$datos['fecha_venta'].'<br/>
-					    Senor(es): '.trim($datos['cliente']).'<br/>
-					    NIT/CI: '.$datos['nit_cliente'].'<hr/>
+ 						FECHA: '.$datos['fecha_venta'].'<br/>
+					    NIT/CI: '.$datos['nit_cliente'].'<br/>
+					    SEÑOR(ES):'.trim($datos['cliente']).'
 					</td>
 				</tr>
 					
 					
-					<table style="width: 295px;">				
-					
+					<table style="width: 295px;">	
 					<thead>
-					
-						<tr><th style="width: 11px;">Ca</th><th style="width:150px;">Concepto</th><th align="center">PU</th><th>SubTotal</th></tr>
+						<tr><th style="width: 11px;">Cant <hr color="#ccc" size=1 width="40"> </th><th style="width:150px;">Concepto <hr color="#ccc" size=1 width="80"></th><th align="center">PU<hr color="#ccc" size=1 width="30"></th><th>SubTotal <hr color="#ccc" size=1 width="80"></th></tr>
 					</thead>
 					<tbody>';					
 					
 					foreach ($datos['detalle'] as $item_detalle) {
 					    $html .= '<tr>
+
 							<td style="width: 11px;">'.number_format($item_detalle['cantidad'], 2, '.', '').'</td>
 							<td style="width:150px;"> '.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
 							<td align="right">'.number_format($item_detalle['precio_unitario'], 2, '.', '').'</td>
-							<td align="right">'.number_format($item_detalle['precio_total'], 2, '.', '').'</td>
-							</tr>';				   
+							<td align="right">'.number_format($item_detalle['precio_total'], 2, '.', '').' </td>
+							</tr> ';
 					
 					}
-
 					$html.='<tr><td colspan="4"></td></tr>';
 					$html.='</tbody>
 					    <tfoot>
 					    <tr>
-					    	<td colspan="2" align="left"><b>Total General</b> <hr/></td>
-					    	<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
+					    	<td colspan="2" align="left"><hr/><b>Total General</b><hr/></td>
+					    	<td colspan="2" align="right"><hr/><b>' .$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
 					    </tr>';
 						
 					if ($datos['total_venta'] > $datos['sujeto_credito']) {
@@ -225,20 +225,19 @@ class RFacturaRecibo
 					    	<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['sujeto_credito'], 2, '.', ',').'</b><hr/></td>
 					    </tr>';
 					}
-					
-					    
+
 					    
 					$html .=' <tr>
-						    <td colspan="4">Son: '.$datos['total_venta_literal']. ' '.$datos['moneda_sucursal'].' </td>						    
+						    <td colspan="4">Son: '.$datos['total_venta_literal']. ' '.strtoupper($datos['desc_moneda_sucursal']).' </td>						    
 						</tr>
 						<tr>
 						    <td colspan="4">OBS: '.$datos['observaciones'].' </td>						    
 						</tr>
 						<tr>
-						    <td colspan="4"><b>Código de control: '.$datos['codigo_control'].'</b></td>
+						    <td colspan="4"><b>Código de Control: '.$datos['codigo_control'].'</b></td>
 						 </tr>
 						  <tr>
-						    <td colspan="4"><b>Fecha limite de Emisión: '.$datos['fecha_limite_emision'].'</b></td>						    
+						    <td colspan="4"><b>Fecha Limite de Emisión: '.$datos['fecha_limite_emision'].'</b></td>						    
 						  </tr>
 						  
 						  <tr>
@@ -251,17 +250,16 @@ class RFacturaRecibo
 						  </tr>
 						  <tr>
 				  			
-						    <td colspan="4" style=" text-align: center;" align="center">&quot;' . $datos['glosa_impuestos'] . '&quot;
+						    <td colspan="4" style=" text-align: center;" align="center">&quot;' . $datos['glosa_impuestos'] . '&quot;<br>
 						    <br/>					    
 						    &quot;' . $datos['glosa_empresa'] . '&quot;
 						    </td>
 						  </tr>
 						  
 						  <tr>
-				  			
 						    <td colspan="4" style=" text-align: center;" align="center">Cajero: ' . $_SESSION["_LOGIN"] . '  Id: ' . $datos['id'] . '  Hora: ' . $datos['hora'] . '
 						    <br/>
-						    GRACIAS POR SU PREFERENCIA	
+						    '.$datos['leyenda'].'
 						    <br/>						    				    
 						    ' . $datos['pagina_entidad'] .'
 						    </td>
