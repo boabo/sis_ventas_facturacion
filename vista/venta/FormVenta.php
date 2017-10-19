@@ -330,6 +330,12 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
         	} else {
         		this.habilitarDescripcion(false);
         	}
+			if (r.data.excento == 'si') {
+				this.mostrarComponente(this.Cmp.excento);
+			}else{
+				this.ocultarComponente(this.Cmp.excento);
+				this.Cmp.excento.reset();
+			}
         },this);
     	
     },
@@ -480,6 +486,8 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
         this.detCmp.precio_unitario.on('keyup',function() {  
             this.detCmp.precio_total.setValue(this.roundTwo(Number(this.detCmp.precio_unitario.getValue()) * Number(this.detCmp.cantidad.getValue())));
         },this);
+
+		this.ocultarComponente(this.Cmp.excento);
     }, 
     
     roundTwo: function(can){
@@ -1319,6 +1327,19 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             form:true 
         },
 		{
+			config:{
+				name: 'nit',
+				fieldLabel: 'NIT',
+				allowBlank: false,
+				anchor: '80%',
+				maxLength:20
+			},
+			type:'NumberField',
+			id_grupo:0,
+			form:true,
+			valorInicial:'0'
+		},
+		{
 			config : {
 				name : 'id_cliente',
 				fieldLabel : 'Cliente',
@@ -1367,19 +1388,6 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
 			id_grupo : 0,
 			form : true
 		},
-        {
-            config:{
-                name: 'nit',
-                fieldLabel: 'NIT',
-                allowBlank: false,
-                anchor: '80%',
-                maxLength:20
-            },
-            type:'NumberField',
-            id_grupo:0,
-            form:true,
-            valorInicial:'0'
-        },
         {
             config : {
                 name : 'id_cliente_destino',
