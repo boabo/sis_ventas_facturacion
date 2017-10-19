@@ -251,7 +251,7 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
                                                     direction: 'ASC'
                                                 },
                                                 totalProperty: 'total',
-                                                fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida'],
+                                                fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida','excento'],
                                                 remoteSort: true,
                                                 baseParams: {par_filtro: 'todo.nombre'}
                                             }),
