@@ -1327,6 +1327,17 @@ Phx.vista.FormVenta=Ext.extend(Phx.frmInterfaz,{
             form:true 
         },
 		{
+			//configuracion del componente
+			config:{
+				labelSeparator:'',
+				inputType:'hidden',
+				name: 'forma_pedido'
+			},
+			valorInicial:'cajero',
+			type:'Field',
+			form:true
+		},
+		{
 			config:{
 				name: 'nit',
 				fieldLabel: 'NIT',
