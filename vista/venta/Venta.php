@@ -112,7 +112,7 @@ Phx.vista.Venta=Ext.extend(Phx.gridInterfaz,{
 	                    totalProperty: 'total',
 	                    fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
 	                    remoteSort: true,
-	                    baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
+	                    baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura, tipo : this.tipo}
 	    });
 		} else {
 			title = 'Seleccione la sucursal con la que trabajara';
@@ -132,7 +132,7 @@ Phx.vista.Venta=Ext.extend(Phx.gridInterfaz,{
                });
 		}		
 	    
-	    storeCombo.load({params:{start: 0, limit: this.tam_pag}, 
+	    storeCombo.load({params:{start: 0, limit: this.tam_pag},
 	           callback : function (r) {
 	                if (r.length == 1 ) {   
 	                	if (this.variables_globales.vef_tiene_punto_venta === 'true') {                    

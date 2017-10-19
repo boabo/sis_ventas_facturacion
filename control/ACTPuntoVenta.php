@@ -22,6 +22,10 @@ class ACTPuntoVenta extends ACTbase{
         if($this->objParam->getParametro('tipo_factura') != '') {
             $this->objParam->addFiltro(" ''".$this->objParam->getParametro('tipo_factura')."'' =ANY (suc.tipo_interfaz)");
         }
+
+		if($this->objParam->getParametro('tipo') != '') {
+			$this->objParam->addFiltro(" puve.tipo =''".$this->objParam->getParametro('tipo')."''");
+		}
 		
 		if($this->objParam->getParametro('tipo_usuario') == 'vendedor') {
                 $this->objParam->addFiltro(" (1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario = " . $_SESSION["ss_id_usuario"] . " ) or (

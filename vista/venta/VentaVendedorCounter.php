@@ -18,6 +18,7 @@ header("content-type: text/javascript; charset=UTF-8");
         title: 'Venta',
         nombreVista: 'VentaVendedorCounter',
         tipo_factura:'computarizada',
+        tipo:'cto',
 
         constructor: function(config) {
             this.maestro = config.maestro;
