@@ -9,7 +9,7 @@ $body$
 /**************************************************************************
  SISTEMA:		Sistema de Ventas
  FUNCION: 		vef.ft_venta_sel
- DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''vef.tventa''
+ DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'vef.tventa'
  AUTOR: 		 (admin)
  FECHA:	        01-06-2015 05:58:00
  COMENTARIOS:
@@ -40,23 +40,23 @@ DECLARE
 
 BEGIN
 
-	v_nombre_funcion = ''vef.ft_venta_sel'';
+	v_nombre_funcion = 'vef.ft_venta_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
 	/*********************************
- 	#TRANSACCION:  ''VF_VEN_SEL''
+ 	#TRANSACCION:  'VF_VEN_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	if(p_transaccion=''VF_VEN_SEL'')then
+	if(p_transaccion='VF_VEN_SEL')then
 
     	begin
-        	IF  pxp.f_existe_parametro(p_tabla,''historico'') THEN
+        	IF  pxp.f_existe_parametro(p_tabla,'historico') THEN
             	v_historico =  v_parametros.historico;
             ELSE
-            	v_historico = ''no'';
+            	v_historico = 'no';
             END IF;
 
             --obtener funcionario del usuario
@@ -70,42 +70,42 @@ BEGIN
             	v_id_funcionario_usuario = -1;
             end if;
 
-        select coalesce(pxp.list(su.id_sucursal::text),''-1'') into v_sucursales
+        select coalesce(pxp.list(su.id_sucursal::text),'-1') into v_sucursales
             from vef.tsucursal_usuario su
-            where su.id_usuario = p_id_usuario and su.estado_reg = ''activo'';
+            where su.id_usuario = p_id_usuario and su.estado_reg = 'activo';
 
-            v_select = ''ven.id_venta'';
-            v_join = ''inner join wf.testado_wf ewf on ewf.id_estado_wf = ven.id_estado_wf'';
+            v_select = 'ven.id_venta';
+            v_join = 'inner join wf.testado_wf ewf on ewf.id_estado_wf = ven.id_estado_wf';
 
             if p_administrador !=1 then
-            	if (v_historico = ''si'') then
-                	v_select = ''distinct(ven.id_venta)'';
-                	v_join = ''inner join wf.testado_wf ewf on ewf.id_proceso_wf = ven.id_proceso_wf'';
+            	if (v_historico = 'si') then
+                	v_select = 'distinct(ven.id_venta)';
+                	v_join = 'inner join wf.testado_wf ewf on ewf.id_proceso_wf = ven.id_proceso_wf';
                 end if;
-                --raise exception ''tipo: %'',v_parametros.tipo_usuario;
-                if (v_parametros.tipo_usuario = ''vendedor'') then
-                  v_filtro = '' (ven.id_usuario_reg=''||p_id_usuario::varchar||'') and '';
-                elsif (v_parametros.tipo_usuario = ''cajero'') THEN
-                  v_filtro = '' (ewf.id_funcionario=''||v_id_funcionario_usuario::varchar||'') and '';
+                --raise exception 'tipo: %',v_parametros.tipo_usuario;
+                if (v_parametros.tipo_usuario = 'vendedor') then
+                  v_filtro = ' (ven.id_usuario_reg='||p_id_usuario::varchar||') and ';
+                elsif (v_parametros.tipo_usuario = 'cajero') THEN
+                  v_filtro = ' (ewf.id_funcionario='||v_id_funcionario_usuario::varchar||') and ';
                 ELSE
-                  v_filtro = '' 0 = 0 and '';
+                  v_filtro = ' 0 = 0 and ';
                 end if;
             else
-            	v_filtro = '' 0 = 0 and '';
+            	v_filtro = ' 0 = 0 and ';
             end if;
 
 
-            if v_parametros.tipo_factura = ''pedido'' then
-               v_join_destino = ''	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino'';
-               v_columnas_destino = '' clides.nombre_factura as cliente_destino'';
+            if v_parametros.tipo_factura = 'pedido' then
+               v_join_destino = '	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino';
+               v_columnas_destino = ' clides.nombre_factura as cliente_destino';
             else
-               v_join_destino = '''';
-                v_columnas_destino = '' ''''''''::varchar as cliente_destino'';
+               v_join_destino = '';
+                v_columnas_destino = ' ''''::varchar as cliente_destino';
             end if;
 
 
     		--Sentencia de la consulta
-			v_consulta:=''with forma_pago_temporal as(
+			v_consulta:='with forma_pago_temporal as(
 					    	select count(*)as cantidad_forma_pago,vfp.id_venta,
 					        	pxp.list(fp.id_forma_pago::text) as id_forma_pago, pxp.list(fp.nombre) as forma_pago,
                                 sum(monto_transaccion) as monto_transaccion,pxp.list(vfp.numero_tarjeta) as numero_tarjeta,
@@ -115,16 +115,16 @@ BEGIN
 					        group by vfp.id_venta
 					    ),
 					    medico_usuario as(
-					    	select (med.id_medico || ''''_medico'''')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
+					    	select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
 					        from vef.vmedico med
 					      union all
-					      select (usu.id_usuario || ''''_usuario'''')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
+					      select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
 					      from segu.vusuario usu
 
 					    )
 
 						select
-						'' || v_select || '',
+						' || v_select || ',
 						ven.id_cliente,
 						ven.id_sucursal,
 						ven.id_proceso_wf,
@@ -154,7 +154,7 @@ BEGIN
                         	forpa.id_forma_pago::integer
                         end) as id_forma_pago,
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''''DIVIDIDO''''::varchar
+                        	''DIVIDIDO''::varchar
                         else
                         	forpa.forma_pago::varchar
                         end) as forma_pago,
@@ -165,19 +165,19 @@ BEGIN
                         end) as monto_forma_pago,
 
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''''''''::varchar
+                        	''''::varchar
                         else
                         	forpa.numero_tarjeta::varchar
                         end) as numero_tarjeta,
 
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''''''''::varchar
+                        	''''::varchar
                         else
                         	forpa.codigo_tarjeta::varchar
                         end) as codigo_tarjeta,
 
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''''''''::varchar
+                        	''''::varchar
                         else
                         	forpa.tipo_tarjeta::varchar
                         end) as tipo_tarjeta,
@@ -204,49 +204,49 @@ BEGIN
                         ven.valor_bruto,
                         ven.descripcion_bulto,
                         ven.contabilizable,
-                        to_char(ven.hora_estimada_entrega,''''HH24:MI'''')::varchar,
+                        to_char(ven.hora_estimada_entrega,''HH24:MI'')::varchar,
                         mu.nombre as vendedor_medico,
                         ven.forma_pedido,
                         ven.id_cliente_destino,
-                        ''||v_columnas_destino||''
+                        '||v_columnas_destino||'
 						from vef.tventa ven
 						inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
 						left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
 				        inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
-                        ''||v_join_destino||''
+                        '||v_join_destino||'
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
                         left join forma_pago_temporal forpa on forpa.id_venta = ven.id_venta
                         left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
                         left join param.tmoneda mon on mon.id_moneda = ven.id_moneda
-                        '' || v_join || ''
-                        where ven.estado_reg = ''''activo'''' and '' || v_filtro;
+                        ' || v_join || '
+                        where ven.estado_reg = ''activo'' and ' || v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||'' order by '' ||v_parametros.ordenacion|| '' '' || v_parametros.dir_ordenacion || '' limit '' || v_parametros.cantidad || '' offset '' || v_parametros.puntero;
-            --raise exception '''';
-            raise notice ''CONSULTA.... % ord % dir % cant % punt %'',v_parametros.filtro, v_parametros.ordenacion, v_parametros.dir_ordenacion, v_parametros.cantidad, v_parametros.puntero;
-            raise notice ''CONSULTA.... %'',v_consulta;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+            --raise exception '';
+            raise notice 'CONSULTA.... % ord % dir % cant % punt %',v_parametros.filtro, v_parametros.ordenacion, v_parametros.dir_ordenacion, v_parametros.cantidad, v_parametros.puntero;
+            raise notice 'CONSULTA.... %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
 
 	/*********************************
- 	#TRANSACCION:  ''VF_VEN_CONT''
+ 	#TRANSACCION:  'VF_VEN_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_VEN_CONT'')then
+	elsif(p_transaccion='VF_VEN_CONT')then
 
 		begin
-        	IF  pxp.f_existe_parametro(p_tabla,''historico'') THEN
+        	IF  pxp.f_existe_parametro(p_tabla,'historico') THEN
             	v_historico =  v_parametros.historico;
             ELSE
-            	v_historico = ''no'';
+            	v_historico = 'no';
             END IF;
         	--obtener funcionario del usuario
             select f.id_funcionario into v_id_funcionario_usuario
@@ -259,59 +259,59 @@ BEGIN
             	v_id_funcionario_usuario = -1;
             end if;
 
-        select coalesce(pxp.list(su.id_sucursal::text),''-1'') into v_sucursales
+        select coalesce(pxp.list(su.id_sucursal::text),'-1') into v_sucursales
             from vef.tsucursal_usuario su
-            where su.id_usuario = p_id_usuario and su.estado_reg = ''activo'';
+            where su.id_usuario = p_id_usuario and su.estado_reg = 'activo';
 
-            v_select = ''ven.id_venta'';
-            v_join = ''inner join wf.testado_wf ewf on ewf.id_estado_wf = ven.id_estado_wf'';
+            v_select = 'ven.id_venta';
+            v_join = 'inner join wf.testado_wf ewf on ewf.id_estado_wf = ven.id_estado_wf';
 
             if p_administrador !=1 then
-            	if (v_historico = ''si'') then
-                	v_select = ''distinct(ven.id_venta)'';
-                	v_join = ''inner join wf.testado_wf ewf on ewf.id_proceso_wf = ven.id_proceso_wf'';
+            	if (v_historico = 'si') then
+                	v_select = 'distinct(ven.id_venta)';
+                	v_join = 'inner join wf.testado_wf ewf on ewf.id_proceso_wf = ven.id_proceso_wf';
                 end if;
 
-                if (v_parametros.tipo_usuario = ''vendedor'') then
-                  v_filtro = '' (ven.id_usuario_reg=''||p_id_usuario::varchar||'') and '';
-                elsif (v_parametros.tipo_usuario = ''cajero'') THEN
-                  v_filtro = '' (ewf.id_funcionario=''||v_id_funcionario_usuario::varchar||'') and '';
+                if (v_parametros.tipo_usuario = 'vendedor') then
+                  v_filtro = ' (ven.id_usuario_reg='||p_id_usuario::varchar||') and ';
+                elsif (v_parametros.tipo_usuario = 'cajero') THEN
+                  v_filtro = ' (ewf.id_funcionario='||v_id_funcionario_usuario::varchar||') and ';
                 ELSE
-                  v_filtro = '' 0 = 0 and '';
+                  v_filtro = ' 0 = 0 and ';
                 end if;
 
             else
-            	v_filtro = '' 0 = 0 and '';
+            	v_filtro = ' 0 = 0 and ';
             end if;
 
-            if v_parametros.tipo_factura = ''pedido'' then
-               v_join_destino = ''	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino'';
+            if v_parametros.tipo_factura = 'pedido' then
+               v_join_destino = '	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino';
             else
-               v_join_destino = '''';
+               v_join_destino = '';
             end if;
 
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:=''
+			v_consulta:='
                       with medico_usuario as(
-                                      select (med.id_medico || ''''_medico'''')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
+                                      select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
                                       from vef.vmedico med
                                     union all
-                                    select (usu.id_usuario || ''''_usuario'''')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
+                                    select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
                                     from segu.vusuario usu
 
                                   )
-            		select count('' || v_select || '')
+            		select count(' || v_select || ')
 					    from vef.tventa ven
 					    inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
 						left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
 					    inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
-                        ''||v_join_destino||''
+                        '||v_join_destino||'
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
                         left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
                         left join param.tmoneda mon on mon.id_moneda = ven.id_moneda
-                        '' || v_join || ''
-                        where ven.estado_reg = ''''activo'''' and '' || v_filtro;
+                        ' || v_join || '
+                        where ven.estado_reg = ''activo'' and ' || v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -321,32 +321,32 @@ BEGIN
 
 		end;
 	/*********************************
- 	#TRANSACCION:  ''VF_VENCONFBAS_SEL''
+ 	#TRANSACCION:  'VF_VENCONFBAS_SEL'
  	#DESCRIPCION:	Obtener configuraciones basicas para sistema de ventas
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_VENCONFBAS_SEL'')then
+	elsif(p_transaccion='VF_VENCONFBAS_SEL')then
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:=''	select variable, valor
+			v_consulta:='	select variable, valor
 						 	from pxp.variable_global
-						 	where variable like ''''vef_%''''
+						 	where variable like ''vef_%''
 						 union all
-						 	select ''''sucursales''''::varchar,pxp.list(id_sucursal::text)::varchar
+						 	select ''sucursales''::varchar,pxp.list(id_sucursal::text)::varchar
 						 	from vef.tsucursal_usuario
-						 	where estado_reg = ''''activo'''' and id_usuario = '' || p_id_usuario || ''
+						 	where estado_reg = ''activo'' and id_usuario = ' || p_id_usuario || '
 						 	and id_sucursal is not null and id_punto_venta is null
 						 union all
-						 	select ''''puntos_venta''''::Varchar,pxp.list(id_punto_venta::text)::varchar
+						 	select ''puntos_venta''::Varchar,pxp.list(id_punto_venta::text)::varchar
 						 	from vef.tsucursal_usuario
-						 	where estado_reg = ''''activo'''' and id_usuario = '' || p_id_usuario || ''
+						 	where estado_reg = ''activo'' and id_usuario = ' || p_id_usuario || '
 						 	and id_sucursal is null and id_punto_venta is not null
                          union all
-						 	select ''''fecha'''',to_char(now(),''''DD/MM/YYYY'''')::varchar
-						 '';
+						 	select ''fecha'',to_char(now(),''DD/MM/YYYY'')::varchar
+						 ';
 
 			--Definicion de la respuesta
 
@@ -356,17 +356,17 @@ BEGIN
 
 		end;
 	/*********************************
- 	#TRANSACCION:  ''VF_NOTAVENDV_SEL''
+ 	#TRANSACCION:  'VF_NOTAVENDV_SEL'
  	#DESCRIPCION:	lista el detalle de la nota de venta
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	ELSIF(p_transaccion=''VF_NOTAVENDV_SEL'')then
+	ELSIF(p_transaccion='VF_NOTAVENDV_SEL')then
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:=''select
+			v_consulta:='select
 
                               vd.id_venta,
                               vd.id_venta_detalle,
@@ -393,34 +393,34 @@ BEGIN
                             left join alm.titem ifo on ifo.id_item = fd.id_item
                             left join vef.tsucursal_producto sp on sp.id_sucursal_producto = vd.id_sucursal_producto
                         where
-                               vd.estado_reg = ''''activo'''' and
-                               vd.id_venta = ''||v_parametros.id_venta::varchar;
+                               vd.estado_reg = ''activo'' and
+                               vd.id_venta = '||v_parametros.id_venta::varchar;
 
 			--Definicion de la respuesta
-			v_consulta:=v_consulta||'' order by vd.id_venta_detalle, fd.id_formula_detalle'';
+			v_consulta:=v_consulta||' order by vd.id_venta_detalle, fd.id_formula_detalle';
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
     /*********************************
- 	#TRANSACCION:  ''VF_NOTAVENDV_CONT''
+ 	#TRANSACCION:  'VF_NOTAVENDV_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_NOTAVENDV_CONT'')then
+	elsif(p_transaccion='VF_NOTAVENDV_CONT')then
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:=''select
+			v_consulta:='select
                             count(vd.id_venta_detalle) as total,
                             SUM(vd.cantidad*COALESCE(vd.precio,0)) as suma_total
                          from vef.tventa_detalle vd
-                         where  id_venta = ''||v_parametros.id_venta::varchar||''
-                              and vd.estado_reg = ''''activo''''
-                          group by vd.id_venta '';
+                         where  id_venta = '||v_parametros.id_venta::varchar||'
+                              and vd.estado_reg = ''activo''
+                          group by vd.id_venta ';
 
 			--Definicion de la respuesta
 
@@ -430,17 +430,17 @@ BEGIN
 
 		end;
     /*********************************
- 	#TRANSACCION:  ''VF_NOTVENV_SEL''
+ 	#TRANSACCION:  'VF_NOTVENV_SEL'
  	#DESCRIPCION:   Lista de la cabecera de la nota de venta
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_NOTVENV_SEL'')then
+	elsif(p_transaccion='VF_NOTVENV_SEL')then
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:=''select
+			v_consulta:='select
 						ven.id_venta,
 						ven.id_cliente,
 						ven.id_sucursal,
@@ -472,7 +472,7 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
 				        inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
-                       where  id_venta = ''||v_parametros.id_venta::varchar;
+                       where  id_venta = '||v_parametros.id_venta::varchar;
 
 
 			--Devuelve la respuesta
@@ -480,32 +480,32 @@ BEGIN
 
 		end;
     /*********************************
- 	#TRANSACCION:  ''VF_VENREP_SEL''
+ 	#TRANSACCION:  'VF_VENREP_SEL'
  	#DESCRIPCION:   Reporte de Recibo o Factura
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_VENREP_SEL'')then
+	elsif(p_transaccion='VF_VENREP_SEL')then
 
     	begin
 
-             if v_parametros.tipo_factura = ''pedido'' then
-               v_join_destino = ''	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino'';
-               v_columnas_destino = '' clides.nombre_factura as cliente_destino, clides.lugar as lugar_destino '';
+             if v_parametros.tipo_factura = 'pedido' then
+               v_join_destino = '	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino';
+               v_columnas_destino = ' clides.nombre_factura as cliente_destino, clides.lugar as lugar_destino ';
             else
-               v_join_destino = '''';
-                v_columnas_destino = '' ''''''''::varchar as cliente_destino,''''''''::varchar as lugar_destino  '';
+               v_join_destino = '';
+                v_columnas_destino = ' ''''::varchar as cliente_destino,''''::varchar as lugar_destino  ';
             end if;
 
 
 
     		--Sentencia de la consulta
-			v_consulta:='' with medico_usuario as(
-                                  select (med.id_medico || ''''_medico'''')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
+			v_consulta:=' with medico_usuario as(
+                                  select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
                                   from vef.vmedico med
                                 union all
-                                select (usu.id_usuario || ''''_usuario'''')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
+                                select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
                                 from segu.vusuario usu
 
                               )
@@ -515,7 +515,7 @@ BEGIN
                         suc.telefono,
                         suc.lugar,
                         lug.nombre as departamento_sucursal,
-                        to_char(ven.fecha,''''DD/MM/YYYY'''')::varchar,
+                        to_char(ven.fecha,''DD/MM/YYYY'')::varchar,
                         ven.correlativo_venta,
                         mon.codigo as moneda,
                         ven.total_venta,
@@ -528,17 +528,17 @@ BEGIN
                         dos.nroaut,
                         ven.nit,
                         ven.cod_control,
-                        to_char(dos.fecha_limite,''''DD/MM/YYYY''''),
+                        to_char(dos.fecha_limite,''DD/MM/YYYY''),
                         dos.glosa_impuestos,
                         dos.glosa_empresa,
                         en.pagina_entidad,
                         ven.id_venta,
-                        to_char(now(),''''HH24:MI:SS''''),
+                        to_char(now(),''HH24:MI:SS''),
                         en.nit,
                         (select pxp.list(nombre)
                         from vef.tactividad_economica
                         where id_actividad_economica =ANY(dos.id_activida_economica))::varchar,
-                        to_char(ven.fecha,''''MM/DD/YYYY'''')::varchar as fecha_venta_recibo,
+                        to_char(ven.fecha,''MM/DD/YYYY'')::varchar as fecha_venta_recibo,
 
                         tc.direccion,
                         ven.tipo_cambio_venta,
@@ -553,55 +553,55 @@ BEGIN
                         ven.transporte_cif,
                         ven.seguros_cif,
                         ven.otros_cif,
-                        (to_char(ven.fecha,''''DD'''')::integer || '''' de '''' ||param.f_literal_periodo(to_char(ven.fecha,''''MM'''')::integer) || '''' de '''' || to_char(ven.fecha,''''YYYY''''))::varchar as fecha_literal,
-			(select count(*) from vef.ttipo_descripcion td where td.estado_reg = ''''activo'''' and td.id_sucursal = suc.id_sucursal)::integer as descripciones,
+                        (to_char(ven.fecha,''DD'')::integer || '' de '' ||param.f_literal_periodo(to_char(ven.fecha,''MM'')::integer) || '' de '' || to_char(ven.fecha,''YYYY''))::varchar as fecha_literal,
+			(select count(*) from vef.ttipo_descripcion td where td.estado_reg = ''activo'' and td.id_sucursal = suc.id_sucursal)::integer as descripciones,
 			ven.estado,
             ven.valor_bruto,
             ven.descripcion_bulto,
-            (cli.telefono_celular || '''' '''' || cli.telefono_fijo)::varchar,
-            (to_char(ven.fecha_estimada_entrega,''''DD/MM/YYYY'''') || '''' '''' || to_char(ven.hora_estimada_entrega,''''HH24:MI''''))::varchar,
+            (cli.telefono_celular || '' '' || cli.telefono_fijo)::varchar,
+            (to_char(ven.fecha_estimada_entrega,''DD/MM/YYYY'') || '' '' || to_char(ven.hora_estimada_entrega,''HH24:MI''))::varchar,
             ven.a_cuenta,
             mu.nombre::varchar as vendedor_medico,
             ven.nro_tramite,
             tc.codigo as codigo_cliente,
             cli.lugar as lugar_cliente,
 
-            ''||v_columnas_destino||'',
+            '||v_columnas_destino||',
             suc.codigo as codigo_sucursal,
             dos.leyenda
             from vef.tventa ven
               inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
-              ''||v_join_destino||''
+              '||v_join_destino||'
               inner join vef.tcliente tc on tc.id_cliente = cli.id_cliente
               inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
               inner join param.tentidad en on en.id_entidad = suc.id_entidad
               inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
               inner join vef.tsucursal_moneda sucmon on sucmon.id_sucursal = suc.id_sucursal
-                  and sucmon.tipo_moneda = ''''moneda_base''''
+                  and sucmon.tipo_moneda = ''moneda_base''
               inner join param.tmoneda mon on mon.id_moneda = sucmon.id_moneda
               inner join param.tmoneda mven on mven.id_moneda = ven.id_moneda
               left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
                         left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
-             where  id_venta = ''||v_parametros.id_venta::varchar;
+             where  id_venta = '||v_parametros.id_venta::varchar;
 
 
 			--Devuelve la respuesta
-            raise notice ''consulta....%'',v_consulta;
+            raise notice 'consulta....%',v_consulta;
 			return v_consulta;
 
 		end;
    /*********************************
- 	#TRANSACCION:  ''VF_VENDETREP_SEL''
+ 	#TRANSACCION:  'VF_VENDETREP_SEL'
  	#DESCRIPCION:   Reporte Detalle de Recibo o Factura
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_VENDETREP_SEL'')then
+	elsif(p_transaccion='VF_VENDETREP_SEL')then
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:=''
+			v_consulta:='
                         select
 						(case when vedet.id_item is not null then
 							item.nombre
@@ -628,8 +628,8 @@ BEGIN
                         left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
 				        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
-                       where  id_venta = ''||v_parametros.id_venta::varchar || ''
-                       order by vedet.descripcion,vedet.id_venta_detalle asc'';
+                       where  id_venta = '||v_parametros.id_venta::varchar || '
+                       order by vedet.descripcion,vedet.id_venta_detalle asc';
 
 
 			--Devuelve la respuesta
@@ -638,17 +638,17 @@ BEGIN
 		end;
 
 	/*********************************
- 	#TRANSACCION:  ''VF_VENDESREP_SEL''
+ 	#TRANSACCION:  'VF_VENDESREP_SEL'
  	#DESCRIPCION:   Reporte Descripciones de Recibo o Factura
  	#AUTOR:		admin
  	#FECHA:		01-06-2015 05:58:00
 	***********************************/
 
-	elsif(p_transaccion=''VF_VENDESREP_SEL'')then
+	elsif(p_transaccion='VF_VENDESREP_SEL')then
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:=''
+			v_consulta:='
                         select
 						vd.valor_label,
 						td.columna,
@@ -657,8 +657,8 @@ BEGIN
 						from vef.tvalor_descripcion vd
 						inner join vef.ttipo_descripcion td on td.id_tipo_descripcion = vd.id_tipo_descripcion
 
-                       where  vd.id_venta = ''||v_parametros.id_venta::varchar||''
-                       order by td.columna,td.fila asc'';
+                       where  vd.id_venta = '||v_parametros.id_venta::varchar||'
+                       order by td.columna,td.fila asc';
 
 
 			--Devuelve la respuesta
@@ -667,26 +667,26 @@ BEGIN
 		end;
 
     /*********************************
- 	#TRANSACCION:  ''VF_VEND_SEL''
+ 	#TRANSACCION:  'VF_VEND_SEL'
  	#DESCRIPCION:	ventas deposito
  	#AUTOR:		MMV
  	#FECHA:		3/10/2017
 	***********************************/
 
-	elsif(p_transaccion=''VF_VEND_SEL'')then
+	elsif(p_transaccion='VF_VEND_SEL')then
 
     	begin
 
-        if (v_parametros.punto = ''puntoVenta'') then
-        v_columnas_punto = ''puve.nombre'';
-        v_join_punto = ''inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta'';
+        if (v_parametros.punto = 'puntoVenta') then
+        v_columnas_punto = 'puve.nombre';
+        v_join_punto = 'inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta';
         else
-        v_columnas_punto = ''s.nombre'';
-        v_join_punto =''left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta'';
+        v_columnas_punto = 's.nombre';
+        v_join_punto ='left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta';
         end if;
 
 
-        	v_consulta:=''with forma_pago_temporal as(
+        	v_consulta:='with forma_pago_temporal as(
 					    	select count(*)as cantidad_forma_pago,
                             vfp.id_venta,
 					        pxp.list(fp.id_forma_pago::text) as id_forma_pago, pxp.list(fp.nombre) as forma_pago,
@@ -704,14 +704,14 @@ BEGIN
                             vcl.nit,
                             ven.total_venta,
                             ven.fecha as fecha_doc,
-                            ''||v_columnas_punto||'' as sucursal,
+                            '||v_columnas_punto||' as sucursal,
                             (case when (forpa.cantidad_forma_pago > 1) then
                                 0::integer
                             else
                                 forpa.id_forma_pago::integer
                             end) as id_forma_pago,
                             (case when (forpa.cantidad_forma_pago > 1) then
-                                ''''DIVIDIDO''''::varchar
+                                ''DIVIDIDO''::varchar
                             else
                                 forpa.forma_pago::varchar
                             end) as forma_pago,
@@ -742,34 +742,34 @@ BEGIN
                             inner join vef.tsucursal s on s.id_sucursal = ven.id_sucursal
                             inner join forma_pago_temporal forpa on forpa.id_venta = ven.id_venta
                             left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
-                            ''||v_join_punto||''
+                            '||v_join_punto||'
                             left join param.tmoneda mon on mon.id_moneda = ven.id_moneda
                             left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-                            where ven.estado_reg = ''''activo'''' and'';
+                            where ven.estado_reg = ''activo'' and';
 
    			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||'' order by '' ||v_parametros.ordenacion|| '' '' || v_parametros.dir_ordenacion || '' limit '' || v_parametros.cantidad || '' offset '' || v_parametros.puntero;
-            raise notice ''CONSULTA.... %'',v_consulta;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+            raise notice 'CONSULTA.... %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
 	/*********************************
- 	#TRANSACCION:  ''VF_VEND_CONT''
+ 	#TRANSACCION:  'VF_VEND_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:		MMV
  	#FECHA:		3/10/2017
 	***********************************/
 
-    elsif(p_transaccion=''VF_VEND_CONT'')then
+    elsif(p_transaccion='VF_VEND_CONT')then
 
     	begin
-        if (v_parametros.punto = ''puntoVenta'') then
-        v_join_punto = ''inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta'';
+        if (v_parametros.punto = 'puntoVenta') then
+        v_join_punto = 'inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta';
         else
-        v_join_punto =''left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta'';
+        v_join_punto ='left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta';
         end if;
-        v_consulta:=''with forma_pago_temporal as(
+        v_consulta:='with forma_pago_temporal as(
 					    	select count(*)as cantidad_forma_pago,
                             vfp.id_venta,
 					        pxp.list(fp.id_forma_pago::text) as id_forma_pago, pxp.list(fp.nombre) as forma_pago,
@@ -785,10 +785,10 @@ BEGIN
                             inner join vef.tsucursal s on s.id_sucursal = ven.id_sucursal
                             inner join forma_pago_temporal forpa on forpa.id_venta = ven.id_venta
                             left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
-                            ''||v_join_punto||''
+                            '||v_join_punto||'
                             left join param.tmoneda mon on mon.id_moneda = ven.id_moneda
                             left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-                            where ven.estado_reg = ''''activo'''' and'';
+                            where ven.estado_reg = ''activo'' and';
 
     		--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -800,21 +800,21 @@ BEGIN
 
 	else
 
-		raise exception ''Transaccion inexistente'';
+		raise exception 'Transaccion inexistente';
 
 	end if;
 
 EXCEPTION
 
 	WHEN OTHERS THEN
-			v_resp='''';
-			v_resp = pxp.f_agrega_clave(v_resp,''mensaje'',SQLERRM);
-			v_resp = pxp.f_agrega_clave(v_resp,''codigo_error'',SQLSTATE);
-			v_resp = pxp.f_agrega_clave(v_resp,''procedimientos'',v_nombre_funcion);
-			raise exception ''%'',v_resp;
+			v_resp='';
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+			raise exception '%',v_resp;
 END;
 $body$
-LANGUAGE ''plpgsql''
+LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
