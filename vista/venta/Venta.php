@@ -676,7 +676,8 @@ Phx.vista.Venta=Ext.extend(Phx.gridInterfaz,{
                                         height:'100%'
                                     }, {data:{objPadre : me,
                                     		tipo_form : tipo,                                    		
-                                    		datos_originales: record}
+                                    		datos_originales: record,
+				   							readOnly : this.readOnly}
                                     }, 
                                     this.idContenedor,
                                     this.formClass,
