@@ -10,7 +10,7 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.VentaCaja = {    
-    bsave:false,    
+    bsave:false,
     require:'../../../sis_ventas_facturacion/vista/venta/Venta.php',
     requireclase:'Phx.vista.Venta',
     title:'Venta',
@@ -20,9 +20,10 @@ Phx.vista.VentaCaja = {
     bdel:true,
     tipo_factura: 'computarizada',
     tipo_usuario : 'cajero',
+    readOnly:true,
     constructor: function(config) {
         this.maestro=config.maestro;  
-        Phx.vista.VentaCaja.superclass.constructor.call(this,config);        
+        Phx.vista.VentaCaja.superclass.constructor.call(this,config);
     } ,
     arrayDefaultColumHidden:['estado_reg','usuario_ai',
     'fecha_reg','fecha_mod','usr_reg','usr_mod','nro_factura','excento','fecha','cod_control','nroaut'],
@@ -90,7 +91,7 @@ Phx.vista.VentaCaja = {
         this.getBoton('sig_estado').disable();        
         Phx.vista.VentaCaja.superclass.liberaMenu.call(this);
     }
-    
-    
+
+
 };
 </script>
