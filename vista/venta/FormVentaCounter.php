@@ -21,6 +21,7 @@ header("content-type: text/javascript; charset=UTF-8");
         storeFormaPago : false,
         fwidth : '9%',
         cantidadAllowDecimals: false,
+
         constructor:function(config)
         {
             Ext.apply(this,config);
@@ -327,6 +328,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
                 if (r.data.excento == 'si') {
                     this.mostrarComponente(this.Cmp.excento);
+                }else{
+                    this.ocultarComponente(this.Cmp.excento);
+                    this.Cmp.excento.reset();
                 }
             },this);
 
@@ -449,7 +453,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 if (this.Cmp.nit.getValue() != '') {
                     this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
-                    this.Cmp.id_cliente.store.load({params:{start:0,limit:this.tam_pag},
+                    this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
                         callback : function (r) {
                             this.Cmp.id_cliente.store.baseParams.nit = '';
                             if (r.length == 1) {
@@ -1149,6 +1153,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.storeFormaPago.baseParams.id_venta = this.Cmp.id_venta.getValue();
             this.storeFormaPago.load({params:{start:0,limit:100}});
         },
+
         onDividirFormaPago : function () {
             if (!this.Cmp.id_sucursal.getValue() && !this.Cmp.id_punto_venta.getValue()) {
                 Ext.Msg.alert('ATENCION', 'Debe registrar la sucursal o el punto de venta para dividir la forma de pago');
@@ -1303,6 +1308,7 @@ header("content-type: text/javascript; charset=UTF-8");
         {
             Phx.vista.FormVentaCounter.superclass.loadValoresIniciales.call(this);
         },
+
         Atributos:[
             {
                 //configuracion del componente
@@ -1326,6 +1332,19 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true
             },
             {
+                config:{
+                    name: 'nit',
+                    fieldLabel: 'NIT',
+                    allowBlank: false,
+                    anchor: '80%',
+                    maxLength:20
+                },
+                type:'NumberField',
+                id_grupo:0,
+                form:true,
+                valorInicial:'0'
+            },
+            {
                 config : {
                     name : 'id_cliente',
                     fieldLabel : 'Cliente',
@@ -1336,8 +1355,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         id : 'id_cliente',
                         root : 'datos',
                         sortInfo : {
-                            field : 'nombres',
-                            direction : 'ASC'
+                            field : 'id_cliente',
+                            direction : 'DESC'
                         },
                         totalProperty : 'total',
                         fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
@@ -1373,19 +1392,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 type : 'TrigguerCombo',
                 id_grupo : 0,
                 form : true
-            },
-            {
-                config:{
-                    name: 'nit',
-                    fieldLabel: 'NIT',
-                    allowBlank: false,
-                    anchor: '80%',
-                    maxLength:20
-                },
-                type:'NumberField',
-                id_grupo:0,
-                form:true,
-                valorInicial:'0'
             },
             {
                 config : {
@@ -1857,7 +1863,6 @@ header("content-type: text/javascript; charset=UTF-8");
             }
 
         },
-
 
 
     })
