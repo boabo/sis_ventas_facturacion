@@ -164,6 +164,7 @@ class RFacturaRecibo
 							SUCURSAL ' . $datos['codigo_sucursal'] . '<br />
 							' . $datos['nombre_sucursal'] . '<br />
 							' . $datos['direccion_sucursal'].'<br />
+							' . $datos['zona'] . '<br />
 							TELF: ' . $datos['telefono_sucursal'].'<br />
 							' . $datos['lugar_sucursal'].'<br />
 						<hr/>
@@ -215,7 +216,7 @@ class RFacturaRecibo
 					$html.='</tbody>
 					    <tfoot>
 					    <tr>
-					    	<td colspan="2" align="left"><hr/><b>Total General</b><hr/></td>
+					    	<td colspan="2" align="left"><hr/><b>TOTAL A PAGAR</b><hr/></td>
 					    	<td colspan="2" align="right"><hr/><b>' .$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
 					    </tr>';
 						

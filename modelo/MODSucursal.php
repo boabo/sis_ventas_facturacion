@@ -54,6 +54,7 @@ class MODSucursal extends MODbase{
 		$this->captura('id_depto','int4');		
 		$this->captura('nombre_depto','varchar');
 		$this->captura('nombre_comprobante','varchar');
+		$this->captura('zona','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -92,6 +93,7 @@ class MODSucursal extends MODbase{
 		
 		$this->setParametro('id_depto','id_depto','integer');
 		$this->setParametro('nombre_comprobante','nombre_comprobante','codigo_html');
+        $this->setParametro('zona','zona','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -129,6 +131,7 @@ class MODSucursal extends MODbase{
 		
 		$this->setParametro('id_depto','id_depto','integer');
 		$this->setParametro('nombre_comprobante','nombre_comprobante','codigo_html');
+        $this->setParametro('zona','zona','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

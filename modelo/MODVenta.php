@@ -933,6 +933,7 @@ class MODVenta extends MODbase{
 		$this->captura('lugar_destino','varchar');
         $this->captura('codigo_sucursal','varchar');//nuevo mvm
 		$this->captura('leyenda','varchar');//nuevo mvm
+        $this->captura('zona','varchar');//nuevo mvm
 
 
 

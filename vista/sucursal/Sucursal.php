@@ -233,7 +233,7 @@ Phx.vista.Sucursal=Ext.extend(Phx.gridInterfaz,{
                 fieldLabel: 'Direccion',
                 allowBlank: true,
                 anchor: '100%',
-                gwidth: 100,
+                gwidth: 210,
                 maxLength:255
             },
                 type:'TextField',
@@ -241,6 +241,21 @@ Phx.vista.Sucursal=Ext.extend(Phx.gridInterfaz,{
                 id_grupo:1,
                 grid:true,
                 form:true
+        },
+        {
+            config:{
+                name: 'zona',
+                fieldLabel: 'Zona',
+                allowBlank: true,
+                anchor: '100%',
+                gwidth: 180,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'suc.zona',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
         },
         
         {
@@ -721,7 +736,7 @@ Phx.vista.Sucursal=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},'tipo_interfaz'
+		{name:'usr_mod', type: 'string'},'tipo_interfaz',	{name:'zona', type: 'string'},
 		
 	],
 	sortInfo:{

@@ -568,7 +568,8 @@ BEGIN
 
             '||v_columnas_destino||',
             suc.codigo as codigo_sucursal,
-            dos.leyenda
+            dos.leyenda,
+            suc.zona
             from vef.tventa ven
               inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
               '||v_join_destino||'

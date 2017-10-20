@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'vef.tsucursal'
  AUTOR: 		 (admin)
  FECHA:	        20-04-2015 15:07:50
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -27,21 +27,21 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-			    
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_sucursal_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_SUC_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		20-04-2015 15:07:50
 	***********************************/
 
 	if(p_transaccion='VF_SUC_SEL')then
-     				
+
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -68,7 +68,7 @@ BEGIN
                         where id_clasificacion = ANY(suc.clasificaciones_para_formula))::varchar as desc_clasificaciones_para_formula,
                         (select pxp.list(c.nombre)
                         from alm.tclasificacion c
-                        where id_clasificacion = ANY(suc.clasificaciones_para_venta))::varchar as desc_clasificaciones_para_venta 	
+                        where id_clasificacion = ANY(suc.clasificaciones_para_venta))::varchar as desc_clasificaciones_para_venta
 						,suc.plantilla_documento_factura
 						,suc.plantilla_documento_recibo,
 						suc.formato_comprobante,
@@ -80,29 +80,30 @@ BEGIN
                         array_to_string(suc.tipo_interfaz,'','') as tipo_interfaz,
                         dep.id_depto,
                         dep.nombre	as nombre_depto	,
-                        suc.nombre_comprobante		
+                        suc.nombre_comprobante,
+                        suc.zona
                         from vef.tsucursal suc
 						inner join segu.tusuario usu1 on usu1.id_usuario = suc.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = suc.id_usuario_mod
                         left join param.tlugar lug on lug.id_lugar = suc.id_lugar
                         left join param.tdepto dep on dep.id_depto = suc.id_depto
 				        where  ';
-			
-           
-            
+
+
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+			raise notice 'v_consulta %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_SUC_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		20-04-2015 15:07:50
 	***********************************/
 
@@ -117,23 +118,23 @@ BEGIN
                         left join param.tlugar lug on lug.id_lugar = suc.id_lugar
                         left join param.tdepto dep on dep.id_depto = suc.id_depto
 					    where ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-					
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

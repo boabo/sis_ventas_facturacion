@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'vef.tsucursal'
  AUTOR: 		 (admin)
  FECHA:	        20-04-2015 15:07:50
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -30,23 +30,23 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_sucursal	integer;
-			    
+
 BEGIN
 
     v_nombre_funcion = 'vef.ft_sucursal_ime';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_SUC_INS'
  	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		20-04-2015 15:07:50
 	***********************************/
 
 	if(p_transaccion='VF_SUC_INS')then
-					
+
         begin
-        	
+
         	--Sentencia de la insercion
         	insert into vef.tsucursal(
 			correo,
@@ -73,14 +73,15 @@ BEGIN
             id_lugar,
             tipo_interfaz,
             id_depto,
-            nombre_comprobante
+            nombre_comprobante,
+            zona
           	) values(
 			v_parametros.correo,
 			v_parametros.nombre,
 			v_parametros.telefono,
 			v_parametros.tiene_precios_x_sucursal,
 			'activo',
-            string_to_array(v_parametros.id_clasificaciones_para_formula,',')::INTEGER[],			
+            string_to_array(v_parametros.id_clasificaciones_para_formula,',')::INTEGER[],
 			v_parametros.codigo,
 			string_to_array(v_parametros.id_clasificaciones_para_venta,',')::INTEGER[],
 			v_parametros._id_usuario_ai,
@@ -95,15 +96,16 @@ BEGIN
 			v_parametros.formato_comprobante,
 			v_parametros.direccion,
 			v_parametros.lugar,
-            v_parametros.habilitar_comisiones,		
+            v_parametros.habilitar_comisiones,
 			v_parametros.id_lugar,
             string_to_array(v_parametros.tipo_interfaz, ','),
             v_parametros.id_depto,
-            v_parametros.nombre_comprobante
+            v_parametros.nombre_comprobante,
+            v_parametros.zona
 			)RETURNING id_sucursal into v_id_sucursal;
-			
+
 			--Definicion de la respuesta
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Sucursal almacenado(a) con exito (id_sucursal'||v_id_sucursal||')'); 
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Sucursal almacenado(a) con exito (id_sucursal'||v_id_sucursal||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_sucursal',v_id_sucursal::varchar);
 
             --Devuelve la respuesta
@@ -111,10 +113,10 @@ BEGIN
 
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_SUC_MOD'
  	#DESCRIPCION:	Modificacion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		20-04-2015 15:07:50
 	***********************************/
 
@@ -143,22 +145,23 @@ BEGIN
             id_lugar = v_parametros.id_lugar,
             tipo_interfaz = string_to_array(v_parametros.tipo_interfaz, ','),
             id_depto = v_parametros.id_depto,
-            nombre_comprobante = v_parametros.nombre_comprobante
+            nombre_comprobante = v_parametros.nombre_comprobante,
+            zona = v_parametros.zona
 			where id_sucursal=v_parametros.id_sucursal;
-               
+
 			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Sucursal modificado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Sucursal modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_sucursal',v_parametros.id_sucursal::varchar);
-               
+
             --Devuelve la respuesta
             return v_resp;
-            
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_SUC_ELI'
  	#DESCRIPCION:	Eliminacion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		20-04-2015 15:07:50
 	***********************************/
 
@@ -168,31 +171,31 @@ BEGIN
 			--Sentencia de la eliminacion
 			delete from vef.tsucursal
             where id_sucursal=v_parametros.id_sucursal;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Sucursal eliminado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Sucursal eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_sucursal',v_parametros.id_sucursal::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
 		end;
-         
+
 	else
-     
+
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 
 	end if;
 
 EXCEPTION
-				
+
 	WHEN OTHERS THEN
 		v_resp='';
 		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
 		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
 		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 		raise exception '%',v_resp;
-				        
+
 END;
 $body$
 LANGUAGE 'plpgsql'
