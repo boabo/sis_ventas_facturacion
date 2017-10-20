@@ -222,8 +222,7 @@ $body$
 
           if (exists(	select 1
                        from vef.tapertura_cierre_caja acc
-                       where acc.id_usuario_cajero = p_id_usuario and
-                             acc.fecha_apertura_cierre = v_fecha and
+                       where acc.fecha_apertura_cierre = v_fecha and
                              acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
                              acc.id_punto_venta = v_parametros.id_punto_venta)) then
             raise exception 'La caja ya fue cerrada, necesita tener la caja abierta para poder registrar la venta';
@@ -232,8 +231,7 @@ $body$
 
           if (not exists(	select 1
                            from vef.tapertura_cierre_caja acc
-                           where acc.id_usuario_cajero = p_id_usuario and
-                                 acc.fecha_apertura_cierre = v_fecha and
+                           where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
                                  acc.id_punto_venta = v_parametros.id_punto_venta)) then
             raise exception 'Antes de registrar una venta debe realizar una apertura de caja';
@@ -244,8 +242,7 @@ $body$
 
           if (exists(	select 1
                        from vef.tapertura_cierre_caja acc
-                       where acc.id_usuario_cajero = p_id_usuario and
-                             acc.fecha_apertura_cierre = v_fecha and
+                       where acc.fecha_apertura_cierre = v_fecha and
                              acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
                              acc.id_sucursal = v_parametros.id_sucursal)) then
             raise exception 'La caja ya fue cerrada, necesita tener la caja abierta para poder registrar la venta';
@@ -254,8 +251,7 @@ $body$
 
           if (not exists(	select 1
                            from vef.tapertura_cierre_caja acc
-                           where acc.id_usuario_cajero = p_id_usuario and
-                                 acc.fecha_apertura_cierre = v_fecha and
+                           where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
                                  acc.id_sucursal = v_parametros.id_sucursal)) then
             raise exception 'Antes de registrar una venta debe realizar una apertura de caja';
