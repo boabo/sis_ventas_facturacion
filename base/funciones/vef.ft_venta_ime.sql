@@ -219,8 +219,48 @@ $body$
         end if;
         if (pxp.f_existe_parametro(p_tabla,'id_punto_venta')) then
           v_id_punto_venta = v_parametros.id_punto_venta;
+
+          if (exists(	select 1
+                       from vef.tapertura_cierre_caja acc
+                       where acc.id_usuario_cajero = p_id_usuario and
+                             acc.fecha_apertura_cierre = v_fecha and
+                             acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
+                             acc.id_punto_venta = v_parametros.id_punto_venta)) then
+            raise exception 'La caja ya fue cerrada, necesita tener la caja abierta para poder registrar la venta';
+          end if;
+
+
+          if (not exists(	select 1
+                           from vef.tapertura_cierre_caja acc
+                           where acc.id_usuario_cajero = p_id_usuario and
+                                 acc.fecha_apertura_cierre = v_fecha and
+                                 acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                                 acc.id_punto_venta = v_parametros.id_punto_venta)) then
+            raise exception 'Antes de registrar una venta debe realizar una apertura de caja';
+          end if;
+
         else
           v_id_punto_venta = NULL;
+
+          if (exists(	select 1
+                       from vef.tapertura_cierre_caja acc
+                       where acc.id_usuario_cajero = p_id_usuario and
+                             acc.fecha_apertura_cierre = v_fecha and
+                             acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
+                             acc.id_sucursal = v_parametros.id_sucursal)) then
+            raise exception 'La caja ya fue cerrada, necesita tener la caja abierta para poder registrar la venta';
+          end if;
+
+
+          if (not exists(	select 1
+                           from vef.tapertura_cierre_caja acc
+                           where acc.id_usuario_cajero = p_id_usuario and
+                                 acc.fecha_apertura_cierre = v_fecha and
+                                 acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                                 acc.id_sucursal = v_parametros.id_sucursal)) then
+            raise exception 'Antes de registrar una venta debe realizar una apertura de caja';
+          end if;
+
         end if;
 
         -- obtener correlativo
@@ -1022,6 +1062,14 @@ $body$
 
         v_id_moneda_suc = v_venta.id_moneda_base;
 
+		select count(distinct vd.id_venta_detalle) into v_cantidad
+        from vef.tventa_detalle vd
+        where vd.id_venta = v_parametros.id_venta;
+
+        IF(v_cantidad=0)THEN
+        	raise exception 'Debe tener al menos un concepto registrado para la venta';
+        END IF;
+
         --Validar que solo haya conceptos contabilizables o no contabilizables
         select count(distinct sp.contabilizable) into v_cantidad
         from vef.tventa_detalle vd
@@ -1063,9 +1111,9 @@ $body$
         if (v_venta.excento > v_venta.total_venta_msuc) then
           raise exception 'El importe excento no puede ser mayor al total de la venta%,%',v_venta.excento,v_venta.total_venta;
         end if;
-
+		
         --raise exception 'v_codigo_estado %', v_venta.estado;
-
+        
         if (pxp.f_existe_parametro(p_tabla,'codigo_estado'))then
         	v_codigo_estado = v_parametros.codigo_estado;
         else
@@ -1078,7 +1126,7 @@ $body$
           where id_venta=v_venta.id_venta;
           	--v_codigo_estado = v_venta.estado;
         end if;
-
+        
         --si es un estado para validar la forma de pago
         if ((v_codigo_estado) = ANY(string_to_array(vef_estados_validar_fp,',')))then
 		  --raise exception 'entra %', v_codigo_estado;
@@ -1140,11 +1188,11 @@ $body$
           IF v_parametros.tipo_factura != 'computarizadaexpo' THEN
             v_suma_det = COALESCE(v_suma_det,0) + COALESCE(v_venta.transporte_fob ,0)  + COALESCE(v_venta.seguros_fob ,0)+ COALESCE(v_venta.otros_fob ,0) + COALESCE(v_venta.transporte_cif ,0) +  COALESCE(v_venta.seguros_cif ,0) + COALESCE(v_venta.otros_cif ,0);
           END IF;
-
+				  
           if (v_suma_fp < v_venta.total_venta) then
             raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
           end if;
-
+          	
           if (v_suma_fp > v_venta.total_venta) then
             raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
           end if;
@@ -1310,12 +1358,8 @@ $body$
 
 
         END IF;
-
-        if (pxp.f_get_variable_global('vef_integracion_lcv') = 'si') then
-          v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'INS',v_parametros.id_venta);
-
-        end if;
-
+        
+        
         --Definicion de la respuesta
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Venta Validada');
         v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_parametros.id_venta::varchar);
@@ -1329,11 +1373,11 @@ $body$
 
       end;
 
-    /*********************************
+    /*********************************    
  	#TRANSACCION:  'VEF_ANTEVE_IME'
  	#DESCRIPCION:	Transaccion utilizada  pasar a  estados anterior en la venta
                     segun la operacion definida
- 	#AUTOR:		JRR
+ 	#AUTOR:		JRR	
  	#FECHA:		17-10-2014 12:12:51
 	***********************************/
 
@@ -1407,10 +1451,10 @@ $body$
         --Devuelve la respuesta
         return v_resp;
       end;
-    /*********************************
+    /*********************************    
  	#TRANSACCION:  'VEF_SIGEVE_IME'
  	#DESCRIPCION:	funcion que controla el cambio al Siguiente estado de las ventas, integrado  con el WF
- 	#AUTOR:		JRR
+ 	#AUTOR:		JRR	
  	#FECHA:		17-10-2014 12:12:51
 	***********************************/
 
@@ -1436,18 +1480,18 @@ $body$
         from wf.testado_wf ew
           inner join wf.ttipo_estado te on te.id_tipo_estado = ew.id_tipo_estado
         where ew.id_estado_wf =  v_parametros.id_estado_wf_act;
-
+        
         select v.*,s.id_entidad,tv.tipo_base into v_venta
         from vef.tventa v
           inner join vef.tsucursal s on s.id_sucursal = v.id_sucursal
           inner join vef.tcliente c on c.id_cliente = v.id_cliente
           inner join vef.ttipo_venta tv on tv.codigo = v.tipo_factura and tv.estado_reg = 'activo'
         where v.id_proceso_wf = v_parametros.id_proceso_wf_act;
-
+        
         select te.codigo into v_codigo_estado
         from wf.ttipo_estado te
         where te.id_tipo_estado=v_parametros.id_tipo_estado;
-
+        
         v_tabla = pxp.f_crear_parametro(ARRAY[	'_nombre_usuario_ai',
         '_id_usuario_ai',
         'id_venta',
@@ -1464,10 +1508,10 @@ $body$
                                         'varchar',
                                         'varchar']
         );
-
-
+        
+                 	
         v_resp = vef.ft_venta_ime(p_administrador,p_id_usuario,v_tabla,'VF_VENVALI_MOD');
-
+        
         -- obtener datos tipo estado
 
         select
@@ -1547,7 +1591,7 @@ $body$
           --genera el numero de factura
 
           IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
-
+			
             select d.* into v_dosificacion
             from vef.tdosificacion d
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
@@ -1633,7 +1677,7 @@ $body$
                                   acc.id_sucursal = v_venta.id_sucursal))) then
             raise exception 'Antes de finalizar una venta debe realizar una apertura de caja';
           end if;
-
+          
           update vef.tventa set id_usuario_cajero = p_id_usuario
           where id_venta = v_venta.id_venta;
         end if;
@@ -1642,27 +1686,27 @@ $body$
         if (pxp.f_get_variable_global('vef_integracion_lcv') = 'si' and v_es_fin = 'si') then
           v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'FIN',v_venta.id_venta);
         end if;
-
+        
 
         -- si hay mas de un estado disponible  preguntamos al usuario
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado de la planilla)');
         v_resp = pxp.f_agrega_clave(v_resp,'operacion','cambio_exitoso');
         v_resp = pxp.f_agrega_clave(v_resp,'estado',v_codigo_estado_siguiente);
-
-        if (pxp.f_get_variable_global('sw_ventas_migrar_informix') = 'si' and pxp.f_get_variable_global('tipo_factura_migrar_ventas') = 'computarizada') then
+		
+        if (pxp.f_get_variable_global('sw_ventas_migrar_informix') = 'si' and pxp.f_get_variable_global('tipo_factura_migrar_ventas') = 'computarizada') then          
 	      v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_venta.id_venta::varchar);
         end if;
-
+        
 
         -- Devuelve la respuesta
         return v_resp;
 
       end;
 
-    /*********************************
+    /*********************************    
  	#TRANSACCION:  'VF_VENANU_MOD'
  	#DESCRIPCION:	Anulacion de Venta
- 	#AUTOR:		RAC
+ 	#AUTOR:		RAC	
  	#FECHA:		19-02-2013 12:12:51
 	***********************************/
 
@@ -1715,10 +1759,10 @@ $body$
         return v_resp;
 
       end;
-    /*********************************
+    /*********************************    
  	#TRANSACCION:  'VF_VENCONTA_MOD'
  	#DESCRIPCION:	Vuelve contabilizable una venta no contabilizable
- 	#AUTOR:		JRR
+ 	#AUTOR:		JRR	
  	#FECHA:		19-02-2013 12:12:51
 	***********************************/
 
@@ -1738,10 +1782,10 @@ $body$
         return v_resp;
 
       end;
-    /*********************************
+    /*********************************    
  	#TRANSACCION:  'VF_VENVERELA_MOD'
  	#DESCRIPCION:	Vuelve contabilizable una venta no contabilizable
- 	#AUTOR:		JRR
+ 	#AUTOR:		JRR	
  	#FECHA:		19-02-2013 12:12:51
 	***********************************/
 
@@ -1754,7 +1798,7 @@ $body$
         select pxp.list_unique(v.correlativo_venta || '<br>') into v_ventas
         from vef.tventa_detalle vd
           inner join vef.tventa v on v.id_venta = vd.id_venta
-        where vd.descripcion is not null and vd.id_boleto is null
+        where vd.descripcion is not null and vd.id_boleto is null 
         		and pxp.f_is_positive_integer(vd.descripcion) and
               v.estado = 'finalizado' and vd.descripcion != ''  and vd.estado_reg = 'activo' and v.id_punto_venta = v_parametros.id_punto_venta
               and v.tipo_factura = v_parametros.tipo_factura;

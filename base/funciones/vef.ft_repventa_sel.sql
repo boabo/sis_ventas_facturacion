@@ -177,12 +177,34 @@ $body$
                              			ELSE
                                         	0
                              			end), 2) as monto_cash_usd,
-                             round(sum(	case when fp.codigo != ''CA'' then
-                                          vfp.monto_transaccion -(vfp.cambio /
-                                           param.f_get_tipo_cambio(fp.id_moneda, v.fecha::date, ''O''))
-                             			ELSE
-                                        	0
-                             			end), 2) as monto_otro_usd,
+                             round(sum(case
+                                         when fp.codigo = ''CC%'' then
+                                           vfp.monto_transaccion -(vfp.cambio /
+                                           param.f_get_tipo_cambio(fp.id_moneda,
+                                           v.fecha::date, ''O''))
+                                         ELSE 0
+                                       end), 2) as monto_cc_usd,
+                             round(sum(case
+                                         when fp.codigo = ''CT%'' then
+                                           vfp.monto_transaccion -(vfp.cambio /
+                                           param.f_get_tipo_cambio(fp.id_moneda,
+                                           v.fecha::date, ''O''))
+                                         ELSE 0
+                                       end), 2) as monto_cte_usd,
+                             round(sum(case
+                                         when fp.codigo = ''MCO%'' then
+                                           vfp.monto_transaccion -(vfp.cambio /
+                                           param.f_get_tipo_cambio(fp.id_moneda,
+                                           v.fecha::date, ''O''))
+                                         ELSE 0
+                                       end), 2) as monto_mco_usd,
+                             round(sum(case
+                                         when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then
+                                           vfp.monto_transaccion -(vfp.cambio /
+                                           param.f_get_tipo_cambio(fp.id_moneda,
+                                           v.fecha::date, ''O''))
+                                         ELSE 0
+                                       end), 2) as monto_otro_usd,
                       pxp.list(fp.nombre) as forma_pago
                       from  vef.tventa_forma_pago vfp
                       inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
@@ -199,10 +221,25 @@ $body$
                              	 ELSE
                                  	0
                                  END) as monto_cash_mb,
-                             sum(CASE when fp.codigo != ''CA'' then
-                             		vfp.monto_transaccion - vfp.cambio
-                             	 ELSE
-                                 	0
+                             sum(CASE
+                                   when fp.codigo like ''CC%'' then
+                                     vfp.monto_transaccion - vfp.cambio
+                                   ELSE 0
+                                 END) as monto_cc_mb,
+                             sum(CASE
+                                   when fp.codigo like ''CT%'' then
+                                     vfp.monto_transaccion - vfp.cambio
+                                   ELSE 0
+                                 END) as monto_cte_mb,
+                             sum(CASE
+                                   when fp.codigo like ''MCO%'' then
+                                     vfp.monto_transaccion - vfp.cambio
+                                   ELSE 0
+                                 END) as monto_mco_mb,
+                             sum(CASE
+                                   when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then
+                                     vfp.monto_transaccion - vfp.cambio
+                                   ELSE 0
                                  END) as monto_otro_mb,
                       pxp.list(fp.nombre) as forma_pago
                       from  vef.tventa_forma_pago vfp
@@ -216,16 +253,25 @@ $body$
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''') as forma_pago,
                     			coalesce(fpusd.monto_cash_usd, 0) as monto_cash_usd,
+                                coalesce(fpusd.monto_cc_usd, 0) as monto_cc_usd,
+                                coalesce(fpusd.monto_cte_usd, 0) as monto_cte_usd,
+                                coalesce(fpusd.monto_mco_usd, 0) as monto_mco_usd,
                          		coalesce(fpusd.monto_otro_usd, 0) as monto_otro_usd,';
-          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_otro_usd';
+          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd';
         else
           v_group_by = '';
           v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,
                     						coalesce(fpmb.monto_cash_mb, 0) as monto_cash_usd,
+                                            coalesce(fpmb.monto_cc_mb, 0) as monto_cc_mb,
+                         					coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
+                         					coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
                                             coalesce(fpmb.monto_otro_mb, 0) as monto_otro_usd,';
         end if;
         v_consulta = v_consulta || '
                   coalesce(fpmb.monto_cash_mb, 0) as monto_cash_mb,
+                  coalesce(fpmb.monto_cc_mb, 0) as monto_cc_mb,
+                  coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
+                  coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
                   coalesce(fpmb.monto_otro_mb, 0) as monto_otro_mb,
                   0::numeric,
                   string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
@@ -250,7 +296,7 @@ $body$
                   where v.estado = ''finalizado'' and ' || v_filtro || ' and
                   	(v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                   group by v.fecha,v.correlativo_venta,cli.nombre_factura,v.observaciones,
-                  			fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
+                  			fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
                   )
 		union ALL
 	 		(WITH ';
@@ -262,11 +308,22 @@ $body$
                            		ELSE
                                 	0
                                 END) as monto_cash_usd,
-                           sum(case when fp.codigo != ''CA'' then
-                           			bfp.importe
-                           		ELSE
-                                	0
-                                END) as monto_otro_usd,
+                           sum(case
+                                 when fp.codigo like ''CC%'' then bfp.importe
+                                 ELSE 0
+                               END) as monto_cc_usd,
+                           sum(case
+                                 when fp.codigo like ''CT%'' then bfp.importe
+                                 ELSE 0
+                               END) as monto_cte_usd,
+                           sum(case
+                                 when fp.codigo like ''MCO%'' then bfp.importe
+                                 ELSE 0
+                               END) as monto_mco_usd,
+                           sum(case
+                                 when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then bfp.importe
+                                 ELSE 0
+                               END) as monto_otro_usd,
                     pxp.list(fp.nombre) as forma_pago
                     from  obingresos.tboleto_forma_pago bfp
                     inner join obingresos.tboleto b on b.id_boleto = bfp.id_boleto
@@ -284,11 +341,22 @@ $body$
                            		ELSE
                                 	0
                                 END) as monto_cash_mb,
-                           sum(case when fp.codigo != ''CA'' then
-                           			bfp.importe
-                           		ELSE
-                                	0
-                                END) as monto_otro_mb,
+                           sum(case
+                             when fp.codigo like ''CC%'' then bfp.importe
+                             ELSE 0
+                           END) as monto_cc_mb,
+                       sum(case
+                             when fp.codigo like ''CT%'' then bfp.importe
+                             ELSE 0
+                           END) as monto_cte_mb,
+                       sum(case
+                             when fp.codigo like ''MCO%'' then bfp.importe
+                             ELSE 0
+                           END) as monto_mco_mb,
+                       sum(case
+                             when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then bfp.importe
+                             ELSE 0
+                           END) as monto_otro_mb,
                 pxp.list(fp.nombre) as forma_pago
                  from  obingresos.tboleto_forma_pago bfp
                  inner join obingresos.tboleto b on b.id_boleto = bfp.id_boleto
@@ -310,18 +378,47 @@ $body$
              ';
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''') as forma_pago,
-                    		coalesce(fpusd.monto_cash_usd,0) as monto_cash_usd,
-                            coalesce(fpusd.monto_otro_usd,0) as monto_otro_usd,';
-          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_otro_usd ';
+                    		case
+                      when b.voided != ''si'' then coalesce(fpusd.monto_cash_usd,
+                        0)
+                      else 0
+                    end as monto_cash_usd,
+                    case
+                      when b.voided != ''si'' then coalesce(fpusd.monto_cc_usd, 0)
+                      else 0
+                    end as monto_cc_usd,
+                    case
+                      when b.voided != ''si'' then coalesce(fpusd.monto_cte_usd, 0
+                        )
+                      else 0
+                    end as monto_cte_usd,
+                    case
+                      when b.voided != ''si'' then coalesce(fpusd.monto_mco_usd, 0
+                        )
+                      else 0
+                    end as monto_mco_usd,
+                    case
+                      when b.voided != ''si'' then coalesce(fpusd.monto_otro_usd,
+                        0)
+                      else 0
+                    end as monto_otro_usd,';
+          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,
+                      fpusd.monto_cte_usd, fpusd.monto_mco_usd,fpusd.monto_otro_usd ';
         else
           v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,
-                    					coalesce(fpmb.monto_cash_mb,0) as monto_cash_usd,
-                                        coalesce(fpmb.monto_otro_mb,0) as monto_otro_usd,';
+                    					case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 as monto_cash_usd,
+                                        case when b.voided != ''si'' then coalesce(fpmb.monto_cc_mb,0) else 0 as monto_cc_usd,
+                                        case when b.voided != ''si'' then coalesce(fpmb.monto_cte_mb,0) else 0 as monto_cte_usd,
+                                        case when b.voided != ''si'' then coalesce(fpmb.monto_mco_mb,0) else 0 as monto_mco_usd,
+                                        case when b.voided != ''si'' then coalesce(fpmb.monto_otro_mb,0) else 0 as monto_otro_usd,';
           v_group_by = '';
         end if;
         v_consulta = v_consulta ||  '
-             coalesce(fpmb.monto_cash_mb,0) as monto_cash_mb,
-             coalesce(fpmb.monto_otro_mb,0) as monto_otro_mb,
+             case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 end as monto_cash_mb,
+             case when b.voided != ''si'' then coalesce(fpmb.monto_cc_mb,0) else 0 end as monto_cc_mb,
+             case when b.voided != ''si'' then coalesce(fpmb.monto_cte_mb,0) else 0 end as monto_cte_mb,
+             case when b.voided != ''si'' then coalesce(fpmb.monto_mco_mb,0) else 0 end as monto_mco_mb,
+             case when b.voided != ''si'' then coalesce(fpmb.monto_otro_mb,0) else 0 end as monto_otro_mb,
              b.neto,
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error
@@ -342,8 +439,9 @@ $body$
              where b.estado_reg = ''activo'' and b.estado=''revisado'' and ' || v_filtro || ' and
              (b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' ||v_parametros.fecha_hasta || ''')
 
-             group by b.fecha_emision,b.pasajero, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.neto,imp.impuesto,
-             		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_otro_mb '|| v_group_by || ')
+             group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.neto,imp.impuesto,
+             		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb '|| v_group_by || ')
              order by fecha,boleto';
         raise notice '%',v_consulta;
         --Devuelve la respuesta
