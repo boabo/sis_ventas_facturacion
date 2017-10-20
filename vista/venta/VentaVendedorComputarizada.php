@@ -17,6 +17,7 @@ Phx.vista.VentaVendedorComputarizada = {
     nombreVista: 'VentaVendedorComputarizada',
     tipo_factura:'computarizada',
     tipo:'ato',
+    tipo_usuario : 'cajero',
     
     constructor: function(config) {
         this.maestro = config.maestro;  

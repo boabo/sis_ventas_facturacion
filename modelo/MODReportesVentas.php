@@ -36,8 +36,14 @@ class MODReportesVentas extends MODbase{
 		$this->captura('conceptos','varchar');
 		$this->captura('forma_pago','text');		
 		$this->captura('monto_cash_usd','numeric');
+        $this->captura('monto_cc_usd','numeric');
+        $this->captura('monto_cte_usd','numeric');
+        $this->captura('monto_mco_usd','numeric');
         $this->captura('monto_otro_usd','numeric');
         $this->captura('monto_cash_mb','numeric');
+        $this->captura('monto_cc_mb','numeric');
+        $this->captura('monto_cte_mb','numeric');
+        $this->captura('monto_mco_mb','numeric');
         $this->captura('monto_otro_mb','numeric');
 		$this->captura('neto','numeric');
 		$this->captura('precios_detalles','varchar');
@@ -46,7 +52,6 @@ class MODReportesVentas extends MODbase{
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
-
 		$this->ejecutarConsulta();
 
 		

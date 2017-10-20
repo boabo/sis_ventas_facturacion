@@ -21,6 +21,8 @@ Phx.vista.VentaCaja = {
     tipo_factura: 'computarizada',
     tipo_usuario : 'cajero',
     readOnly:true,
+    tipo:'cto',
+    
     constructor: function(config) {
         this.maestro=config.maestro;  
         Phx.vista.VentaCaja.superclass.constructor.call(this,config);
