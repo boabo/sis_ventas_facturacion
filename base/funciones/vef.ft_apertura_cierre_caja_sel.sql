@@ -40,6 +40,7 @@ DECLARE
     v_cod_moneda_local			varchar;
     v_moneda_base				varchar;
     v_moneda_ref				varchar;
+    v_filtro					varchar;
 
 BEGIN
 
@@ -85,6 +86,10 @@ BEGIN
 
                         where  ';
 
+            IF p_administrador !=1  THEN
+              v_filtro = ' apcie.id_usuario_cajero='||p_id_usuario||' and ';
+            END IF;
+            v_consulta :=v_consulta||v_filtro;
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
