@@ -362,7 +362,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		this.ocultarComponente(this.Cmp.arqueo_moneda_local);
 		this.ocultarComponente(this.Cmp.arqueo_moneda_extranjera);
 		this.Cmp.arqueo_moneda_local.allowBlank = true;		
-		this.mostrarComponente(this.Cmp.id_sucursal);
+		this.ocultarComponente(this.Cmp.id_sucursal);
 		this.mostrarComponente(this.Cmp.id_punto_venta);
 		this.mostrarComponente(this.Cmp.monto_inicial);
 		this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
@@ -378,7 +378,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		this.ocultarComponente(this.Cmp.arqueo_moneda_local);
 		this.ocultarComponente(this.Cmp.arqueo_moneda_extranjera);
 		this.Cmp.arqueo_moneda_local.allowBlank = true;		
-		this.mostrarComponente(this.Cmp.id_sucursal);
+		this.ocultarComponente(this.Cmp.id_sucursal);
 		this.mostrarComponente(this.Cmp.id_punto_venta);
 		this.mostrarComponente(this.Cmp.monto_inicial);
 		this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
