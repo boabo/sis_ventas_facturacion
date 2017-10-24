@@ -870,7 +870,7 @@ header("content-type: text/javascript; charset=UTF-8");
             ],
             sortInfo:{
                 field: 'nro_boleto',
-                direction: 'DESC'
+                direction: 'ASC'
             },
             arrayDefaultColumHidden:['estado_reg','usuario_ai',
                 'fecha_reg','fecha_mod','usr_reg','usr_mod','estado','cupones','codigo_noiata','codigo_agencia','neto','tipopax','nombre_agencia','comision'],
