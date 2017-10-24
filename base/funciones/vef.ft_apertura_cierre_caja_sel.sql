@@ -88,6 +88,8 @@ BEGIN
 
             IF p_administrador !=1  THEN
               v_filtro = ' apcie.id_usuario_cajero='||p_id_usuario||' and ';
+            ELSE
+              v_filtro = '';
             END IF;
             v_consulta :=v_consulta||v_filtro;
 			--Definicion de la respuesta
@@ -137,12 +139,6 @@ BEGIN
 	elsif(p_transaccion='VF_CIE_SEL')then
 
     	begin
-        	/*IF NOT EXISTS (select 1
-            			  from vef.tapertura_cierre_caja
-            			  where id_usuario_cajero=id_usuario_cajero
-            			  and fecha_apertura_cierre=v_parametros.fecha)THEN
-            	raise exception 'Debe realizar una apertura de caja para la fecha de hoy';
-            END IF;*/
             select codigo_internacional into v_moneda_base
             from param.tmoneda
         	where tipo_moneda='base';
