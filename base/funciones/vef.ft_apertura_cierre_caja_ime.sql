@@ -300,7 +300,7 @@ BEGIN
 				raise exception 'Ya se registraron ventas con esta apertura de caja. Debe eliminar esas ventas para poder eliminar la apertura';
             end if;
             if (exists (select 1 from pg_catalog.pg_namespace where nspname = 'obingresos' ))then
-                if (exists (select 1 from obingresos.tboleto b
+                if (exists (select 1 from obingresos.tboleto_amadeus b
                             where b.estado_reg = 'activo' and
                                 b.id_punto_venta = v_registro.id_punto_venta and
                                 b.fecha_emision = v_registro.fecha_apertura_cierre and
@@ -323,20 +323,20 @@ BEGIN
 		end;
 
 	else
-     
+
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 
 	end if;
 
 EXCEPTION
-				
+
 	WHEN OTHERS THEN
 		v_resp='';
 		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
 		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
 		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 		raise exception '%',v_resp;
-				        
+
 END;
 $body$
 LANGUAGE 'plpgsql'

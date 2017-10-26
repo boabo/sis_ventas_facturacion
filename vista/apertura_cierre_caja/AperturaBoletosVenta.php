@@ -805,7 +805,7 @@ header("content-type: text/javascript; charset=UTF-8");
             title:'Boleto',
             ActSave:'../../sis_obingresos/control/Boleto/modificarBoletoVenta',
             ActDel:'../../sis_obingresos/control/Boleto/eliminarBoleto',
-            ActList:'../../sis_obingresos/control/Boleto/listarBoleto',
+            ActList:'../../sis_obingresos/control/Boleto/listarBoletosEmitidosAmadeus',
             id_store:'id_boleto',
             fields: [
                 {name:'id_boleto', type: 'numeric'},
@@ -905,7 +905,7 @@ header("content-type: text/javascript; charset=UTF-8");
             },
         onReloadPage: function (m) {
             this.maestro = m;
-            this.store.baseParams = {id_punto_venta: this.maestro.id_punto_venta, tipo_factura: this.tipo_factura, id_usuario_cajero:this.maestro.id_usuario_cajero, estado:'revisado', fecha_emision:this.maestro.fecha_apertura_cierre};
+            this.store.baseParams = {id_punto_venta: this.maestro.id_punto_venta, tipo_factura: this.tipo_factura, id_usuario_cajero:this.maestro.id_usuario_cajero, pes_estado:'revisados', fecha:this.maestro.fecha_apertura_cierre, id_usuario_cajero:this.maestro.id_usuario_cajero};
             this.store.baseParams.tipo_usuario = this.tipo_usuario;
             this.load({params: {start: 0, limit: 50}});
         }

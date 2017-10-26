@@ -165,7 +165,7 @@ BEGIN
                          vef.f_monto_forma_pago('''||v_moneda_base::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_base_fp_ventas,
                          vef.f_monto_forma_pago('''||v_moneda_ref::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_ref_fp_ventas
                   from vef.tapertura_cierre_caja apcie
-                  inner join obingresos.tboleto bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||p_id_usuario||'
+                  inner join obingresos.tboleto_amadeus bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||p_id_usuario||'
                   inner join vef.tpunto_venta pv on pv.id_punto_venta=apcie.id_punto_venta
                   where apcie.id_usuario_cajero = '||p_id_usuario||' and
                   		apcie.fecha_apertura_cierre='''||v_parametros.fecha||''' and
@@ -359,7 +359,7 @@ BEGIN
                                   and ven.id_usuario_cajero = acc.id_usuario_cajero and
                                   ven.estado = ''finalizado'') +
 
-                      (	select sum(bol.comision) from obingresos.tboleto bol
+                      (	select sum(bol.comision) from obingresos.tboleto_amadeus bol
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_base  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
                                   and bol.id_usuario_cajero = acc.id_usuario_cajero and
@@ -371,7 +371,7 @@ BEGIN
                                   and ven.id_usuario_cajero = acc.id_usuario_cajero and
                                   ven.estado = ''finalizado'') +
 
-                      (	select sum(bol.comision) from obingresos.tboleto bol
+                      (	select sum(bol.comision) from obingresos.tboleto_amadeus bol
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_tri  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
                                    and bol.id_usuario_cajero = acc.id_usuario_cajero and
@@ -386,11 +386,11 @@ BEGIN
                       left join param.tlugar ls on ls.id_lugar = s.id_lugar
                       left join param.tlugar ppv on ppv.id_lugar = param.f_get_id_lugar_pais(lpv.id_lugar)
                       left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
-                      left join obingresos.tboleto b on b.id_usuario_cajero = u.id_usuario
+                      left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
                                                       and b.fecha_reg::date = acc.fecha_apertura_cierre and
                                                       b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
 
-                      left join obingresos.tboleto_forma_pago bfp on bfp.id_boleto = b.id_boleto
+                      left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
                       left join forma_pago fp on fp.id_forma_pago = bfp.id_forma_pago
                       left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                       and v.fecha = acc.fecha_apertura_cierre and
