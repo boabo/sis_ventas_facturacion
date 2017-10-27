@@ -311,7 +311,7 @@ $body$
 	 		(WITH ';
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' bol_forma_pago_usd  AS(
-        			select bfp.id_boleto,
+        			select bfp.id_boleto_amadeus,
                     sum(case when fp.codigo = ''CA'' then
                            			bfp.importe
                            		ELSE
@@ -334,17 +334,17 @@ $body$
                                  ELSE 0
                                END) as monto_otro_usd,
                     pxp.list(fp.nombre) as forma_pago
-                    from  obingresos.tboleto_forma_pago bfp
-                    inner join obingresos.tboleto b on b.id_boleto = bfp.id_boleto
+                    from  obingresos.tboleto_amadeus_forma_pago bfp
+                    inner join obingresos.tboleto_amadeus b on b.id_boleto_amadeus = bfp.id_boleto_amadeus
                     inner join obingresos.tforma_pago fp on bfp.id_forma_pago = fp.id_forma_pago
                     where ' || v_filtro || ' and
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') and fp.id_moneda = ' || v_id_moneda_usd || '
-                    group by bfp.id_boleto
+                    group by bfp.id_boleto_amadeus
         			),';
         end if;
 
         v_consulta = v_consulta || 'bol_forma_pago_mb AS(
-                select bfp.id_boleto,
+                select bfp.id_boleto_amadeus,
                 sum(case when fp.codigo = ''CA'' then
                            			bfp.importe
                            		ELSE
@@ -367,16 +367,16 @@ $body$
                              ELSE 0
                            END) as monto_otro_mb,
                 pxp.list(fp.nombre) as forma_pago
-                 from  obingresos.tboleto_forma_pago bfp
-                 inner join obingresos.tboleto b on b.id_boleto = bfp.id_boleto
+                 from  obingresos.tboleto_amadeus_forma_pago bfp
+                 inner join obingresos.tboleto_amadeus b on b.id_boleto_amadeus = bfp.id_boleto_amadeus
                  inner join obingresos.tforma_pago fp on bfp.id_forma_pago = fp.id_forma_pago
                 where ' || v_filtro || ' and
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') and fp.id_moneda = ' || v_id_moneda || '
-                group by bfp.id_boleto
+                group by bfp.id_boleto_amadeus
             ), bol_impuesto AS(
             	select bimp.id_boleto,string_agg(bimp.importe::text,''|'')::varchar as monto_impuesto,string_agg(imp.codigo,''|'')::varchar as impuesto
                  from  obingresos.tboleto_impuesto bimp
-                 inner join obingresos.tboleto b on b.id_boleto = bimp.id_boleto
+                 inner join obingresos.tboleto_amadeus b on b.id_boleto_amadeus = bimp.id_boleto
                  inner join obingresos.timpuesto imp on imp.id_impuesto = bimp.id_impuesto
                 where ' || v_filtro || ' and
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
@@ -431,18 +431,18 @@ $body$
              b.neto,
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error
-             from obingresos.tboleto b
+             from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' left join bol_forma_pago_usd fpusd
-                      on b.id_boleto = fpusd.id_boleto ';
+                      on b.id_boleto_amadeus = fpusd.id_boleto_amadeus ';
         end if;
 
         v_consulta = v_consulta || '
              left join bol_forma_pago_mb fpmb
-                on fpmb.id_boleto = b.id_boleto
+                on fpmb.id_boleto_amadeus = b.id_boleto_amadeus
              left join bol_impuesto imp
-                on imp.id_boleto = b.id_boleto
+                on imp.id_boleto = b.id_boleto_amadeus
 
 
              where b.estado_reg = ''activo'' and b.estado=''revisado'' and ' || v_filtro || ' and
@@ -525,7 +525,7 @@ $body$
              sum(coalesce(fpcash.monto_efectivo,0)) as precio_cash,
              sum(coalesce(fpcc.monto_tarjeta,0) + coalesce(fpcash.monto_efectivo,0)) as monto
 
-             from vef.tboleto b
+             from vef.tboleto_amadeus b
              left join bol_forma_pago_cc fpcc
                 on fpcc.id_boleto = b.id_boleto
              left join bol_forma_pago_cash fpcash
