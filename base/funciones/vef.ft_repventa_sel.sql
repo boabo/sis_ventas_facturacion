@@ -39,6 +39,7 @@ $body$
     v_cod_moneda		varchar;
     v_group_by			varchar;
     v_id_pais			integer;
+    v_filtro_cajero		varchar;
 
   BEGIN
 
@@ -165,6 +166,14 @@ $body$
           v_filtro = ' id_sucursal = ' || v_parametros.id_sucursal;
           v_id_sucursal = v_parametros.id_sucursal;
         end if;
+
+        v_filtro_cajero='';
+
+        IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
+        	IF(v_parametros.id_usuario_cajero!=0)THEN
+        		v_filtro_cajero = ' and b.id_usuario_cajero='||v_parametros.id_usuario_cajero;
+            END IF;
+        END IF;
 
         select	mon.codigo_internacional,mon.id_moneda into v_cod_moneda,v_id_moneda
         from vef.tsucursal_moneda sm
@@ -447,7 +456,7 @@ $body$
 
              where b.estado_reg = ''activo'' and b.estado=''revisado'' and ' || v_filtro || ' and
              (b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' ||v_parametros.fecha_hasta || ''')
-
+             '||v_filtro_cajero||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.neto,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
                       fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb '|| v_group_by || ')

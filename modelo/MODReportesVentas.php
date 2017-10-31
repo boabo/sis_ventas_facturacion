@@ -22,6 +22,7 @@ class MODReportesVentas extends MODbase{
 
 		$this->setParametro('id_sucursal','id_sucursal','integer');
 		$this->setParametro('id_punto_venta','id_punto_venta','integer');
+		$this->setParametro('id_usuario_cajero','id_usuario_cajero','integer');
 		$this->setParametro('fecha_desde','fecha_desde','date');
 		$this->setParametro('fecha_hasta','fecha_hasta','date');
 

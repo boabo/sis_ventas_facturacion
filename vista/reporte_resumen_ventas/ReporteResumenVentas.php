@@ -116,7 +116,7 @@ header("content-type: text/javascript; charset=UTF-8");
 	       },
 			{
 				config:{
-					name:'id_usuario',
+					name:'id_usuario_cajero',
 					fieldLabel:'Usuario',
 					allowBlank:false,
 					emptyText:'Usuario...',

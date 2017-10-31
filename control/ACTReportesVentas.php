@@ -17,12 +17,6 @@ class ACTReportesVentas extends ACTbase{
 		
 		$this->res=$this->objFunc->listarConceptosSucursal($this->objParam);
 
-		if($this->objParam->getParametro('id_usuario') != '') {
-			if($this->objParam->getParametro('id_usuario') != 0) {
-				$this->objParam->addFiltro(" b.id_usuario = " . $this->objParam->getParametro('id_usuario'));
-			}
-		}
-
 		$this->objFunc=$this->create('MODReportesVentas');	
 		$this->res2=$this->objFunc->listarReporteDetalle($this->objParam);
 		
