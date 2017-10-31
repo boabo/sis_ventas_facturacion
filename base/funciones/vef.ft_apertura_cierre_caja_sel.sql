@@ -160,16 +160,16 @@ BEGIN
                          apcie.fecha_apertura_cierre,
                          apcie.arqueo_moneda_local,
                          apcie.arqueo_moneda_extranjera,
-                         obingresos.f_monto_forma_pago_boletos('''||v_moneda_base::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_base_fp_boleto,
-                         obingresos.f_monto_forma_pago_boletos('''||v_moneda_ref::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_ref_fp_boleto,
-                         vef.f_monto_forma_pago('''||v_moneda_base::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_base_fp_ventas,
-                         vef.f_monto_forma_pago('''||v_moneda_ref::varchar||''','||p_id_usuario||','''||v_parametros.fecha::date||''') as monto_ref_fp_ventas
+                         obingresos.f_monto_forma_pago_boletos('''||v_moneda_base::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_base_fp_boleto,
+                         obingresos.f_monto_forma_pago_boletos('''||v_moneda_ref::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_ref_fp_boleto,
+                         vef.f_monto_forma_pago('''||v_moneda_base::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_base_fp_ventas,
+                         vef.f_monto_forma_pago('''||v_moneda_ref::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_ref_fp_ventas
                   from vef.tapertura_cierre_caja apcie
-                  inner join obingresos.tboleto_amadeus bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||p_id_usuario||'
+                  inner join obingresos.tboleto_amadeus bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||v_parametros.id_usuario_cajero||'
                   inner join vef.tpunto_venta pv on pv.id_punto_venta=apcie.id_punto_venta
-                  where apcie.id_usuario_cajero = '||p_id_usuario||' and
+                  where apcie.id_usuario_cajero = '||v_parametros.id_usuario_cajero||' and
                   		apcie.fecha_apertura_cierre='''||v_parametros.fecha||''' and
-                        bol.estado=''revisado'' and ';
+                      bol.estado=''revisado'' and ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

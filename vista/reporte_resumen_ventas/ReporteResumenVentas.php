@@ -114,6 +114,63 @@ header("content-type: text/javascript; charset=UTF-8");
 	            grid: true,
 	            form: true
 	       },
+			{
+				config:{
+					name:'id_usuario',
+					fieldLabel:'Usuario',
+					allowBlank:false,
+					emptyText:'Usuario...',
+					store: new Ext.data.JsonStore({
+
+						url: '../../sis_seguridad/control/Usuario/listarUsuario',
+						id: 'id_persona',
+						root: 'datos',
+						sortInfo:{
+							field: 'desc_person',
+							direction: 'ASC'
+						},
+						totalProperty: 'total',
+						fields: ['id_usuario','desc_person','cuenta'],
+						// turn on remote sorting
+						remoteSort: true,
+						baseParams:{par_filtro:'PERSON.nombre_completo2#cuenta', '_adicionar':'si'}
+					}),
+					valueField: 'id_usuario',
+					displayField: 'desc_person',
+					gdisplayField:'desc_persona',//dibuja el campo extra de la consulta al hacer un inner join con orra tabla
+					tpl:'<tpl for="."><div class="x-combo-list-item"><p>{desc_person}</p><p>CI:{ci}</p> </div></tpl>',
+					hiddenName: 'id_usuario',
+					forceSelection:true,
+					typeAhead: true,
+					triggerAction: 'all',
+					lazyRender:true,
+					mode:'remote',
+					pageSize:10,
+					queryDelay:1000,
+					width:250,
+					gwidth:280,
+					minChars:2,
+					turl:'../../../sis_seguridad/vista/usuario/Usuario.php',
+					ttitle:'Usuarios',
+					// tconfig:{width:1800,height:500},
+					tdata:{},
+					tcls:'usuario',
+					pid:this.idContenedor,
+
+					renderer:function (value, p, record){return String.format('{0}', record.data['desc_persona']);}
+				},
+				//type:'TrigguerCombo',
+				type:'ComboBox',
+				bottom_filter: true,
+				id_grupo:0,
+				filters:{
+					pfiltro:'nombre_completo1',
+					type:'string'
+				},
+
+				grid:true,
+				form:true
+			},
 	       {
 				config:{
 					name: 'fecha_desde',
