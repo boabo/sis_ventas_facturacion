@@ -39,7 +39,9 @@ $body$
     v_cod_moneda		varchar;
     v_group_by			varchar;
     v_id_pais			integer;
-    v_filtro_cajero		varchar;
+    v_filtro_cajero_boleto		varchar;
+    v_filtro_cajero_factura		varchar;
+    v_usuario			varchar;
 
   BEGIN
 
@@ -86,7 +88,7 @@ $body$
 
           v_filtro = ' id_punto_venta = ' || v_parametros.id_punto_venta;
 
-          v_consulta:='(' || v_select || ' UNION ALL select ''TARIFA NETA'',''1TARIFA''::varchar as tipo
+          v_consulta:='(' || v_select || ' UNION ALL select ''TOTAL'',''1TARIFA''::varchar as tipo
                 			UNION ALL
                 			select cig.desc_ingas,''3CONCEPTO''::varchar as tipo
                 			 from vef.tventa v
@@ -115,7 +117,7 @@ $body$
 
           v_filtro = ' id_sucursal = ' || v_parametros.id_sucursal;
 
-          v_consulta:='(' || v_select || ' UNION ALL select ''TARIFA NETA'',''1TARIFA''::varchar as tipo
+          v_consulta:='(' || v_select || ' UNION ALL select ''TOTAL'',''1TARIFA''::varchar as tipo
                 			UNION ALL
                 			select cig.desc_ingas,''3CONCEPTO''::varchar as tipo
                 			 from vef.tventa v
@@ -167,11 +169,23 @@ $body$
           v_id_sucursal = v_parametros.id_sucursal;
         end if;
 
-        v_filtro_cajero='';
+        v_filtro_cajero_boleto='';
+        v_filtro_cajero_factura='';
 
         IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
-        	IF(v_parametros.id_usuario_cajero!=0)THEN
-        		v_filtro_cajero = ' and b.id_usuario_cajero='||v_parametros.id_usuario_cajero;
+
+            IF(v_parametros.id_usuario_cajero!=0)THEN
+                v_filtro_cajero_boleto = ' and b.id_usuario_cajero='||v_parametros.id_usuario_cajero;
+            END IF;
+
+            IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
+            	select cuenta into v_usuario
+                from segu.tusuario
+                where id_usuario=v_parametros.id_usuario_cajero;
+
+            	IF(v_parametros.id_usuario_cajero!=0)THEN
+                    v_filtro_cajero_factura = ' and v.usuario='''||v_usuario||'''';
+                END IF;
             END IF;
         END IF;
 
@@ -187,87 +201,171 @@ $body$
         v_consulta:='
             ( WITH ';
         if (v_cod_moneda != 'USD') then
-          v_consulta = v_consulta || ' forma_pago_usd  AS(
-                      select vfp.id_venta,
-                      round(sum(	case when fp.codigo = ''CA'' then
-                                          vfp.monto_transaccion -(vfp.cambio /
-                                           param.f_get_tipo_cambio(fp.id_moneda, v.fecha::date, ''O''))
-                             			ELSE
-                                        	0
-                             			end), 2) as monto_cash_usd,
+        	IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+                v_consulta = v_consulta || ' forma_pago_usd  AS(
+                            select vfp.id_venta,
+                            round(sum(	case when fp.codigo = ''CA'' then
+                                                vfp.monto_transaccion -(vfp.cambio /
+                                                 param.f_get_tipo_cambio(fp.id_moneda, v.fecha::date, ''O''))
+                                              ELSE
+                                                  0
+                                              end), 2) as monto_cash_usd,
+                                   round(sum(case
+                                               when fp.codigo = ''CC%'' then
+                                                 vfp.monto_transaccion -(vfp.cambio /
+                                                 param.f_get_tipo_cambio(fp.id_moneda,
+                                                 v.fecha::date, ''O''))
+                                               ELSE 0
+                                             end), 2) as monto_cc_usd,
+                                   round(sum(case
+                                               when fp.codigo = ''CT%'' then
+                                                 vfp.monto_transaccion -(vfp.cambio /
+                                                 param.f_get_tipo_cambio(fp.id_moneda,
+                                                 v.fecha::date, ''O''))
+                                               ELSE 0
+                                             end), 2) as monto_cte_usd,
+                                   round(sum(case
+                                               when fp.codigo = ''MCO%'' then
+                                                 vfp.monto_transaccion -(vfp.cambio /
+                                                 param.f_get_tipo_cambio(fp.id_moneda,
+                                                 v.fecha::date, ''O''))
+                                               ELSE 0
+                                             end), 2) as monto_mco_usd,
+                                   round(sum(case
+                                               when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then
+                                                 vfp.monto_transaccion -(vfp.cambio /
+                                                 param.f_get_tipo_cambio(fp.id_moneda,
+                                                 v.fecha::date, ''O''))
+                                               ELSE 0
+                                             end), 2) as monto_otro_usd,
+                            pxp.list(fp.nombre) as forma_pago
+                            from  vef.tventa_forma_pago vfp
+                            inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
+                            inner join vef.tventa v on v.id_venta = vfp.id_venta
+                            where fp.id_moneda = ' || v_id_moneda_usd || ' and (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
+                            group by vfp.id_venta
+                        ),';
+            ELSE
+            	v_consulta = v_consulta || ' forma_pago_usd  AS(
+							select vfp.id_factucom,
                              round(sum(case
-                                         when fp.codigo = ''CC%'' then
-                                           vfp.monto_transaccion -(vfp.cambio /
-                                           param.f_get_tipo_cambio(fp.id_moneda,
-                                           v.fecha::date, ''O''))
+                                         when vfp.forma like ''CA'' then
+                                           vfp.importe_pago
+                                         ELSE 0
+                                       end), 2) as monto_cash_usd,
+                             round(sum(case
+                                         when vfp.forma like ''CC%'' then
+                                           vfp.importe_pago
                                          ELSE 0
                                        end), 2) as monto_cc_usd,
                              round(sum(case
-                                         when fp.codigo = ''CT%'' then
-                                           vfp.monto_transaccion -(vfp.cambio /
-                                           param.f_get_tipo_cambio(fp.id_moneda,
-                                           v.fecha::date, ''O''))
+                                         when vfp.forma like ''CT%'' then
+                                           vfp.importe_pago
                                          ELSE 0
                                        end), 2) as monto_cte_usd,
                              round(sum(case
-                                         when fp.codigo = ''MCO%'' then
-                                           vfp.monto_transaccion -(vfp.cambio /
-                                           param.f_get_tipo_cambio(fp.id_moneda,
-                                           v.fecha::date, ''O''))
+                                         when vfp.forma like ''MCO%'' then
+                                           vfp.importe_pago
                                          ELSE 0
                                        end), 2) as monto_mco_usd,
                              round(sum(case
-                                         when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then
-                                           vfp.monto_transaccion -(vfp.cambio /
-                                           param.f_get_tipo_cambio(fp.id_moneda,
-                                           v.fecha::date, ''O''))
+                                         when vfp.forma not similar to
+                                           ''(CA|CC|CT|MCO)%'' then
+                                           vfp.importe_pago
                                          ELSE 0
                                        end), 2) as monto_otro_usd,
-                      pxp.list(fp.nombre) as forma_pago
-                      from  vef.tventa_forma_pago vfp
-                      inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
-                      inner join vef.tventa v on v.id_venta = vfp.id_venta
-                      where fp.id_moneda = ' || v_id_moneda_usd || ' and (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
-                      group by vfp.id_venta
-                  ),';
+                             pxp.list(vfp.nombre_forma) as forma_pago
+                      from vef.tfactucompag_endesis vfp
+                      inner join param.tmoneda mon on mon.codigo_internacional=vfp.moneda
+                      inner join vef.tfactucom_endesis v on v.id_factucom=vfp.id_factucom
+                      where mon.id_moneda = '||v_id_moneda_usd||' and
+                            (v.fecha::date between '''||v_parametros.fecha_desde||''' and '''||v_parametros.fecha_hasta||''' )
+                      group by vfp.id_factucom),';
+            END IF;
         end if;
+		IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+            v_consulta = v_consulta || ' forma_pago_mb AS(
+                          select vfp.id_venta,
+                          sum(CASE when fp.codigo = ''CA'' then
+                                        vfp.monto_transaccion - vfp.cambio
+                                     ELSE
+                                        0
+                                     END) as monto_cash_mb,
+                                 sum(CASE
+                                       when fp.codigo like ''CC%'' then
+                                         vfp.monto_transaccion - vfp.cambio
+                                       ELSE 0
+                                     END) as monto_cc_mb,
+                                 sum(CASE
+                                       when fp.codigo like ''CT%'' then
+                                         vfp.monto_transaccion - vfp.cambio
+                                       ELSE 0
+                                     END) as monto_cte_mb,
+                                 sum(CASE
+                                       when fp.codigo like ''MCO%'' then
+                                         vfp.monto_transaccion - vfp.cambio
+                                       ELSE 0
+                                     END) as monto_mco_mb,
+                                 sum(CASE
+                                       when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then
+                                         vfp.monto_transaccion - vfp.cambio
+                                       ELSE 0
+                                     END) as monto_otro_mb,
+                          pxp.list(fp.nombre) as forma_pago
+                          from  vef.tventa_forma_pago vfp
+                          inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
+                          inner join vef.tventa v on v.id_venta = vfp.id_venta
+                          where fp.id_moneda = ' || v_id_moneda || ' and (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
+                          group by vfp.id_venta
+                      )
+                      select ''' || v_cod_moneda || '''::varchar as moneda_emision, ''venta''::varchar as tipo,v.fecha::date as fecha,v.correlativo_venta,cli.nombre_factura,v.observaciones::varchar as boleto,''''::varchar as ruta,string_agg(cig.desc_ingas,''|'')::varchar as conceptos,
+                      ';
+        ELSE
+        	v_consulta = v_consulta ||' forma_pago_mb AS(select vfp.id_factucom,
+                                       round(sum(case
+                                                   when vfp.forma like ''CA'' then
+                                                     vfp.importe_pago
+                                                   ELSE 0
+                                                 end), 2) as monto_cash_mb,
+                                       round(sum(case
+                                                   when vfp.forma like ''CC%'' then
+                                                     vfp.importe_pago
+                                                   ELSE 0
+                                                 end), 2) as monto_cc_mb,
+                                       round(sum(case
+                                                   when vfp.forma like ''CT%'' then
+                                                     vfp.importe_pago
+                                                   ELSE 0
+                                                 end), 2) as monto_cte_mb,
+                                       round(sum(case
+                                                   when vfp.forma like ''MCO%'' then
+                                                     vfp.importe_pago
+                                                   ELSE 0
+                                                 end), 2) as monto_mco_mb,
+                                       round(sum(case
+                                                   when vfp.forma not similar to
+                                                     ''(CA|CC|CT|MCO)%'' then
+                                                     vfp.importe_pago
+                                                   ELSE 0
+                                                 end), 2) as monto_otro_mb,
+                                       pxp.list(vfp.nombre_forma) as forma_pago
+                                from vef.tfactucompag_endesis vfp
+                                inner join param.tmoneda mon on mon.codigo_internacional=vfp.moneda
+                                inner join vef.tfactucom_endesis v on v.id_factucom=vfp.id_factucom
+                                where mon.id_moneda = '||v_id_moneda||' and (v.fecha::date between '''||v_parametros.fecha_desde||''' and
+                                      '''||v_parametros.fecha_hasta||''' )
+                                group by vfp.id_factucom)
+						        select ''BOB''::varchar as moneda_emision,
+                                   ''venta''::varchar as tipo,
+                                   v.fecha::date as fecha,
+                                   v.nrofac::varchar as correlativo_venta,
+                                   v.razon_cliente,
+                                   ''''::varchar as boleto,
+                                   v.observacion::varchar as ruta,
+                                   ''''::varchar as conceptos,';
 
-        v_consulta = v_consulta || ' forma_pago_mb AS(
-                      select vfp.id_venta,
-                      sum(CASE when fp.codigo = ''CA'' then
-                             		vfp.monto_transaccion - vfp.cambio
-                             	 ELSE
-                                 	0
-                                 END) as monto_cash_mb,
-                             sum(CASE
-                                   when fp.codigo like ''CC%'' then
-                                     vfp.monto_transaccion - vfp.cambio
-                                   ELSE 0
-                                 END) as monto_cc_mb,
-                             sum(CASE
-                                   when fp.codigo like ''CT%'' then
-                                     vfp.monto_transaccion - vfp.cambio
-                                   ELSE 0
-                                 END) as monto_cte_mb,
-                             sum(CASE
-                                   when fp.codigo like ''MCO%'' then
-                                     vfp.monto_transaccion - vfp.cambio
-                                   ELSE 0
-                                 END) as monto_mco_mb,
-                             sum(CASE
-                                   when fp.codigo not similar to ''(CA|CC|CT|MCO)%'' then
-                                     vfp.monto_transaccion - vfp.cambio
-                                   ELSE 0
-                                 END) as monto_otro_mb,
-                      pxp.list(fp.nombre) as forma_pago
-                      from  vef.tventa_forma_pago vfp
-                      inner join vef.tforma_pago fp on vfp.id_forma_pago = fp.id_forma_pago
-                      inner join vef.tventa v on v.id_venta = vfp.id_venta
-                      where fp.id_moneda = ' || v_id_moneda || ' and (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
-                      group by vfp.id_venta
-                  )
-                  select ''' || v_cod_moneda || '''::varchar as moneda_emision, ''venta''::varchar as tipo,v.fecha::date as fecha,v.correlativo_venta,cli.nombre_factura,v.observaciones::varchar as boleto,''''::varchar as ruta,string_agg(cig.desc_ingas,''|'')::varchar as conceptos,
-                  ';
+        END IF;
+
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''') as forma_pago,
                     			coalesce(fpusd.monto_cash_usd, 0) as monto_cash_usd,
@@ -285,39 +383,79 @@ $body$
                          					coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
                                             coalesce(fpmb.monto_otro_mb, 0) as monto_otro_usd,';
         end if;
-        v_consulta = v_consulta || '
-                  coalesce(fpmb.monto_cash_mb, 0) as monto_cash_mb,
-                  coalesce(fpmb.monto_cc_mb, 0) as monto_cc_mb,
-                  coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
-                  coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
-                  coalesce(fpmb.monto_otro_mb, 0) as monto_otro_mb,
-                  0::numeric,
-                  string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
-                  NULL::varchar as mensaje_error
-                  from vef.tventa v
-                  inner join vef.tventa_detalle vd
-                      on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
-                  inner join vef.tsucursal_producto sp
-                      on sp.id_sucursal_producto = vd.id_sucursal_producto
-                  inner join param.tconcepto_ingas cig
-                      on cig.id_concepto_ingas = sp.id_concepto_ingas
-                  inner join vef.tcliente cli
-                      on cli.id_cliente = v.id_cliente';
+
+        IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+
+            v_consulta = v_consulta || '
+                      coalesce(fpmb.monto_cash_mb, 0) as monto_cash_mb,
+                      coalesce(fpmb.monto_cc_mb, 0) as monto_cc_mb,
+                      coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
+                      coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
+                      coalesce(fpmb.monto_otro_mb, 0) as monto_otro_mb,
+                      0::numeric,
+                      string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
+                      NULL::varchar as mensaje_error
+                      from vef.tventa v
+                      inner join vef.tventa_detalle vd
+                          on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
+                      inner join vef.tsucursal_producto sp
+                          on sp.id_sucursal_producto = vd.id_sucursal_producto
+                      inner join param.tconcepto_ingas cig
+                          on cig.id_concepto_ingas = sp.id_concepto_ingas
+                      inner join vef.tcliente cli
+                          on cli.id_cliente = v.id_cliente';
+        ELSE
+        	v_consulta = v_consulta || ' coalesce(fpmb.monto_cash_mb, 0) as monto_cash_mb,
+                         coalesce(fpmb.monto_cc_mb, 0) as monto_cc_mb,
+                         coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
+                         coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
+                         coalesce(fpmb.monto_otro_mb, 0) as monto_otro_mb,
+                         v.monto::numeric,
+                         ''''::varchar as precios_detalles,
+                         NULL::varchar as mensaje_error
+                  from vef.tfactucom_endesis v
+                       inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
+        END IF;
+
         if (v_cod_moneda != 'USD') then
-          v_consulta = v_consulta || ' left join forma_pago_usd fpusd
-                      on v.id_venta = fpusd.id_venta ';
+        	IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+                v_consulta = v_consulta || ' left join forma_pago_usd fpusd
+                            on v.id_venta = fpusd.id_venta ';
+			ELSE
+            	v_consulta = v_consulta || ' left join forma_pago_usd fpusd on v.id_factucom = fpusd.id_factucom ';
+            END IF;
 
         end if;
 
-        v_consulta = v_consulta || ' left join forma_pago_mb fpmb
-                      on v.id_venta = fpmb.id_venta
-                  where v.estado = ''finalizado'' and ' || v_filtro || ' and
-                  	(v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
-                  group by v.fecha,v.correlativo_venta,cli.nombre_factura,v.observaciones,
-                  			fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
-                  )
-		union ALL
-	 		(WITH ';
+		IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+            v_consulta = v_consulta || ' left join forma_pago_mb fpmb
+                          on v.id_venta = fpmb.id_venta
+                      where v.estado = ''finalizado'' and
+                        (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
+                      group by v.fecha,v.correlativo_venta,cli.nombre_factura,v.observaciones,
+                                fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
+                      )
+            union ALL
+                (WITH ';
+        ELSE
+        	v_consulta = v_consulta || ' left join forma_pago_mb fpmb on v.id_factucom = fpmb.id_factucom
+                  where v.estado_reg = ''emitida'' ' || v_filtro_cajero_factura || ' and
+                        (v.fecha::date between '''||v_parametros.fecha_desde||''' and '''||v_parametros.fecha_hasta||''')
+                  group by v.fecha,
+                           v.nrofac,
+                           v.monto,
+                           v.razon_cliente,
+                           v.observacion,
+                           fpmb.forma_pago,
+                           fpmb.monto_cash_mb,
+                           fpmb.monto_cc_mb,
+                           fpmb.monto_cte_mb,
+                           fpmb.monto_mco_mb,
+                           fpmb.monto_otro_mb'|| v_group_by ||')
+                  UNION ALL
+                  (WITH ';
+        END IF;
+
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || ' bol_forma_pago_usd  AS(
         			select bfp.id_boleto_amadeus,
@@ -391,7 +529,7 @@ $body$
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                 group by bimp.id_boleto
             )
-             SELECT b.moneda::varchar as moneda_emision,''boleto''::varchar as tipo ,b.fecha_emision, ''''::varchar as correlativo_venta,b.pasajero::varchar as nombre_factura,b.nro_boleto as boleto,b.ruta_completa as ruta ,
+             SELECT b.moneda::varchar as moneda_emision,''boleto''::varchar as tipo ,b.fecha_emision, ''''::varchar as correlativo_venta,b.pasajero::varchar as nombre_factura,b.nro_boleto::varchar as boleto,b.ruta_completa as ruta ,
              imp.impuesto as conceptos,
              ';
         if (v_cod_moneda != 'USD') then
@@ -437,7 +575,7 @@ $body$
              case when b.voided != ''si'' then coalesce(fpmb.monto_cte_mb,0) else 0 end as monto_cte_mb,
              case when b.voided != ''si'' then coalesce(fpmb.monto_mco_mb,0) else 0 end as monto_mco_mb,
              case when b.voided != ''si'' then coalesce(fpmb.monto_otro_mb,0) else 0 end as monto_otro_mb,
-             b.neto,
+             b.total,
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error
              from obingresos.tboleto_amadeus b
@@ -456,11 +594,11 @@ $body$
 
              where b.estado_reg = ''activo'' and b.estado=''revisado'' and ' || v_filtro || ' and
              (b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' ||v_parametros.fecha_hasta || ''')
-             '||v_filtro_cajero||'
-             group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.neto,imp.impuesto,
+             '||v_filtro_cajero_boleto||'
+             group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
                       fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb '|| v_group_by || ')
-             order by fecha,boleto';
+             order by fecha,boleto,correlativo_venta';
         raise notice '%',v_consulta;
         --Devuelve la respuesta
         return v_consulta;

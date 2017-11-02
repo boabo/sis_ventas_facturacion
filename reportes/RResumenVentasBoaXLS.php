@@ -120,7 +120,10 @@ class RResumenVentasBoaXLS
 		$totales = array();
 		$correlativo_hoja = 1;
 		$correlativo_general = 1;
+
+
 		foreach ($datos as $key => $value) {
+
 			//si es distinta creamos una nueva hoja
 			if ($value['fecha'] != $fecha) {
 				$objFecha = DateTime::createFromFormat('Y-m-d', $value['fecha']);
@@ -164,7 +167,6 @@ class RResumenVentasBoaXLS
 				$boleto = $value['boleto'];
 				$recibo = $value['correlativo'];
 			}
-
 			if ($value['mensaje_error'] != '') {
 				$this->docexcel->getActiveSheet()->getStyle('C'.$fila .':D'.$fila)->applyFromArray($this->styleDetalleRojo);
 			}
@@ -180,7 +182,6 @@ class RResumenVentasBoaXLS
 			if ($value['mensaje_error'] != '') {
 				$this->docexcel->setActiveSheetIndex(0)->getStyle('C'.$fila_general .':D'.$fila_general)->applyFromArray($this->styleDetalleRojo);
 			}
-
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('A'.$fila_general,$correlativo_general);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('B'.$fila_general,$objFecha->format('d-M'));
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('C'.$fila_general,$value['pasajero']);
@@ -202,7 +203,6 @@ class RResumenVentasBoaXLS
 					$this->docexcel->setActiveSheetIndex($sheetId);
 				}
 			}
-
 			//imprimir totales y ofmr ade pago
 			if ($config[count($config)-10]['nombre'] == 'CASH USD') {
 				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 3].$fila,$value['monto_cash_usd']);
@@ -229,8 +229,8 @@ class RResumenVentasBoaXLS
 				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 6].$fila_general,$value['monto_otro_mb']);
 				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 7].$fila_general,$value['forma_pago']);
 				$this->docexcel->setActiveSheetIndex($sheetId);
-			} else {
 
+			} else {
 				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 3].$fila,$value['monto_cash_usd']);
 				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 2].$fila,$value['monto_cc_usd']);
 				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 1].$fila,$value['monto_cte_usd']);
@@ -248,12 +248,10 @@ class RResumenVentasBoaXLS
 			}
 
 
-
 			$correlativo_hoja++;
 			$correlativo_general++;
 
 		}
-
 		//TOTALES ULTIMA HOJA
 		$this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 6].($fila+2))->applyFromArray($this->styleTotal);
 		$this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
@@ -263,6 +261,7 @@ class RResumenVentasBoaXLS
 
 		$this->docexcel->getActiveSheet()->
 		setCellValue($this->equivalencias[count($conceptos) + 5].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila . ')');
+
 		$this->docexcel->getActiveSheet()->
 		setCellValue($this->equivalencias[count($conceptos) + 6].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila . ')');
 
@@ -277,12 +276,14 @@ class RResumenVentasBoaXLS
 		$this->docexcel->setActiveSheetIndex(0)->mergeCells('A'.($fila_general + 2) .':D'.($fila_general+2));
 		$this->docexcel->setActiveSheetIndex(0)->setCellValue('A'.($fila_general + 2),'TOTAL');
 
+
 		$this->docexcel->setActiveSheetIndex(0)->
 		setCellValue($this->equivalencias[count($conceptos) + 5].($fila_general+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila_general . ')');
+
 		$this->docexcel->setActiveSheetIndex(0)->
 		setCellValue($this->equivalencias[count($conceptos) + 6].($fila_general+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila_general . ')');
 
-		for ($i = 7;$i < 7 + count($conceptos);$i++) {
+		for ($i = 8;$i < 8 + count($conceptos);$i++) {
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[$i].($fila_general + 2),'=SUM(' . $this->equivalencias[$i]. "6:" . $this->equivalencias[$i].$fila_general . ')');
 		}
 
@@ -344,7 +345,7 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->setCellValue('B5','FECHA');
 		$this->docexcel->getActiveSheet()->setCellValue('C5','NOMBRE PAX');
 		$this->docexcel->getActiveSheet()->setCellValue('D5','No TKT');
-		$this->docexcel->getActiveSheet()->setCellValue('E5','No RECIBO');
+		$this->docexcel->getActiveSheet()->setCellValue('E5','No FACTURA');
 		$this->docexcel->getActiveSheet()->setCellValue('F5','RUTA');
 		$this->docexcel->getActiveSheet()->setCellValue('G5','MONEDA');
 
