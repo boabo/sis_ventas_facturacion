@@ -396,8 +396,8 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				'Cerrar Caja',
 				{
 					modal:true,
-					width:1000,
-					height:400
+					width:1100,
+					height:600
 				}, {data:data}, this.idContenedor,'FormCierreCaja',
 				{
 					config:[{
@@ -424,7 +424,12 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				accion :'cerrar',
 				monto_inicial: resp.monto_inicial,
 				obs_apertura: resp.obs_apertura,
-				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera
+				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera,
+				monto_ca_recibo_ml: resp.monto_ca_recibo_ml,
+				monto_cc_recibo_ml: resp.monto_cc_recibo_ml,
+				monto_cte_recibo_ml: resp.monto_cte_recibo_ml,
+				monto_mco_recibo_ml: resp.monto_mco_recibo_ml,
+				monto_otro_recibo_ml: resp.monto_otro_recibo_ml
 			},
 			argument:{wizard:wizard},
 			success:this.successWizard,
