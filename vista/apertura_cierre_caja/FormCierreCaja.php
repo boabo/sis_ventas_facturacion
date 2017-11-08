@@ -29,7 +29,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Total Boletos Bs',
+                                    title: 'Total Boletos M/L',
                                     autoHeight: true,
                                     //layout:'hbox',
                                     items: [],
@@ -43,11 +43,24 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Total Boletos USD',
+                                    title: 'Total Boletos M/E',
                                     autoHeight: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo:1
+                                }
+                            ]
+                        },{
+                            bodyStyle: 'padding-right:10px;',
+                            items: [
+
+                                {
+                                    xtype: 'fieldset',
+                                    title: 'Total Recibos M/L',
+                                    autoHeight: true,
+                                    //layout:'hbox',
+                                    items: [],
+                                    id_grupo:4
                                 }
                             ]
                         },
@@ -57,7 +70,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Total Facturacion Bs',
+                                    title: 'Total Facturacion M/L',
                                     autoHeight: true,
                                     //layout:'hbox',
                                     items: [],
@@ -70,24 +83,11 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Total Facturacion USD',
+                                    title: 'Total Facturacion M/E',
                                     autoHeight: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo:3
-                                }
-                            ]
-                        },{
-                            bodyStyle: 'padding-right:10px;',
-                            items: [
-
-                                {
-                                    xtype: 'fieldset',
-                                    title: 'Total Recibos Bs',
-                                    autoHeight: true,
-                                    //layout:'hbox',
-                                    items: [],
-                                    id_grupo:4
                                 }
                             ]
                         },
@@ -97,7 +97,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Cortes Monedas Bs',
+                                    title: 'Cortes Monedas M/L',
                                     autoHeight: true,
                                     hiden: true,
                                     //layout:'hbox',
@@ -112,7 +112,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Cortes Billetes Bs',
+                                    title: 'Cortes Billetes M/L',
                                     autoHeight: true,
                                     hiden: true,
                                     //layout:'hbox',
@@ -127,7 +127,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
-                                    title: 'Cortes Billetes USD',
+                                    title: 'Cortes Billetes M/E',
                                     autoHeight: true,
                                     hiden: true,
                                     //layout:'hbox',
@@ -328,7 +328,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_inicial',
-                    fieldLabel: 'Monto Inicial',
+                    fieldLabel: 'Importe Inicial',
                     allowBlank: false,
                     disabled: true,
                     anchor: '80%',
@@ -346,7 +346,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_inicial_moneda_extranjera',
-                    fieldLabel: 'Monto Inicial Moneda Extranjera',
+                    fieldLabel: 'Importe Inicial M/E',
                     allowBlank: false,
                     disabled: true,
                     anchor: '80%',
@@ -378,7 +378,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_ca_boleto_bs',
-                    fieldLabel: 'Monto Cash Boletos Bs',
+                    fieldLabel: 'Importe Cash Boletos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -396,7 +396,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_boleto_bs',
-                    fieldLabel: 'Monto Tarjetas Boletos Bs',
+                    fieldLabel: 'Importe Tarjetas Boletos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -414,7 +414,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cte_boleto_bs',
-                    fieldLabel: 'Monto Cta Cte Boletos Bs',
+                    fieldLabel: 'Importe Cta Cte Boletos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -432,7 +432,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_mco_boleto_bs',
-                    fieldLabel: 'Monto MCO Boletos Bs',
+                    fieldLabel: 'Importe MCO Boletos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -450,7 +450,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_otro_boleto_bs',
-                    fieldLabel: 'Monto Otros Boletos Bs',
+                    fieldLabel: 'Importe Otros Boletos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -468,7 +468,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_boleto_moneda_base',
-                    fieldLabel: 'Total Boletos Moneda Local',
+                    fieldLabel: 'Total Boletos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -486,7 +486,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_ca_boleto_usd',
-                    fieldLabel: 'Monto Cash Boletos USD',
+                    fieldLabel: 'Importe Cash Boletos M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -504,7 +504,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_boleto_usd',
-                    fieldLabel: 'Monto Tarjetas Boletos USD',
+                    fieldLabel: 'Importe Tarjetas Boletos M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -522,7 +522,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cte_boleto_usd',
-                    fieldLabel: 'Monto Cta Cte Boletos USD',
+                    fieldLabel: 'Importe Cta Cte Boletos M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -540,7 +540,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_mco_boleto_usd',
-                    fieldLabel: 'Monto MCO Boletos USD',
+                    fieldLabel: 'Importe MCO Boletos M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -558,7 +558,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_otro_boleto_usd',
-                    fieldLabel: 'Monto Otros Boletos USD',
+                    fieldLabel: 'Importe Otros Boletos M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -576,7 +576,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_boleto_moneda_usd',
-                    fieldLabel: 'Total Boletos Moneda USD',
+                    fieldLabel: 'Total Boletos Moneda M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -594,7 +594,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_ca_facturacion_bs',
-                    fieldLabel: 'Monto Cash Facturacion Bs',
+                    fieldLabel: 'Importe Cash Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -612,7 +612,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_facturacion_bs',
-                    fieldLabel: 'Monto Tarjetas Facturacion Bs',
+                    fieldLabel: 'Importe Tarjetas Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -630,7 +630,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cte_facturacion_bs',
-                    fieldLabel: 'Monto Cta Cte Facturacion Bs',
+                    fieldLabel: 'Importe Cta Cte Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -648,7 +648,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_mco_facturacion_bs',
-                    fieldLabel: 'Monto MCO Facturacion Bs',
+                    fieldLabel: 'Importe MCO Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -666,7 +666,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_otro_facturacion_bs',
-                    fieldLabel: 'Monto Otros Facturacion Bs',
+                    fieldLabel: 'Importe Otros Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -684,7 +684,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_moneda_base_fp_facturacion',
-                    fieldLabel: 'Total Facturacion Moneda Local',
+                    fieldLabel: 'Total Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -702,7 +702,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_ca_facturacion_usd',
-                    fieldLabel: 'Monto Cash Facturacion USD',
+                    fieldLabel: 'Importe Cash Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -720,7 +720,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_facturacion_usd',
-                    fieldLabel: 'Monto Tarjetas Facturacion USD',
+                    fieldLabel: 'Importe Tarjetas Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -738,7 +738,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cte_facturacion_usd',
-                    fieldLabel: 'Monto Cta Cte Facturacion USD',
+                    fieldLabel: 'Importe Cta Cte Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -756,7 +756,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_mco_facturacion_usd',
-                    fieldLabel: 'Monto MCO Facturacion USD',
+                    fieldLabel: 'Importe MCO Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -774,7 +774,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_otro_facturacion_usd',
-                    fieldLabel: 'Monto Otros Facturacion USD',
+                    fieldLabel: 'Importe Otros Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -792,7 +792,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_moneda_ref_fp_facturacion',
-                    fieldLabel: 'Total Facturacion Moneda USD',
+                    fieldLabel: 'Total Facturacion Moneda M/E',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -810,14 +810,15 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_ca_recibo_ml',
-                    fieldLabel: 'Monto Cash Recibos Bs',
+                    fieldLabel: 'Importe Cash Recibos M/L',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:4,
@@ -828,68 +829,15 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_recibo_ml',
-                    fieldLabel: 'Monto Tarjetas Recibos Bs',
+                    fieldLabel: 'Importe Tarjetas Recibos M/L',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
-                },
-                type:'NumberField',
-                id_grupo:4,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_cte_recibo_ml',
-                    fieldLabel: 'Monto Cta Cte Recibos Bs',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2
-                },
-                type:'NumberField',
-                id_grupo:4,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_mco_recibo_ml',
-                    fieldLabel: 'Monto MCO Recibos Bs',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2
-                },
-                type:'NumberField',
-                id_grupo:4,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_otro_recibo_ml',
-                    fieldLabel: 'Monto Otros Recibos Bs',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:4,
@@ -900,7 +848,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_recibo_moneda_base',
-                    fieldLabel: 'Total Recibos Moneda Local',
+                    fieldLabel: 'Total Recibos M/L',
                     allowBlank: true,
                     disabled:true,
                     anchor: '80%',
@@ -932,14 +880,15 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'total_efectivo_ml',
-                    fieldLabel: 'Total Efectivo Bs',
+                    fieldLabel: 'Total Efectivo M/L',
                     allowBlank: false,
-                    disabled: true,
+                    readOnly: true,
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #3cf251;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:5,
@@ -949,15 +898,15 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'total_efectivo_me',
-                    fieldLabel: 'Total Efectivo USD',
+                    fieldLabel: 'Total Efectivo M/E',
                     allowBlank: false,
-                    disabled: true,
+                    readOnly: true,
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
-
+                    decimalPrecision : 2,
+                    style: 'background-color: #3cf251;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:5,
@@ -968,13 +917,14 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'arqueo_moneda_local',
-                    fieldLabel: 'Arqueo Moneda Local',
+                    fieldLabel: 'Arqueo M/L',
                     allowBlank: false,
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 filters:{pfiltro:'apcie.arqueo_moneda_local',type:'numeric'},
@@ -986,17 +936,37 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'arqueo_moneda_extranjera',
-                    fieldLabel: 'Arqueo Moneda Extranjera',
+                    fieldLabel: 'Arqueo M/E',
                     allowBlank: false,
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
 
                 },
                 type:'NumberField',
                 filters:{pfiltro:'apcie.arqueo_moneda_extranjera',type:'numeric'},
+                id_grupo:5,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'diferencia',
+                    fieldLabel: 'Diferencia M/L',
+                    allowBlank: true,
+                    readOnly: true,
+                    anchor: '90%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    style: 'background-color: #3cf251;  background-image: none;'
+                },
+                type:'NumberField',
                 id_grupo:5,
                 grid:true,
                 form:true,
@@ -1027,7 +997,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1045,7 +1016,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1063,7 +1035,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1081,7 +1054,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1099,7 +1073,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1117,7 +1092,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1135,7 +1111,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1153,7 +1130,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1171,7 +1149,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1189,7 +1168,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1207,7 +1187,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1225,7 +1206,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1243,7 +1225,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1261,7 +1244,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1279,7 +1263,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1297,7 +1282,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1315,7 +1301,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1333,7 +1320,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1425,8 +1413,12 @@ header("content-type: text/javascript; charset=UTF-8");
             //TODO passar los datos obtenidos del wizard y pasar  el evento save
 
             if (this.form.getForm().isValid()) {
-                this.fireEvent('beforesave',this,this.getValues());
-                this.getValues();
+                if(this.Cmp.diferencia.getValue() >= 1 || this.Cmp.diferencia.getValue() <= -1){
+                    alert('Existe diferencia de : '+ this.Cmp.diferencia.getValue());
+                }else{
+                    this.fireEvent('beforesave',this,this.getValues());
+                    this.getValues();
+                }
             }
         },
 
@@ -1443,10 +1435,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 //obs_apertura:this.Cmp.obs_apertura.getValue(),
                 monto_inicial_moneda_extranjera: this.data.monto_inicial_moneda_extranjera,
                 monto_ca_recibo_ml: this.Cmp.monto_ca_recibo_ml.getValue(),
-                monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue(),
-                monto_cte_recibo_ml: this.Cmp.monto_cte_recibo_ml.getValue(),
-                monto_mco_recibo_ml: this.Cmp.monto_mco_recibo_ml.getValue(),
-                monto_otro_recibo_ml: this.Cmp.monto_otro_recibo_ml.getValue()
+                monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue()
             }
             return resp;
         },
@@ -1456,144 +1445,152 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue()+newValue);
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue() + this.Cmp.monto_cte_recibo_ml.getValue()+
-                        this.Cmp.monto_mco_recibo_ml.getValue() + this.Cmp.monto_otro_recibo_ml.getValue());
+                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue() + this.Cmp.monto_cte_recibo_ml.getValue()+
-                        this.Cmp.monto_mco_recibo_ml.getValue() + this.Cmp.monto_otro_recibo_ml.getValue());
-                }
-            }, this);
-
-            this.Cmp.monto_cte_recibo_ml.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue() + this.Cmp.monto_cte_recibo_ml.getValue()+
-                        this.Cmp.monto_mco_recibo_ml.getValue() + this.Cmp.monto_otro_recibo_ml.getValue());
-                }
-            }, this);
-
-            this.Cmp.monto_mco_recibo_ml.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue() + this.Cmp.monto_cte_recibo_ml.getValue()+
-                        this.Cmp.monto_mco_recibo_ml.getValue() + this.Cmp.monto_otro_recibo_ml.getValue());
-                }
-            }, this);
-
-            this.Cmp.monto_otro_recibo_ml.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue() + this.Cmp.monto_cte_recibo_ml.getValue()+
-                        this.Cmp.monto_mco_recibo_ml.getValue() + this.Cmp.monto_otro_recibo_ml.getValue());
+                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
                 }
             }, this);
 
             this.Cmp.monto_moneda_10_ctvs.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_moneda_20_ctvs.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_moneda_50_ctvs.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_moneda_1_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_moneda_2_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_moneda_5_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_10_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_20_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_50_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_100_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_200_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_1_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_2_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_5_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_10_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_20_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_50_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_billete_100_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+            this.Cmp.arqueo_moneda_local.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+            this.Cmp.arqueo_moneda_extranjera.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
         },
@@ -1611,6 +1608,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_billete_5_usd.getValue()*5 + this.Cmp.monto_billete_10_usd.getValue()*10 + this.Cmp.monto_billete_20_usd.getValue()*20 +
                 this.Cmp.monto_billete_50_usd.getValue()*50 + this.Cmp.monto_billete_100_usd.getValue()*100;
             return total;
+        },
+
+        calcularDiferencia : function () {
+            var total_efectivo = this.Cmp.total_efectivo_ml.getValue() + (this.Cmp.total_efectivo_me.getValue()*6.96);
+            var total_arqueo = this.Cmp.arqueo_moneda_local.getValue() + (this.Cmp.arqueo_moneda_extranjera.getValue()*6.96);
+            return total_efectivo - total_arqueo;
         }
+
     })
 </script>
