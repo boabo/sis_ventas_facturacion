@@ -33,15 +33,15 @@ class ACTAperturaCierreCaja extends ACTbase{
 	}
 
     function listarCierreCaja(){
-        $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+        /*$this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
         $this->objParam->defecto('dir_ordenacion','asc');
 
         if($this->objParam->getParametro('id_punto_venta') != '') {
             $this->objParam->addFiltro(" apcie.id_punto_venta = " . $this->objParam->getParametro('id_punto_venta'));
-        }
+        }*/
 
         $this->objFunc=$this->create('MODAperturaCierreCaja');
-        $this->res=$this->objFunc->listarCierreCaja($this->objParam);
+        $this->res=$this->objFunc->reporteAperturaCierreCaja($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 

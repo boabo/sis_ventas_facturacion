@@ -162,8 +162,8 @@ BEGIN
                          apcie.arqueo_moneda_extranjera,
                          obingresos.f_monto_forma_pago_boletos('''||v_moneda_base::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_base_fp_boleto,
                          obingresos.f_monto_forma_pago_boletos('''||v_moneda_ref::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_ref_fp_boleto,
-                         vef.f_monto_forma_pago('''||v_moneda_base::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_base_fp_ventas,
-                         vef.f_monto_forma_pago('''||v_moneda_ref::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_ref_fp_ventas
+                         vef.f_monto_forma_pago_endesis('''||v_moneda_base::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_base_fp_ventas,
+                         vef.f_monto_forma_pago_endesis('''||v_moneda_ref::varchar||''','||v_parametros.id_usuario_cajero||','''||v_parametros.fecha::date||''') as monto_ref_fp_ventas
                   from vef.tapertura_cierre_caja apcie
                   inner join obingresos.tboleto_amadeus bol on bol.id_punto_venta=apcie.id_punto_venta and bol.id_usuario_cajero= '||v_parametros.id_usuario_cajero||'
                   inner join vef.tpunto_venta pv on pv.id_punto_venta=apcie.id_punto_venta
@@ -389,7 +389,7 @@ BEGIN
                       left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
                                                       and b.fecha_reg::date = acc.fecha_apertura_cierre and
                                                       b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
-
+													  and b.voided=''no''
                       left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
                       left join forma_pago fp on fp.id_forma_pago = bfp.id_forma_pago
                       left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
@@ -404,6 +404,173 @@ BEGIN
                       pv.codigo , pv.nombre, s.codigo ,s.nombre,acc.id_punto_venta,
                       acc.id_usuario_cajero,acc.obs_cierre, acc.arqueo_moneda_local,
                       acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera';
+
+            IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
+
+            	v_consulta:= 'with total_ventas as(('||v_consulta||')
+                              UNION ALL
+                              (with forma_pago as (
+                                      select fp.id_forma_pago,
+                                             fp.id_moneda,
+                                             (case
+                                                when fp.codigo like ''CA%'' then ''CASH''
+                                                when fp.codigo like ''CC%'' then ''CC''
+                                                when fp.codigo like ''CT%'' then ''CT''
+                                                when fp.codigo like ''MCO%'' then ''MCO''
+                                                else ''OTRO''
+                                              end)::varchar as codigo
+                                      from obingresos.tforma_pago fp)
+                                  select u.desc_persona::varchar,
+                                         to_char(acc.fecha_apertura_cierre, ''DD/MM/YYYY'')::varchar as fecha_apertura_cierre,
+                                         v.pais,
+                                         v.estacion,
+                                         v.agt || '' - '' || v.razon_sucursal as punto_venta,
+                                         acc.obs_cierre::varchar,
+                                         acc.arqueo_moneda_local,
+                                         acc.arqueo_moneda_extranjera,
+                                         acc.monto_inicial,
+                                         acc.monto_inicial_moneda_extranjera,
+                                         '||v_tipo_cambio||'::numeric as tipo_cambio,
+                                         '''||v_tiene_dos_monedas||'''::varchar as tiene_dos_monedas,
+                                         '''||v_moneda_local||'''::varchar as moneda_local,
+                                         '''||v_moneda_extranjera||'''::varchar as moneda_extranjera,
+                                         '''||v_cod_moneda_local||'''::varchar as cod_moneda_local,
+                                         '''||v_cod_moneda_extranjera||'''::varchar as cod_moneda_extranjera,
+                                         0 as efectivo_boletos_ml,
+                                         0 as efectivo_boletos_me,
+                                         0 as tarjeta_boletos_ml,
+                                         0 as tarjeta_boletos_me,
+                                         0 as cuenta_corriente_boletos_ml,
+                                         0 as cuenta_corriente_boletos_me,
+                                         0 as mco_boletos_ml,
+                                         0 as mco_boletos_me,
+                                         0 as otro_boletos_ml,
+                                         0 as otro_boletos_me,
+                                         sum(case
+                                               when fp2.codigo = ''CASH'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
+                                               else 0
+                                             end) as efectivo_ventas_ml,
+                                         sum(case
+                                               when fp2.codigo = ''CASH'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               else 0
+                                             end) as efectivo_ventas_me,
+                                         sum(case
+                                               when fp2.codigo = ''CC'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
+                                               else 0
+                                             end) as tarjeta_ventas_ml,
+                                         sum(case
+                                               when fp2.codigo = ''CC'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               else 0
+                                             end) as tarjeta_vetas_me,
+                                         sum(case
+                                               when fp2.codigo = ''CT'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
+                                               else 0
+                                             end) as cuenta_corriente_ventas_ml,
+                                         sum(case
+                                               when fp2.codigo = ''CT'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               else 0
+                                             end) as cuenta_corriente_ventas_me,
+                                         sum(case
+                                               when fp2.codigo = ''MCO'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
+                                               else 0
+                                             end) as mco_ventas_ml,
+                                         sum(case
+                                               when fp2.codigo = ''MCO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               else 0
+                                             end) as mco_ventas_me,
+                                         sum(case
+                                               when fp2.codigo = ''OTRO'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
+                                               else 0
+                                             end) as otro_ventas_ml,
+                                         sum(case
+                                               when fp2.codigo like ''OTRO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               else 0
+                                             end) as otro_ventas_me,
+                                         0 as comisiones_ml,
+                                         0 as comisiones_me
+                                  from vef.tapertura_cierre_caja acc
+                                       inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
+                                       inner join vef.tfactucom_endesis v on v.fecha=acc.fecha_apertura_cierre and v.estado_reg=''emitida'' and v.usuario=u.cuenta
+                                       inner join vef.tfactucompag_endesis vfp on vfp.id_factucom=v.id_factucom
+                                       inner join forma_pago fp2 on fp2.id_forma_pago=(select fp.id_forma_pago
+                                                                                          from obingresos.tforma_pago fp
+                                                                                          inner join param.tmoneda mon on mon.id_moneda=fp.id_moneda
+                                                                                          inner join param.tlugar lug on lug.id_lugar=fp.id_lugar
+                                                                                          where fp.codigo=vfp.forma and mon.codigo_internacional=vfp.moneda and
+                                                                                          lug.codigo=vfp.pais)
+                                  where acc.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
+                                  group by u.desc_persona,
+                                           acc.fecha_apertura_cierre,
+                                           acc.id_punto_venta,
+                                           acc.id_usuario_cajero,
+                                           acc.obs_cierre,
+                                           acc.arqueo_moneda_local,
+                                           acc.arqueo_moneda_extranjera,
+                                           acc.monto_inicial,
+                                           acc.monto_inicial_moneda_extranjera,
+                                           v.pais,
+                                           v.estacion,
+                                           v.agt,
+                                           v.razon_sucursal)
+                                           )select desc_persona::varchar,
+                                                   to_char::varchar,
+                                                   pais::varchar,
+                                                   estacion::varchar,
+                                                   ''''::varchar as punto_venta,
+                                                   obs_cierre::varchar,
+                                                   arqueo_moneda_local::numeric,
+                                                   arqueo_moneda_extranjera::numeric,
+                                                   monto_inicial::numeric,
+                                                   monto_inicial_moneda_extranjera::numeric,
+                                                   tipo_cambio::numeric,
+                                                   tiene_dos_monedas::varchar,
+                                                   moneda_local::varchar,
+                                                   moneda_extranjera::varchar,
+                                                   cod_moneda_local::varchar,
+                                                   cod_moneda_extranjera::varchar,
+                                                   sum(efectivo_boletos_ml)::numeric as  efectivo_boletos_ml,
+                                                   sum(efectivo_boletos_me)::numeric as  efectivo_boletos_me,
+                                                   sum(tarjeta_boletos_ml)::numeric as tarjeta_boletos_ml,
+                                                   sum(tarjeta_boletos_me)::numeric as tarjeta_boletos_me,
+                                                   sum(cuenta_corriente_boletos_ml)::numeric as cuenta_corriente_boletos_ml,
+                                                   sum(cuenta_corriente_boletos_me)::numeric as cuenta_corriente_boletos_me,
+                                                   sum(mco_boletos_ml)::numeric as mco_boletos_ml,
+                                                   sum(mco_boletos_me)::numeric as mco_boletos_me,
+                                                   sum(otro_boletos_ml)::numeric as otro_boletos_ml,
+                                                   sum(otro_boletos_me)::numeric as otro_boletos_me,
+                                                   sum(efectivo_ventas_ml)::numeric as efectivo_ventas_ml,
+                                                   sum(efectivo_ventas_me)::numeric as efectivo_ventas_me,
+                                                   sum(tarjeta_ventas_ml)::numeric as tarjeta_ventas_ml,
+                                                   sum(tarjeta_vetas_me)::numeric as tarjeta_vetas_me,
+                                                   sum(cuenta_corriente_ventas_ml)::numeric as cuenta_corriente_ventas_ml,
+                                                   sum(cuenta_corriente_ventas_me)::numeric as cuenta_corriente_ventas_me,
+                                                   sum(mco_ventas_ml)::numeric as mco_ventas_ml,
+                                                   sum(mco_ventas_me)::numeric as mco_ventas_me,
+                                                   sum(otro_ventas_ml)::numeric as otro_ventas_ml,
+                                                   sum(otro_ventas_me)::numeric as otro_ventas_me,
+                                                   sum(comisiones_ml)::numeric as comisiones_ml,
+                                                   sum(comisiones_me)::numeric as comisiones_me
+                                            from
+                                           total_ventas
+                                           group by
+                                           desc_persona,
+                                           to_char,
+                                           pais,
+                                           estacion,
+                                           obs_cierre,
+                                           arqueo_moneda_local,
+                                           arqueo_moneda_extranjera,
+                                           monto_inicial,
+                                           monto_inicial_moneda_extranjera,
+                                           tipo_cambio,
+                                           tiene_dos_monedas,
+                                           moneda_local,
+                                           moneda_extranjera,
+                                           cod_moneda_local,
+                                           cod_moneda_extranjera';
+
+
+            END IF;
 
 			--Definicion de la respuesta
 
