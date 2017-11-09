@@ -142,6 +142,21 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 {
                                     xtype: 'fieldset',
+                                    title: 'Apertura',
+                                    autoHeight: true,
+                                    hiden: true,
+                                    //layout:'hbox',
+                                    items: [],
+                                    id_grupo: 9
+                                }
+                            ]
+                        },
+                        {
+                            bodyStyle: 'padding-right:10px;',
+                            items:[
+
+                                {
+                                    xtype: 'fieldset',
                                     title: 'Cierre',
                                     autoHeight: true,
                                     hiden: true,
@@ -328,8 +343,8 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_inicial',
-                    fieldLabel: 'Importe Inicial',
-                    allowBlank: false,
+                    fieldLabel: 'Importe Inicial M/L',
+                    allowBlank: true,
                     disabled: true,
                     anchor: '80%',
                     gwidth: 100,
@@ -338,16 +353,17 @@ header("content-type: text/javascript; charset=UTF-8");
                     decimalPrecision : 2
                 },
                 type:'NumberField',
+                id_grupo: 9,
                 filters:{pfiltro:'apcie.monto_inicial',type:'numeric'},
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
                 config:{
                     name: 'monto_inicial_moneda_extranjera',
                     fieldLabel: 'Importe Inicial M/E',
-                    allowBlank: false,
+                    allowBlank: true,
                     disabled: true,
                     anchor: '80%',
                     gwidth: 100,
@@ -356,9 +372,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     decimalPrecision : 2
                 },
                 type:'NumberField',
+                id_grupo: 9,
                 filters:{pfiltro:'apcie.monto_inicial_moneda_extranjera',type:'numeric'},
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
@@ -367,13 +384,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Obs. Apertura',
                     disabled: true,
                     allowBlank: true,
-                    anchor: '100%',
+                    anchor: '80%',
                     gwidth: 200
                 },
                 type:'TextArea',
+                id_grupo: 9,
                 filters:{pfiltro:'apcie.obs_apertura',type:'string'},
                 grid:true,
-                form:false
+                form:true
             },
             {
                 config:{
@@ -1404,6 +1422,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']));
                 this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']));
 
+                this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
+                this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
+
             }else{
                 alert('ocurrio error al obtener datos de la caja')
             }
@@ -1431,9 +1452,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 obs_cierre:this.Cmp.obs_cierre.getValue(),
                 arqueo_moneda_local:this.Cmp.arqueo_moneda_local.getValue(),
                 arqueo_moneda_extranjera:this.Cmp.arqueo_moneda_extranjera.getValue(),
-                monto_inicial:this.data.monto_inicial,
-                //obs_apertura:this.Cmp.obs_apertura.getValue(),
-                monto_inicial_moneda_extranjera: this.data.monto_inicial_moneda_extranjera,
+                monto_inicial:this.Cmp.monto_inicial.getValue(),
+                //obs_apertura:this.data.obs_apertura,
+                monto_inicial_moneda_extranjera: this.Cmp.monto_inicial_moneda_extranjera.getValue(),
                 monto_ca_recibo_ml: this.Cmp.monto_ca_recibo_ml.getValue(),
                 monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue()
             }
@@ -1613,7 +1634,7 @@ header("content-type: text/javascript; charset=UTF-8");
         calcularDiferencia : function () {
             var total_efectivo = this.Cmp.total_efectivo_ml.getValue() + (this.Cmp.total_efectivo_me.getValue()*6.96);
             var total_arqueo = this.Cmp.arqueo_moneda_local.getValue() + (this.Cmp.arqueo_moneda_extranjera.getValue()*6.96);
-            return total_efectivo - total_arqueo;
+            return total_arqueo - total_efectivo;
         }
 
     })
