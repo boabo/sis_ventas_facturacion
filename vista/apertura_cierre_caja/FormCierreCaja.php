@@ -51,16 +51,43 @@ header("content-type: text/javascript; charset=UTF-8");
                                 }
                             ]
                         },{
-                            bodyStyle: 'padding-right:10px;',
+                            bodyStyle: 'padding-right:10px; border-style: none;',
                             items: [
-
                                 {
-                                    xtype: 'fieldset',
-                                    title: 'Total Recibos M/L',
-                                    autoHeight: true,
+                                    //xtype: 'fieldset',
+                                    //title: 'Total Recibos M/L',
+                                    autoHeight: false,
                                     //layout:'hbox',
-                                    items: [],
-                                    id_grupo:4
+                                    items: [
+                                        {
+                                            bodyStyle: 'padding-right:10px; padding-left:10px;',
+                                            items: [
+
+                                                {
+                                                    xtype: 'fieldset',
+                                                    title: 'Total Recibos M/L',
+                                                    autoHeight: true,
+                                                    //layout:'hbox',
+                                                    items: [],
+                                                    id_grupo:4
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            bodyStyle: 'padding-right:10px; padding-left:10px;',
+                                            items: [
+
+                                                {
+                                                    xtype: 'fieldset',
+                                                    title: 'Total Comisiones',
+                                                    autoHeight: true,
+                                                    //layout:'hbox',
+                                                    items: [],
+                                                    id_grupo:10
+                                                }
+                                            ]
+                                        }],
+                                    //id_grupo:4
                                 }
                             ]
                         },
@@ -831,7 +858,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cash Recibos M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -850,7 +877,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Recibos M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -869,7 +896,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Total Recibos M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -878,6 +905,42 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'NumberField',
                 id_grupo:4,
                 grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'comisiones_ml',
+                    fieldLabel: 'Comisiones M/L',
+                    allowBlank: true,
+                    disabled:true,
+                    anchor: '90%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2
+                },
+                type:'NumberField',
+                id_grupo:10,
+                //grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'comisiones_me',
+                    fieldLabel: 'Comisiones M/E',
+                    allowBlank: true,
+                    disabled:true,
+                    anchor: '90%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2
+                },
+                type:'NumberField',
+                id_grupo:10,
+                //grid:true,
                 form:true,
                 valorInicial :0.00
             },
@@ -1007,65 +1070,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_moneda_10_ctvs',
-                    fieldLabel: '0.10',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
-                },
-                type:'NumberField',
-                id_grupo:6,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_moneda_20_ctvs',
-                    fieldLabel: '0.20',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
-                },
-                type:'NumberField',
-                id_grupo:6,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_moneda_50_ctvs',
-                    fieldLabel: '0.50',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
-                },
-                type:'NumberField',
-                id_grupo:6,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_moneda_1_ml',
-                    fieldLabel: '1',
+                    name: 'monto_moneda_5_ml',
+                    fieldLabel: '5',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1102,8 +1108,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_moneda_5_ml',
-                    fieldLabel: '5',
+                    name: 'monto_moneda_1_ml',
+                    fieldLabel: '1',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1121,8 +1127,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_billete_10_ml',
-                    fieldLabel: '10',
+                    name: 'monto_moneda_50_ctvs',
+                    fieldLabel: '0.50',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1133,15 +1139,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
-                id_grupo:7,
+                id_grupo:6,
                 grid:true,
                 form:true,
                 valorInicial :0.00
             },
             {
                 config:{
-                    name: 'monto_billete_20_ml',
-                    fieldLabel: '20',
+                    name: 'monto_moneda_20_ctvs',
+                    fieldLabel: '0.20',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1152,15 +1158,34 @@ header("content-type: text/javascript; charset=UTF-8");
                     style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
-                id_grupo:7,
+                id_grupo:6,
                 grid:true,
                 form:true,
                 valorInicial :0.00
             },
             {
                 config:{
-                    name: 'monto_billete_50_ml',
-                    fieldLabel: '50',
+                    name: 'monto_moneda_10_ctvs',
+                    fieldLabel: '0.10',
+                    allowBlank: true,
+                    disabled:false,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:6,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_200_ml',
+                    fieldLabel: '200',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1197,8 +1222,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_billete_200_ml',
-                    fieldLabel: '200',
+                    name: 'monto_billete_50_ml',
+                    fieldLabel: '50',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1216,8 +1241,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_billete_1_usd',
-                    fieldLabel: '1',
+                    name: 'monto_billete_20_ml',
+                    fieldLabel: '20',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1228,52 +1253,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
-                id_grupo:8,
+                id_grupo:7,
                 grid:true,
                 form:true,
                 valorInicial :0.00
             },
             {
                 config:{
-                    name: 'monto_billete_2_usd',
-                    fieldLabel: '2',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
-                },
-                type:'NumberField',
-                id_grupo:8,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_billete_5_usd',
-                    fieldLabel: '5',
-                    allowBlank: true,
-                    disabled:false,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
-                },
-                type:'NumberField',
-                id_grupo:8,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_billete_10_usd',
+                    name: 'monto_billete_10_ml',
                     fieldLabel: '10',
                     allowBlank: true,
                     disabled:false,
@@ -1285,15 +1272,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
-                id_grupo:8,
+                id_grupo:7,
                 grid:true,
                 form:true,
                 valorInicial :0.00
             },
             {
                 config:{
-                    name: 'monto_billete_20_usd',
-                    fieldLabel: '20',
+                    name: 'monto_billete_100_usd',
+                    fieldLabel: '100',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1330,8 +1317,84 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_billete_100_usd',
-                    fieldLabel: '100',
+                    name: 'monto_billete_20_usd',
+                    fieldLabel: '20',
+                    allowBlank: true,
+                    disabled:false,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:8,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_10_usd',
+                    fieldLabel: '10',
+                    allowBlank: true,
+                    disabled:false,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:8,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_5_usd',
+                    fieldLabel: '5',
+                    allowBlank: true,
+                    disabled:false,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:8,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_2_usd',
+                    fieldLabel: '2',
+                    allowBlank: true,
+                    disabled:false,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:8,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_1_usd',
+                    fieldLabel: '1',
                     allowBlank: true,
                     disabled:false,
                     anchor: '80%',
@@ -1424,6 +1487,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
                 this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
+                this.Cmp.comisiones_ml.setValue(reg.datos[0]['comisiones_ml']);
+                this.Cmp.comisiones_me.setValue(reg.datos[0]['comisiones_me']);
 
             }else{
                 alert('ocurrio error al obtener datos de la caja')
