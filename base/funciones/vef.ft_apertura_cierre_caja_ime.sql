@@ -169,6 +169,8 @@ BEGIN
 			monto_inicial_moneda_extranjera = v_parametros.monto_inicial_moneda_extranjera,
 			id_usuario_ai = v_parametros._id_usuario_ai,
 			usuario_ai = v_parametros._nombre_usuario_ai,
+            monto_ca_recibo_ml = v_parametros.monto_ca_recibo_ml,
+            monto_cc_recibo_ml = v_parametros.monto_cc_recibo_ml,
             estado = (case when v_parametros.accion = 'cerrar' then
             			'cerrado'
             		  else
@@ -260,7 +262,7 @@ BEGIN
 
             	--si el total de ventas y boletos es menor q los arqueos en moneda de sucursal falta dinero!!!
                 if (v_total_boletos + v_total_ventas + v_registro.monto_inicial + param.f_convertir_moneda(v_id_moneda_usd,v_id_moneda,coalesce(v_registro.monto_inicial_moneda_extranjera,0),now()::date,'O',2) > v_parametros.arqueo_moneda_local + COALESCE(v_parametros.arqueo_moneda_extranjera,0) ) then
-                	raise exception 'Los montos del arqueo en moneda local y extranjera son inferiores al total vendido en efectivo mas el monto inicial: %',v_total_boletos + v_total_ventas + v_registro.monto_inicial;
+                	--raise exception 'Los montos del arqueo en moneda local y extranjera son inferiores al total vendido en efectivo mas el monto inicial: %',v_total_boletos + v_total_ventas + v_registro.monto_inicial;
                 end if;
 
             end if;
@@ -316,6 +318,29 @@ BEGIN
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Apertura de Caja eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_apertura_cierre_caja',v_parametros.id_apertura_cierre_caja::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+    /*********************************
+ 	#TRANSACCION:  'VF_APCIE_FECH'
+ 	#DESCRIPCION:	Insertar  entrega brinks
+ 	#AUTOR:		MMM
+ 	#FECHA:		10-11-2017
+	***********************************/
+
+	elsif(p_transaccion='VF_APCIE_FECH')then
+
+		begin
+
+        update vef.tapertura_cierre_caja   set
+        id_entrega_brinks = v_parametros.id_entrega_brinks
+        where fecha_apertura_cierre::date = v_parametros.fecha;
+
+         --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','entrega insertada (a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_entrega_brinks',v_parametros.id_entrega_brinks::varchar);
 
             --Devuelve la respuesta
             return v_resp;

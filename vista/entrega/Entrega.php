@@ -188,8 +188,11 @@ header("content-type: text/javascript; charset=UTF-8");
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+                format: 'd/m/Y',
+                renderer: function(value,p,record){
+                    return '<tpl for="."><div class="x-combo-list-item"><p><font color="black"><b>'+record.data['fecha_recojo'].dateFormat('d/m/Y')+'</b></font></p></p></div></tpl>';
+
+                }
 			},
 				type:'DateField',
 				filters:{pfiltro:'eng.fecha_recojo',type:'date'},
@@ -197,6 +200,24 @@ header("content-type: text/javascript; charset=UTF-8");
 				grid:true,
 				form:true
 		},
+        {
+            config:{
+                name: 'nombre_punto_venta',
+                fieldLabel: 'Punto de Venta / Codigo / Estacion',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 270,
+                maxLength:100,
+                disabled: true,
+                renderer: function(value,p,record){
+                    return '<tpl for="."><div class="x-combo-list-item"><p><b>Punto de venta: </b> <font color="#006400"><b>'+record.data['nombre_punto_venta']+'</b></font></p><p><b>Codigo: </b><font color="#dc143c"><b>'+record.data['codigo']+'</b></font></p> <p><b>Estacion: </b><font color="#191970"><b>'+record.data['estacion']+'</b></font></p></div></tpl>';
+
+                }
+            },
+            type:'TextField',
+            grid:true,
+            form:false
+        },
         {
             config:{
                 name: 'arqueo_moneda_local',
@@ -362,12 +383,14 @@ header("content-type: text/javascript; charset=UTF-8");
         {name:'arqueo_moneda_local', type: 'numeric'},
         {name:'arqueo_moneda_extranjera', type: 'numeric'},
         {name:'id_punto_venta', type: 'numeric'},
-        {name:'nombre_punto_venta', type: 'string'}
+        {name:'nombre_punto_venta', type: 'string'},
+        {name:'estacion', type: 'string'},
+        {name:'codigo', type: 'string'}
 		
 	],
 	sortInfo:{
 		field: 'id_entrega_brinks',
-		direction: 'ASC'
+		direction: 'DESC'
 	},
     tabsouth :[
         {

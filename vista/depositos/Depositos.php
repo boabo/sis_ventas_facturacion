@@ -57,32 +57,12 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             form:true
         },
         {
-            //configuracion del componente
-            config:{
-                labelSeparator:'',
-                inputType:'hidden',
-                name: 'id_sucursal'
-            },
-            type:'Field',
-            form:true
-        },
-        {
-            //configuracion del componente
-            config:{
-                labelSeparator:'',
-                inputType:'hidden',
-                name: 'id_deposito'
-            },
-            type:'Field',
-            form:true
-        },
-        {
             config:{
                 name: 'cajero',
                 fieldLabel: 'Cajero',
                 allowBlank: true,
                 anchor: '80%',
-                gwidth: 200,
+                gwidth: 190,
                 maxLength:-5
             },
             type:'TextField',
@@ -104,18 +84,23 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             type:'TextField',
             filters:{pfiltro:'cdo.codigo',type:'string'},
             id_grupo:1,
-            grid:true,
-            form:true,
+            grid:false,
+            form:false,
             bottom_filter:true
         },
         {
             config:{
                 name: 'nombre_punto_venta',
-                fieldLabel: 'Nombre Punto Venta',
+                fieldLabel: 'Punto de Venta / Codigo / Estacion',
                 allowBlank: true,
                 anchor: '80%',
-                gwidth: 250,
-                maxLength:100
+                gwidth: 270,
+                maxLength:100,
+                disabled: true,
+                renderer: function(value,p,record){
+                    return '<tpl for="."><div class="x-combo-list-item"><p><b>Punto de venta: </b> <font color="#006400"><b>'+record.data['nombre_punto_venta']+'</b></font></p><p><b>Codigo: </b><font color="#dc143c"><b>'+record.data['codigo']+'</b></font></p> <p><b>Estacion: </b><font color="#191970"><b>'+record.data['estacion']+'</b></font></p></div></tpl>';
+
+                }
             },
             type:'TextField',
             filters:{pfiltro:'cdo.nombre_punto_venta',type:'string'},
@@ -124,9 +109,9 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             form:true,
             bottom_filter:true
         },
-        {
+       /* {
             config:{
-                name: 'codigo_lugar',
+                name: 'estacion',
                 fieldLabel: 'Estación',
                 allowBlank: true,
                 anchor: '80%',
@@ -134,11 +119,11 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
                 maxLength:25
             },
             type:'TextField',
-            filters:{pfiltro:'cdo.codigo_lugar',type:'string'},
+            filters:{pfiltro:'cdo.estacion',type:'string'},
             id_grupo:1,
             grid:true,
             form:true
-        },
+        },*/
         {
             config:{
                 name: 'fecha_venta',
@@ -214,10 +199,10 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
                 fieldLabel: 'Total Deposito (Bs)',
                 allowBlank: true,
                 anchor: '80%',
-                gwidth: 100,
+                gwidth: 120,
                 maxLength:1179650,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="blue">{0}</font></b><br></div>', value);
+                    return String.format('<div ext:qtip="Optimo"><b><font color="#0000cd">{0}</font></b><br></div>', value);
                 }
             },
             type:'NumberField',
@@ -232,10 +217,10 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
                 fieldLabel: 'Total Deposito ($us)',
                 allowBlank: true,
                 anchor: '80%',
-                gwidth: 100,
+                gwidth: 120,
                 maxLength:1179650,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="red">{0}</font></b><br></div>', value);
+                    return String.format('<div ext:qtip="Optimo"><b><font color="#dc143c">{0}</font></b><br></div>', value);
                 }
             },
             type:'NumberField',
@@ -254,23 +239,20 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 	fields: [
 		{name:'id_apertura_cierre_caja', type: 'numeric'},
         {name:'id_punto_venta', type: 'numeric'},
-        {name:'id_sucursal', type: 'numeric'},
         {name:'id_entrega_brinks', type: 'numeric'},
         {name:'id_usuario_cajero', type: 'numeric'},
-        {name:'id_deposito', type: 'numeric'},
         {name:'cajero', type: 'string'},
         {name:'codigo', type: 'string'},
-        {name:'nro_deposito', type: 'string'},
         {name:'nombre_punto_venta', type: 'string'},
-        {name:'nombre_sucursal', type: 'string'},
-        {name:'codigo_lugar', type: 'string'},
+        {name:'codigo_padre', type: 'string'},
+        {name:'estacion', type: 'string'},
         {name:'fecha_venta', type: 'date',dateFormat:'Y-m-d'},
         {name:'fecha_recojo', type: 'date',dateFormat:'Y-m-d'},
-		{name:'fecha_hora_cierre', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
         {name:'arqueo_moneda_local', type: 'numeric'},
         {name:'arqueo_moneda_extranjera', type: 'numeric'},
         {name:'deposito_bs', type: 'numeric'},
-        {name:'deposito_$us', type: 'numeric'}
+        {name:'deposito_$us', type: 'numeric'},
+        {name:'tipo_cambio', type: 'numeric'}
 
 	],
 	sortInfo:{

@@ -83,6 +83,7 @@ header("content-type: text/javascript; charset=UTF-8");
                          mode: 'remote',
                          pageSize: 15,
                          queryDelay: 1000,
+                         format: 'd/m/Y',
                          gwidth: 150,
                          listWidth: 450,
                          resizable: true,
@@ -90,7 +91,7 @@ header("content-type: text/javascript; charset=UTF-8");
                          renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
                      },
                      type: 'ComboBox',
-                     filters: {pfiltro:'ap.fecha_apertura_cierre', type:'date'},
+                     filters: {pfiltro:'ap.fecha_apertura_cierre', type:'string'},
                      id_grupo: 1,
                      grid: true,
                      form: true

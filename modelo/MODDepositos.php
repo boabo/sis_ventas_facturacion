@@ -22,20 +22,20 @@ class MODDepositos extends MODbase{
 		//Definicion de la lista del resultado del query
 		$this->captura('id_apertura_cierre_caja','int4');
         $this->captura('id_punto_venta','int4');
-        $this->captura('id_sucursal','int4');
         $this->captura('id_entrega_brinks','int4');
         $this->captura('id_usuario_cajero','int4');
-        $this->captura('cajero','text');
-        $this->captura('codigo','varchar');
+        $this->captura('codigo_padre','varchar');
+        $this->captura('estacion','varchar');
         $this->captura('nombre_punto_venta','varchar');
-		$this->captura('nombre_sucursal','varchar');
-        $this->captura('codigo_lugar','varchar');
-        $this->captura('fecha_venta','date');
+        $this->captura('codigo','varchar');
+        $this->captura('cajero','text');
         $this->captura('fecha_recojo','date');
+        $this->captura('fecha_venta','date');
         $this->captura('arqueo_moneda_local','numeric');
         $this->captura('arqueo_moneda_extranjera','numeric');
         $this->captura('deposito_bs','numeric');
         $this->captura('deposito_$us','numeric');
+        $this->captura('tipo_cambio','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -47,10 +47,14 @@ class MODDepositos extends MODbase{
 			
 	function insertarDepositos(){
 		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='vef.ft_depositos_ime';
+
+
+        $this->procedimiento='vef.ft_depositos_ime';
 		$this->transaccion='VF_CDO_INS';
 		$this->tipo_procedimiento='IME';
-				
+
+
+
 		//Define los parametros para la funcion
 		$this->setParametro('nro_deposito','nro_deposito','varchar');
 		$this->setParametro('id_punto_venta','id_punto_venta','int4');
@@ -130,6 +134,7 @@ class MODDepositos extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
+
 }
 ?>

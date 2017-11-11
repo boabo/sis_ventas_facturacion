@@ -44,7 +44,14 @@ BEGIN
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:='select
+			v_consulta:=' WITH punto_venta AS (SELECT p.id_punto_venta,
+                                            l.codigo AS estacion,
+                                            p.nombre,
+                                            p.codigo
+                                           FROM param.tlugar l
+                                             inner join vef.tsucursal s ON s.id_lugar = l.id_lugar
+                                             inner join vef.tpunto_venta p ON p.id_sucursal = s.id_sucursal)
+						select
 						eng.id_entrega_brinks,
 						eng.fecha_recojo,
 						eng.estado_reg,
@@ -63,10 +70,12 @@ BEGIN
                         from vef.tapertura_cierre_caja a
                         where a.id_entrega_brinks = eng.id_entrega_brinks)::numeric  as arqueo_moneda_extranjera,
                         eng.id_punto_venta,
-                        pu.nombre as nombre_punto_venta
+                        initcap (v.nombre)::varchar as nombre_punto_venta,
+                        v.estacion,
+                        v.codigo
 						from vef.tentrega eng
 						inner join segu.tusuario usu1 on usu1.id_usuario = eng.id_usuario_reg
-                        inner join vef.tpunto_venta pu on pu.id_punto_venta = eng.id_punto_venta
+                        inner join punto_venta v on v.id_punto_venta = eng.id_punto_venta
 						left join segu.tusuario usu2 on usu2.id_usuario = eng.id_usuario_mod
                         where   ';
 
@@ -90,10 +99,17 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_entrega_brinks)
+			v_consulta:='WITH punto_venta AS (SELECT p.id_punto_venta,
+                                            l.codigo AS estacion,
+                                            p.nombre,
+                                            p.codigo
+                                           FROM param.tlugar l
+                                             inner join vef.tsucursal s ON s.id_lugar = l.id_lugar
+                                             inner join vef.tpunto_venta p ON p.id_sucursal = s.id_sucursal)
+            select count(id_entrega_brinks)
 					    from vef.tentrega eng
 					    inner join segu.tusuario usu1 on usu1.id_usuario = eng.id_usuario_reg
-                        inner join vef.tpunto_venta pu on pu.id_punto_venta = eng.id_punto_venta
+                        inner join punto_venta v on v.id_punto_venta = eng.id_punto_venta
 						left join segu.tusuario usu2 on usu2.id_usuario = eng.id_usuario_mod
 					    where ';
 
@@ -114,7 +130,7 @@ BEGIN
 
 		begin
 
-        v_consulta:='select  to_char( ap.fecha_apertura_cierre,''DD/MM/YYYY'') as fecha_cierre,
+        v_consulta:='select  to_char( ap.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar as fecha_cierre,
         			ap.id_punto_venta
                     from vef.tapertura_cierre_caja ap
                     where ap.id_entrega_brinks is null and ap.estado =''cerrado'' and';

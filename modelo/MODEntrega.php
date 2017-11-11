@@ -35,6 +35,8 @@ class MODEntrega extends MODbase{
         $this->captura('arqueo_moneda_extranjera','numeric');
         $this->captura('id_punto_venta','int4');
         $this->captura('nombre_punto_venta','varchar');
+        $this->captura('estacion','varchar');
+        $this->captura('codigo','varchar');
 
 		
 		//Ejecuta la instruccion
@@ -107,7 +109,7 @@ class MODEntrega extends MODbase{
         $this->setCount(false);
 
         //Definicion de la lista del resultado del query
-        $this->captura('fecha_cierre','text');
+        $this->captura('fecha_cierre','varchar');
         $this->captura('id_punto_venta','int4');
 
         //Ejecuta la instruccion

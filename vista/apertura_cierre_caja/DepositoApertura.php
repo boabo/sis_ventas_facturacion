@@ -36,9 +36,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
             );
             this.finCons = true;
-            this.store.baseParams.tipo = 'agencia';
-            this.store.baseParams.estado = 'borrador';
-
         },
         gruposBarraTareas: [
             {name: 'borrador', title: '<H1 align="center"><i class="fa fa-eye"></i> Registrados</h1>', grupo: 0, height: 0},
@@ -127,7 +124,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type: 'Field',
                 form: true,
-                valorInicial : 'agencia'
+                valorInicial : 'venta_agencia'
             },
 
             {
@@ -315,7 +312,7 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
         tam_pag: 50,
         title: 'Depositos',
-        ActSave: '../../sis_obingresos/control/Deposito/completarDeposito',
+        ActSave: '../../sis_obingresos/control/Deposito/insertarDeposito',
         ActDel:'../../sis_obingresos/control/Deposito/eliminarDepositoPortal',
         ActList: '../../sis_obingresos/control/Deposito/listarDeposito',
         id_store: 'id_deposito',
@@ -390,6 +387,10 @@ header("content-type: text/javascript; charset=UTF-8");
         loadValoresIniciales:function(){
             Phx.vista.DepositoApertura.superclass.loadValoresIniciales.call(this);
             this.getComponente('id_apertura_cierre_caja').setValue(this.maestro.id_apertura_cierre_caja);
+        },
+        onButtonEdit: function() {
+            Phx.vista.DepositoApertura.superclass.onButtonEdit.call(this);
+            this.getComponente('tipo').setValue('venta_agencia');
         }
 
 

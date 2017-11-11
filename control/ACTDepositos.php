@@ -39,7 +39,9 @@ class ACTDepositos extends ACTbase{
 		$this->res=$this->objFunc->eliminarDepositos($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-			
+
+
+
 }
 
 ?>
