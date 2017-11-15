@@ -1501,6 +1501,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
                 this.Cmp.comisiones_ml.setValue(reg.datos[0]['comisiones_ml']);
                 this.Cmp.comisiones_me.setValue(reg.datos[0]['comisiones_me']);
+                this.Cmp.diferencia.setValue(this.calcularDiferencia());
 
             }else{
                 alert('ocurrio error al obtener datos de la caja')
