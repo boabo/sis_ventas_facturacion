@@ -77,7 +77,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = eng.id_usuario_reg
                         inner join punto_venta v on v.id_punto_venta = eng.id_punto_venta
 						left join segu.tusuario usu2 on usu2.id_usuario = eng.id_usuario_mod
-                        where   ';
+                        where  id_usuario_reg='||p_id_usuario||' and ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -111,7 +111,7 @@ BEGIN
 					    inner join segu.tusuario usu1 on usu1.id_usuario = eng.id_usuario_reg
                         inner join punto_venta v on v.id_punto_venta = eng.id_punto_venta
 						left join segu.tusuario usu2 on usu2.id_usuario = eng.id_usuario_mod
-					    where ';
+					    where id_usuario_reg='||p_id_usuario||' and ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -133,7 +133,7 @@ BEGIN
         v_consulta:='select  to_char( ap.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar as fecha_cierre,
         			ap.id_punto_venta
                     from vef.tapertura_cierre_caja ap
-                    where ap.id_entrega_brinks is null and ap.estado =''cerrado'' and';
+                    where ap.id_entrega_brinks is null and ap.estado =''cerrado'' and ap.id_usuario_cajero='||p_id_usuario||' and ';
 
 
         v_consulta:=v_consulta||v_parametros.filtro;

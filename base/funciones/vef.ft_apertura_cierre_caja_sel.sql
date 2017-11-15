@@ -353,30 +353,31 @@ BEGIN
                           else
                               0
                           end)as otro_ventas_me,
-                      (	select sum(ven.comision) from vef.tventa ven
+                      COALESCE((	select sum(ven.comision) from vef.tventa ven
                           where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_base  || ' and
                                   ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                   and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                  ven.estado = ''finalizado'') +
+                                  ven.estado = ''finalizado''),0) +
 
-                      (	select sum(bol.comision) from obingresos.tboleto_amadeus bol
+                      COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_base  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
                                   and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''revisado'') as comisiones_ml,
+                                  bol.estado = ''revisado''),0) as comisiones_ml,
 
-                      (	select sum(ven.comision) from vef.tventa ven
+                      COALESCE((	select sum(ven.comision) from vef.tventa ven
                           where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_tri  || ' and
                                   ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                   and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                  ven.estado = ''finalizado'') +
+                                  ven.estado = ''finalizado''),0) +
 
-                      (	select sum(bol.comision) from obingresos.tboleto_amadeus bol
+                      COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_tri  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
                                    and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''revisado'')   as comisiones_me
-
+                                  bol.estado = ''revisado''),0)   as comisiones_me,
+					  acc.monto_ca_recibo_ml,
+                      acc.monto_cc_recibo_ml
                       from vef.tapertura_cierre_caja acc
                       inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
                       left join vef.tsucursal s on acc.id_sucursal = s.id_sucursal
@@ -403,7 +404,8 @@ BEGIN
                       ppv.codigo,ps.codigo,lpv.codigo,ls.codigo,
                       pv.codigo , pv.nombre, s.codigo ,s.nombre,acc.id_punto_venta,
                       acc.id_usuario_cajero,acc.obs_cierre, acc.arqueo_moneda_local,
-                      acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera';
+                      acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera,
+                      acc.monto_ca_recibo_ml, acc.monto_cc_recibo_ml';
 
             IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
 

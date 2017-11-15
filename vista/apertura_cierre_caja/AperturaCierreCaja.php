@@ -18,6 +18,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.AperturaCierreCaja.superclass.constructor.call(this,config);
 		this.init();
 		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
+		this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'unblock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
 		this.addButton('boletos',{grupo:[0],text: 'Actualizar Boletos',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
 		this.addButton('reporte',{grupo:[0,1],text:'Declaracion de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración Diarias de Ventas</b>'});
 		this.finCons = true;
@@ -396,8 +397,8 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				'Cerrar Caja',
 				{
 					modal:true,
-					width:1100,
-					height:650
+					width:1200,
+					height:550
 				}, {data:data}, this.idContenedor,'FormCierreCaja',
 				{
 					config:[{
@@ -441,6 +442,28 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		Phx.CP.loadingHide();
 		resp.argument.wizard.panel.destroy()
 		this.reload();
+	},
+
+	abrirCaja:function(){
+		Phx.CP.loadingShow();
+		var d = this.sm.getSelected().data;
+		Ext.Ajax.request({
+			url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/abrirAperturaCierreCaja',
+			params:{id_apertura_cierre_caja:d.id_apertura_cierre_caja, estado:d.estado},
+			success:this.successAbrirAperturaCierreCaja,
+			failure: this.conexionFailure,
+			timeout:this.timeout,
+			scope:this
+		});
+
+	},
+
+	successAbrirAperturaCierreCaja:function(resp){
+		Phx.CP.loadingHide();
+		var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+		if(!reg.ROOT.error){
+			this.reload();
+		}
 	},
 
 	/*cerrarCaja:function(wizard,resp){
@@ -535,14 +558,16 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
               this.getBoton('edit').enable(); 
               this.getBoton('del').enable();                                       
               this.getBoton('boletos').enable();
+              this.getBoton('abrir').disable();
         }
         
         if (rec.data.estado == 'cerrado') {              
               this.getBoton('cerrar').disable();
-            this.getBoton('reporte').enable();
+              this.getBoton('reporte').enable();
               this.getBoton('edit').disable(); 
               this.getBoton('del').disable();                                
               this.getBoton('boletos').disable();
+			this.getBoton('abrir').enable();
         }
         
         Phx.vista.AperturaCierreCaja.superclass.preparaMenu.call(this);

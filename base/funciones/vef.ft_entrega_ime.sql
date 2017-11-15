@@ -120,6 +120,10 @@ BEGIN
 
 		begin
 			--Sentencia de la eliminacion
+            update vef.tapertura_cierre_caja  set
+			id_entrega_brinks  = null
+ 			where id_entrega_brinks  = v_parametros.id_entrega_brinks;
+
 			delete from vef.tentrega
             where id_entrega_brinks=v_parametros.id_entrega_brinks;
 

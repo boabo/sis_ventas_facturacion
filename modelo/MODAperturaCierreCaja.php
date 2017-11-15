@@ -140,7 +140,10 @@ class MODAperturaCierreCaja extends MODbase{
         
         $this->captura('comisiones_ml','numeric');
         $this->captura('comisiones_me','numeric');
-        
+
+        $this->captura('monto_ca_recibo_ml','numeric');
+        $this->captura('monto_cc_recibo_ml','numeric');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -203,7 +206,25 @@ class MODAperturaCierreCaja extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
+    function abrirAperturaCierreCaja(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_ABRAPCIE_MOD';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
+        $this->setParametro('estado','estado','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 	function eliminarAperturaCierreCaja(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_apertura_cierre_caja_ime';
@@ -229,7 +250,8 @@ class MODAperturaCierreCaja extends MODbase{
         //Define los parametros para la funcion
         $this->setParametro('fecha','fecha','date');
         $this->setParametro('id_entrega_brinks','id_entrega_brinks','int4');
-
+        $this->setParametro('id_usuario_cajero','id_usuario_cajero','int4');
+        $this->setParametro('id_punto_venta','id_punto_venta','int4');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

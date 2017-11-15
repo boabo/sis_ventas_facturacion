@@ -336,7 +336,9 @@ BEGIN
 
         update vef.tapertura_cierre_caja   set
         id_entrega_brinks = v_parametros.id_entrega_brinks
-        where fecha_apertura_cierre::date = v_parametros.fecha;
+        where fecha_apertura_cierre::date = v_parametros.fecha
+        and id_punto_venta= v_parametros.id_punto_venta
+        and id_usuario_cajero = v_parametros.id_usuario_cajero;
 
          --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','entrega insertada (a)');
@@ -347,7 +349,31 @@ BEGIN
 
 		end;
 
-	else
+    /*********************************
+    #TRANSACCION: 'VF_APCIE_BOR'
+    #DESCRIPCION: Date-mining
+    #AUTOR: MMM
+    #FECHA: 10-11-2017
+    ***********************************/
+
+	elsif (p_transaccion = 'VF_APCIE_BOR') then
+
+  	BEGIN
+
+      update vef.tapertura_cierre_caja  set
+      id_entrega_brinks = null
+      where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
+
+      --Definition of the response
+      	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'delivery inserted (a)');
+        v_resp = pxp.f_agrega_clave(v_resp, 'id_apertura_cierre_caja ', v_parametros.id_apertura_cierre_caja:: varchar);
+
+      --Returns the answer
+        return v_resp;
+
+  	END;
+
+    else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 

@@ -31,6 +31,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Total Boletos M/L',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo:0
@@ -45,6 +46,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Total Boletos M/E',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo:1
@@ -57,6 +59,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     //xtype: 'fieldset',
                                     //title: 'Total Recibos M/L',
                                     autoHeight: false,
+                                    autoWidth: true,
                                     //layout:'hbox',
                                     items: [
                                         {
@@ -67,6 +70,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                                     xtype: 'fieldset',
                                                     title: 'Total Recibos M/L',
                                                     autoHeight: true,
+                                                    autoWidth: true,
                                                     //layout:'hbox',
                                                     items: [],
                                                     id_grupo:4
@@ -81,6 +85,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                                     xtype: 'fieldset',
                                                     title: 'Total Comisiones',
                                                     autoHeight: true,
+                                                    autoWidth: true,
                                                     //layout:'hbox',
                                                     items: [],
                                                     id_grupo:10
@@ -99,6 +104,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Total Facturacion M/L',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo:2
@@ -112,6 +118,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Total Facturacion M/E',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo:3
@@ -127,6 +134,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     title: 'Cortes Monedas M/L',
                                     autoHeight: true,
                                     hiden: true,
+                                    autoWidth: true,
                                     //layout:'hbox',
                                     items: [],
                                     id_grupo: 6
@@ -141,6 +149,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Cortes Billetes M/L',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     hiden: true,
                                     //layout:'hbox',
                                     items: [],
@@ -156,6 +165,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Cortes Billetes M/E',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     hiden: true,
                                     //layout:'hbox',
                                     items: [],
@@ -171,6 +181,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Apertura',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     hiden: true,
                                     //layout:'hbox',
                                     items: [],
@@ -186,6 +197,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     xtype: 'fieldset',
                                     title: 'Cierre',
                                     autoHeight: true,
+                                    autoWidth: true,
                                     hiden: true,
                                     //layout:'hbox',
                                     items: [],
@@ -1443,8 +1455,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
             var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
             if(reg.datos.length=1){
-                var total_boletos_ml = parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['tarjeta_boletos_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_boletos_ml']) + parseFloat(reg.datos[0]['mco_boletos_ml']) + parseFloat(reg.datos[0]['otros_boletos_ml']);
-                var total_boletos_me = parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['tarjeta_boletos_me']) + parseFloat(reg.datos[0]['cuenta_corriente_boletos_me']) + parseFloat(reg.datos[0]['mco_boletos_me']) + parseFloat(reg.datos[0]['otros_boletos_me']);
+                var total_boletos_ml = parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['tarjeta_boletos_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_boletos_ml']) + parseFloat(reg.datos[0]['mco_boletos_ml']) + parseFloat(reg.datos[0]['otros_boletos_ml'] + parseFloat(reg.datos[0]['comisiones_ml']));
+                var total_boletos_me = parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['tarjeta_boletos_me']) + parseFloat(reg.datos[0]['cuenta_corriente_boletos_me']) + parseFloat(reg.datos[0]['mco_boletos_me']) + parseFloat(reg.datos[0]['otros_boletos_me'] + parseFloat(reg.datos[0]['comisiones_me']));
                 this.Cmp.id_apertura_cierre_caja.setValue(reg.datos[0]['id_apertura_cierre_caja']);
                 //this.Cmp.id_punto_venta.setValue(reg.datos[0]['id_punto_venta']);
                 this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
@@ -1482,8 +1494,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_otro_facturacion_usd.setValue(reg.datos[0]['otros_ventas_me']);
                 this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
 
-                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']));
-                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']));
+                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['comisiones_ml'])+ parseFloat(reg.datos[0]['monto_inicial']));
+                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['comisiones_me'])+ parseFloat(reg.datos[0]['monto_inicial_moneda_extranjera']));
 
                 this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
                 this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
@@ -1530,7 +1542,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                    this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue()+newValue);
+                    this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() + + this.Cmp.monto_inicial.getValue() +newValue);
                     this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
