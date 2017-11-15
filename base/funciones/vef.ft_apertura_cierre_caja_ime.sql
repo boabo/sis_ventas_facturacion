@@ -288,18 +288,6 @@ BEGIN
 
 		begin
 
-        	select fecha_apertura_cierre into v_fecha
-            from vef.tapertura_cierre_caja
-            where id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
-
-        	if (exists (select 1
-            			from vef.tapertura_cierre_caja acc
-                        where id_usuario_cajero = p_id_usuario and
-        				acc.fecha_apertura_cierre = v_fecha and estado = 'abierto' and
-                        acc.id_apertura_cierre_caja != v_parametros.id_apertura_cierre_caja )) then
-            	raise exception 'La caja ya esta abierta para el usuario. Por favor revise los datos';
-            end if;
-
             if (exists (select 1
             			from vef.tapertura_cierre_caja acc
                         where id_usuario_cajero = p_id_usuario and
