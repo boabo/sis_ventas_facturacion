@@ -489,7 +489,9 @@ BEGIN
                                                else 0
                                              end) as otro_ventas_me,
                                          0 as comisiones_ml,
-                                         0 as comisiones_me
+                                         0 as comisiones_me,
+                                         0 as monto_ca_recibo_ml,
+                            			 0 as monto_cc_recibo_ml
                                   from vef.tapertura_cierre_caja acc
                                        inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
                                        inner join vef.tfactucom_endesis v on v.fecha=acc.fecha_apertura_cierre and v.estado_reg=''emitida'' and v.usuario=u.cuenta
@@ -551,7 +553,9 @@ BEGIN
                                                    sum(otro_ventas_ml)::numeric as otro_ventas_ml,
                                                    sum(otro_ventas_me)::numeric as otro_ventas_me,
                                                    sum(comisiones_ml)::numeric as comisiones_ml,
-                                                   sum(comisiones_me)::numeric as comisiones_me
+                                                   sum(comisiones_me)::numeric as comisiones_me,
+                                                   sum(monto_ca_recibo_ml)::numeric as monto_ca_recibo_ml,
+                                                   sum(monto_cc_recibo_ml)::numeric as monto_cc_recibo_ml
                                             from
                                            total_ventas
                                            group by
