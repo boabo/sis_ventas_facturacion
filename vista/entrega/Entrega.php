@@ -187,10 +187,14 @@ header("content-type: text/javascript; charset=UTF-8");
 				fieldLabel: 'Recha Recojo',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 225,
                 format: 'd/m/Y',
                 renderer: function(value,p,record){
-                    return '<tpl for="."><div class="x-combo-list-item"><p><font color="black"><b>'+record.data['fecha_recojo'].dateFormat('d/m/Y')+'</b></font></p></p></div></tpl>';
+				    if (record.data['fecha_recojo'] == null){
+                        return '<tpl for="."><div class="x-combo-list-item"><p><b>Recha Recojo:</b> <font color="#a52a2a"><b>'+record.data['fecha_recojo']+'</b></font><p><b>Cajero:</b> <font color="#191970"><b>'+record.data['cajero']+'</b></font></p></div></tpl>';
+                    }else{
+                        return '<tpl for="."><div class="x-combo-list-item"><p><b>Recha Recojo:</b> <font color="#a52a2a"><b>'+record.data['fecha_recojo'].dateFormat('d/m/Y')+'</b></font><p><b>Cajero:</b> <font color="#191970"><b>'+record.data['cajero']+'</b></font></p></div></tpl>';
+                    }
 
                 }
 			},
@@ -385,7 +389,8 @@ header("content-type: text/javascript; charset=UTF-8");
         {name:'id_punto_venta', type: 'numeric'},
         {name:'nombre_punto_venta', type: 'string'},
         {name:'estacion', type: 'string'},
-        {name:'codigo', type: 'string'}
+        {name:'codigo', type: 'string'},
+        {name:'cajero', type: 'string'}
 		
 	],
 	sortInfo:{
@@ -401,7 +406,7 @@ header("content-type: text/javascript; charset=UTF-8");
         }
     ],
 	bdel:true,
-	bsave:true,
+	bsave:false,
 
     cmbPuntoV: new Ext.form.ComboBox({
         name: 'punto_venta',
@@ -421,7 +426,7 @@ header("content-type: text/javascript; charset=UTF-8");
             totalProperty: 'total',
             fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
             remoteSort: true,
-            baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
+            baseParams: {tipo_usuario: 'cajero',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
         }),
         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
         valueField: 'id_punto_venta',
@@ -431,9 +436,9 @@ header("content-type: text/javascript; charset=UTF-8");
         mode:'remote',
         pageSize:50,
         queryDelay:500,
-        listWidth:'250',
+        listWidth:'300',
         hidden:false,
-        width:250
+        width:300
     }),
         capturaFiltros:function(combo, record, index){
             this.desbloquearOrdenamientoGrid();
@@ -443,7 +448,9 @@ header("content-type: text/javascript; charset=UTF-8");
         onButtonNew : function () {
             Phx.vista.Entrega.superclass.onButtonNew.call(this);
             this.Cmp.id_punto_venta.setValue(this.variables_globales.id_punto_venta);
-            //this.Cmp.id_punto_venta.setValue(this.cmbPuntoV.getValue());
+            if(this.variables_globales.id_punto_venta != this.cmbPuntoV.getValue()) {
+                this.Cmp.id_punto_venta.setValue(this.cmbPuntoV.getValue());
+            }
         },
         onButtonReporte:function(){
             var rec=this.sm.getSelected();

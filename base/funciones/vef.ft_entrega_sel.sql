@@ -27,6 +27,7 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
+    v_filto				varchar;
 
 BEGIN
 
@@ -43,6 +44,11 @@ BEGIN
 	if(p_transaccion='VF_ENG_SEL')then
 
     	begin
+        IF 	p_administrador THEN
+        v_filto = '0=0 AND';
+        ELSE
+        v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
+        END IF;
     		--Sentencia de la consulta
 			v_consulta:=' WITH punto_venta AS (SELECT p.id_punto_venta,
                                             l.codigo AS estacion,
@@ -72,12 +78,14 @@ BEGIN
                         eng.id_punto_venta,
                         initcap (v.nombre)::varchar as nombre_punto_venta,
                         v.estacion,
-                        v.codigo
+                        v.codigo,
+                        initcap(u.desc_persona) as cajero
 						from vef.tentrega eng
 						inner join segu.tusuario usu1 on usu1.id_usuario = eng.id_usuario_reg
                         inner join punto_venta v on v.id_punto_venta = eng.id_punto_venta
+                        inner join segu.vusuario u on u.id_usuario = eng.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = eng.id_usuario_mod
-                        where  id_usuario_reg='||p_id_usuario||' and ';
+                        where '||v_filto;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -98,6 +106,11 @@ BEGIN
 	elsif(p_transaccion='VF_ENG_CONT')then
 
 		begin
+         IF 	p_administrador THEN
+        v_filto = '0=0 AND';
+        ELSE
+        v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
+        END IF;
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='WITH punto_venta AS (SELECT p.id_punto_venta,
                                             l.codigo AS estacion,
@@ -110,8 +123,9 @@ BEGIN
 					    from vef.tentrega eng
 					    inner join segu.tusuario usu1 on usu1.id_usuario = eng.id_usuario_reg
                         inner join punto_venta v on v.id_punto_venta = eng.id_punto_venta
+                        inner join segu.vusuario u on u.id_usuario = eng.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = eng.id_usuario_mod
-					    where id_usuario_reg='||p_id_usuario||' and ';
+					    where '||v_filto;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -129,11 +143,20 @@ BEGIN
     elsif(p_transaccion='VF_ENG_FECH')then
 
 		begin
+         IF p_administrador THEN
+        v_filto = 'ap.id_entrega_brinks is null and ap.estado = ''cerrado'' and ';
+        ELSE
+        v_filto = 'ap.id_entrega_brinks is null and ap.estado =''cerrado'' and ap.id_usuario_cajero='||p_id_usuario||' and ';
+        END IF;
 
         v_consulta:='select  to_char( ap.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar as fecha_cierre,
-        			ap.id_punto_venta
+        			ap.id_punto_venta,
+                    initcap(u.desc_persona) as nombre_cajero,
+                    initcap(p.nombre) as nombre
                     from vef.tapertura_cierre_caja ap
-                    where ap.id_entrega_brinks is null and ap.estado =''cerrado'' and ap.id_usuario_cajero='||p_id_usuario||' and ';
+                    inner join segu.vusuario u on u.id_usuario = ap.id_usuario_cajero
+                    inner join vef.tpunto_venta p on p.id_punto_venta = ap.id_punto_venta
+                    where '||v_filto;
 
 
         v_consulta:=v_consulta||v_parametros.filtro;

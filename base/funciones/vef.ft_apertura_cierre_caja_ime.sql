@@ -278,6 +278,52 @@ BEGIN
 		end;
 
 	/*********************************
+ 	#TRANSACCION:  'VF_ABRAPCIE_MOD'
+ 	#DESCRIPCION:	Apertura de caja cerrada
+ 	#AUTOR:		Gonzalo Sarmiento Sejas
+ 	#FECHA:		15-11-2017
+	***********************************/
+
+	elsif(p_transaccion='VF_ABRAPCIE_MOD')then
+
+		begin
+
+        	select fecha_apertura_cierre into v_fecha
+            from vef.tapertura_cierre_caja
+            where id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+
+        	if (exists (select 1
+            			from vef.tapertura_cierre_caja acc
+                        where id_usuario_cajero = p_id_usuario and
+        				acc.fecha_apertura_cierre = v_fecha and estado = 'abierto' and
+                        acc.id_apertura_cierre_caja != v_parametros.id_apertura_cierre_caja )) then
+            	raise exception 'La caja ya esta abierta para el usuario. Por favor revise los datos';
+            end if;
+
+            if (exists (select 1
+            			from vef.tapertura_cierre_caja acc
+                        where id_usuario_cajero = p_id_usuario and
+        				acc.fecha_apertura_cierre != CURRENT_DATE and estado = 'cerrado' and
+                        acc.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja )) then
+            	raise exception 'La caja no puede ser re-abierta posterior a su fecha de apertura para el usuario. Por favor contactarse con personal de Finanzas';
+            end if;
+
+
+			--Sentencia de la modificacion
+			update vef.tapertura_cierre_caja set
+            estado = 'abierto'
+			where id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+
+			--Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Apertura de Caja modificado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_apertura_cierre_caja',v_parametros.id_apertura_cierre_caja::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+	/*********************************
  	#TRANSACCION:  'VF_APCIE_ELI'
  	#DESCRIPCION:	Eliminacion de registros
  	#AUTOR:		jrivera

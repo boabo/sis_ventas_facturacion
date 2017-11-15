@@ -32,6 +32,15 @@ header("content-type: text/javascript; charset=UTF-8");
                      form:true
                  },
                  {
+                     config: {
+                         labelSeparator: '',
+                         inputType: 'hidden',
+                         name: 'id_usuario_cajero'
+                     },
+                     type: 'Field',
+                     form: true
+                 },
+                 {
                      //configuracion del componente
                      config: {
                          labelSeparator: '',
@@ -67,7 +76,7 @@ header("content-type: text/javascript; charset=UTF-8");
                              },
 
                              totalProperty: 'total',
-                             fields: ['fecha_cierre','id_punto_venta'],
+                             fields: ['fecha_cierre','id_punto_venta','nombre_cajero','nombre'],
                              remoteSort: true,
                              baseParams: {id_punto_venta:'si'}
                          }),
@@ -76,6 +85,7 @@ header("content-type: text/javascript; charset=UTF-8");
                          displayField: 'fecha_cierre',
                          gdisplayField: 'fecha_apertura_cierre',
                          hiddenName: 'fecha',
+                         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Fecha apertura cierre: </b><font color="#8b0000"><b>{fecha_cierre}</b></font></p><p><b>Cajero:</b>  <font color="#006400"><b>{nombre_cajero}</b></font> </p><p><b>Punto de venta:</b>  <font color="#483d8b"><b>{nombre}</b></font> </p></div></tpl>',
                          forceSelection: true,
                          typeAhead: false,
                          triggerAction: 'all',
@@ -83,9 +93,9 @@ header("content-type: text/javascript; charset=UTF-8");
                          mode: 'remote',
                          pageSize: 15,
                          queryDelay: 1000,
-                         format: 'd/m/Y',
+                         anchor: '62%',
                          gwidth: 150,
-                         listWidth: 450,
+                         listWidth: 305,
                          resizable: true,
                          minChars: 2,
                          renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
@@ -96,19 +106,6 @@ header("content-type: text/javascript; charset=UTF-8");
                      grid: true,
                      form: true
                  },
-                /* {
-                     config:{
-                         name: 'fecha_apertura_cierre',
-                         fieldLabel: 'Fecha ',
-                         gwidth: 110,
-                         format: 'd/m/Y',
-                         renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-                     },
-                     type:'DateField',
-                     filters: { pfiltro:'apcie.fecha', type:'date'},
-                     grid:true,
-                     form:false
-                 },*/
                  {
                      config:{
                          name: 'nombre_punto_venta',
@@ -238,7 +235,8 @@ header("content-type: text/javascript; charset=UTF-8");
                  {name:'arqueo_moneda_local', type: 'numeric'},
                  {name:'arqueo_moneda_extranjera', type: 'numeric'},
                  {name:'obs_cierre', type: 'string'},
-                 {name:'cajero', type: 'string'}
+                 {name:'cajero', type: 'string'},
+                 {name:'nombre', type: 'string'}
 
 
 
@@ -250,15 +248,16 @@ header("content-type: text/javascript; charset=UTF-8");
          bedit:false,
          onReloadPage: function (m) {
              this.maestro = m;
-             this.store.baseParams = {id_entrega_brinks: this.maestro.id_entrega_brinks};
+             this.store.baseParams = {id_entrega_brinks: this.maestro.id_entrega_brinks, id_punto_venta: this.maestro. id_punto_venta};
              this.load({params: {start: 0, limit: 50}});
          },
          loadValoresIniciales:function() {
              Phx.vista.DepositoEntrega.superclass.loadValoresIniciales.call(this);
              this.getComponente('id_entrega_brinks').setValue(this.maestro.id_entrega_brinks);
+             this.getComponente('id_punto_venta').setValue(this.maestro.id_punto_venta);
+             this.getComponente('id_usuario_cajero').setValue(this.maestro.id_usuario_reg);
          },
          onButtonNew:function(){
-             console.log('fecha',this.Cmp.fecha);
              Phx.vista.DepositoEntrega.superclass.onButtonNew.call(this);
              this.iniciarEvento();
              this.Cmp.fecha.store.baseParams ={id_punto_venta:this.maestro.id_punto_venta};
@@ -268,18 +267,15 @@ header("content-type: text/javascript; charset=UTF-8");
              Phx.vista.DepositoEntrega.superclass.successSave.call(this,resp);
              Phx.CP.getPagina(this.idContenedorPadre).reload();
          },
-
          iniciarEvento:function () {
              this.Cmp.fecha.lastQuery = null;
          },
          onButtonDel:function(){
              var rec=this.sm.getSelected();
-             console.log ('Data',rec.data.id_apertura_cierre_caja);
              this.store.baseParams.id_apertura_cierre_caja =  rec.data.id_apertura_cierre_caja;
              Phx.vista.DepositoEntrega.superclass.onButtonDel.call(this);
+             Phx.CP.getPagina(this.idContenedorPadre).reload();
          }
-
-
          })
 
 </script>

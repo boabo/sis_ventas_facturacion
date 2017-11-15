@@ -37,6 +37,7 @@ class MODEntrega extends MODbase{
         $this->captura('nombre_punto_venta','varchar');
         $this->captura('estacion','varchar');
         $this->captura('codigo','varchar');
+        $this->captura('cajero','text');
 
 		
 		//Ejecuta la instruccion
@@ -111,6 +112,8 @@ class MODEntrega extends MODbase{
         //Definicion de la lista del resultado del query
         $this->captura('fecha_cierre','varchar');
         $this->captura('id_punto_venta','int4');
+        $this->captura('nombre_cajero','text');
+        $this->captura('nombre','text');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

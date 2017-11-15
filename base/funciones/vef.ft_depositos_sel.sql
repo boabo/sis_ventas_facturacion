@@ -28,6 +28,8 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
     v_denominacion		varchar;
+    v_filtro			varchar;
+    v_fill				varchar;
 
 BEGIN
 
@@ -44,6 +46,21 @@ BEGIN
 	if(p_transaccion='VF_CDO_SEL')then
 
     	begin
+           IF p_administrador THEN
+            v_fill = '0 = 0 and';
+            ELSE
+            select pxp.list(pv.id_punto_venta::text)
+            into
+            v_filtro
+            from param.tdepto d
+            inner join vef.tsucursal s on s.id_depto = d.id_depto
+            inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+            inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+            where su.id_usuario  = p_id_usuario and  su.tipo_usuario = 'administrador';
+
+            v_fill = 'cdo.id_punto_venta in('||v_filtro||')and';
+            END IF;
+
     		--Sentencia de la consulta
 			v_consulta:='select cdo.id_apertura_cierre_caja,
         						cdo.id_punto_venta,
@@ -53,7 +70,7 @@ BEGIN
                                 cdo.estacion,
                                 initcap (cdo.nombre)::varchar as nombre_punto_venta,
                                 cdo.codigo,
-                               initcap( cdo.cajero) as cajero,
+                                initcap( cdo.cajero) as cajero,
                                 cdo.fecha_recojo,
                                 cdo.fecha_venta,
                                 cdo.arqueo_moneda_local,
@@ -62,12 +79,12 @@ BEGIN
                                 cdo.deposito_$us,
                                 cdo.tipo_cambio
                                 from vef.vdepositos cdo
-                                where  ';
+                                where '||v_fill;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+			raise notice 'consulta -> %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -83,10 +100,23 @@ BEGIN
 	elsif(p_transaccion='VF_CDO_CONT')then
 
 		begin
-			--Sentencia de la consulta de conteo de registros
+            IF p_administrador THEN
+            v_fill = '0 = 0 and';
+            ELSE
+            select pxp.list(pv.id_punto_venta::text)
+            into
+            v_filtro
+            from param.tdepto d
+            inner join vef.tsucursal s on s.id_depto = d.id_depto
+            inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+            inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+            where su.id_usuario  = p_id_usuario and  su.tipo_usuario = 'administrador';
+
+            v_fill = 'cdo.id_punto_venta in('||v_filtro||')and';
+            END IF;
 			v_consulta:='select count(id_apertura_cierre_caja)
 					    from vef.vdepositos cdo
-					    where ';
+					    where ' ||v_fill;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
