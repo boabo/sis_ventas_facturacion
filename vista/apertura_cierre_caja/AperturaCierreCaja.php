@@ -18,7 +18,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.AperturaCierreCaja.superclass.constructor.call(this,config);
 		this.init();
 		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
-		this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'unblock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
+		this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'bunlock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
 		this.addButton('boletos',{grupo:[0],text: 'Actualizar Boletos',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
 		this.addButton('reporte',{grupo:[0,1],text:'Declaracion de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración Diarias de Ventas</b>'});
 		this.finCons = true;
@@ -144,7 +144,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 	            },
 	            type: 'ComboBox',
 	            id_grupo: 1,
-	            filters: {pfiltro: 'puve.nombre',type: 'string'},
+	            filters: {pfiltro: 'pv.nombre',type: 'string'},
 	            grid: true,
 	            form: true,
 	            grid:true
