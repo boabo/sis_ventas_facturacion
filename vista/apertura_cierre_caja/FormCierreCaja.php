@@ -1494,8 +1494,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 //this.Cmp.monto_otro_facturacion_usd.setValue(reg.datos[0]['otros_ventas_me']);
                 this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
 
-                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['comisiones_ml'])+ parseFloat(reg.datos[0]['monto_inicial']));
-                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['comisiones_me'])+ parseFloat(reg.datos[0]['monto_inicial_moneda_extranjera']));
+                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['comisiones_ml']));
+                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['comisiones_me']));
 
                 this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
                 this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
@@ -1543,7 +1543,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                    this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() + + this.Cmp.monto_inicial.getValue() +newValue);
+                    this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
                     this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
