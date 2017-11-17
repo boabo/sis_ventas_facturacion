@@ -34,8 +34,10 @@ class MODDepositos extends MODbase{
         $this->captura('arqueo_moneda_local','numeric');
         $this->captura('arqueo_moneda_extranjera','numeric');
         $this->captura('deposito_bs','numeric');
-        $this->captura('deposito_$us','numeric');
+        $this->captura('deposito_usd','numeric');
         $this->captura('tipo_cambio','numeric');
+        $this->captura('diferencia_bs','numeric');
+        $this->captura('diferencia_usd','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

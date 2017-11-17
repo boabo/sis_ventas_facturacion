@@ -22,9 +22,20 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         this.getBoton('reporte').enable();
         this.getBoton('rventas').enable();
         this.init();
-		this.load({params:{start:0, limit:this.tam_pag}})
+        this.finCons = true;
+        this.store.baseParams.pes_estado = 'pendiente';
+        this.load({params:{start:0, limit:this.tam_pag}})
 	},
-			
+    gruposBarraTareas:[{name:'pendiente',title:'<H1 align="center"><i class="fa fa-folder-open"></i> Pendientes</h1>',grupo:0,height:0},
+                          {name:'registrado',title:'<H1 align="center"><i class="fa fa-folder"></i> Registrados</h1>',grupo:1,height:0}],
+    actualizarSegunTab: function(name, indice){
+        if(this.finCons) {
+            this.store.baseParams.pes_estado = name;
+            this.load({params:{start:0, limit:this.tam_pag}});
+        }
+    },
+    bactGroups:  [0,1],
+    bexcelGroups: [0,1],
 	Atributos:[
 		{
 			//configuracion del componente
@@ -109,21 +120,6 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             form:true,
             bottom_filter:true
         },
-       /* {
-            config:{
-                name: 'estacion',
-                fieldLabel: 'Estación',
-                allowBlank: true,
-                anchor: '80%',
-                gwidth: 100,
-                maxLength:25
-            },
-            type:'TextField',
-            filters:{pfiltro:'cdo.estacion',type:'string'},
-            id_grupo:1,
-            grid:true,
-            form:true
-        },*/
         {
             config:{
                 name: 'fecha_venta',
@@ -149,7 +145,9 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 100,
 				maxLength:1179650,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="blue">{0}</font></b><br></div>', value);
+                    var dato =  value.replace('.', ",")
+                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                    return '<div ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
                 }
 			},
 				type:'NumberField',
@@ -167,7 +165,9 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 100,
 				maxLength:1179650,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="red">{0}</font></b><br></div>', value);
+                    var dato =  value.replace('.', ",")
+                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                    return '<div ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
                 }
 			},
 				type:'NumberField',
@@ -192,42 +192,110 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
-
         {
-            config:{
+            config: {
                 name: 'deposito_bs',
                 fieldLabel: 'Total Deposito (Bs)',
+                currencyChar: ' ',
                 allowBlank: true,
-                anchor: '80%',
+                width: 100,
                 gwidth: 120,
-                maxLength:1179650,
-                renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="#0000cd">{0}</font></b><br></div>', value);
-                }
+                disabled: true,
+                maxLength: 1245186,
+               renderer:function (value,p,record) {
+                   /*var datos2;
+                   if (record.data['diferencia_bs'] == record.data['arqueo_moneda_local'] ){
+                       datos2= '<p><b>Diferencia: </b><font color="black"><b>'+0+'</b></font></p>';
+                   }else {
+                       datos2= '<p><b>Diferencia: </b><font color="red"><b>'+record.data['diferencia_bs']+'</b></font></p>';
+                   }*/
+                   var dato =  value.replace('.', ",")
+                                    .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                   return '<div ext:qtip="Optimo"><p><font color="#0000cd"><b>'+dato+'</b></font></p></div>';
+
+               }
             },
-            type:'NumberField',
-            filters:{pfiltro:'cdo.arqueo_moneda_local',type:'numeric'},
-            id_grupo:1,
-            grid:true,
-            form:true
+            type: 'MoneyField',
+            filters:{pfiltro:'cdo.deposito_bs',type:'numeric'},
+            id_grupo: 1,
+            grid: true,
+            form: false
         },
         {
-            config:{
-                name: 'deposito_$us',
+            config: {
+                name: 'deposito_usd',
                 fieldLabel: 'Total Deposito ($us)',
+                currencyChar: ' ',
                 allowBlank: true,
-                anchor: '80%',
+                width: 100,
                 gwidth: 120,
-                maxLength:1179650,
+                disabled: true,
+                maxLength: 1245186,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="#dc143c">{0}</font></b><br></div>', value);
+                    var dato =     value.replace('.', ",")
+                                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                    return '<div ext:qtip="Optimo"><p> <font color="#dc143c"><b>'+dato+'</b></font></p></div>';
                 }
             },
-            type:'NumberField',
-            filters:{pfiltro:'cdo.arqueo_moneda_extranjera',type:'numeric'},
-            id_grupo:1,
-            grid:true,
-            form:true
+            type: 'MoneyField',
+            filters:{pfiltro:'cdo.deposito_usd',type:'numeric'},
+            id_grupo: 1,
+            grid: true,
+            form: false
+        },
+
+        {
+            config: {
+                name: 'diferencia_bs',
+                fieldLabel: 'Diferencia (Bs)',
+                currencyChar: ' ',
+                allowBlank: true,
+                width: 100,
+                gwidth: 120,
+                disabled: true,
+                maxLength: 1245186,
+                renderer:function (value,p,record) {
+                    var dato =     record.data['diferencia_bs'].replace('.', ",")
+                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+
+                    if (record.data['diferencia_bs'] == record.data['arqueo_moneda_local'] ){
+                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+0+'</b></font></p></div>';
+                    }else {
+                        return '<div ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
+                    }
+
+                }
+            },
+            type: 'MoneyField',
+            id_grupo: 1,
+            grid: true,
+            form: false
+        },
+        {
+            config: {
+                name: 'diferencia_usd',
+                fieldLabel: 'Diferencia ($us)',
+                currencyChar: ' ',
+                allowBlank: true,
+                width: 100,
+                gwidth: 120,
+                disabled: true,
+                maxLength: 1245186,
+                renderer:function (value,p,record) {
+                    var dato =     record.data['diferencia_usd'].replace('.', ",")
+                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+
+                    if (  record.data['diferencia_usd'] == record.data['arqueo_moneda_extranjera'] ){
+                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+0+'</b></font></p></div>';
+                    }else {
+                        return '<div ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
+                    }
+                }
+            },
+            type: 'MoneyField',
+            id_grupo: 1,
+            grid: true,
+            form: false
         }
 	],
 	tam_pag:50,	
@@ -251,8 +319,10 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         {name:'arqueo_moneda_local', type: 'numeric'},
         {name:'arqueo_moneda_extranjera', type: 'numeric'},
         {name:'deposito_bs', type: 'numeric'},
-        {name:'deposito_$us', type: 'numeric'},
-        {name:'tipo_cambio', type: 'numeric'}
+        {name:'deposito_usd', type: 'numeric'},
+        {name:'tipo_cambio', type: 'numeric'},
+        {name:'diferencia_bs', type: 'numeric'},
+        {name:'diferencia_usd', type: 'numeric'}
 
 	],
 	sortInfo:{
@@ -297,7 +367,6 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             scope:this
         });
     }
-	}
-)
+	})
 </script>
 

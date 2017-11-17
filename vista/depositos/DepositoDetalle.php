@@ -26,7 +26,6 @@ header("content-type: text/javascript; charset=UTF-8");
             });
             this.finCons = true;
             this.store.baseParams.tipo = 'venta_propia';
-            this.iniciarEventos();
         },
 
         archivo : function (){
@@ -202,7 +201,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: false,
                     anchor: '80%',
                     gwidth: 150,
-                    maxLength: 1179650
+                    maxLength: 1179650,
+                    renderer:function (value,p,record) {
+                        var dato =  value.replace('.', ",")
+                            .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+dato+'</b></font></p></div>';
+
+                    }
                 },
                 type: 'NumberField',
                 filters: {pfiltro: 'dep.monto_deposito', type: 'numeric'},
@@ -362,9 +367,7 @@ header("content-type: text/javascript; charset=UTF-8");
             field: 'id_deposito',
             direction: 'DESC'
         },
-        iniciarEventos: function () {
 
-        },
         bdel: true,
         bsave: false,
         preparaMenu: function () {
@@ -381,8 +384,8 @@ header("content-type: text/javascript; charset=UTF-8");
             this.load({params: {start: 0, limit: 50}});
         },
         onButtonSave:function(){
-            Phx.vista.DepositoDetalle.superclass.onButtonSave.call(this);
             Phx.CP.getPagina(this.idContenedorPadre).reload();
+            Phx.vista.DepositoDetalle.superclass.onButtonSave.call(this);
         },
         onButtonEdit: function() {
             Phx.vista.DepositoDetalle.superclass.onButtonEdit.call(this);
@@ -404,6 +407,10 @@ header("content-type: text/javascript; charset=UTF-8");
         },
         successEdit:function(resp){
             Phx.vista.DepositoDetalle.superclass.successEdit.call(this,resp);
+            Phx.CP.getPagina(this.idContenedorPadre).reload();
+        },
+        successDel:function(resp){
+            Phx.vista.DepositoDetalle.superclass.successDel.call(this,resp);
             Phx.CP.getPagina(this.idContenedorPadre).reload();
         }
 

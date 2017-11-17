@@ -75,9 +75,25 @@ BEGIN
                                 cdo.fecha_venta,
                                 cdo.arqueo_moneda_local,
                                 cdo.arqueo_moneda_extranjera,
-                                cdo.deposito_bs,
-                                cdo.deposito_$us,
-                                cdo.tipo_cambio
+                                cdo.deposito_bs::numeric(18,2),
+                                cdo.deposito_usd::numeric(18,2),
+                                cdo.tipo_cambio,
+                                ( case
+                                  when round(cdo.arqueo_moneda_local - cdo.deposito_bs) = 0 then
+                                  cdo.deposito_bs
+                                  when cdo.deposito_bs = 0 then
+        						   0
+                                  else
+                                  round(cdo.arqueo_moneda_local - cdo.deposito_bs)
+                                  end::numeric(18,2)) as diferencia_bs,
+                                  ( case
+                                  when round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd) = 0 then
+                                  cdo.deposito_usd
+                                  when  cdo.deposito_usd = 0 then
+       							   0
+                                  else
+                                  round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd)
+                                  end::numeric(18,2)) as diferencia_usd
                                 from vef.vdepositos cdo
                                 where '||v_fill;
 

@@ -11,7 +11,72 @@ class ACTDepositos extends ACTbase{
 			
 	function listarDepositos(){
 		$this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+        if ($this->objParam->getParametro('pes_estado') == 'pendiente') {
 
+            $this->objParam->addFiltro("(cdo.arqueo_moneda_local <> ( case 
+                                  when round(cdo.arqueo_moneda_local - cdo.deposito_bs) = 0 then
+                                  cdo.deposito_bs
+                                  when cdo.deposito_bs = 0 then
+        						   0
+                                  else
+                                  round(cdo.arqueo_moneda_local - cdo.deposito_bs)
+                                  end::numeric(18,2)) and  cdo.arqueo_moneda_extranjera <> ( case 
+                                  when round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd) = 0 then
+                                  cdo.deposito_usd
+                                  when  cdo.deposito_usd = 0 then
+       							   0
+                                  else
+                                  round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd)
+                                  end::numeric(18,2)) OR 
+                                  cdo.arqueo_moneda_local = ( case 
+                                  when round(cdo.arqueo_moneda_local - cdo.deposito_bs) = 0 then
+                                  cdo.deposito_bs
+                                  when cdo.deposito_bs = 0 then
+        						   0
+                                  else
+                                  round(cdo.arqueo_moneda_local - cdo.deposito_bs)
+                                  end::numeric(18,2)) and  cdo.arqueo_moneda_extranjera <> ( case 
+                                  when round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd) = 0 then
+                                  cdo.deposito_usd
+                                  when  cdo.deposito_usd = 0 then
+       							   0
+                                  else
+                                  round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd)
+                                  end::numeric(18,2)) OR
+                                  cdo.arqueo_moneda_local <> ( case 
+                                  when round(cdo.arqueo_moneda_local - cdo.deposito_bs) = 0 then
+                                  cdo.deposito_bs
+                                  when cdo.deposito_bs = 0 then
+        						   0
+                                  else
+                                  round(cdo.arqueo_moneda_local - cdo.deposito_bs)
+                                  end::numeric(18,2)) and  cdo.arqueo_moneda_extranjera = ( case 
+                                  when round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd) = 0 then
+                                  cdo.deposito_usd
+                                  when  cdo.deposito_usd = 0 then
+       							   0
+                                  else
+                                  round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd)
+                                  end::numeric(18,2)) 
+                                  )");
+        }else{
+            $this->objParam->addFiltro("cdo.arqueo_moneda_local = ( case 
+                                  when round(cdo.arqueo_moneda_local - cdo.deposito_bs) = 0 then
+                                  cdo.deposito_bs
+                                  when cdo.deposito_bs = 0 then
+        						   0
+                                  else
+                                  round(cdo.arqueo_moneda_local - cdo.deposito_bs)
+                                  end::numeric(18,2)) and  cdo.arqueo_moneda_extranjera = ( case 
+                                  when round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd) = 0 then
+                                  cdo.deposito_usd
+                                  when  cdo.deposito_usd = 0 then
+       							   0
+                                  else
+                                  round(cdo.arqueo_moneda_extranjera - cdo.deposito_usd)
+                                  end::numeric(18,2))");
+
+        }
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
