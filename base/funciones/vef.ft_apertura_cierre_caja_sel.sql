@@ -86,10 +86,27 @@ BEGIN
 
                         where  ';
 
+
             IF p_administrador !=1  THEN
-              v_filtro = ' apcie.id_usuario_cajero='||p_id_usuario||' and ';
+
+            	IF EXISTS (select 1
+				    	   from vef.tsucursal_usuario su
+						   where su.id_usuario =p_id_usuario
+						   and su.tipo_usuario = 'administrador') THEN
+
+                	v_filtro = ' apcie.id_punto_venta in (select pv.id_punto_venta
+								 from vef.tsucursal s
+                                 inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+                                 inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+                                 and su.tipo_usuario = ''administrador''
+								 where su.id_usuario ='||p_id_usuario||') and ';
+
+                ELSE
+              		v_filtro = ' apcie.id_usuario_cajero='||p_id_usuario||' and ';
+
+              	END IF;
             ELSE
-              v_filtro = '';
+              v_filtro = ' ';
             END IF;
             v_consulta :=v_consulta||v_filtro;
 			--Definicion de la respuesta
@@ -121,9 +138,31 @@ BEGIN
 
                         where ';
 
+			IF p_administrador !=1  THEN
+
+            	IF EXISTS (select 1
+				    	   from vef.tsucursal_usuario su
+						   where su.id_usuario =p_id_usuario
+						   and su.tipo_usuario = 'administrador') THEN
+
+                	v_filtro = ' apcie.id_punto_venta in (select pv.id_punto_venta
+								 from vef.tsucursal s
+                                 inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+                                 inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+                                 and su.tipo_usuario = ''administrador''
+								 where su.id_usuario ='||p_id_usuario||') and ';
+
+                ELSE
+              		v_filtro = ' apcie.id_usuario_cajero='||p_id_usuario||' and ';
+
+              	END IF;
+            ELSE
+              v_filtro = ' ';
+            END IF;
+
+            v_consulta :=v_consulta||v_filtro;
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -407,6 +446,8 @@ BEGIN
                       acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera,
                       acc.monto_ca_recibo_ml, acc.monto_cc_recibo_ml';
 
+
+
             IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
 
             	v_consulta:= 'with total_ventas as(('||v_consulta||')
@@ -453,7 +494,7 @@ BEGIN
                                                else 0
                                              end) as efectivo_ventas_ml,
                                          sum(case
-                                               when fp2.codigo = ''CASH'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               when fp2.codigo = ''CASH'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as efectivo_ventas_me,
                                          sum(case
@@ -461,7 +502,7 @@ BEGIN
                                                else 0
                                              end) as tarjeta_ventas_ml,
                                          sum(case
-                                               when fp2.codigo = ''CC'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               when fp2.codigo = ''CC'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as tarjeta_vetas_me,
                                          sum(case
@@ -469,7 +510,7 @@ BEGIN
                                                else 0
                                              end) as cuenta_corriente_ventas_ml,
                                          sum(case
-                                               when fp2.codigo = ''CT'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               when fp2.codigo = ''CT'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as cuenta_corriente_ventas_me,
                                          sum(case
@@ -477,7 +518,7 @@ BEGIN
                                                else 0
                                              end) as mco_ventas_ml,
                                          sum(case
-                                               when fp2.codigo = ''MCO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               when fp2.codigo = ''MCO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as mco_ventas_me,
                                          sum(case
@@ -485,7 +526,7 @@ BEGIN
                                                else 0
                                              end) as otro_ventas_ml,
                                          sum(case
-                                               when fp2.codigo like ''OTRO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_cobrar_bs
+                                               when fp2.codigo like ''OTRO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as otro_ventas_me,
                                          0 as comisiones_ml,
@@ -580,7 +621,6 @@ BEGIN
 
 			--Definicion de la respuesta
 
-			raise notice '%',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 

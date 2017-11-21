@@ -36,6 +36,7 @@ DECLARE
     v_total_ventas			numeric;
     v_total_boletos			numeric;
     v_id_moneda_usd			integer;
+    v_tipo_usuario			varchar;
 
 BEGIN
 
@@ -101,7 +102,9 @@ BEGIN
                 end if;
             end if;
 
-
+			IF(v_parametros.monto_inicial=0)THEN
+            	raise exception 'La caja no puede aperturarse con monto inicial 0';
+            END IF;
 
             --Sentencia de la insercion
         	insert into vef.tapertura_cierre_caja(
@@ -153,9 +156,9 @@ BEGIN
             			from vef.tapertura_cierre_caja acc
                         where id_usuario_cajero = p_id_usuario and
                         (id_punto_venta =v_parametros.id_punto_venta or id_sucursal =v_parametros.id_sucursal)
-        				and fecha_apertura_cierre = now()::date and estado_reg = 'activo' and
-                        acc.id_apertura_cierre_caja != v_parametros.id_apertura_cierre_caja )) then
-            	raise exception 'La caja ya esta abierta para el usuario. Por favor revise los datos';
+        				and acc.estado='cerrado' and estado_reg = 'activo' and
+                        acc.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja )) then
+            	raise exception 'La caja ya esta cerrada para el usuario. Por favor revise los datos';
             end if;
 
 
@@ -277,7 +280,7 @@ BEGIN
 
 		end;
 
-	/*********************************
+    /*********************************
  	#TRANSACCION:  'VF_ABRAPCIE_MOD'
  	#DESCRIPCION:	Apertura de caja cerrada
  	#AUTOR:		Gonzalo Sarmiento Sejas
@@ -287,13 +290,21 @@ BEGIN
 	elsif(p_transaccion='VF_ABRAPCIE_MOD')then
 
 		begin
+            select su.tipo_usuario into v_tipo_usuario
+			from vef.tapertura_cierre_caja ap
+          	inner join vef.tsucursal_usuario su on su.id_punto_venta=ap.id_punto_venta
+			where su.id_usuario=p_id_usuario and ap.id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
 
             if (exists (select 1
             			from vef.tapertura_cierre_caja acc
                         where id_usuario_cajero = p_id_usuario and
         				acc.fecha_apertura_cierre != CURRENT_DATE and estado = 'cerrado' and
-                        acc.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja )) then
-            	raise exception 'La caja no puede ser re-abierta posterior a su fecha de apertura para el usuario. Por favor contactarse con personal de Finanzas';
+                        acc.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja ) ) then
+
+            	IF v_tipo_usuario !='administrador' THEN
+            		raise exception 'La caja no puede ser re-abierta posterior a su fecha de apertura para el usuario. Por favor contactarse con personal de Finanzas';
+                END IF;
+
             end if;
 
 
