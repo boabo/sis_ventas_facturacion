@@ -534,8 +534,10 @@ BEGIN
                                          0 as monto_ca_recibo_ml,
                             			 0 as monto_cc_recibo_ml
                                   from vef.tapertura_cierre_caja acc
+                                  inner join vef.tpunto_venta pv on pv.id_punto_venta=acc.id_punto_venta
                                        inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
-                                       inner join vef.tfactucom_endesis v on v.fecha=acc.fecha_apertura_cierre and v.estado_reg=''emitida'' and v.usuario=u.cuenta
+                                       inner join vef.tfactucom_endesis v on v.fecha=acc.fecha_apertura_cierre and v.estado_reg=''emitida''
+                                       and v.usuario=u.cuenta and v.agt::varchar=pv.codigo
                                        inner join vef.tfactucompag_endesis vfp on vfp.id_factucom=v.id_factucom
                                        inner join forma_pago fp2 on fp2.id_forma_pago=(select fp.id_forma_pago
                                                                                           from obingresos.tforma_pago fp
