@@ -63,7 +63,9 @@ class ACTPuntoVenta extends ACTbase{
             $this->objParam->addFiltro("(1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario = " . $_SESSION["ss_id_usuario"] .  " ) or (
                                                     " . $_SESSION["ss_id_usuario"] .  " in (select d.id_usuario
                                                                                             from vef.tsucursal s 
+                                                                                            inner join vef.tpunto_venta p on p.id_sucursal = s.id_sucursal
                                                                                             inner join param.tdepto_usuario d on d.id_depto = s.id_depto 
+                                                                                            where puve.id_punto_venta = p.id_punto_venta
                                                                                             )))");
         }
 		
