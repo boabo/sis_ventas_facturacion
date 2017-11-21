@@ -114,7 +114,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
                 }
             },
             type:'TextField',
-            filters:{pfiltro:'cdo.nombre_punto_venta',type:'string'},
+            filters:{pfiltro:'cdo.nombre',type:'string'},
             id_grupo:1,
             grid:true,
             form:true,
