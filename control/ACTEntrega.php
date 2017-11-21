@@ -86,6 +86,11 @@ class ACTEntrega extends ACTbase{
         $this->res=$this->objFunc->getPuntoVenta($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    function getTipoUsuario(){
+        $this->objFunc=$this->create('MODEntrega');
+        $this->res=$this->objFunc->getTipoUsuario($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 			
 }
 

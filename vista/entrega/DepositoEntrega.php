@@ -115,7 +115,9 @@ header("content-type: text/javascript; charset=UTF-8");
                              if(record.data.nombre_punto_venta == 'TOTAL'){
                                  return String.format('<div ext:qtip="Optimo"><b><font color="#006400">{0}</font></b><br></div>', value);
                              }else{
-                                 return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', value);
+                                 var dato =  value.replace('.', ",")
+                                     .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                                 return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', dato);
                              }
 
                          }
@@ -153,7 +155,9 @@ header("content-type: text/javascript; charset=UTF-8");
                              if(record.data.nombre_punto_venta == 'TOTAL'){
                                  return String.format('<div ext:qtip="Optimo"><b><font color="blue">{0}</font></b><br></div>', value);
                              }else{
-                                 return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', value);
+                                 var dato =  value.replace('.', ",")
+                                     .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                                 return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', dato);
                              }
 
                          }

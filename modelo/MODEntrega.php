@@ -19,6 +19,7 @@ class MODEntrega extends MODbase{
 		$this->transaccion='VF_ENG_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
         $this->setParametro('id_punto_venta','id_punto_venta','integer');
+        $this->setParametro('tipo_usuario','tipo_usuario','varchar');
 		//Definicion de la lista del resultado del query
 		$this->captura('id_entrega_brinks','int4');
 		$this->captura('fecha_recojo','date');
@@ -185,6 +186,23 @@ class MODEntrega extends MODbase{
         $this->tipo_procedimiento='IME';
 
         //Define los parametros para la funcion
+        $this->setParametro('id_punto_venta','id_punto_venta','int4');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function getTipoUsuario(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_entrega_ime';
+        $this->transaccion='VF_USU_GET';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('p_id_usuario','p_id_usuario','int4');
         $this->setParametro('id_punto_venta','id_punto_venta','int4');
 
         //Ejecuta la instruccion

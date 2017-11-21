@@ -36,12 +36,14 @@ header("content-type: text/javascript; charset=UTF-8");
         },this);
     },
     successGetVariables : function (response,request) {
+
         var respuesta = JSON.parse(response.responseText);
         if('datos' in respuesta){
             this.variables_globales = respuesta.datos;
         }
         if(this.solicitarPuntoVenta){
             this.seleccionarPuntoVentaSucursal();
+
         }
         Phx.vista.Entrega.superclass.constructor.call(this,request.arguments);
         this.addButton('Report',{
@@ -123,6 +125,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                         this.variables_globales.formato_comprobante = combo2.getStore().getById(combo2.getValue()).data.formato_comprobante;
                                         VentanaInicio.close();
                                         this.variables_globales.id_punto_venta = combo2.getValue();
+
                                         Ext.Ajax.request({
                                             url:'../../sis_ventas_facturacion/control/Entrega/getPuntoVen',
                                             params:{id_punto_venta : this.variables_globales.id_punto_venta},
@@ -184,16 +187,16 @@ header("content-type: text/javascript; charset=UTF-8");
 		{
 			config:{
 				name: 'fecha_recojo',
-				fieldLabel: 'Recha Recojo',
+				fieldLabel: 'Fecha Recojo',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 225,
                 format: 'd/m/Y',
                 renderer: function(value,p,record){
 				    if (record.data['fecha_recojo'] == null){
-                        return '<tpl for="."><div class="x-combo-list-item"><p><b>Recha Recojo:</b> <font color="#a52a2a"><b>'+record.data['fecha_recojo']+'</b></font><p><b>Cajero:</b> <font color="#191970"><b>'+record.data['cajero']+'</b></font></p></div></tpl>';
+                        return '<tpl for="."><div class="x-combo-list-item"><p><b>Fecha Recojo:</b> <font color="#a52a2a"><b>'+record.data['fecha_recojo']+'</b></font><p><b>Cajero:</b> <font color="#191970"><b>'+record.data['cajero']+'</b></font></p></div></tpl>';
                     }else{
-                        return '<tpl for="."><div class="x-combo-list-item"><p><b>Recha Recojo:</b> <font color="#a52a2a"><b>'+record.data['fecha_recojo'].dateFormat('d/m/Y')+'</b></font><p><b>Cajero:</b> <font color="#191970"><b>'+record.data['cajero']+'</b></font></p></div></tpl>';
+                        return '<tpl for="."><div class="x-combo-list-item"><p><b>Fecha Recojo:</b> <font color="#a52a2a"><b>'+record.data['fecha_recojo'].dateFormat('d/m/Y')+'</b></font><p><b>Cajero:</b> <font color="#191970"><b>'+record.data['cajero']+'</b></font></p></div></tpl>';
                     }
 
                 }
@@ -231,7 +234,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 gwidth: 150,
                 maxLength:1179650,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="blue">{0}</font></b><br></div>', value);
+                    var dato =  value.replace('.', ",")
+                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                    return '<div ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
                 }
             },
             type:'NumberField',
@@ -249,7 +254,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 gwidth: 150,
                 maxLength:1179650,
                 renderer:function (value,p,record) {
-                    return String.format('<div ext:qtip="Optimo"><b><font color="red">{0}</font></b><br></div>', value);
+                    var dato =  value.replace('.', ",")
+                        .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                    return '<div ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
                 }
             },
             type:'NumberField',

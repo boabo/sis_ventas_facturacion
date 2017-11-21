@@ -44,8 +44,12 @@ BEGIN
 	if(p_transaccion='VF_ENG_SEL')then
 
     	begin
+
         IF 	p_administrador THEN
         v_filto = '0=0 AND';
+
+        ELSIF (v_parametros.tipo_usuario = 'adminEntrega') THEN
+          v_filto = '0=0 AND';
         ELSE
         v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
@@ -90,7 +94,7 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+			raise notice 'consulta %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -106,8 +110,10 @@ BEGIN
 	elsif(p_transaccion='VF_ENG_CONT')then
 
 		begin
-         IF 	p_administrador THEN
+        IF 	p_administrador THEN
         v_filto = '0=0 AND';
+        ELSIF (v_parametros.tipo_usuario = 'adminEntrega') THEN
+          v_filto = '0=0 AND';
         ELSE
         v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
