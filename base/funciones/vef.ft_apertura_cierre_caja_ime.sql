@@ -58,8 +58,8 @@ BEGIN
             			from vef.tapertura_cierre_caja acc
                         where id_usuario_cajero = p_id_usuario and
                         (id_punto_venta =v_parametros.id_punto_venta or id_sucursal =v_parametros.id_sucursal)
-        				and fecha_apertura_cierre = now()::date and estado_reg = 'activo')) then
-            	raise exception 'La caja ya esta abierta para el usuario. Por favor revise los datos';
+        				and fecha_apertura_cierre = v_parametros.fecha_apertura_cierre::date and estado_reg = 'activo')) then
+            	raise exception 'Ya existe una caja registrada en fecha % para el usuario. Por favor revise los datos', v_parametros.fecha_apertura_cierre;
             end if;
 
             if (exists (select 1
@@ -127,7 +127,7 @@ BEGIN
 			v_parametros.obs_apertura,
 			v_parametros.monto_inicial_moneda_extranjera,
             p_id_usuario,
-            now()::date,
+            v_parametros.fecha_apertura_cierre,
             'abierto'
 
 			)RETURNING id_apertura_cierre_caja into v_id_apertura_cierre_caja;
@@ -161,6 +161,14 @@ BEGIN
             	raise exception 'La caja ya esta cerrada para el usuario. Por favor revise los datos';
             end if;
 
+            if (exists (select 1
+            			from vef.tapertura_cierre_caja acc
+                        where id_usuario_cajero = p_id_usuario and
+                        (id_punto_venta =v_parametros.id_punto_venta or id_sucursal =v_parametros.id_sucursal)
+        				and fecha_apertura_cierre = v_parametros.fecha_apertura_cierre::date and estado_reg = 'activo')) then
+            	raise exception 'Ya existe una caja registrada en fecha % para el usuario. Por favor revise los datos', v_parametros.fecha_apertura_cierre;
+            end if;
+
 
 			--Sentencia de la modificacion
 			update vef.tapertura_cierre_caja set
@@ -172,8 +180,6 @@ BEGIN
 			monto_inicial_moneda_extranjera = v_parametros.monto_inicial_moneda_extranjera,
 			id_usuario_ai = v_parametros._id_usuario_ai,
 			usuario_ai = v_parametros._nombre_usuario_ai,
-            monto_ca_recibo_ml = v_parametros.monto_ca_recibo_ml,
-            monto_cc_recibo_ml = v_parametros.monto_cc_recibo_ml,
             estado = (case when v_parametros.accion = 'cerrar' then
             			'cerrado'
             		  else
@@ -182,6 +188,24 @@ BEGIN
             arqueo_moneda_local = v_parametros.arqueo_moneda_local,
             arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera
 			where id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+
+            if (pxp.f_existe_parametro(p_tabla,'monto_ca_recibo_ml') = TRUE) then
+            	UPDATE vef.tapertura_cierre_caja SET
+                monto_ca_recibo_ml = v_parametros.monto_ca_recibo_ml
+                WHERE id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+            end if;
+
+            if (pxp.f_existe_parametro(p_tabla,'monto_cc_recibo_ml') = TRUE) then
+            	UPDATE vef.tapertura_cierre_caja SET
+                monto_cc_recibo_ml = v_parametros.monto_cc_recibo_ml
+                WHERE id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+            end if;
+
+            if (pxp.f_existe_parametro(p_tabla,'fecha_apertura_cierre') = TRUE) then
+            	UPDATE vef.tapertura_cierre_caja SET
+                fecha_apertura_cierre = v_parametros.fecha_apertura_cierre
+                WHERE id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+            end if;
 
             select * into v_registro
             from vef.tapertura_cierre_caja

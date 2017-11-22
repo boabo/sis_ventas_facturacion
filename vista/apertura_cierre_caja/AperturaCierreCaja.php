@@ -61,7 +61,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
                 type:'DateField',
                 filters: { pfiltro:'apcie.fecha_apertura_cierre', type:'date'},
                 grid:true,
-                form:false
+                form:true
         },
 		{
             config: {
@@ -371,6 +371,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.id_punto_venta.setDisabled(false);
         this.Cmp.id_sucursal.setDisabled(false);
 		Phx.vista.AperturaCierreCaja.superclass.onButtonNew.call(this);
+		this.Cmp.fecha_apertura_cierre.setValue(new Date());
 		
 	},
 	
@@ -455,7 +456,6 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 			timeout:this.timeout,
 			scope:this
 		});
-
 	},
 
 	successAbrirAperturaCierreCaja:function(resp){

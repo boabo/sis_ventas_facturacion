@@ -1015,6 +1015,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
+                    readOnly:true,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     style: 'background-color: #f2f23c;  background-image: none;'
@@ -1034,6 +1035,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
+                    readOnly:true,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     style: 'background-color: #f2f23c;  background-image: none;'
@@ -1466,14 +1468,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['tarjeta_boletos_ml']);
                 this.Cmp.monto_cte_boleto_bs.setValue(reg.datos[0]['cuenta_corriente_boletos_ml']);
                 this.Cmp.monto_mco_boleto_bs.setValue(reg.datos[0]['mco_boletos_ml']);
-                //this.Cmp.monto_otro_boleto_bs.setValue(reg.datos[0]['otros_boletos_ml']);
                 this.Cmp.monto_boleto_moneda_base.setValue(total_boletos_ml);
 
                 this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['efectivo_boletos_me']);
                 this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['tarjeta_boletos_me']);
                 this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['cuenta_corriente_boletos_me']);
                 this.Cmp.monto_mco_boleto_usd.setValue(reg.datos[0]['mco_boletos_me']);
-                //this.Cmp.monto_otro_boleto_usd.setValue(reg.datos[0]['otros_boletos_me']);
                 this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
 
                 var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']);
@@ -1483,7 +1483,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_cc_facturacion_bs.setValue(reg.datos[0]['tarjeta_ventas_ml']);
                 this.Cmp.monto_cte_facturacion_bs.setValue(reg.datos[0]['cuenta_corriente_ventas_ml']);
                 this.Cmp.monto_mco_facturacion_bs.setValue(reg.datos[0]['mco_ventas_ml']);
-                //this.Cmp.monto_otro_facturacion_bs.setValue(reg.datos[0]['otros_ventas_ml']);
 
                 this.Cmp.monto_moneda_base_fp_facturacion.setValue(total_ventas_ml);
 
@@ -1491,11 +1490,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_cc_facturacion_usd.setValue(reg.datos[0]['tarjeta_ventas_me']);
                 this.Cmp.monto_cte_facturacion_usd.setValue(reg.datos[0]['cuenta_corriente_ventas_me']);
                 this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
-                //this.Cmp.monto_otro_facturacion_usd.setValue(reg.datos[0]['otros_ventas_me']);
                 this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
 
-                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['comisiones_ml']));
-                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['comisiones_me']));
+                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']));
+                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']));
 
                 this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
                 this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
@@ -1544,14 +1542,13 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                    this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
+                    //this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
                 }
             }, this);
 

@@ -169,6 +169,7 @@ class MODAperturaCierreCaja extends MODbase{
 		$this->setParametro('monto_inicial','monto_inicial','int4');
 		$this->setParametro('obs_apertura','obs_apertura','text');
 		$this->setParametro('monto_inicial_moneda_extranjera','monto_inicial_moneda_extranjera','int4');
+		$this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -199,6 +200,7 @@ class MODAperturaCierreCaja extends MODbase{
 		$this->setParametro('accion','accion','varchar');
 		$this->setParametro('arqueo_moneda_local','arqueo_moneda_local','numeric');
 		$this->setParametro('arqueo_moneda_extranjera','arqueo_moneda_extranjera','numeric');
+        $this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

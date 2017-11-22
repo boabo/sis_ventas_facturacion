@@ -427,7 +427,7 @@ BEGIN
                       left join param.tlugar ppv on ppv.id_lugar = param.f_get_id_lugar_pais(lpv.id_lugar)
                       left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
                       left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
-                                                      and b.fecha_reg::date = acc.fecha_apertura_cierre and
+                                                      and b.fecha_emision::date = acc.fecha_apertura_cierre and
                                                       b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
 													  and b.voided=''no''
                       left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
