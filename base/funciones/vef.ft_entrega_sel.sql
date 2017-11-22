@@ -28,6 +28,7 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
     v_filto				varchar;
+    v_var				varchar;
 
 BEGIN
 
@@ -45,14 +46,21 @@ BEGIN
 
     	begin
 
+        IF  pxp.f_existe_parametro(p_tabla,'tipo_usuario') THEN
+             v_var =  v_parametros.tipo_usuario;
+        END IF;
+
+        IF v_var = 'adminEntrega' THEN
+         v_filto = '0=0 AND';
+        END IF;
+
         IF 	p_administrador THEN
         v_filto = '0=0 AND';
-
-        ELSIF (v_parametros.tipo_usuario = 'adminEntrega') THEN
-          v_filto = '0=0 AND';
         ELSE
         v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
+
+
     		--Sentencia de la consulta
 			v_consulta:=' WITH punto_venta AS (SELECT p.id_punto_venta,
                                             l.codigo AS estacion,
@@ -110,10 +118,17 @@ BEGIN
 	elsif(p_transaccion='VF_ENG_CONT')then
 
 		begin
+
+        IF  pxp.f_existe_parametro(p_tabla,'tipo_usuario') THEN
+             v_var =  v_parametros.tipo_usuario;
+        END IF;
+
+        IF v_var = 'adminEntrega' THEN
+         v_filto = '0=0 AND';
+        END IF;
+
         IF 	p_administrador THEN
         v_filto = '0=0 AND';
-        ELSIF (v_parametros.tipo_usuario = 'adminEntrega') THEN
-          v_filto = '0=0 AND';
         ELSE
         v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
