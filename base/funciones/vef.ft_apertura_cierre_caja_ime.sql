@@ -166,7 +166,9 @@ BEGIN
                         where id_usuario_cajero = p_id_usuario and
                         (id_punto_venta =v_parametros.id_punto_venta or id_sucursal =v_parametros.id_sucursal)
         				and fecha_apertura_cierre = v_parametros.fecha_apertura_cierre::date and estado_reg = 'activo')) then
-            	raise exception 'Ya existe una caja registrada en fecha % para el usuario. Por favor revise los datos', v_parametros.fecha_apertura_cierre;
+            	IF v_parametros.accion!='cerrar' THEN
+	            	raise exception 'Ya existe una caja registrada en fecha % para el usuario. Por favor revise los datos', v_parametros.fecha_apertura_cierre;
+                END IF;
             end if;
 
 

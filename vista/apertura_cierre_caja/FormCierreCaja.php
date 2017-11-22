@@ -1532,7 +1532,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 //obs_apertura:this.data.obs_apertura,
                 monto_inicial_moneda_extranjera: this.Cmp.monto_inicial_moneda_extranjera.getValue(),
                 monto_ca_recibo_ml: this.Cmp.monto_ca_recibo_ml.getValue(),
-                monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue()
+                monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue(),
+                fecha_apertura_cierre : this.data.fecha_apertura_cierre
             }
             return resp;
         },

@@ -477,3 +477,66 @@ ALTER TABLE vef.tpunto_venta
     NOT DEFERRABLE;
 
 /************************************F-DEP-JRR-VEF-0-14/03/2017*************************************************/
+/************************************I-DEP-MMV-VEF-0-21/11/2017*************************************************/
+CREATE OR REPLACE VIEW vef.vdepositos (
+    id_punto_venta,
+    id_apertura_cierre_caja,
+    id_entrega_brinks,
+    id_usuario_cajero,
+    codigo_padre,
+    estacion,
+    nombre,
+    codigo,
+    cajero,
+    fecha_recojo,
+    fecha_venta,
+    arqueo_moneda_local,
+    arqueo_moneda_extranjera,
+    deposito_bs,
+    deposito_usd,
+    tipo_cambio)
+AS
+ WITH punto_venta AS (
+         SELECT p.id_punto_venta,
+            l.codigo AS estacion,
+            lu.codigo AS codigo_padre,
+            p.nombre,
+            p.codigo
+           FROM param.tlugar l
+             JOIN vef.tsucursal s ON s.id_lugar = l.id_lugar
+             JOIN vef.tpunto_venta p ON p.id_sucursal = s.id_sucursal
+             JOIN param.tlugar lu ON lu.id_lugar = l.id_lugar_fk
+        )
+ SELECT ap.id_punto_venta,
+    ap.id_apertura_cierre_caja,
+    ap.id_entrega_brinks,
+    ap.id_usuario_cajero,
+    pu.codigo_padre,
+    pu.estacion,
+    pu.nombre,
+    pu.codigo,
+    pe.nombre_completo1 AS cajero,
+    en.fecha_recojo,
+    ap.fecha_apertura_cierre AS fecha_venta,
+    ap.arqueo_moneda_local,
+    ap.arqueo_moneda_extranjera,
+    obingresos.f_monto_tipo_cambio('BOB'::character varying, ap.id_apertura_cierre_caja) AS deposito_bs,
+    obingresos.f_monto_tipo_cambio('USD'::character varying, ap.id_apertura_cierre_caja) AS deposito_usd,
+    ( SELECT c.oficial
+           FROM param.ttipo_cambio c
+          WHERE c.id_moneda = 2 AND c.fecha = now()::date AND c.fecha_mod IS NULL) AS tipo_cambio
+   FROM vef.tapertura_cierre_caja ap
+     JOIN punto_venta pu ON pu.id_punto_venta = ap.id_punto_venta
+     JOIN segu.tusuario us ON us.id_usuario = ap.id_usuario_cajero
+     JOIN segu.vpersona pe ON pe.id_persona = us.id_persona
+     JOIN vef.tentrega en ON en.id_entrega_brinks = ap.id_entrega_brinks;
+/************************************F-DEP-MMV-VEF-0-21/11/2017*************************************************/
+
+/************************************I-DEP-GSS-VEF-0-22/11/2017*************************************************/
+
+CREATE TRIGGER trig_tapertura_cierre_caja
+  BEFORE UPDATE OF fecha_apertura_cierre
+  ON vef.tapertura_cierre_caja FOR EACH ROW
+  EXECUTE PROCEDURE vef.f_trig_apertura_cierre_caja();
+
+/************************************F-DEP-GSS-VEF-0-22/11/2017*************************************************/
