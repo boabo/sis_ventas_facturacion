@@ -46,20 +46,16 @@ BEGIN
 	if(p_transaccion='VF_CDO_SEL')then
 
     	begin
-           IF p_administrador THEN
-            v_fill = '0 = 0 and';
-            ELSE
-            select pxp.list(pv.id_punto_venta::text)
-            into
-            v_filtro
-            from param.tdepto d
-            inner join vef.tsucursal s on s.id_depto = d.id_depto
-            inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
-            inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
-            where su.id_usuario  = p_id_usuario and  su.tipo_usuario = 'administrador';
 
-            v_fill = 'cdo.id_punto_venta in('||v_filtro||')and';
-            END IF;
+
+            v_fill = '(1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario = '||p_id_usuario||' ) or (
+                                                     '||p_id_usuario||'in (select d.id_usuario
+                                                                                            from vef.tsucursal s
+                                                                                            inner join vef.tpunto_venta p on p.id_sucursal = s.id_sucursal
+                                                                                            inner join param.tdepto_usuario d on d.id_depto = s.id_depto
+                                                                                            where cdo.id_punto_venta = p.id_punto_venta
+                                                                                            )))and';
+
 
     		--Sentencia de la consulta
 			v_consulta:='select cdo.id_apertura_cierre_caja,
@@ -116,20 +112,14 @@ BEGIN
 	elsif(p_transaccion='VF_CDO_CONT')then
 
 		begin
-            IF p_administrador THEN
-            v_fill = '0 = 0 and';
-            ELSE
-            select pxp.list(pv.id_punto_venta::text)
-            into
-            v_filtro
-            from param.tdepto d
-            inner join vef.tsucursal s on s.id_depto = d.id_depto
-            inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
-            inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
-            where su.id_usuario  = p_id_usuario and  su.tipo_usuario = 'administrador';
 
-            v_fill = 'cdo.id_punto_venta in('||v_filtro||')and';
-            END IF;
+            v_fill = '(1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario = '||p_id_usuario||' ) or (
+                                                     '||p_id_usuario||'in (select d.id_usuario
+                                                                                            from vef.tsucursal s
+                                                                                            inner join vef.tpunto_venta p on p.id_sucursal = s.id_sucursal
+                                                                                            inner join param.tdepto_usuario d on d.id_depto = s.id_depto
+                                                                                            where cdo.id_punto_venta = p.id_punto_venta
+                                                                                            )))and';
 			v_consulta:='select count(id_apertura_cierre_caja)
 					    from vef.vdepositos cdo
 					    where ' ||v_fill;
