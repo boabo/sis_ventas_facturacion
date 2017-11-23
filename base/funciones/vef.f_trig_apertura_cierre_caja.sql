@@ -29,14 +29,16 @@ BEGIN
         BEGIN
 
             if (exists (select 1 from pg_catalog.pg_namespace where nspname = 'obingresos' ))then
-                if (exists (select 1 from obingresos.tboleto_amadeus b
-                            where b.estado_reg = 'activo' and
-                                b.id_punto_venta = OLD.id_punto_venta and
-                                b.fecha_emision = OLD.fecha_apertura_cierre and
-                                b.estado='revisado' and
-                                b.id_usuario_cajero = OLD.id_usuario_cajero)) then
-                    raise exception 'Ya se emitieron boletos con esta apertura de caja. Debe eliminar esos boletos para poder cambiar la fecha de la apertura';
-                end if;
+            	IF(OLD.fecha_apertura_cierre != NEW.fecha_apertura_cierre)THEN
+                    if (exists (select 1 from obingresos.tboleto_amadeus b
+                                where b.estado_reg = 'activo' and
+                                    b.id_punto_venta = OLD.id_punto_venta and
+                                    b.fecha_emision = OLD.fecha_apertura_cierre and
+                                    b.estado='revisado' and
+                                    b.id_usuario_cajero = OLD.id_usuario_cajero)) then
+                        raise exception 'Ya se emitieron boletos con esta apertura de caja. Debe eliminar esos boletos para poder cambiar la fecha de la apertura';
+                    end if;
+                END IF;
             end if;
 
         END;
