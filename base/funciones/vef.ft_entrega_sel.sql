@@ -48,15 +48,13 @@ BEGIN
 
         IF  pxp.f_existe_parametro(p_tabla,'tipo_usuario') THEN
              v_var =  v_parametros.tipo_usuario;
-        END IF;
-
-        IF v_var = 'adminEntrega' THEN
-         v_filto = '0=0 AND';
-        END IF;
+              END IF;
 
         IF 	p_administrador THEN
         v_filto = '0=0 AND';
-        ELSE
+        ELSIF   v_var = 'adminEntrega' THEN
+         v_filto = '0=0 AND';
+         ELSE
         v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
 
@@ -121,15 +119,13 @@ BEGIN
 
         IF  pxp.f_existe_parametro(p_tabla,'tipo_usuario') THEN
              v_var =  v_parametros.tipo_usuario;
-        END IF;
-
-        IF v_var = 'adminEntrega' THEN
-         v_filto = '0=0 AND';
-        END IF;
+             END IF;
 
         IF 	p_administrador THEN
         v_filto = '0=0 AND';
-        ELSE
+        ELSIF   v_var = 'adminEntrega' THEN
+         v_filto = '0=0 AND';
+         ELSE
         v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
 			--Sentencia de la consulta de conteo de registros
