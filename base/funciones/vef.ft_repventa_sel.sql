@@ -414,6 +414,7 @@ $body$
                          ''''::varchar as precios_detalles,
                          NULL::varchar as mensaje_error
                   from vef.tfactucom_endesis v
+                  inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
         END IF;
 
@@ -440,6 +441,7 @@ $body$
         ELSE
         	v_consulta = v_consulta || ' left join forma_pago_mb fpmb on v.id_factucom = fpmb.id_factucom
                   where v.estado_reg = ''emitida'' ' || v_filtro_cajero_factura || ' and
+                  		pv.id_punto_venta='||v_parametros.id_punto_venta||' and
                         (v.fecha::date between '''||v_parametros.fecha_desde||''' and '''||v_parametros.fecha_hasta||''')
                   group by v.fecha,
                            v.nrofac,
