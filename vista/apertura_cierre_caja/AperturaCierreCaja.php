@@ -19,7 +19,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
 		this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'bunlock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
-		this.addButton('boletos',{grupo:[0],text: 'Actualizar Boletos',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
+		this.addButton('boletos',{grupo:[0],text: 'Comparar Boletos Amadeus - ERP',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
 		this.addButton('reporte',{grupo:[0,1],text:'Declaracion de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración Diarias de Ventas</b>'});
 		this.finCons = true;
 		this.store.baseParams.pes_estado = 'abierto';    
@@ -285,7 +285,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
                 gwidth: 100
             },
                 type:'TextField',
-                filters:{pfiltro:'ven.estado',type:'string'},                
+                filters:{pfiltro:'usu1.cuenta',type:'string'},
                 grid:true,
                 form:false
         }
@@ -429,6 +429,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera,
 				monto_ca_recibo_ml: resp.monto_ca_recibo_ml,
 				monto_cc_recibo_ml: resp.monto_cc_recibo_ml,
+				fecha_apertura_cierre: resp.fecha_apertura_cierre
 			},
 			argument:{wizard:wizard},
 			success:this.successWizard,
@@ -529,7 +530,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		var data=this.sm.getSelected().data;
 		Phx.CP.loadingShow();
 		Ext.Ajax.request({
-			url:'../../sis_obingresos/control/Boleto/traerBoletos',
+			url:'../../sis_obingresos/control/Boleto/traerBoletosJsonAnulados',
 			params: {id_punto_venta: data.id_punto_venta, fecha: data.fecha_apertura_cierre.dateFormat('Ymd'), id_usuario_cajero: data.id_usuario_cajero},
 			success:this.successSinc,
 			failure: this.conexionFailure,
@@ -544,8 +545,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		if (reg.ROOT.error) {
 			Ext.Msg.alert('Error','Boletos no actualizados: se ha producido un error inesperado. Comuníquese con el Administrador del Sistema.')
 		} else {
-			Ext.Msg.alert('Mensaje','Boletos actualizados')
-			this.reload();
+			Ext.Msg.alert('Mensaje',reg.ROOT.datos.mensaje_respuesta);
 		}
 	},
 
