@@ -285,7 +285,7 @@ BEGIN
                       )
                       select u.desc_persona::varchar, to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
                       coalesce(ppv.codigo,ps.codigo)::varchar as pais, COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
-                      coalesce(pv.codigo || ''-'' || pv.nombre, s.codigo || ''-'' || s.nombre)::varchar as punto_venta,
+                      coalesce(pv.codigo, s.codigo)::varchar as punto_venta,
                       acc.obs_cierre::varchar, acc.arqueo_moneda_local,acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera,
                       ' || v_tipo_cambio || '::numeric as tipo_cambio, ''' || v_tiene_dos_monedas || '''::varchar as tiene_dos_monedas,
                       ''' || v_moneda_local || '''::varchar as moneda_local,''' || v_moneda_extranjera || '''::varchar as moneda_extranjera,
@@ -467,7 +467,7 @@ BEGIN
                                          to_char(acc.fecha_apertura_cierre, ''DD/MM/YYYY'')::varchar as fecha_apertura_cierre,
                                          v.pais,
                                          v.estacion,
-                                         v.agt || '' - '' || v.razon_sucursal as punto_venta,
+                                         v.agt::varchar as punto_venta,
                                          acc.obs_cierre::varchar,
                                          acc.arqueo_moneda_local,
                                          acc.arqueo_moneda_extranjera,
@@ -563,7 +563,7 @@ BEGIN
                                                    to_char::varchar,
                                                    pais::varchar,
                                                    estacion::varchar,
-                                                   ''''::varchar as punto_venta,
+                                                   punto_venta::varchar as punto_venta,
                                                    obs_cierre::varchar,
                                                    arqueo_moneda_local::numeric,
                                                    arqueo_moneda_extranjera::numeric,
@@ -611,6 +611,7 @@ BEGIN
                                            arqueo_moneda_extranjera,
                                            monto_inicial,
                                            monto_inicial_moneda_extranjera,
+                                           punto_venta,
                                            tipo_cambio,
                                            tiene_dos_monedas,
                                            moneda_local,
@@ -622,7 +623,7 @@ BEGIN
             END IF;
 
 			--Definicion de la respuesta
-
+			raise notice 'v_consulta %', v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
