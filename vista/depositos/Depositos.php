@@ -14,6 +14,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
+        this.tbarItems = ['-', this.cmbPuntoVenta,'-'];
     	//llama al constructor de la clase padre
 		Phx.vista.Depositos.superclass.constructor.call(this,config);
         this.addButton('reporte',{grupo:[0,1],text:'Declaración de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración de Ventas Diarias/b>'});
@@ -21,6 +22,9 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 
         this.getBoton('reporte').enable();
         this.getBoton('rventas').enable();
+        this.cmbPuntoVenta.on('select', function( combo, record, index){
+            this.capturaFiltros();
+        },this);
         this.init();
         this.finCons = true;
         this.store.baseParams.pes_estado = 'pendiente';
@@ -36,6 +40,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
     },
     bactGroups:  [0,1],
     bexcelGroups: [0,1],
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -258,8 +263,8 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
                     var dato =     record.data['diferencia_bs'].replace('.', ",")
                         .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
 
-                    if (record.data['diferencia_bs'] == record.data['arqueo_moneda_local'] ){
-                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+0+'</b></font></p></div>';
+                    if (record.data['diferencia_bs'] == 0 ){
+                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+dato+'</b></font></p></div>';
                     }else {
                         return '<div ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
                     }
@@ -285,8 +290,8 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
                     var dato =     record.data['diferencia_usd'].replace('.', ",")
                         .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
 
-                    if (  record.data['diferencia_usd'] == record.data['arqueo_moneda_extranjera'] ){
-                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+0+'</b></font></p></div>';
+                    if (  record.data['diferencia_usd'] == 0 ){
+                        return '<div ext:qtip="Optimo"><p> <font color="black"><b>'+dato+'</b></font></p></div>';
                     }else {
                         return '<div ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
                     }
@@ -341,6 +346,44 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 	bsave:false,
     bedit:false,
     bnew:false,
+
+    cmbPuntoVenta: new Ext.form.ComboBox({
+        name: 'punto_venta',
+        id: 'id_punto_venta',
+        fieldLabel: 'Punto Venta',
+        allowBlank: true,
+        emptyText:'Punto de Venta...',
+        blankText: 'Año',
+        store: new Ext.data.JsonStore({
+            url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
+            id: 'id_punto_venta',
+            root: 'datos',
+            sortInfo: {
+                field: 'nombre',
+                direction: 'ASC'
+            },
+            totalProperty: 'total',
+            fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
+            remoteSort: true,
+            baseParams: {tipo_usuario: 'adminEntrega',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
+        }),
+        tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
+        valueField: 'id_punto_venta',
+        triggerAction: 'all',
+        displayField: 'nombre',
+        hiddenName: 'id_punto_venta',
+        mode:'remote',
+        pageSize:50,
+        queryDelay:500,
+        listWidth:'300',
+        hidden:false,
+        width:300
+    }),
+    capturaFiltros:function(combo, record, index){
+        this.desbloquearOrdenamientoGrid();
+        this.store.baseParams.id_punto_venta = this.cmbPuntoVenta.getValue();
+        this.load();
+    },
     generarReporte : function () {
         var data=this.sm.getSelected().data;
         Phx.CP.loadingShow();
