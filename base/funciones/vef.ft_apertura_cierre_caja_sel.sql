@@ -531,7 +531,7 @@ BEGIN
                                              end) as otro_ventas_me,
                                          0 as comisiones_ml,
                                          0 as comisiones_me,
-                                         0 as monto_ca_recibo_ml,
+                                 		 0 as monto_ca_recibo_ml,
                             			 0 as monto_cc_recibo_ml
                                   from vef.tapertura_cierre_caja acc
                                   inner join vef.tpunto_venta pv on pv.id_punto_venta=acc.id_punto_venta
@@ -546,6 +546,7 @@ BEGIN
                                                                                           where fp.codigo=vfp.forma and mon.codigo_internacional=vfp.moneda and
                                                                                           lug.codigo=vfp.pais)
                                   where acc.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
+                                  and v.sw_excluir=''no''
                                   group by u.desc_persona,
                                            acc.fecha_apertura_cierre,
                                            acc.id_punto_venta,
