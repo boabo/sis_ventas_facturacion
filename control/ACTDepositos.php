@@ -19,13 +19,13 @@ class ACTDepositos extends ACTbase{
 
         if ($this->objParam->getParametro('pes_estado') == 'pendiente') {
 
-            $this->objParam->addFiltro("cdo.diferencia_bs <>  0 and  cdo.diferencia_usd <> 0
+            $this->objParam->addFiltro("(cdo.diferencia_bs <>  0 and  cdo.diferencia_usd <> 0
                                         OR
                                         cdo.diferencia_bs <> 0   and  cdo.diferencia_usd  = 0
                                         OR
-                                        cdo.diferencia_bs =  0  and  cdo.diferencia_usd <> 0 ");
+                                        cdo.diferencia_bs =  0  and  cdo.diferencia_usd <> 0 )");
         }else{
-            $this->objParam->addFiltro("cdo.diferencia_bs =  0  and  cdo.diferencia_usd = 0");
+            $this->objParam->addFiltro("(cdo.diferencia_bs =  0  and  cdo.diferencia_usd = 0)");
         }
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

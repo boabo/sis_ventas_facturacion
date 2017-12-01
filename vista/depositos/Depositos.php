@@ -101,8 +101,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             filters:{pfiltro:'cdo.codigo',type:'string'},
             id_grupo:1,
             grid:false,
-            form:false,
-            bottom_filter:true
+            form:false
         },
         {
             config:{
@@ -122,8 +121,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             filters:{pfiltro:'cdo.nombre',type:'string'},
             id_grupo:1,
             grid:true,
-            form:true,
-            bottom_filter:true
+            form:true
         },
         {
             config:{
