@@ -390,6 +390,15 @@ header("content-type: text/javascript; charset=UTF-8");
         onButtonEdit: function() {
             Phx.vista.DepositoDetalle.superclass.onButtonEdit.call(this);
             this.getComponente('tipo').setValue('venta_propia');
+            this.getComponente('codigo_padre').setValue(this.maestro.codigo_padre);
+            this.getComponente('estacion').setValue(this.maestro.estacion);
+            this.getComponente('codigo').setValue(this.maestro.codigo);
+            this.getComponente('fecha_venta').setValue(this.maestro.fecha_venta.dateFormat('d-m-Y'));
+        },
+        onButtonDel: function() {
+            Phx.vista.DepositoDetalle.superclass.onButtonDel.call(this);
+            this.eliminar();
+
         },
         loadValoresIniciales:function() {
             Phx.vista.DepositoDetalle.superclass.loadValoresIniciales.call(this);
@@ -412,6 +421,20 @@ header("content-type: text/javascript; charset=UTF-8");
         successDel:function(resp){
             Phx.vista.DepositoDetalle.superclass.successDel.call(this,resp);
             Phx.CP.getPagina(this.idContenedorPadre).reload();
+        },
+        eliminar : function () {
+            var data = this.getSelectedData();
+            console.log(data);
+            Ext.Ajax.request({
+                url:'../../sis_obingresos/control/Deposito/eliminar',
+                params:{'nro_deposito':data.nro_deposito,'codigo':this.maestro.codigo,
+                        'fecha_venta':this.maestro.fecha_venta.dateFormat('d-m-Y'),'monto_deposito':data.monto_deposito,
+                        'desc_moneda':data.desc_moneda},
+                success: this.successWizard,
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
         }
 
     })
