@@ -201,7 +201,7 @@ BEGIN
                                 to_char( a.fecha_apertura_cierre,''DD/MM/YYYY'') as fecha_apertura_cierre,
                                COALESCE( a.arqueo_moneda_local, 0) as arqueo_moneda_local,
                                cuen.nro_cuenta,
-                               cuen.denominacion,
+                               int.nombre as denominacion,
                                (select sum(r.arqueo_moneda_local)
                                from vef.tapertura_cierre_caja r
                                where r.id_entrega_brinks = e.id_entrega_brinks) as total,
@@ -218,6 +218,7 @@ BEGIN
                               left join tes.tdepto_cuenta_bancaria de on de.id_depto = s.id_depto
                               left join tes.tcuenta_bancaria cuen on cuen.id_cuenta_bancaria = de.id_cuenta_bancaria and cuen.id_moneda = 1
                               inner join param.tlugar l on l.id_lugar = s.id_lugar
+                              inner join param.tinstitucion int on int.id_institucion = cuen.id_institucion
                               where cuen.id_moneda = 1 and e.id_entrega_brinks = '|| v_parametros.id_entrega_brinks;
 
 
@@ -234,7 +235,7 @@ BEGIN
                                 to_char( a.fecha_apertura_cierre,''DD/MM/YYYY'') as fecha_apertura_cierre,
                                COALESCE( a.arqueo_moneda_extranjera, 0) as arqueo_moneda_extranjera,
                                cuen.nro_cuenta,
-                               cuen.denominacion,
+                               int.nombre as denominacion,
                                (select sum(r.arqueo_moneda_extranjera)
                                from vef.tapertura_cierre_caja r
                                where r.id_entrega_brinks = e.id_entrega_brinks) as total,
@@ -251,6 +252,7 @@ BEGIN
                               left join tes.tdepto_cuenta_bancaria de on de.id_depto = s.id_depto
                               left join tes.tcuenta_bancaria cuen on cuen.id_cuenta_bancaria = de.id_cuenta_bancaria and cuen.id_moneda = 2
                               inner join param.tlugar l on l.id_lugar = s.id_lugar
+                              inner join param.tinstitucion int on int.id_institucion = cuen.id_institucion
                               where cuen.id_moneda = 2 and e.id_entrega_brinks = '|| v_parametros.id_entrega_brinks;
 
 
