@@ -76,9 +76,13 @@ class RAperturaCierrePDF extends  ReportePDF {
         $this->Cell(50,5,number_format($this->datos[0]['comisiones_ml'],2) ,1,0,'R');
         $this->Cell(50,5,number_format($this->datos[0]['comisiones_me'],2) ,1,1,'R');
 
-        $this->Cell(80,5,'Cuentas Corrientes' ,1,0,'L');
+        $this->Cell(80,5,'Cuentas Corrientes Boletos' ,1,0,'L');
         $this->Cell(50,5,number_format($this->datos[0]['cuenta_corriente_boletos_ml'],2) ,1,0,'R');
         $this->Cell(50,5,number_format($this->datos[0]['cuenta_corriente_boletos_me'],2) ,1,1,'R');
+
+        $this->Cell(80,5,'Cuentas Corrientes Ventas' ,1,0,'L');
+        $this->Cell(50,5,number_format($this->datos[0]['cuenta_corriente_ventas_ml'],2) ,1,0,'R');
+        $this->Cell(50,5,number_format($this->datos[0]['cuenta_corriente_ventas_me'],2) ,1,1,'R');
 
         $this->Cell(80,5,'MCO' ,1,0,'L');
         $this->Cell(50,5,number_format($this->datos[0]['mco_boletos_ml'],2) ,1,0,'R');
