@@ -718,6 +718,95 @@ BEGIN
             v_consulta:=v_consulta||v_parametros.filtro;
             return v_consulta;
         end;
+        /*********************************
+ 	#TRANSACCION:  'VF_CONTR_SEL'
+ 	#DESCRIPCION:	Consulta estado cierre de apertucar
+ 	#AUTOR:		mmv
+ 	#FECHA:		11/1/2018
+	***********************************/
+    elsif(p_transaccion='VF_CONTR_SEL')then
+
+    	begin
+    --Sentencia de la consulta
+			v_consulta:='WITH estado_cerrado as ( select  a.fecha_apertura_cierre,
+								  count(a.estado) as cerrado
+                                from vef.tapertura_cierre_caja a
+                                where a.estado = ''cerrado''
+                                group by a.fecha_apertura_cierre
+                                order by fecha_apertura_cierre desc),
+estado_abierto as ( select  a.fecha_apertura_cierre,
+								 count(a.estado) as abierto
+                                from vef.tapertura_cierre_caja a
+                                where a.estado = ''abierto''
+                                group by a.fecha_apertura_cierre
+                                order by fecha_apertura_cierre desc
+                                )select distinct  b.fecha_apertura_cierre,
+                                COALESCE(a.abierto,0)::integer as abierto_co,
+                                COALESCE(c.cerrado,0)::integer as cerrado_co,
+                                case
+                                when COALESCE( a.abierto,0) >= 1  then
+                                ''abierto''
+                                 when COALESCE( c.cerrado,0) >= COALESCE( a.abierto,0)  then
+                                ''cerrado''
+                                end::varchar as estado
+                               from vef.tapertura_cierre_caja b
+                               inner join estado_cerrado c on c.fecha_apertura_cierre = b.fecha_apertura_cierre
+                               left join estado_abierto a on a.fecha_apertura_cierre = b.fecha_apertura_cierre
+                               order by fecha_apertura_cierre desc ';
+
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+        /*********************************
+ 	#TRANSACCION:  'VF_DETA_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		MMV
+ 	#FECHA:
+	***********************************/
+
+	elsif(p_transaccion='VF_DETA_SEL')then
+
+    	begin
+    		--Sentencia de la consulta
+			v_consulta:='select 	a.id_apertura_cierre_caja,
+                                    a.fecha_apertura_cierre,
+                                    a.estado,
+                                    p.nombre,
+                                    p.codigo,
+                                    initcap(u.desc_persona) as desc_persona
+                            from vef.tapertura_cierre_caja a
+                            inner join vef.tpunto_venta p on p.id_punto_venta = a.id_punto_venta
+                            inner join segu.vusuario u on u.id_usuario = a.id_usuario_cajero
+                            where ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+			raise notice 'cosulta %',v_consulta;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+          /*********************************
+ 	#TRANSACCION:  'VF_DETA_CONT'
+ 	#DESCRIPCION:	Contar
+ 	#AUTOR:		MMV
+ 	#FECHA:		12-01-2018
+	***********************************/
+
+	elsif(p_transaccion='VF_DETA_CONT')then
+
+    	begin
+        	v_consulta:='select count(a.id_apertura_cierre_caja)
+                         from vef.tapertura_cierre_caja a
+                         inner join vef.tpunto_venta p on p.id_punto_venta = a.id_punto_venta
+                         inner join segu.vusuario u on u.id_usuario = a.id_usuario_cajero
+                         where ';
+            v_consulta:=v_consulta||v_parametros.filtro;
+            return v_consulta;
+        end;
 
 	else
 

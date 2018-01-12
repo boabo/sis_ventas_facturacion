@@ -310,6 +310,41 @@ class MODAperturaCierreCaja extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+    function EstadoApertura(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_sel';
+        $this->transaccion='VF_CONTR_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->setCount(false);//tipo de transaccion
+        $this->captura('fecha_apertura_cierre','date');
+        $this->captura('abierto_co','int4');
+        $this->captura('cerrado_co','int4');
+        $this->captura('estado','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function DetalleEstadoApertura(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_sel';
+        $this->transaccion='VF_DETA_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        $this->captura('id_apertura_cierre_caja','int4');
+        $this->captura('fecha_apertura_cierre','date');
+        $this->captura('estado','varchar');
+        $this->captura('nombre','varchar');
+        $this->captura('codigo','varchar');
+        $this->captura('desc_persona','text');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
 
 }

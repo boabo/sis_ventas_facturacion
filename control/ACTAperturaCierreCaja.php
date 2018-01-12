@@ -133,6 +133,38 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->res->addLastRecDatos($temp);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    function EstadoApertura(){
+       // $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+        //$this->objParam->defecto('dir_ordenacion','asc');
+
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODAperturaCierreCaja','EstadoApertura');
+        } else{
+            $this->objFunc=$this->create('MODAperturaCierreCaja');
+
+            $this->res=$this->objFunc->EstadoApertura($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function DetalleEstadoApertura(){
+        $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+        $this->objParam->defecto('dir_ordenacion','asc');
+
+        if ($this->objParam->getParametro('pes_estado') != ''  ) {
+            $this->objParam->addFiltro(" a.fecha_apertura_cierre = " . $this->objParam->getParametro('fecha_apertura_cierre')."::date and a.estado = ''".  $this->objParam->getParametro('pes_estado') . "''");
+        }
+
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODAperturaCierreCaja','DetalleEstadoApertura');
+        } else{
+            $this->objFunc=$this->create('MODAperturaCierreCaja');
+
+            $this->res=$this->objFunc->DetalleEstadoApertura($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
 
 }
