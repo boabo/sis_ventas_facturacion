@@ -49,12 +49,13 @@ class MODReportesVentas extends MODbase{
 		$this->captura('neto','numeric');
 		$this->captura('precios_detalles','varchar');
         $this->captura('mensaje_error','varchar');
+        $this->captura('comision','numeric');
 		
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-
+        //var_dump($this->respuesta);exit;
 		
 		//Devuelve la respuesta
 		return $this->respuesta;

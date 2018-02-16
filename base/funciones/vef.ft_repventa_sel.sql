@@ -394,7 +394,8 @@ $body$
                       coalesce(fpmb.monto_otro_mb, 0) as monto_otro_mb,
                       0::numeric,
                       string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
-                      NULL::varchar as mensaje_error
+                      NULL::varchar as mensaje_error,
+                        0::numeric as comision
                       from vef.tventa v
                       inner join vef.tventa_detalle vd
                           on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
@@ -413,6 +414,7 @@ $body$
                          v.monto::numeric,
                          ''''::varchar as precios_detalles,
                          NULL::varchar as mensaje_error
+
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -579,7 +581,8 @@ $body$
              case when b.voided != ''si'' then coalesce(fpmb.monto_otro_mb,0) else 0 end as monto_otro_mb,
              b.total,
              imp.monto_impuesto as precios_conceptos,
-             b.mensaje_error
+             b.mensaje_error,
+             b.comision
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then
@@ -599,7 +602,7 @@ $body$
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb, b.comision '|| v_group_by || ')
              order by fecha,boleto,correlativo_venta';
         raise notice '%',v_consulta;
         --Devuelve la respuesta

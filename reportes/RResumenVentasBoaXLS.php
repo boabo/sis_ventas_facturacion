@@ -131,9 +131,9 @@ class RResumenVentasBoaXLS
 				if ($fila != 5){
 
 					//TOTALES
-					$this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 6].($fila+2))->applyFromArray($this->styleTotal);
-					$this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-					$this->docexcel->getActiveSheet()->getStyle("A". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+					$this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila+2))->applyFromArray($this->styleTotal);
+					$this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+					$this->docexcel->getActiveSheet()->getStyle("A". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
 					$this->docexcel->getActiveSheet()->mergeCells('A'.($fila + 2) .':D'.($fila+2));
 					$this->docexcel->getActiveSheet()->setCellValue('A'.($fila + 2),'TOTAL');
 
@@ -141,8 +141,10 @@ class RResumenVentasBoaXLS
 					setCellValue($this->equivalencias[count($conceptos) + 5].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila . ')');
 					$this->docexcel->getActiveSheet()->
 					setCellValue($this->equivalencias[count($conceptos) + 6].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila . ')');
+                    $this->docexcel->getActiveSheet()->
+                    setCellValue($this->equivalencias[count($conceptos) + 7].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 7].'6:' . $this->equivalencias[count($conceptos) + 8] . $fila . ')');
 
-					for ($i = 7;$i < 7 + count($conceptos);$i++) {
+                    for ($i = 7;$i < 7 + count($conceptos);$i++) {
 						$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].($fila + 2),'=SUM(' . $this->equivalencias[$i]. "6:" . $this->equivalencias[$i].$fila . ')');
 					}
 
@@ -177,7 +179,8 @@ class RResumenVentasBoaXLS
 			$this->docexcel->getActiveSheet()->setCellValue('E'.$fila,$recibo);
 			$this->docexcel->getActiveSheet()->setCellValue('F'.$fila,$value['ruta']);
 			$this->docexcel->getActiveSheet()->setCellValue('G'.$fila,$value['moneda_emision']);
-			$this->docexcel->getActiveSheet()->setCellValue('H'.$fila,$value['neto']);
+			$this->docexcel->getActiveSheet()->setCellValue('I'.$fila,$value['neto']);
+		 	$this->docexcel->getActiveSheet()->setCellValue('H'.$fila,$value['comision']);
 
 			if ($value['mensaje_error'] != '') {
 				$this->docexcel->setActiveSheetIndex(0)->getStyle('C'.$fila_general .':D'.$fila_general)->applyFromArray($this->styleDetalleRojo);
@@ -189,7 +192,8 @@ class RResumenVentasBoaXLS
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('E'.$fila_general,$recibo);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('F'.$fila_general,$value['ruta']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('G'.$fila_general,$value['moneda_emision']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValue('H'.$fila_general,$value['neto']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValue('I'.$fila_general,$value['neto']);
+            $this->docexcel->setActiveSheetIndex(0)->setCellValue('H'.$fila_general,$value['comision']);
 			$this->docexcel->setActiveSheetIndex($sheetId);
 
 			//imprimir conceptos e impuestos en hoja actual y en el resume
@@ -204,86 +208,90 @@ class RResumenVentasBoaXLS
 				}
 			}
 			//imprimir totales y ofmr ade pago
-			if ($config[count($config)-10]['nombre'] == 'CASH USD') {
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 3].$fila,$value['monto_cash_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 2].$fila,$value['monto_cc_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 1].$fila,$value['monto_cte_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config)    ].$fila,$value['monto_mco_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 1].$fila,$value['monto_otro_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 2].$fila,$value['monto_cash_mb']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 3].$fila,$value['monto_cc_mb']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 4].$fila,$value['monto_cte_mb']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 5].$fila,$value['monto_mco_mb']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 6].$fila,$value['monto_otro_mb']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 7].$fila,$value['forma_pago']);
 
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 3].$fila_general,$value['monto_cash_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 2].$fila_general,$value['monto_cc_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 1].$fila_general,$value['monto_cte_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config)    ].$fila_general,$value['monto_mco_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 1].$fila_general,$value['monto_otro_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 2].$fila_general,$value['monto_cash_mb']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 3].$fila_general,$value['monto_cc_mb']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 4].$fila_general,$value['monto_cte_mb']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 5].$fila_general,$value['monto_mco_mb']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 6].$fila_general,$value['monto_otro_mb']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 7].$fila_general,$value['forma_pago']);
+			if ($config[count($config)-10]['nombre'] == 'CASH USD') {
+
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 2].$fila,$value['monto_cash_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 1].$fila,$value['monto_cc_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) ].$fila,$value['monto_cte_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 1].$fila,$value['monto_mco_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 2].$fila,$value['monto_otro_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 3].$fila,$value['monto_cash_mb']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 4].$fila,$value['monto_cc_mb']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 5].$fila,$value['monto_cte_mb']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 6].$fila,$value['monto_mco_mb']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 7].$fila,$value['monto_otro_mb']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 8].$fila,$value['forma_pago']);
+
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 2].$fila_general,$value['monto_cash_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 1].$fila_general,$value['monto_cc_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) ].$fila_general,$value['monto_cte_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 1].$fila_general,$value['monto_mco_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 2].$fila_general,$value['monto_otro_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 3].$fila_general,$value['monto_cash_mb']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 4].$fila_general,$value['monto_cc_mb']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 5].$fila_general,$value['monto_cte_mb']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 6].$fila_general,$value['monto_mco_mb']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 7].$fila_general,$value['monto_otro_mb']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 8].$fila_general,$value['forma_pago']);
 				$this->docexcel->setActiveSheetIndex($sheetId);
 
 			} else {
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 3].$fila,$value['monto_cash_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 2].$fila,$value['monto_cc_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 1].$fila,$value['monto_cte_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config)    ].$fila,$value['monto_mco_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 1].$fila,$value['monto_otro_usd']);
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 2].$fila,$value['forma_pago']);
+               // var_dump($this->equivalencias[count($config) - 3]);exit;
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 2].$fila,$value['monto_cash_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) - 1].$fila,$value['monto_cc_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) ].$fila,$value['monto_cte_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 1 ].$fila,$value['monto_mco_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 2].$fila,$value['monto_otro_usd']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[count($config) + 3].$fila,$value['forma_pago']);
 
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 3].$fila_general,$value['monto_cash_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 2].$fila_general,$value['monto_cc_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 1].$fila_general,$value['monto_cte_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config)    ].$fila_general,$value['monto_mco_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 1].$fila_general,$value['monto_otro_usd']);
-				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 2].$fila_general,$value['forma_pago']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 2].$fila_general,$value['monto_cash_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) - 1].$fila_general,$value['monto_cc_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) ].$fila_general,$value['monto_cte_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 1 ].$fila_general,$value['monto_mco_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 2].$fila_general,$value['monto_otro_usd']);
+				$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[count($config) + 3].$fila_general,$value['forma_pago']);
 				$this->docexcel->setActiveSheetIndex($sheetId);
 			}
-
 
 			$correlativo_hoja++;
 			$correlativo_general++;
 
 		}
 		//TOTALES ULTIMA HOJA
-		$this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 6].($fila+2))->applyFromArray($this->styleTotal);
-		$this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-		$this->docexcel->getActiveSheet()->getStyle("A". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        //var_dump('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila+2));exit;
+		$this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila+2))->applyFromArray($this->styleTotal);
+		$this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+		$this->docexcel->getActiveSheet()->getStyle("A". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
 		$this->docexcel->getActiveSheet()->mergeCells('A'.($fila + 2) .':D'.($fila+2));
 		$this->docexcel->getActiveSheet()->setCellValue('A'.($fila + 2),'TOTAL');
-
 		$this->docexcel->getActiveSheet()->
 		setCellValue($this->equivalencias[count($conceptos) + 5].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila . ')');
-
 		$this->docexcel->getActiveSheet()->
 		setCellValue($this->equivalencias[count($conceptos) + 6].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila . ')');
+        $this->docexcel->getActiveSheet()->
+        setCellValue($this->equivalencias[count($conceptos) + 7].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 7].'6:' . $this->equivalencias[count($conceptos) + 8] . $fila . ')');
 
-		for ($i = 7;$i < 7 + count($conceptos);$i++) {
+        for ($i = 7;$i < 7 + count($conceptos);$i++) {
 			$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].($fila + 2),'=SUM(' . $this->equivalencias[$i]. "6:" . $this->equivalencias[$i].$fila . ')');
 		}
 
 		//TOTALES RESUMEN
-		$this->docexcel->setActiveSheetIndex(0)->getStyle('A'.($fila_general + 2) .':'.$this->equivalencias[count($conceptos) + 6].($fila_general+2))->applyFromArray($this->styleTotal);
-		$this->docexcel->setActiveSheetIndex(0)->getStyle("E". ($fila_general + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila_general+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-		$this->docexcel->setActiveSheetIndex(0)->getStyle("A". ($fila_general + 2).":" . $this->equivalencias[count($conceptos) + 6] . ($fila_general+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+		$this->docexcel->setActiveSheetIndex(0)->getStyle('A'.($fila_general + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila_general+2))->applyFromArray($this->styleTotal);
+		$this->docexcel->setActiveSheetIndex(0)->getStyle("E". ($fila_general + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila_general+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+		$this->docexcel->setActiveSheetIndex(0)->getStyle("A". ($fila_general + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila_general+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
 		$this->docexcel->setActiveSheetIndex(0)->mergeCells('A'.($fila_general + 2) .':D'.($fila_general+2));
 		$this->docexcel->setActiveSheetIndex(0)->setCellValue('A'.($fila_general + 2),'TOTAL');
 
 
 		$this->docexcel->setActiveSheetIndex(0)->
 		setCellValue($this->equivalencias[count($conceptos) + 5].($fila_general+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila_general . ')');
-
 		$this->docexcel->setActiveSheetIndex(0)->
 		setCellValue($this->equivalencias[count($conceptos) + 6].($fila_general+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila_general . ')');
+        $this->docexcel->setActiveSheetIndex(0)->
+        setCellValue($this->equivalencias[count($conceptos) + 7].($fila_general+2),'=SUM(' . $this->equivalencias[count($conceptos) + 7].'6:' . $this->equivalencias[count($conceptos) + 8] . $fila_general . ')');
 
-		for ($i = 8;$i < 8 + count($conceptos);$i++) {
+		for ($i = 7;$i < 7 + count($conceptos);$i++) {
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue($this->equivalencias[$i].($fila_general + 2),'=SUM(' . $this->equivalencias[$i]. "6:" . $this->equivalencias[$i].$fila_general . ')');
 		}
 
@@ -305,6 +313,7 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
 		$this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
 		$this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(15);
+        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
 
 		for ($i = 7;$i < 7 + count($conceptos);$i++) {
 
@@ -348,14 +357,15 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->setCellValue('E5','No FACTURA');
 		$this->docexcel->getActiveSheet()->setCellValue('F5','RUTA');
 		$this->docexcel->getActiveSheet()->setCellValue('G5','MONEDA');
+        $this->docexcel->getActiveSheet()->setCellValue('H5','COMISION');
 
 
 
-		for ($i = 7;$i < 7 + count($config);$i++) {
-			if (substr( $config[$i-7]['tipo'], 0, 7 ) == '4MONEDA') {
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].'5', $config[$i-7]['nombre']);
+		for ($i = 8;$i < 8 + count($config);$i++) {
+			if (substr( $config[$i-8]['tipo'], 0, 8 ) == 'COMISION') {
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].'5', $config[$i-8]['nombre']);
 			} else {
-				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].'5',$config[$i-7]['nombre']);
+				$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].'5',$config[$i-8]['nombre']);
 
 			}
 		}
