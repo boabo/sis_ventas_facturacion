@@ -37,6 +37,8 @@ DECLARE
     v_total_boletos			numeric;
     v_id_moneda_usd			integer;
     v_tipo_usuario			varchar;
+	v_m1 numeric;
+    v_me numeric;
 
 BEGIN
 
@@ -151,6 +153,7 @@ BEGIN
 	elsif(p_transaccion='VF_APCIE_MOD')then
 
 		begin
+       -- raise exception 'llega %',v_parametros.monto_ca_facturacion_usd;
 
         	if (exists (select 1
             			from vef.tapertura_cierre_caja acc
@@ -171,7 +174,6 @@ BEGIN
                 END IF;
             end if;
 
-
 			--Sentencia de la modificacion
 			update vef.tapertura_cierre_caja set
 			id_sucursal = v_parametros.id_sucursal,
@@ -189,7 +191,141 @@ BEGIN
                       end),
             arqueo_moneda_local = v_parametros.arqueo_moneda_local,
             arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera
-			where id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+			where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
+
+
+       if ((select modificado
+            from vef.tapertura_cierre_caja
+            where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja) = 'no')then
+
+
+         INSERT INTO vef.tdetalle_apertura_cc ( id_usuario_reg,
+                                                id_usuario_mod,
+                                                fecha_reg,
+                                                fecha_mod,
+                                                estado_reg,
+                                                id_apertura_cierre_caja,
+                                                tipo_apertura,
+                                                monto_ca_boleto_bs,
+                                                monto_cc_boleto_bs,
+                                                monto_cte_boleto_bs,
+                                                monto_mco_boleto_bs,
+
+                                                monto_ca_boleto_usd,
+                                                monto_cc_boleto_usd,
+                                                monto_cte_boleto_usd,
+                                                monto_mco_boleto_usd,
+
+                                                monto_ca_recibo_ml,
+                                                monto_ca_recibo_me,
+                                                monto_cc_recibo_ml,
+                                                monto_cc_recibo_me,
+
+                                                monto_ca_facturacion_bs,
+                                                monto_cc_facturacion_bs,
+                                                monto_cte_facturacion_bs,
+                                                monto_mco_facturacion_bs,
+
+                                                monto_ca_facturacion_usd,
+                                                monto_cc_facturacion_usd,
+                                                monto_cte_facturacion_usd,
+                                                monto_mco_facturacion_usd,
+                                                arqueo_moneda_local,
+            									arqueo_moneda_extranjera,
+                                                comisiones_ml,
+                                                comisiones_me
+                                              )
+                                              VALUES (
+                                                p_id_usuario,
+                                                null,
+                                                now(),
+                                                null,
+                                                'activo',
+                                                v_parametros.id_apertura_cierre_caja,
+                                                v_parametros.tipo,
+                                                --local
+                                                v_parametros.monto_ca_boleto_bs,
+                                                v_parametros.monto_cc_boleto_bs,
+                                                v_parametros.monto_cte_boleto_bs,
+                                                v_parametros.monto_mco_boleto_bs,
+                                                --Internacional
+                                                v_parametros.monto_ca_boleto_usd,
+                                                v_parametros.monto_cc_boleto_usd,
+                                                v_parametros.monto_cte_boleto_usd,
+                                                v_parametros.monto_mco_boleto_usd,
+
+                                                v_parametros.monto_ca_recibo_ml,
+                                                v_parametros.monto_ca_recibo_me,
+                                                v_parametros.monto_cc_recibo_ml,
+                                                v_parametros.monto_cc_recibo_me,
+
+                                                v_parametros.monto_ca_facturacion_bs,
+                                                v_parametros.monto_cc_facturacion_bs,
+                                                v_parametros.monto_cte_facturacion_bs,
+                                                v_parametros.monto_mco_facturacion_bs,
+
+                                                v_parametros.monto_ca_facturacion_usd,
+                                                v_parametros.monto_cc_facturacion_usd,
+                                                v_parametros.monto_cte_facturacion_usd,
+                                                v_parametros.monto_mco_facturacion_usd,
+
+                                                v_parametros.arqueo_moneda_local,
+            									v_parametros.arqueo_moneda_extranjera,
+                                                (case
+                                                when pxp.f_existe_parametro(p_tabla,'comisiones_ml') then
+                                                 v_parametros.comisiones_ml
+                                                 else
+                                                 0
+                                                 end),
+                                                 (case
+                                                 when pxp.f_existe_parametro(p_tabla,'comisiones_me') then
+                                                 v_parametros.comisiones_me
+                                                 else
+                                                 0
+                                                 end));
+		else
+
+        if pxp.f_existe_parametro(p_tabla,'comisiones_ml') then
+       v_m1 = v_parametros.comisiones_ml;
+        else
+        v_m1 =0;
+        end if;
+
+        if pxp.f_existe_parametro(p_tabla,'comisiones_me') then
+       v_me = v_parametros.comisiones_me;
+        else
+        v_me = 0;
+        end if;
+        update vef.tdetalle_apertura_cc set
+        id_usuario_mod = p_id_usuario,
+        fecha_mod = now(),
+        monto_ca_boleto_bs = v_parametros.monto_ca_boleto_bs,
+        monto_cc_boleto_bs = v_parametros.monto_cc_boleto_bs,
+        monto_cte_boleto_bs = v_parametros.monto_cte_boleto_bs,
+        monto_mco_boleto_bs = v_parametros.monto_mco_boleto_bs,
+        monto_ca_boleto_usd = v_parametros.monto_ca_boleto_usd,
+        monto_cc_boleto_usd = v_parametros.monto_cc_boleto_usd,
+        monto_cte_boleto_usd = v_parametros.monto_cte_boleto_usd,
+        monto_mco_boleto_usd = v_parametros.monto_mco_boleto_usd,
+        monto_ca_recibo_ml = v_parametros.monto_ca_recibo_ml,
+        monto_ca_recibo_me = v_parametros.monto_ca_recibo_me,
+        monto_cc_recibo_ml = v_parametros.monto_cc_recibo_ml,
+        monto_cc_recibo_me = v_parametros.monto_cc_recibo_me,
+        monto_ca_facturacion_bs = v_parametros.monto_ca_facturacion_bs,
+        monto_cc_facturacion_bs = v_parametros.monto_cc_facturacion_bs,
+        monto_cte_facturacion_bs = v_parametros.monto_cte_facturacion_bs,
+        monto_mco_facturacion_bs = v_parametros.monto_mco_facturacion_bs,
+        monto_ca_facturacion_usd = v_parametros.monto_ca_facturacion_usd,
+        monto_cc_facturacion_usd = v_parametros.monto_cc_facturacion_usd,
+        monto_cte_facturacion_usd = v_parametros.monto_cte_facturacion_usd,
+        monto_mco_facturacion_usd = v_parametros.monto_mco_facturacion_usd,
+        arqueo_moneda_local = v_parametros.arqueo_moneda_local,
+        arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera,
+        comisiones_ml = v_m1,
+        comisiones_me = v_me
+        where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
+		end if;
+
 
             if (pxp.f_existe_parametro(p_tabla,'monto_ca_recibo_ml') = TRUE) then
             	UPDATE vef.tapertura_cierre_caja SET
@@ -336,8 +472,27 @@ BEGIN
 
 			--Sentencia de la modificacion
 			update vef.tapertura_cierre_caja set
-            estado = 'abierto'
+            estado = 'abierto',
+            modificado = 'si'
 			where id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+          IF((select cde.tipo_apertura
+             from vef.tdetalle_apertura_cc cde
+             where cde.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja) = 'carga')then
+
+            update vef.tdetalle_apertura_cc  set
+                  monto_ca_facturacion_bs = 0,
+                  monto_cc_facturacion_bs = 0,
+                  monto_cte_facturacion_bs = 0,
+                  monto_mco_facturacion_bs = 0,
+                  monto_ca_facturacion_usd = 0,
+                  monto_cc_facturacion_usd = 0,
+                  monto_cte_facturacion_usd = 0,
+                  monto_mco_facturacion_usd = 0
+                  where id_apertura_cierre_caja =v_parametros.id_apertura_cierre_caja ;
+            else
+            delete from vef.tdetalle_apertura_cc d
+            where d.id_apertura_cierre_caja =v_parametros.id_apertura_cierre_caja ;
+		end if;
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Apertura de Caja modificado(a)');

@@ -1,7 +1,7 @@
 <?php
 /**
  *@package pXP
- *@file    FormCierreCaja.php
+ *@file    FormCierreCajaCarga.php
  *@author  Gonzalo Sarmiento Sejas
  *@date    28-09-2017
  *@description muestra un formulario que muestra el importe contable con el cual sera registrado el deposito
@@ -9,199 +9,211 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-    Phx.vista.FormCierreCaja=Ext.extend(Phx.frmInterfaz,{
-
+    Phx.vista.FormCierreCajaCarga=Ext.extend(Phx.frmInterfaz,{
         layout:'fit',
         maxCount:0,
-        constructor:function(config){
-        this.Grupos =[{
-                layout: 'column',
-                items:[
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items:[
-                           {
-                                xtype:'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Boletos M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items:[],
-                                id_grupo:0,
-                                collapsible:true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-left:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Boletos M/E',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 1,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Recibos M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 4,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Facturacion M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 2,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Facturacion M/E',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 3,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cortes Monedas M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 6,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cortes Billetes M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 7,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cortes Billetes M/E',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 8,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Apertura',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 9,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Comisiones',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 10,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cierre',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 5,
-                                collapsible: true
-                            }
-                        ]
-                    }
+        mod:'',
+        efectivo_ventas_ml:0,
+        tarjeta_ventas_ml:0,
+        cuenta_corriente_ventas_ml:0,
+        mco_ventas_ml:0,
+        efectivo_ventas_me:0,
+        tarjeta_ventas_me:0,
+        cuenta_corriente_ventas_me:0,
+        mco_ventas_me:0,
+        total_ventas_facturadas_me: 0,
 
-                ]
-            }];
-            Phx.vista.FormCierreCaja.superclass.constructor.call(this,config);
+        constructor:function(config){
+        this.maestro=config
+          this.Grupos =[{
+                  layout: 'column',
+                  items:[
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items:[
+                             {
+                                  xtype:'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Total Boletos M/L',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items:[],
+                                  id_grupo:0,
+                                  collapsible:true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-left:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Total Boletos M/E',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 1,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Total Recibos M/L',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 4,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Total Facturacion M/L',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 2,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Total Facturacion M/E',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 3,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Cortes Monedas M/L',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 6,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Cortes Billetes M/L',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 7,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Cortes Billetes M/E',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 8,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Apertura',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 9,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Total Comisiones',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 10,
+                                  collapsible: true
+                              }
+                          ]
+                      },
+                      {
+                          bodyStyle: 'padding-right:10px;',
+                          items: [
+                              {
+                                  xtype: 'fieldset',
+                                  layout: 'form',
+                                  border: false,
+                                  title: 'Cierre',
+                                  bodyStyle: 'padding:0 10px 0;',
+                                  columnWidth: 0.5,
+                                  items: [],
+                                  id_grupo: 5,
+                                  collapsible: true
+                              }
+                          ]
+                      }
+
+                  ]
+              }];
+            Phx.vista.FormCierreCajaCarga.superclass.constructor.call(this,config);
             this.init();
+            this.mod = this.maestro.data.modificado;
             this.iniciarEventos();
+            this.calcularBoleto();
             this.obtenerCaja();
         },
-
         Atributos:[
             {
                 //configuracion del componente
@@ -339,7 +351,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_ca_boleto_bs',
                     fieldLabel: 'Importe Cash Boletos M/L',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
@@ -357,7 +369,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_cc_boleto_bs',
                     fieldLabel: 'Importe Tarjetas Boletos M/L',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
@@ -375,25 +387,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_cte_boleto_bs',
                     fieldLabel: 'Importe Cta Cte Boletos M/L',
                     allowBlank: true,
-                    disabled:true,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2
-                },
-                type:'NumberField',
-                id_grupo:0,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_mco_boleto_bs',
-                    fieldLabel: 'Importe MCO Boletos M/L',
-                    allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
@@ -429,12 +423,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_boleto_moneda_base',
                     fieldLabel: 'Total Boletos M/L',
                     allowBlank: true,
-                    disabled:true,
+                    readOnly: true,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #A6EFB3;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:0,
@@ -447,7 +442,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_ca_boleto_usd',
                     fieldLabel: 'Importe Cash Boletos M/E',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
@@ -465,7 +460,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_cc_boleto_usd',
                     fieldLabel: 'Importe Tarjetas Boletos M/E',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
@@ -483,25 +478,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_cte_boleto_usd',
                     fieldLabel: 'Importe Cta Cte Boletos M/E',
                     allowBlank: true,
-                    disabled:true,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:8,
-                    allowDecimals: true,
-                    decimalPrecision : 2
-                },
-                type:'NumberField',
-                id_grupo:1,
-                grid:true,
-                form:true,
-                valorInicial :0.00
-            },
-            {
-                config:{
-                    name: 'monto_mco_boleto_usd',
-                    fieldLabel: 'Importe MCO Boletos M/E',
-                    allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
@@ -537,12 +514,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_boleto_moneda_usd',
                     fieldLabel: 'Total Boletos Moneda M/E',
                     allowBlank: true,
-                    disabled:true,
+                    readOnly: true,
                     anchor: '80%',
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2
+                    decimalPrecision : 2,
+                    style: 'background-color: #A6EFB3;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:1,
@@ -804,11 +782,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
-            //nuevo MMV
+            //
             {
                 config:{
                     name: 'monto_ca_recibo_me',
-                    fieldLabel: 'Importe Cash Recibos M/L',
+                    fieldLabel: 'Importe Cash Recibos M/E',
                     allowBlank: true,
                     disabled:false,
                     anchor: '90%',
@@ -827,7 +805,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_recibo_me',
-                    fieldLabel: 'Importe Tarjetas Recibos M/L',
+                    fieldLabel: 'Importe Tarjetas Recibos M/E',
                     allowBlank: true,
                     disabled:false,
                     anchor: '90%',
@@ -843,7 +821,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
-            //
             {
                 config:{
                     name: 'monto_recibo_moneda_base',
@@ -867,7 +844,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'comisiones_ml',
                     fieldLabel: 'Comisiones M/L',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
@@ -885,7 +862,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'comisiones_me',
                     fieldLabel: 'Comisiones M/E',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     anchor: '90%',
                     gwidth: 100,
                     maxLength:8,
@@ -1380,12 +1357,10 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
 
         title:'Cierre Caja',
-
         obtenerCaja:function(x){
             Phx.CP.loadingShow();
             Ext.Ajax.request({
-                // form:this.form.getForm().getEl(),
-                url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/listarCierreCaja',
+                url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/listarAperturaCierreCajaVentas',
                 params:{id_apertura_cierre_caja:this.data.id_apertura_cierre_caja},
                 success:this.successCaja,
                 failure: this.conexionFailure,
@@ -1393,64 +1368,106 @@ header("content-type: text/javascript; charset=UTF-8");
                 scope:this
             });
         },
-
         successCaja:function(resp){
             Phx.CP.loadingHide();
 
             var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
             if(reg.datos.length=1){
-                var total_boletos_ml = parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['tarjeta_boletos_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_boletos_ml']) + parseFloat(reg.datos[0]['mco_boletos_ml']) + parseFloat(reg.datos[0]['comisiones_ml']);
-                var total_boletos_me = parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['tarjeta_boletos_me']) + parseFloat(reg.datos[0]['cuenta_corriente_boletos_me']) + parseFloat(reg.datos[0]['mco_boletos_me']) + parseFloat(reg.datos[0]['comisiones_me']);
-                this.Cmp.id_apertura_cierre_caja.setValue(reg.datos[0]['id_apertura_cierre_caja']);
-                //this.Cmp.id_punto_venta.setValue(reg.datos[0]['id_punto_venta']);
-                this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
-                //this.Cmp.nombre_punto_venta.setValue(reg.datos[0]['nombre_punto_venta']);
+                if (this.mod == 'no'){
+                      //Datos de Apertura
+                      this.Cmp.id_apertura_cierre_caja.setValue(reg.datos[0]['id_apertura_cierre_caja']);
+                      this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
+                      //Totales Ventas
+                      var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']);
+                      var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me']);
+                      //Ventas Nacional
+                      this.Cmp.monto_ca_facturacion_bs.setValue(reg.datos[0]['efectivo_ventas_ml']);
+                      this.Cmp.monto_cc_facturacion_bs.setValue(reg.datos[0]['tarjeta_ventas_ml']);
+                      this.Cmp.monto_cte_facturacion_bs.setValue(reg.datos[0]['cuenta_corriente_ventas_ml']);
+                      this.Cmp.monto_mco_facturacion_bs.setValue(reg.datos[0]['mco_ventas_ml']);
+                      this.Cmp.monto_moneda_base_fp_facturacion.setValue(total_ventas_ml);
+                      //Ventas Internacional
+                      this.Cmp.monto_ca_facturacion_usd.setValue(reg.datos[0]['efectivo_ventas_me']);
+                      this.Cmp.monto_cc_facturacion_usd.setValue(reg.datos[0]['tarjeta_ventas_me']);
+                      this.Cmp.monto_cte_facturacion_usd.setValue(reg.datos[0]['cuenta_corriente_ventas_me']);
+                      this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
+                      this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
+                      //Total Arqueo
+                      this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_ventas_ml']) +  parseFloat(reg.datos[0]['tarjeta_ventas_ml']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml'] )+  parseFloat( reg.datos[0]['mco_ventas_ml']));
+                      this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_ventas_me']) +  parseFloat(reg.datos[0]['tarjeta_ventas_me']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_me'] )+  parseFloat( reg.datos[0]['mco_ventas_me']));
+                      //Recuperar Monto Nacional
+                      this.efectivo_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']);
+                      this.tarjeta_ventas_ml =  parseFloat(reg.datos[0]['tarjeta_ventas_ml']);
+                      this.cuenta_corriente_ventas_ml =  parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']);
+                      this.mco_ventas_ml =  parseFloat(reg.datos[0]['mco_ventas_ml']);
+                      //Recuperar Monto Nacional
+                      this.efectivo_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']);
+                      this.tarjeta_ventas_me = parseFloat(reg.datos[0]['tarjeta_ventas_me']);
+                      this.cuenta_corriente_ventas_me = parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']);
+                      this.mco_ventas_me = parseFloat(reg.datos[0]['mco_ventas_me']);
+                      this.Cmp.diferencia.setValue(this.calcularDiferencia());
 
-                this.Cmp.monto_ca_boleto_bs.setValue(reg.datos[0]['efectivo_boletos_ml']);
-                this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['tarjeta_boletos_ml']);
-                this.Cmp.monto_cte_boleto_bs.setValue(reg.datos[0]['cuenta_corriente_boletos_ml']);
-                this.Cmp.monto_mco_boleto_bs.setValue(reg.datos[0]['mco_boletos_ml']);
-                this.Cmp.monto_boleto_moneda_base.setValue(total_boletos_ml);
+                  }else{
+                      //Datos de Apertura
+                      this.Cmp.id_apertura_cierre_caja.setValue(reg.datos[0]['id_apertura_cierre_caja']);
+                      this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
+                      //Totales Boletos
+                      var total_boletos_ml = parseFloat(reg.datos[0]['monto_ca_boleto_bs']) + parseFloat(reg.datos[0]['monto_cc_boleto_bs']) + parseFloat(reg.datos[0]['monto_cte_boleto_bs']);
+                      var total_boletos_me = parseFloat(reg.datos[0]['monto_ca_boleto_usd']) + parseFloat(reg.datos[0]['monto_cc_boleto_usd']) + parseFloat(reg.datos[0]['monto_cte_boleto_usd']);
+                      //Boletos Nacional
+                      this.Cmp.monto_ca_boleto_bs.setValue(reg.datos[0]['monto_ca_boleto_bs']);
+                      this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['monto_cc_boleto_bs']);
+                      this.Cmp.monto_cte_boleto_bs.setValue(reg.datos[0]['monto_cte_boleto_bs']);
+                      this.Cmp.monto_boleto_moneda_base.setValue(total_boletos_ml);
+                      //Boletos Internacional
+                      this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['monto_ca_boleto_usd']);
+                      this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['monto_cc_boleto_usd']);
+                      this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['monto_cte_boleto_usd']);
+                      this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
+                      //recibo nacional
+                      this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['monto_ca_recibo_ml']);
+                      this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['monto_cc_recibo_ml']);
+                      //recibo Internacional
+                      this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['monto_ca_recibo_me']);
+                      this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['monto_cc_recibo_me']);
+                      //venta total
+                      var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']);
+                      var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me']);
+                      //venta nacional
+                      this.Cmp.monto_ca_facturacion_bs.setValue(reg.datos[0]['efectivo_ventas_ml']);
+                      this.Cmp.monto_cc_facturacion_bs.setValue(reg.datos[0]['tarjeta_ventas_ml']);
+                      this.Cmp.monto_cte_facturacion_bs.setValue(reg.datos[0]['cuenta_corriente_ventas_ml']);
+                      this.Cmp.monto_mco_facturacion_bs.setValue(reg.datos[0]['mco_ventas_ml']);
+                      this.Cmp.monto_moneda_base_fp_facturacion.setValue(total_ventas_ml);
+                      //venta Internacional
+                      this.Cmp.monto_ca_facturacion_usd.setValue(reg.datos[0]['efectivo_ventas_me']);
+                      this.Cmp.monto_cc_facturacion_usd.setValue(reg.datos[0]['tarjeta_ventas_me']);
+                      this.Cmp.monto_cte_facturacion_usd.setValue(reg.datos[0]['cuenta_corriente_ventas_me']);
+                      this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
+                      this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
 
-                this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['efectivo_boletos_me']);
-                this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['tarjeta_boletos_me']);
-                this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['cuenta_corriente_boletos_me']);
-                this.Cmp.monto_mco_boleto_usd.setValue(reg.datos[0]['mco_boletos_me']);
-                this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
+                      this.efectivo_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']);
+                      this.tarjeta_ventas_ml =  parseFloat(reg.datos[0]['tarjeta_ventas_ml']);
+                      this.cuenta_corriente_ventas_ml = parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']);
+                      this.mco_ventas_ml =  parseFloat(reg.datos[0]['mco_ventas_ml']);
 
-                var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']);
-                var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me']);
+                      this.efectivo_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']);
+                      this.tarjeta_ventas_me = parseFloat(reg.datos[0]['tarjeta_ventas_me']);
+                      this.cuenta_corriente_ventas_me = parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']);
+                      this.mco_ventas_me =  parseFloat(reg.datos[0]['mco_ventas_me']);
 
-                this.Cmp.monto_ca_facturacion_bs.setValue(reg.datos[0]['efectivo_ventas_ml']);
-                this.Cmp.monto_cc_facturacion_bs.setValue(reg.datos[0]['tarjeta_ventas_ml']);
-                this.Cmp.monto_cte_facturacion_bs.setValue(reg.datos[0]['cuenta_corriente_ventas_ml']);
-                this.Cmp.monto_mco_facturacion_bs.setValue(reg.datos[0]['mco_ventas_ml']);
+                      this.Cmp.total_efectivo_ml.setValue(parseFloat(total_boletos_ml) + parseFloat(total_ventas_ml) + parseFloat(reg.datos[0]['monto_ca_recibo_ml']));
+                      this.Cmp.total_efectivo_me.setValue(parseFloat(total_boletos_me) + parseFloat(total_ventas_me) + parseFloat(reg.datos[0]['monto_ca_recibo_me']));
 
-                this.Cmp.monto_moneda_base_fp_facturacion.setValue(total_ventas_ml);
-
-                this.Cmp.monto_ca_facturacion_usd.setValue(reg.datos[0]['efectivo_ventas_me']);
-                this.Cmp.monto_cc_facturacion_usd.setValue(reg.datos[0]['tarjeta_ventas_me']);
-                this.Cmp.monto_cte_facturacion_usd.setValue(reg.datos[0]['cuenta_corriente_ventas_me']);
-                this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
-                this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
-
-                this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_boletos_ml']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']));
-                this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_boletos_me']) + parseFloat(reg.datos[0]['efectivo_ventas_me']));
-
-                this.Cmp.monto_inicial.setValue(reg.datos[0]['monto_inicial']);
-                this.Cmp.monto_inicial_moneda_extranjera.setValue(reg.datos[0]['monto_inicial_moneda_extranjera']);
-                this.Cmp.comisiones_ml.setValue(reg.datos[0]['comisiones_ml']);
-                this.Cmp.comisiones_me.setValue(reg.datos[0]['comisiones_me']);
-                this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                      this.Cmp.diferencia.setValue(this.calcularDiferencia());
+              }
 
             }else{
                 alert('ocurrio error al obtener datos de la caja')
             }
         },
-
         onSubmit:function(){
             //TODO passar los datos obtenidos del wizard y pasar  el evento save
-
             if (this.form.getForm().isValid()) {
                 if(this.Cmp.diferencia.getValue() >= 1 || this.Cmp.diferencia.getValue() <= -1){
                     alert('Existe diferencia de : '+ this.Cmp.diferencia.getValue());
@@ -1462,7 +1479,7 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         getValues:function(){
-            var me = this;
+            console.log(this.Cmp.monto_ca_facturacion_bs.getValue());
             var resp = {
                 id_apertura_cierre_caja:this.data.id_apertura_cierre_caja,
                 id_sucursal:this.Cmp.id_sucursal.getValue(),
@@ -1472,21 +1489,18 @@ header("content-type: text/javascript; charset=UTF-8");
                 arqueo_moneda_extranjera:this.Cmp.arqueo_moneda_extranjera.getValue(),
                 monto_inicial:this.Cmp.monto_inicial.getValue(),
                 monto_inicial_moneda_extranjera: this.Cmp.monto_inicial_moneda_extranjera.getValue(),
-
                 //monto_ca_recibo_ml: this.Cmp.monto_ca_recibo_ml.getValue(),
                 //monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue(),
                 fecha_apertura_cierre : this.data.fecha_apertura_cierre,
-                tipo :'normal',
+                tipo :'carga',
                 //nacional
                 monto_ca_boleto_bs : this.Cmp.monto_ca_boleto_bs.getValue(),
                 monto_cc_boleto_bs : this.Cmp.monto_cc_boleto_bs.getValue(),
                 monto_cte_boleto_bs : this.Cmp.monto_cte_boleto_bs.getValue(),
-                monto_mco_boleto_bs : this.Cmp.monto_mco_boleto_bs.getValue(),
                 //internacional
                 monto_ca_boleto_usd : this.Cmp.monto_ca_boleto_usd.getValue(),
                 monto_cc_boleto_usd : this.Cmp.monto_cc_boleto_usd.getValue(),
                 monto_cte_boleto_usd : this.Cmp.monto_cte_boleto_usd.getValue(),
-                monto_mco_boleto_usd : this.Cmp.monto_mco_boleto_usd.getValue(),
 
                 monto_ca_recibo_ml: this.Cmp.monto_ca_recibo_ml.getValue(),
                 monto_ca_recibo_me: this.Cmp.monto_ca_recibo_me.getValue(),
@@ -1505,19 +1519,93 @@ header("content-type: text/javascript; charset=UTF-8");
                 monto_ca_facturacion_usd: this.Cmp.monto_ca_facturacion_usd.getValue(),
                 monto_cc_facturacion_usd: this.Cmp.monto_cc_facturacion_usd.getValue(),
                 monto_cte_facturacion_usd: this.Cmp.monto_cte_facturacion_usd.getValue(),
-                monto_mco_facturacion_usd: this.Cmp.monto_mco_facturacion_usd.getValue(),
                 //Comision
                 comisiones_ml: this.Cmp.comisiones_ml.getValue(),
                 comisiones_me: this.Cmp.comisiones_me.getValue()
+
+
+
             }
             return resp;
+        },
+        calcularBoleto :function () {
+
+            //Moneda Nacional
+            this.Cmp.monto_ca_boleto_bs.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.monto_boleto_moneda_base.setValue(this.Cmp.monto_ca_boleto_bs.getValue() + this.Cmp.monto_cc_boleto_bs.getValue() + this.Cmp.monto_cte_boleto_bs.getValue());
+                    this.Cmp.total_efectivo_ml.setValue(parseFloat(this.calcularTotalBoletos())  );
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+            this.Cmp.monto_cc_boleto_bs.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.monto_boleto_moneda_base.setValue(this.Cmp.monto_ca_boleto_bs.getValue() + this.Cmp.monto_cc_boleto_bs.getValue() + this.Cmp.monto_cte_boleto_bs.getValue());
+                    this.Cmp.total_efectivo_ml.setValue(parseFloat(this.calcularTotalBoletos()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+            this.Cmp.monto_cte_boleto_bs.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.monto_boleto_moneda_base.setValue(this.Cmp.monto_ca_boleto_bs.getValue() + this.Cmp.monto_cc_boleto_bs.getValue() + this.Cmp.monto_cte_boleto_bs.getValue());
+                    this.Cmp.total_efectivo_ml.setValue(parseFloat(this.calcularTotalBoletos()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+            this.Cmp.comisiones_ml.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.total_efectivo_ml.setValue(parseFloat(this.calcularTotalBoletos()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+            /// Moneda Internacional
+
+            this.Cmp.monto_ca_boleto_usd.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.monto_boleto_moneda_usd.setValue(this.Cmp.monto_ca_boleto_usd.getValue() + this.Cmp.monto_cc_boleto_usd.getValue() + this.Cmp.monto_cte_boleto_usd.getValue());
+                    this.Cmp.total_efectivo_me.setValue(parseFloat(this.calcularTotalBoletos_uds()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+            this.Cmp.monto_cc_boleto_usd.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.monto_boleto_moneda_usd.setValue(this.Cmp.monto_ca_boleto_usd.getValue() + this.Cmp.monto_cc_boleto_usd.getValue() + this.Cmp.monto_cte_boleto_usd.getValue());
+                    this.Cmp.total_efectivo_me.setValue(parseFloat(this.calcularTotalBoletos_uds()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+            this.Cmp.monto_cte_boleto_usd.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.monto_boleto_moneda_usd.setValue(this.Cmp.monto_ca_boleto_usd.getValue() + this.Cmp.monto_cc_boleto_usd.getValue() + this.Cmp.monto_cte_boleto_usd.getValue());
+                    this.Cmp.total_efectivo_me.setValue(parseFloat(this.calcularTotalBoletos_uds()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+            this.Cmp.comisiones_me.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.total_efectivo_me.setValue(parseFloat(this.calcularTotalBoletos_uds()));
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+
+
         },
 
         iniciarEventos : function () {
 
             this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                    this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
+                    this.Cmp.total_efectivo_ml.setValue(this.calcularTotalBoletos() + newValue);
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+            this.Cmp.monto_ca_recibo_me.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.total_efectivo_me.setValue(this.calcularTotalBoletos_uds() + newValue);
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
@@ -1525,12 +1613,6 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     //this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
-                }
-            }, this);
-            this.Cmp.monto_ca_recibo_me.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    this.Cmp.total_efectivo_me.setValue(this.Cmp.monto_ca_boleto_usd.getValue()+this.Cmp.monto_ca_facturacion_usd.getValue() +newValue);
-                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
                 }
             }, this);
 
@@ -1692,7 +1774,16 @@ header("content-type: text/javascript; charset=UTF-8");
             var total_efectivo = this.Cmp.total_efectivo_ml.getValue() + (this.Cmp.total_efectivo_me.getValue()*6.96);
             var total_arqueo = this.Cmp.arqueo_moneda_local.getValue() + (this.Cmp.arqueo_moneda_extranjera.getValue()*6.96);
             return total_arqueo - total_efectivo;
+        },
+        calcularTotalBoletos : function () {
+            var BoletoTotal = this.Cmp.monto_ca_boleto_bs.getValue() + this.Cmp.monto_cc_boleto_bs.getValue() + this.Cmp.monto_cte_boleto_bs.getValue()+ this.Cmp.comisiones_ml.getValue() + this.efectivo_ventas_ml + this.tarjeta_ventas_ml + this.cuenta_corriente_ventas_ml+ this.mco_ventas_ml;
+            return BoletoTotal;
+        },
+        calcularTotalBoletos_uds : function () {
+            var BoletoTotal = this.Cmp.monto_ca_boleto_usd.getValue() + this.Cmp.monto_cc_boleto_usd.getValue() + this.Cmp.monto_cte_boleto_usd.getValue()+ this.Cmp.comisiones_me.getValue()  + this.efectivo_ventas_me + this.tarjeta_ventas_me + this.cuenta_corriente_ventas_me + this.mco_ventas_me;
+            return BoletoTotal;
         }
+
 
     })
 </script>

@@ -19,10 +19,10 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
 		this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'bunlock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
-		this.addButton('boletos',{grupo:[0],text: 'Comparar Boletos Amadeus - ERP',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
+		this.addButton('boletos',{grupo:[0],text: 'Validar Boletos Amadeus - ERP',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
 		this.addButton('reporte',{grupo:[0,1],text:'Declaracion de Ventas',iconCls: 'bpdf',disabled:true,handler:this.generarReporte,tooltip: '<b>Reporte Declaración Diarias de Ventas</b>'});
 		this.finCons = true;
-		this.store.baseParams.pes_estado = 'abierto';    
+		this.store.baseParams.pes_estado = 'abierto';
 		this.load({params:{start:0, limit:this.tam_pag}});
 	},
 	bactGroups:  [0,1],
@@ -30,15 +30,15 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
     bdel : true,
 	gruposBarraTareas:[{name:'abierto',title:'<H1 align="center"><i class="fa fa-eye"></i> Abiertas</h1>',grupo:0,height:0},
                        {name:'cerrado',title:'<H1 align="center"><i class="fa fa-eye"></i> Cerradas</h1>',grupo:1,height:0}
-                       
+
                        ],
     actualizarSegunTab: function(name, indice){
-        if(this.finCons) {        	 
-             this.store.baseParams.pes_estado = name;                          
+        if(this.finCons) {
+             this.store.baseParams.pes_estado = name;
              this.load({params:{start:0, limit:this.tam_pag}});
         }
     },
-			
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -48,14 +48,24 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 					name: 'id_apertura_cierre_caja'
 			},
 			type:'Field',
-			form:true 
+			form:true
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'modificado'
+			},
+			type:'Field',
+			form:true
 		},
 		{
             config:{
                 name: 'fecha_apertura_cierre',
-                fieldLabel: 'Fecha ',              
+                fieldLabel: 'Fecha ',
                 gwidth: 110,
-                format: 'd/m/Y', 
+                format: 'd/m/Y',
 				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
             },
                 type:'DateField',
@@ -84,7 +94,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
                 }),
                 valueField: 'id_sucursal',
                 gdisplayField : 'nombre_sucursal',
-                displayField: 'nombre',                
+                displayField: 'nombre',
                 hiddenName: 'id_sucursal',
                 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
                 forceSelection: true,
@@ -93,15 +103,40 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
                 lazyRender: true,
                 mode: 'remote',
                 pageSize: 15,
-                queryDelay: 1000,                
+                queryDelay: 1000,
                 minChars: 2,
                 width:250,
                 resizable:true
             },
             type: 'ComboBox',
-            id_grupo: 1,            
+            id_grupo: 1,
             form: true,
-            grid:true
+            grid:false
+        },
+        {
+            config:{
+                name: 'desc_persona',
+                fieldLabel: 'Cajero',
+                gwidth: 200,
+                renderer: function(value, p, record) {
+                        return '<tpl for="."><p <b><font color="black">'+record.data['desc_persona']+'</font></b></p></tpl>';
+                }
+            },
+            type:'TextField',
+            filters:{pfiltro:'u.desc_persona',type:'string'},
+            grid:true,
+            form:false,
+            bottom_filter:true
+        },
+        {
+            config:{
+                name: 'tipo',
+                fieldLabel: 'tipo',
+                gwidth: 200
+            },
+            type:'TextField',
+            grid:false,
+            form:false
         },
 		{
 			config: {
@@ -133,8 +168,8 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 	                lazyRender: true,
 	                mode: 'remote',
 	                pageSize: 15,
-	                queryDelay: 1000,               
-	                gwidth: 150,
+	                queryDelay: 1000,
+	                gwidth: 200,
 	                minChars: 2,
 	                renderer : function(value, p, record) {
 	                    return String.format('{0}', record.data['nombre_punto_venta']);
@@ -147,21 +182,40 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 	            filters: {pfiltro: 'pv.nombre',type: 'string'},
 	            grid: true,
 	            form: true,
-	            grid:true
-	       },
-	       
-	       {
+	            grid:true,
+                bottom_filter:true
+        },
+        {
             config:{
-                name: 'estado',
-                fieldLabel: 'Estado',                
+                name: 'tipo',
+                fieldLabel: 'Tipo',
                 gwidth: 100
             },
-                type:'TextField',
-                filters:{pfiltro:'ven.estado',type:'string'},                
-                grid:true,
-                form:false
+            type:'TextField',
+            filters:{pfiltro:'pv.tipo',type:'string'},
+            grid:true,
+            form:false
         },
-		
+
+        {
+            config:{
+                name: 'estado',
+                fieldLabel: 'Estado',
+                gwidth: 100,
+                renderer: function(value, p, record) {
+                    if (record.data['estado'] == 'abierto') {
+                        return '<tpl for="."><p><font color="red"><b>'+record.data['estado']+'</b></font></p></tpl>';
+                    }else{
+                        return '<tpl for="."><p <b><font color="black">'+record.data['estado']+'</font></b></p></tpl>';
+                    }
+                }
+            },
+            type:'TextField',
+            filters:{pfiltro:'ven.estado',type:'string'},
+            grid:true,
+            form:false
+        },
+
 		{
 			config:{
 				name: 'monto_inicial',
@@ -242,7 +296,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				id_grupo:1,
 				grid:true,
 				form:true
-				
+
 		},
 		{
 			config:{
@@ -254,7 +308,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4,
 				allowDecimals: true,
 				decimalPrecision : 2
-				
+
 			},
 				type:'NumberField',
 				filters:{pfiltro:'apcie.arqueo_moneda_extranjera',type:'numeric'},
@@ -270,10 +324,10 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
-				type:'DateField',				
+				type:'DateField',
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -281,7 +335,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		{
             config:{
                 name: 'usr_reg',
-                fieldLabel: 'Cajero',                
+                fieldLabel: 'User Cajero',
                 gwidth: 100
             },
                 type:'TextField',
@@ -289,9 +343,9 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
                 grid:true,
                 form:false
         }
-		
+
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Apertura de Caja',
 	ActSave:'../../sis_ventas_facturacion/control/AperturaCierreCaja/insertarAperturaCierreCaja',
 	ActDel:'../../sis_ventas_facturacion/control/AperturaCierreCaja/eliminarAperturaCierreCaja',
@@ -317,8 +371,14 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_punto_venta', type: 'string'},
-        {name:'id_entrega_brinks', type: 'numeric'}
-		
+    {name:'id_entrega_brinks', type: 'numeric'},
+    {name:'tipo', type: 'string'},
+    {name:'desc_persona', type: 'string'},
+    {name:'tipo', type: 'string'},
+    {name:'modificado', type: 'string'}
+
+
+
 	],
 	sortInfo:{
 		field: 'id_apertura_cierre_caja',
@@ -353,7 +413,7 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
     ],
 	onSubmit: function(o, x, force) {
 		if (!this.Cmp.id_punto_venta.getValue() && !this.Cmp.id_punto_venta.getValue()) {
-			alert('Debe elegir un punto de venta o sucursal para abrir');	
+			alert('Debe elegir un punto de venta o sucursal para abrir');
 		} else {
 			Phx.vista.AperturaCierreCaja.superclass.onSubmit.call(this,o, x, force);
 		}
@@ -362,24 +422,23 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 		this.ocultarComponente(this.Cmp.obs_cierre);
 		this.ocultarComponente(this.Cmp.arqueo_moneda_local);
 		this.ocultarComponente(this.Cmp.arqueo_moneda_extranjera);
-		this.Cmp.arqueo_moneda_local.allowBlank = true;		
+		this.Cmp.arqueo_moneda_local.allowBlank = true;
 		this.ocultarComponente(this.Cmp.id_sucursal);
 		this.mostrarComponente(this.Cmp.id_punto_venta);
 		this.mostrarComponente(this.Cmp.monto_inicial);
 		this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
 		this.mostrarComponente(this.Cmp.obs_apertura);
-        this.Cmp.id_punto_venta.setDisabled(false);
-        this.Cmp.id_sucursal.setDisabled(false);
+    this.Cmp.id_punto_venta.setDisabled(false);
+    this.Cmp.id_sucursal.setDisabled(false);
 		Phx.vista.AperturaCierreCaja.superclass.onButtonNew.call(this);
 		this.Cmp.fecha_apertura_cierre.setValue(new Date());
-		
 	},
-	
+
 	onButtonEdit: function() {
 		this.ocultarComponente(this.Cmp.obs_cierre);
 		this.ocultarComponente(this.Cmp.arqueo_moneda_local);
 		this.ocultarComponente(this.Cmp.arqueo_moneda_extranjera);
-		this.Cmp.arqueo_moneda_local.allowBlank = true;		
+		this.Cmp.arqueo_moneda_local.allowBlank = true;
 		this.ocultarComponente(this.Cmp.id_sucursal);
 		this.mostrarComponente(this.Cmp.id_punto_venta);
 		this.mostrarComponente(this.Cmp.monto_inicial);
@@ -389,26 +448,46 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.id_sucursal.setDisabled(true);
 		this.argumentExtraSubmit = {'accion' :'nada'};
 		Phx.vista.AperturaCierreCaja.superclass.onButtonEdit.call(this);
-		
+
 	},
 
 	preparaCerrarCaja:function(){
-		var data=this.sm.getSelected().data;
-		Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/apertura_cierre_caja/FormCierreCaja.php',
-				'Cerrar Caja',
-				{
-					modal:true,
-					width:1200,
-					height:600
-				}, {data:data}, this.idContenedor,'FormCierreCaja',
-				{
-					config:[{
-						event:'beforesave',
-						delegate: this.cerrarCaja,
-					}
-					],
-					scope:this
-				})
+        var data=this.sm.getSelected().data;
+        console.log(data.tipo);
+        if (data.tipo == 'carga'){
+            Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/apertura_cierre_caja/FormCierreCajaCarga.php',
+                'Cerrar Caja Carga',
+                {
+                    modal: true,
+                    width: 1200,
+                    height: 700
+                }, {data: data}, this.idContenedor, 'FormCierreCajaCarga',
+                {
+                    config: [{
+                        event: 'beforesave',
+                        delegate: this.cerrarCaja,
+                    }
+                    ],
+                    scope: this
+                })
+
+        }else {
+            Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/apertura_cierre_caja/FormCierreCaja.php',
+                'Cerrar Caja',
+                {
+                    modal: true,
+                    width: 1200,
+                    height: 700
+                }, {data: data}, this.idContenedor, 'FormCierreCaja',
+                {
+                    config: [{
+                        event: 'beforesave',
+                        delegate: this.cerrarCaja,
+                    }
+                    ],
+                    scope: this
+                })
+        }
 	},
 
 	cerrarCaja:function(wizard,resp){
@@ -427,9 +506,39 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 				monto_inicial: resp.monto_inicial,
 				obs_apertura: resp.obs_apertura,
 				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera,
-				monto_ca_recibo_ml: resp.monto_ca_recibo_ml,
-				monto_cc_recibo_ml: resp.monto_cc_recibo_ml,
-				fecha_apertura_cierre: resp.fecha_apertura_cierre
+				//monto_ca_recibo_ml: resp.monto_ca_recibo_ml,
+			//	monto_cc_recibo_ml: resp.monto_cc_recibo_ml,
+				fecha_apertura_cierre: resp.fecha_apertura_cierre,
+
+                tipo:resp.tipo,
+                //nacional
+                monto_ca_boleto_bs : resp.monto_ca_boleto_bs,
+                monto_cc_boleto_bs : resp.monto_cc_boleto_bs,
+                monto_cte_boleto_bs : resp.monto_cte_boleto_bs,
+                monto_mco_boleto_bs : resp.monto_mco_boleto_bs,
+                //internaciona
+                monto_ca_boleto_usd: resp.monto_ca_boleto_usd,
+                monto_cc_boleto_usd: resp.monto_cc_boleto_usd,
+                monto_cte_boleto_usd: resp.monto_cte_boleto_usd,
+                monto_mco_boleto_usd: resp.monto_mco_boleto_usd,
+
+                monto_ca_recibo_ml : resp.monto_ca_recibo_ml,
+                monto_ca_recibo_me : resp.monto_ca_recibo_me,
+                monto_cc_recibo_ml : resp.monto_cc_recibo_ml,
+                monto_cc_recibo_me : resp.monto_cc_recibo_me,
+                //nacional_ventas
+
+                monto_ca_facturacion_bs : resp.monto_ca_facturacion_bs,
+                monto_cc_facturacion_bs : resp.monto_cc_facturacion_bs,
+                monto_cte_facturacion_bs : resp.monto_cte_facturacion_bs,
+                monto_mco_facturacion_bs : resp.monto_mco_facturacion_bs,
+                //interncionl_ventas
+                monto_ca_facturacion_usd : resp.monto_ca_facturacion_usd,
+                monto_cc_facturacion_usd : resp.monto_cc_facturacion_usd,
+                monto_cte_facturacion_usd : resp.monto_cte_facturacion_usd,
+                monto_mco_facturacion_usd : resp.monto_mco_facturacion_usd
+
+
 			},
 			argument:{wizard:wizard},
 			success:this.successWizard,
@@ -466,53 +575,6 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 			this.reload();
 		}
 	},
-
-	/*cerrarCaja:function(wizard,resp){
-		var me=this;
-		Phx.CP.loadingShow();
-		Ext.Ajax.request({
-			url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/insertarAperturaCierreCaja',
-			params:{
-				id_apertura_cierre_caja: resp.id_apertura_cierre_caja,
-				id_sucursal: resp.id_sucursal,
-				id_punto_venta: resp.id_punto_venta,
-				obs_cierre: resp.obs_cierre,
-				arqueo_moneda_local: resp.arqueo_moneda_local,
-				arqueo_moneda_extranjera: resp.arqueo_moneda_extranjera,
-				accion :'cerrar',
-				monto_inicial: resp.monto_inicial,
-				obs_apertura: resp.obs_apertura,
-				monto_inicial_moneda_extranjera: resp.monto_inicial_moneda_extranjera
-			},
-			argument:{wizard:wizard},
-			success:this.successWizard,
-			failure: this.conexionFailure,
-			timeout:this.timeout,
-			scope:this
-		});
-
-	},
-
-	successWizard:function(resp){
-		Phx.CP.loadingHide();
-		resp.argument.wizard.panel.destroy()
-		this.reload();
-	},
-	
-	cerrarCaja : function () {
-		this.mostrarComponente(this.Cmp.obs_cierre);
-		this.mostrarComponente(this.Cmp.arqueo_moneda_local);
-		this.mostrarComponente(this.Cmp.arqueo_moneda_extranjera);
-		this.Cmp.arqueo_moneda_local.allowBlank = false;		
-		this.ocultarComponente(this.Cmp.id_sucursal);
-		this.ocultarComponente(this.Cmp.id_punto_venta);
-		this.ocultarComponente(this.Cmp.monto_inicial);
-		this.ocultarComponente(this.Cmp.monto_inicial_moneda_extranjera);
-		this.ocultarComponente(this.Cmp.obs_apertura);
-		this.argumentExtraSubmit = {'accion' :'cerrar'};
-		Phx.vista.AperturaCierreCaja.superclass.onButtonEdit.call(this);
-	},*/
-
     generarReporte : function () {
         var data=this.sm.getSelected().data;
         Phx.CP.loadingShow();
@@ -551,25 +613,25 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
 
 	preparaMenu:function()
     {   var rec = this.sm.getSelected();
-        
-        if (rec.data.estado == 'abierto') {              
+
+        if (rec.data.estado == 'abierto') {
               this.getBoton('cerrar').enable();
               this.getBoton('reporte').enable();
-              this.getBoton('edit').enable(); 
-              this.getBoton('del').enable();                                       
+              this.getBoton('edit').enable();
+              this.getBoton('del').enable();
               this.getBoton('boletos').enable();
               this.getBoton('abrir').disable();
         }
-        
-        if (rec.data.estado == 'cerrado') {              
+
+        if (rec.data.estado == 'cerrado') {
               this.getBoton('cerrar').disable();
               this.getBoton('reporte').enable();
-              this.getBoton('edit').disable(); 
-              this.getBoton('del').disable();                                
+              this.getBoton('edit').disable();
+              this.getBoton('del').disable();
               this.getBoton('boletos').disable();
 			this.getBoton('abrir').enable();
         }
-        
+
         Phx.vista.AperturaCierreCaja.superclass.preparaMenu.call(this);
     },
     liberaMenu:function()
@@ -578,10 +640,8 @@ Phx.vista.AperturaCierreCaja=Ext.extend(Phx.gridInterfaz,{
     	this.getBoton('boletos').disable();
         Phx.vista.AperturaCierreCaja.superclass.liberaMenu.call(this);
     }
-	
-	
+
+
 	}
 )
 </script>
-		
-		

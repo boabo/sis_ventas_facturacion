@@ -70,7 +70,7 @@ class ACTAperturaCierreCaja extends ACTbase{
     function reporteAperturaCierreCaja()	{
 
         $this->objFunc=$this->create('MODAperturaCierreCaja');
-        $this->res=$this->objFunc->reporteAperturaCierreCaja($this->objParam);
+        $this->res=$this->objFunc->reporteApertura($this->objParam);
 
 
         //obtener titulo del reporte
@@ -163,6 +163,12 @@ class ACTAperturaCierreCaja extends ACTbase{
 
             $this->res=$this->objFunc->DetalleEstadoApertura($this->objParam);
         }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function listarAperturaCierreCajaVentas(){
+
+        $this->objFunc=$this->create('MODAperturaCierreCaja');
+        $this->res=$this->objFunc->listarAperturaCierreCajaVentas($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
