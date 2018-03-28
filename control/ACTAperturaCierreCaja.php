@@ -1,36 +1,36 @@
 <?php
 /**
-*@package pXP
-*@file gen-ACTAperturaCierreCaja.php
-*@author  (jrivera)
-*@date 07-07-2016 14:16:20
-*@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
-*/
+ *@package pXP
+ *@file gen-ACTAperturaCierreCaja.php
+ *@author  (jrivera)
+ *@date 07-07-2016 14:16:20
+ *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
+ */
 
 require_once(dirname(__FILE__).'/../reportes/RAperturaCierrePDF.php');
-class ACTAperturaCierreCaja extends ACTbase{    
-			
-	function listarAperturaCierreCaja(){
-		$this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
-        
-		$this->objParam->defecto('dir_ordenacion','asc');
+class ACTAperturaCierreCaja extends ACTbase{
 
-		if ($this->objParam->getParametro('pes_estado') != '') {
+    function listarAperturaCierreCaja(){
+        $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+
+        $this->objParam->defecto('dir_ordenacion','asc');
+
+        if ($this->objParam->getParametro('pes_estado') != '') {
             $this->objParam->addFiltro(" apcie.estado = ''" .  $this->objParam->getParametro('pes_estado') . "''");
         }
-       /* if($this->objParam->getParametro('id_entrega_brinks') != '') {
-            $this->objParam->addFiltro(" apcie.id_entrega_brinks = " . $this->objParam->getParametro('id_entrega_brinks'));
-        }*/
-		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
-			$this->objReporte = new Reporte($this->objParam,$this);
-			$this->res = $this->objReporte->generarReporteListado('MODAperturaCierreCaja','listarAperturaCierreCaja');
-		} else{
-			$this->objFunc=$this->create('MODAperturaCierreCaja');
-			
-			$this->res=$this->objFunc->listarAperturaCierreCaja($this->objParam);
-		}
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
+        /* if($this->objParam->getParametro('id_entrega_brinks') != '') {
+             $this->objParam->addFiltro(" apcie.id_entrega_brinks = " . $this->objParam->getParametro('id_entrega_brinks'));
+         }*/
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODAperturaCierreCaja','listarAperturaCierreCaja');
+        } else{
+            $this->objFunc=$this->create('MODAperturaCierreCaja');
+
+            $this->res=$this->objFunc->listarAperturaCierreCaja($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
     function listarCierreCaja(){
         /*$this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
@@ -45,15 +45,15 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
-	function insertarAperturaCierreCaja(){
-		$this->objFunc=$this->create('MODAperturaCierreCaja');	
-		if($this->objParam->insertar('id_apertura_cierre_caja')){
-			$this->res=$this->objFunc->insertarAperturaCierreCaja($this->objParam);			
-		} else{			
-			$this->res=$this->objFunc->modificarAperturaCierreCaja($this->objParam);
-		}
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
+    function insertarAperturaCierreCaja(){
+        $this->objFunc=$this->create('MODAperturaCierreCaja');
+        if($this->objParam->insertar('id_apertura_cierre_caja')){
+            $this->res=$this->objFunc->insertarAperturaCierreCaja($this->objParam);
+        } else{
+            $this->res=$this->objFunc->modificarAperturaCierreCaja($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
     function abrirAperturaCierreCaja(){
         $this->objFunc=$this->create('MODAperturaCierreCaja');
@@ -61,11 +61,11 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
-	function eliminarAperturaCierreCaja(){
-			$this->objFunc=$this->create('MODAperturaCierreCaja');	
-		$this->res=$this->objFunc->eliminarAperturaCierreCaja($this->objParam);
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
+    function eliminarAperturaCierreCaja(){
+        $this->objFunc=$this->create('MODAperturaCierreCaja');
+        $this->res=$this->objFunc->eliminarAperturaCierreCaja($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
     function reporteAperturaCierreCaja()	{
 
@@ -98,14 +98,14 @@ class ACTAperturaCierreCaja extends ACTbase{
 
     }
     function insertarFecha(){
-    $this->objFunc=$this->create('MODAperturaCierreCaja');
-    $this->res=$this->objFunc->insertarFecha($this->objParam);
-    $this->res->imprimirRespuesta($this->res->generarJson());
+        $this->objFunc=$this->create('MODAperturaCierreCaja');
+        $this->res=$this->objFunc->insertarFecha($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
     function eleminarFecha(){
-    $this->objFunc=$this->create('MODAperturaCierreCaja');
-    $this->res=$this->objFunc->eleminarFecha($this->objParam);
-    $this->res->imprimirRespuesta($this->res->generarJson());
+        $this->objFunc=$this->create('MODAperturaCierreCaja');
+        $this->res=$this->objFunc->eleminarFecha($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
     function listarAperturaCierreCajaEntrega(){
@@ -134,7 +134,7 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
     function EstadoApertura(){
-       // $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+        // $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
         //$this->objParam->defecto('dir_ordenacion','asc');
 
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

@@ -1,55 +1,55 @@
 <?php
 /**
-*@package pXP
-*@file gen-MODAperturaCierreCaja.php
-*@author  (jrivera)
-*@date 07-07-2016 14:16:20
-*@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
-*/
+ *@package pXP
+ *@file gen-MODAperturaCierreCaja.php
+ *@author  (jrivera)
+ *@date 07-07-2016 14:16:20
+ *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
+ */
 
 class MODAperturaCierreCaja extends MODbase{
 
-	function __construct(CTParametro $pParam){
-		parent::__construct($pParam);
-	}
+    function __construct(CTParametro $pParam){
+        parent::__construct($pParam);
+    }
 
-	function listarAperturaCierreCaja(){
-		//Definicion de variables para ejecucion del procedimientp
-		$this->procedimiento='vef.ft_apertura_cierre_caja_sel';
-		$this->transaccion='VF_APCIE_SEL';
-		$this->tipo_procedimiento='SEL';//tipo de transaccion
+    function listarAperturaCierreCaja(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_sel';
+        $this->transaccion='VF_APCIE_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
 
-		//Definicion de la lista del resultado del query
-		$this->captura('id_apertura_cierre_caja','int4');
-		$this->captura('id_sucursal','int4');
-		$this->captura('id_punto_venta','int4');
-		$this->captura('id_usuario_cajero','int4');
-		$this->captura('id_moneda','int4');
-		$this->captura('obs_cierre','text');
-		$this->captura('monto_inicial','numeric');
-		$this->captura('obs_apertura','text');
-		$this->captura('monto_inicial_moneda_extranjera','numeric');
-		$this->captura('usr_reg','varchar');
-		$this->captura('usr_mod','varchar');
+        //Definicion de la lista del resultado del query
+        $this->captura('id_apertura_cierre_caja','int4');
+        $this->captura('id_sucursal','int4');
+        $this->captura('id_punto_venta','int4');
+        $this->captura('id_usuario_cajero','int4');
+        $this->captura('id_moneda','int4');
+        $this->captura('obs_cierre','text');
+        $this->captura('monto_inicial','numeric');
+        $this->captura('obs_apertura','text');
+        $this->captura('monto_inicial_moneda_extranjera','numeric');
+        $this->captura('usr_reg','varchar');
+        $this->captura('usr_mod','varchar');
 
-		$this->captura('estado','varchar');
-		$this->captura('fecha_apertura_cierre','date');
-		$this->captura('fecha_hora_cierre','timestamp');
-		$this->captura('nombre_punto_venta','varchar');
-		$this->captura('nombre_sucursal','varchar');
-		$this->captura('arqueo_moneda_local','numeric');
-		$this->captura('arqueo_moneda_extranjera','numeric');
-    $this->captura('id_entrega_brinks','int4');
-    $this->captura('tipo','varchar');
-    $this->captura('desc_persona','text');
-		$this->captura('modificado','varchar');
-		//Ejecuta la instruccion
-		$this->armarConsulta();
-		$this->ejecutarConsulta();
+        $this->captura('estado','varchar');
+        $this->captura('fecha_apertura_cierre','date');
+        $this->captura('fecha_hora_cierre','timestamp');
+        $this->captura('nombre_punto_venta','varchar');
+        $this->captura('nombre_sucursal','varchar');
+        $this->captura('arqueo_moneda_local','numeric');
+        $this->captura('arqueo_moneda_extranjera','numeric');
+        $this->captura('id_entrega_brinks','int4');
+        $this->captura('tipo','varchar');
+        $this->captura('desc_persona','text');
+        $this->captura('modificado','varchar');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
 
-		//Devuelve la respuesta
-		return $this->respuesta;
-	}
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
     function listarCierreCaja(){
         //Definicion de variables para ejecucion del procedimientp
@@ -141,11 +141,8 @@ class MODAperturaCierreCaja extends MODbase{
 
         $this->captura('comisiones_ml','numeric');
         $this->captura('comisiones_me','numeric');
-
         $this->captura('monto_ca_recibo_ml','numeric');
         $this->captura('monto_ca_recibo_me','numeric');
-        $this->captura('monto_cc_recibo_ml','numeric');
-        $this->captura('monto_cc_recibo_me','numeric');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -157,52 +154,52 @@ class MODAperturaCierreCaja extends MODbase{
         return $this->respuesta;
     }
 
-	function insertarAperturaCierreCaja(){
-		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='vef.ft_apertura_cierre_caja_ime';
-		$this->transaccion='VF_APCIE_INS';
-		$this->tipo_procedimiento='IME';
+    function insertarAperturaCierreCaja(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_APCIE_INS';
+        $this->tipo_procedimiento='IME';
 
-		//Define los parametros para la funcion
-		$this->setParametro('id_sucursal','id_sucursal','int4');
-		$this->setParametro('id_punto_venta','id_punto_venta','int4');
-		$this->setParametro('id_usuario_cajero','id_usuario_cajero','int4');
-		$this->setParametro('id_moneda','id_moneda','int4');
-		$this->setParametro('obs_cierre','obs_cierre','text');
-		$this->setParametro('monto_inicial','monto_inicial','int4');
-		$this->setParametro('obs_apertura','obs_apertura','text');
-		$this->setParametro('monto_inicial_moneda_extranjera','monto_inicial_moneda_extranjera','int4');
-		$this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
+        //Define los parametros para la funcion
+        $this->setParametro('id_sucursal','id_sucursal','int4');
+        $this->setParametro('id_punto_venta','id_punto_venta','int4');
+        $this->setParametro('id_usuario_cajero','id_usuario_cajero','int4');
+        $this->setParametro('id_moneda','id_moneda','int4');
+        $this->setParametro('obs_cierre','obs_cierre','text');
+        $this->setParametro('monto_inicial','monto_inicial','int4');
+        $this->setParametro('obs_apertura','obs_apertura','text');
+        $this->setParametro('monto_inicial_moneda_extranjera','monto_inicial_moneda_extranjera','int4');
+        $this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
 
-		//Ejecuta la instruccion
-		$this->armarConsulta();
-		$this->ejecutarConsulta();
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
 
-		//Devuelve la respuesta
-		return $this->respuesta;
-	}
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
-	function modificarAperturaCierreCaja(){
-		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='vef.ft_apertura_cierre_caja_ime';
-		$this->transaccion='VF_APCIE_MOD';
-		$this->tipo_procedimiento='IME';
+    function modificarAperturaCierreCaja(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_APCIE_MOD';
+        $this->tipo_procedimiento='IME';
 
-		//Define los parametros para la funcion
-		$this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
-		$this->setParametro('id_sucursal','id_sucursal','int4');
-		$this->setParametro('id_punto_venta','id_punto_venta','int4');
-		$this->setParametro('id_usuario_cajero','id_usuario_cajero','int4');
-		$this->setParametro('id_moneda','id_moneda','int4');
-		$this->setParametro('obs_cierre','obs_cierre','text');
-		$this->setParametro('monto_inicial','monto_inicial','numeric');
-		$this->setParametro('obs_apertura','obs_apertura','text');
-		$this->setParametro('monto_inicial_moneda_extranjera','monto_inicial_moneda_extranjera','numeric');
-       // $this->setParametro('monto_ca_recibo_ml','monto_ca_recibo_ml','numeric');
+        //Define los parametros para la funcion
+        $this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
+        $this->setParametro('id_sucursal','id_sucursal','int4');
+        $this->setParametro('id_punto_venta','id_punto_venta','int4');
+        $this->setParametro('id_usuario_cajero','id_usuario_cajero','int4');
+        $this->setParametro('id_moneda','id_moneda','int4');
+        $this->setParametro('obs_cierre','obs_cierre','text');
+        $this->setParametro('monto_inicial','monto_inicial','numeric');
+        $this->setParametro('obs_apertura','obs_apertura','text');
+        $this->setParametro('monto_inicial_moneda_extranjera','monto_inicial_moneda_extranjera','numeric');
+        // $this->setParametro('monto_ca_recibo_ml','monto_ca_recibo_ml','numeric');
         //$this->setParametro('monto_cc_recibo_ml','monto_cc_recibo_ml','numeric');
-		$this->setParametro('accion','accion','varchar');
-		$this->setParametro('arqueo_moneda_local','arqueo_moneda_local','numeric');
-		$this->setParametro('arqueo_moneda_extranjera','arqueo_moneda_extranjera','numeric');
+        $this->setParametro('accion','accion','varchar');
+        $this->setParametro('arqueo_moneda_local','arqueo_moneda_local','numeric');
+        $this->setParametro('arqueo_moneda_extranjera','arqueo_moneda_extranjera','numeric');
         $this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
         //$this->setParametro('monto_billete_100_ml','monto_billete_100_ml','numeric');
         $this->setParametro('tipo','tipo','varchar');
@@ -230,13 +227,16 @@ class MODAperturaCierreCaja extends MODbase{
         $this->setParametro('monto_cc_facturacion_usd','monto_cc_facturacion_usd','numeric');
         $this->setParametro('monto_cte_facturacion_usd','monto_cte_facturacion_usd','numeric');
         $this->setParametro('monto_mco_facturacion_usd','monto_mco_facturacion_usd','numeric');
-		//Ejecuta la instruccion
-		$this->armarConsulta();
-		$this->ejecutarConsulta();
 
-		//Devuelve la respuesta
-		return $this->respuesta;
-	}
+        $this->setParametro('comisiones_ml','comisiones_ml','numeric');
+        $this->setParametro('comisiones_me','comisiones_me','numeric');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
     function abrirAperturaCierreCaja(){
         //Definicion de variables para ejecucion del procedimiento
@@ -256,22 +256,22 @@ class MODAperturaCierreCaja extends MODbase{
         return $this->respuesta;
     }
 
-	function eliminarAperturaCierreCaja(){
-		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='vef.ft_apertura_cierre_caja_ime';
-		$this->transaccion='VF_APCIE_ELI';
-		$this->tipo_procedimiento='IME';
+    function eliminarAperturaCierreCaja(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_APCIE_ELI';
+        $this->tipo_procedimiento='IME';
 
-		//Define los parametros para la funcion
-		$this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
+        //Define los parametros para la funcion
+        $this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
 
-		//Ejecuta la instruccion
-		$this->armarConsulta();
-		$this->ejecutarConsulta();
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
 
-		//Devuelve la respuesta
-		return $this->respuesta;
-	}
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
     function insertarFecha(){
         //Definicion de variables para ejecucion del procedimiento
         $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
@@ -390,8 +390,8 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('estacion','varchar');
         $this->captura('punto_venta','varchar');
         $this->captura('obs_cierre','varchar');
-      //  $this->captura('arqueo_moneda_local','numeric');
-      //  $this->captura('arqueo_moneda_extranjera','numeric');
+        //  $this->captura('arqueo_moneda_local','numeric');
+        //  $this->captura('arqueo_moneda_extranjera','numeric');
         $this->captura('monto_inicial','numeric');
         $this->captura('monto_inicial_moneda_extranjera','numeric');
         $this->captura('tipo_cambio','numeric');
@@ -424,7 +424,7 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('monto_cc_recibo_me','numeric');
         $this->captura('arqueo_moneda_local','numeric');
         $this->captura('arqueo_moneda_extranjera','numeric');
-				//Ejecuta la instruccion
+        //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
         //var_dump($this->respuesta);exit;
@@ -481,10 +481,8 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('otros_ventas_ml','numeric');
         $this->captura('otros_ventas_me','numeric');
 
-
         $this->captura('comisiones_ml','numeric');
         $this->captura('comisiones_me','numeric');
-
         $this->captura('monto_ca_recibo_ml','numeric');
         $this->captura('monto_ca_recibo_me','numeric');
         $this->captura('monto_cc_recibo_ml','numeric');
