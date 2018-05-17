@@ -455,9 +455,10 @@ header("content-type: text/javascript; charset=UTF-8");
         onButtonNew : function () {
             Phx.vista.Entrega.superclass.onButtonNew.call(this);
             this.Cmp.id_punto_venta.setValue(this.variables_globales.id_punto_venta);
-            if(this.variables_globales.id_punto_venta != this.cmbPuntoV.getValue()) {
+           // if(this.variables_globales.id_punto_venta != this.cmbPuntoV.getValue()) {
+                console.log(this.variables_globales.id_punto_venta,this.cmbPuntoV.getValue() );
                 this.Cmp.id_punto_venta.setValue(this.cmbPuntoV.getValue());
-            }
+           // }
         },
         onButtonReporte:function(){
             var rec=this.sm.getSelected();
