@@ -220,6 +220,7 @@ BEGIN
                               inner join param.tlugar l on l.id_lugar = s.id_lugar
                               inner join param.tinstitucion int on int.id_institucion = cuen.id_institucion
                               where cuen.id_moneda = 1 and e.id_entrega_brinks = '|| v_parametros.id_entrega_brinks;
+                              v_consulta:=v_consulta||' order by a.fecha_apertura_cierre';
 
 
 		--Devuelve la respuesta
@@ -254,7 +255,7 @@ BEGIN
                               inner join param.tlugar l on l.id_lugar = s.id_lugar
                               inner join param.tinstitucion int on int.id_institucion = cuen.id_institucion
                               where cuen.id_moneda = 2 and e.id_entrega_brinks = '|| v_parametros.id_entrega_brinks;
-
+							   v_consulta:=v_consulta||' order by a.fecha_apertura_cierre';
 
 		--Devuelve la respuesta
 		return v_consulta;

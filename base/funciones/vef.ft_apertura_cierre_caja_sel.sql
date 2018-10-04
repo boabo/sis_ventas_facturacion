@@ -669,7 +669,12 @@ BEGIN
             	v_tiene_dos_monedas = 'si';
                 v_tipo_cambio = param.f_get_tipo_cambio_v2(v_id_moneda_base, v_id_moneda_tri,v_fecha,'O');
             end if;
-       -- raise exception 'lo %',v_parametros.id_apertura_cierre_caja;
+
+      /*  select ap.fecha_apertura_cierre
+        from vef.tapertura_cierre_caja ap
+        where ap.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
+     raise exception 'hola'*/
+
         v_consulta:='  select 	u.desc_persona::varchar,
    			to_char(a.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
             coalesce(ppv.codigo,ps.codigo)::varchar as pais,
@@ -853,7 +858,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                 ''cerrado''
                                 end::varchar as estado
                                from vef.tapertura_cierre_caja b
-                               inner join estado_cerrado c on c.fecha_apertura_cierre = b.fecha_apertura_cierre
+                               left join estado_cerrado c on c.fecha_apertura_cierre = b.fecha_apertura_cierre
                                left join estado_abierto a on a.fecha_apertura_cierre = b.fecha_apertura_cierre
                                order by fecha_apertura_cierre desc ';
 
@@ -968,7 +973,34 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                                 when fp.codigo like ''MCO%'' then ''MCO''
                                                 else ''OTRO''
                                               end)::varchar as codigo
-                                      from obingresos.tforma_pago fp)
+                                      from obingresos.tforma_pago fp),
+        botetos as (
+select id_apertura_cierre_caja,
+       monto_ca_boleto_bs,
+       monto_cc_boleto_bs,
+       monto_cte_boleto_bs,
+       monto_mco_boleto_bs,
+       monto_ca_boleto_usd,
+       monto_cc_boleto_usd,
+       monto_cte_boleto_usd,
+       monto_mco_boleto_usd,
+       monto_ca_recibo_ml,
+       monto_ca_recibo_me,
+       monto_cc_recibo_ml,
+       monto_cc_recibo_me,
+       monto_ca_facturacion_bs,
+       monto_cc_facturacion_bs,
+       monto_cte_facturacion_bs,
+       monto_mco_facturacion_bs,
+       monto_ca_facturacion_usd,
+       monto_cc_facturacion_usd,
+       monto_cte_facturacion_usd,
+       monto_mco_facturacion_usd,
+       arqueo_moneda_local,
+       arqueo_moneda_extranjera
+from vef.tdetalle_apertura_cc
+where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
+)
                                   select u.desc_persona::varchar,
                                          to_char(acc.fecha_apertura_cierre, ''DD/MM/YYYY'')::varchar as fecha_apertura_cierre,
                                          v.pais,

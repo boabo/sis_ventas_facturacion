@@ -194,10 +194,11 @@ BEGIN
 			where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
 
 
-       if ((select modificado
+     /*  if ((select modificado
             from vef.tapertura_cierre_caja
-            where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja) = 'no')then
-
+            where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja) = 'no')then */
+         delete from vef.tdetalle_apertura_cc fo
+		where fo.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
 
          INSERT INTO vef.tdetalle_apertura_cc ( id_usuario_reg,
                                                 id_usuario_mod,
@@ -271,31 +272,15 @@ BEGIN
 
                                                 v_parametros.arqueo_moneda_local,
             									v_parametros.arqueo_moneda_extranjera,
-                                                (case
-                                                when pxp.f_existe_parametro(p_tabla,'comisiones_ml') then
-                                                 v_parametros.comisiones_ml
-                                                 else
-                                                 0
-                                                 end),
-                                                 (case
-                                                 when pxp.f_existe_parametro(p_tabla,'comisiones_me') then
-                                                 v_parametros.comisiones_me
-                                                 else
-                                                 0
-                                                 end));
-		else
+                                                v_parametros.comisiones_ml,
+                                                 v_parametros.comisiones_me);
+		--else
 
-        if pxp.f_existe_parametro(p_tabla,'comisiones_ml') then
+     /*
        v_m1 = v_parametros.comisiones_ml;
-        else
-        v_m1 =0;
-        end if;
 
-        if pxp.f_existe_parametro(p_tabla,'comisiones_me') then
        v_me = v_parametros.comisiones_me;
-        else
-        v_me = 0;
-        end if;
+
         update vef.tdetalle_apertura_cc set
         id_usuario_mod = p_id_usuario,
         fecha_mod = now(),
@@ -325,7 +310,7 @@ BEGIN
         comisiones_me = v_me
         where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
 		end if;
-
+            */
 
             if (pxp.f_existe_parametro(p_tabla,'monto_ca_recibo_ml') = TRUE) then
             	UPDATE vef.tapertura_cierre_caja SET
@@ -460,7 +445,7 @@ BEGIN
             if (exists (select 1
             			from vef.tapertura_cierre_caja acc
                         where id_usuario_cajero = p_id_usuario and
-        				acc.fecha_apertura_cierre != CURRENT_DATE and estado = 'cerrado' and
+        				date(acc.fecha_reg) != CURRENT_DATE and estado = 'cerrado' and
                         acc.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja ) ) then
 
             	IF v_tipo_usuario !='administrador' THEN

@@ -87,15 +87,31 @@ $body$
     elsif(p_transaccion='VF_OFFID_SEL')then
 
 		begin
+        --prueba para consumo de servicio
+        if (v_parametros.id_punto_venta = 3404 )then
+
+         --Sentencia de la consulta de conteo de registros
+            v_consulta:='select ''CBBOB04TE''::varchar as officeID,
+                         4919::integer,
+                        COALESCE(pvr.identificador_reporte,''0'') AS identificador_reporte
+						from vef.tpunto_venta pv
+                        left join vef.tpunto_venta_reporte pvr on pvr.id_punto_venta=pv.id_punto_venta
+     					and pvr.fecha='''||v_parametros.fecha||''' and pvr.moneda='''||v_parametros.moneda||'''';
+        else
+
+
+
 			--Sentencia de la consulta de conteo de registros
-            v_consulta:='select ag.codigo_int as officeID, ag.id_agencia,
-            COALESCE(pvr.identificador_reporte,''0'') AS identificador_reporte
+            v_consulta:='select ag.codigo_int as officeID,
+                         ag.id_agencia,
+                        COALESCE(pvr.identificador_reporte,''0'') AS identificador_reporte
 						from vef.tpunto_venta pv
 						inner join obingresos.tagencia ag on pv.codigo=ag.codigo
 						and pv.id_punto_venta='||v_parametros.id_punto_venta||'
                         left join vef.tpunto_venta_reporte pvr on pvr.id_punto_venta=pv.id_punto_venta
      					and pvr.fecha='''||v_parametros.fecha||''' and pvr.moneda='''||v_parametros.moneda||'''';
             raise notice 'v_consulta %', v_consulta;
+           end if;
 			--Devuelve la respuesta
 			return v_consulta;
 
