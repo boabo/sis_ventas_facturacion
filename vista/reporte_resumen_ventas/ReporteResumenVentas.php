@@ -25,7 +25,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 store:['sucursal','punto_venta']
 			},
 			type: 'ComboBox',
-			id_grupo: 0,			
+			id_grupo: 0,
 			form: true
 		},
 		{
@@ -49,7 +49,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 }),
                 valueField: 'id_sucursal',
                 gdisplayField : 'nombre_sucursal',
-                displayField: 'nombre',                
+                displayField: 'nombre',
                 hiddenName: 'id_sucursal',
                 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
                 forceSelection: true,
@@ -59,15 +59,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 mode: 'remote',
                 pageSize: 15,
                 width:250,
-                queryDelay: 1000,                
+                queryDelay: 1000,
                 minChars: 2,
                 resizable:true,
                 hidden : true
             },
             type: 'ComboBox',
-            id_grupo: 0,            
+            id_grupo: 0,
             form: true
-        },  
+        },
         {
 			config: {
 	                name: 'id_punto_venta',
@@ -98,7 +98,7 @@ header("content-type: text/javascript; charset=UTF-8");
 	                lazyRender: true,
 	                mode: 'remote',
 	                pageSize: 15,
-	                queryDelay: 1000,               
+	                queryDelay: 1000,
 	                gwidth: 150,
 	                width:250,
 	                resizable:true,
@@ -175,24 +175,24 @@ header("content-type: text/javascript; charset=UTF-8");
 				config:{
 					name: 'fecha_desde',
 					fieldLabel: 'Fecha Desde',
-					allowBlank: false,				
+					allowBlank: false,
 					format: 'd/m/Y'
-								
+
 				},
-				type:'DateField',				
-				id_grupo:0,				
+				type:'DateField',
+				id_grupo:0,
 				form:true
 			},
 			{
 				config:{
 					name: 'fecha_hasta',
 					fieldLabel: 'Fecha Hasta',
-					allowBlank: false,				
+					allowBlank: false,
 					format: 'd/m/Y'
-								
+
 				},
-				type:'DateField',				
-				id_grupo:0,				
+				type:'DateField',
+				id_grupo:0,
 				form:true
 			}
 		],
@@ -218,26 +218,26 @@ header("content-type: text/javascript; charset=UTF-8");
 					this.ocultarComponente(this.Cmp.id_sucursal);
 					this.Cmp.id_punto_venta.allowBlank = false;
 					this.mostrarComponente(this.Cmp.id_punto_venta);
-				}			
+				}
 			},this);
-			
+
 			this.Cmp.fecha_desde.on('valid',function(){
 				this.Cmp.fecha_hasta.setMinValue(this.Cmp.fecha_desde.getValue());
 			},this);
-			
+
 			this.Cmp.fecha_hasta.on('valid',function(){
 				this.Cmp.fecha_desde.setMaxValue(this.Cmp.fecha_hasta.getValue());
 			},this);
-			
-			
+
+
 		},
-		
+
 		tipo : 'reporte',
 		clsSubmit : 'bprint',
 		agregarArgsExtraSubmit: function() {
     		this.argumentExtraSubmit.sucursal = this.Cmp.id_sucursal.getRawValue();
     		this.argumentExtraSubmit.punto_venta = this.Cmp.id_punto_venta.getRawValue();
-    		
+
     	},
 })
 </script>
