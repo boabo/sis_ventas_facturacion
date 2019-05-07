@@ -123,7 +123,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					store: new Ext.data.JsonStore({
 
 						url: '../../sis_seguridad/control/Usuario/listarUsuario',
-						id: 'id_persona',
+						id: 'id_usuario',
 						root: 'datos',
 						sortInfo:{
 							field: 'desc_person',
@@ -138,7 +138,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					valueField: 'id_usuario',
 					displayField: 'desc_person',
 					gdisplayField:'desc_persona',//dibuja el campo extra de la consulta al hacer un inner join con orra tabla
-					tpl:'<tpl for="."><div class="x-combo-list-item"><p>{desc_person}</p><p>CI:{ci}</p> </div></tpl>',
+					tpl:'<tpl for="."><div class="x-combo-list-item"><br><p>{desc_person}</p><p>Cuenta Usuario:{cuenta}</p> </div></tpl>',
 					hiddenName: 'id_usuario',
 					forceSelection:true,
 					typeAhead: true,
