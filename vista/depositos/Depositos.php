@@ -50,7 +50,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 					name: 'id_apertura_cierre_caja'
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
         {
             //configuracion del componente
@@ -142,7 +142,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'arqueo_moneda_local',
-				fieldLabel: 'Importe (Bs)',
+				fieldLabel: 'Importe M/L.',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -162,7 +162,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         {
 			config:{
 				name: 'arqueo_moneda_extranjera',
-				fieldLabel: 'Importe ($us)',
+				fieldLabel: 'Importe M/E.',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -198,7 +198,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         {
             config: {
                 name: 'deposito_bs',
-                fieldLabel: 'Total Deposito (Bs)',
+                fieldLabel: 'Total Deposito M/L.',
                 currencyChar: ' ',
                 allowBlank: true,
                 width: 100,
@@ -227,7 +227,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         {
             config: {
                 name: 'deposito_usd',
-                fieldLabel: 'Total Deposito ($us)',
+                fieldLabel: 'Total Deposito M/E.',
                 currencyChar: ' ',
                 allowBlank: true,
                 width: 100,
@@ -250,7 +250,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         {
             config: {
                 name: 'diferencia_bs',
-                fieldLabel: 'Diferencia (Bs)',
+                fieldLabel: 'Diferencia M/L.',
                 currencyChar: ' ',
                 allowBlank: true,
                 width: 100,
@@ -277,7 +277,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         {
             config: {
                 name: 'diferencia_usd',
-                fieldLabel: 'Diferencia ($us)',
+                fieldLabel: 'Diferencia M/E.',
                 currencyChar: ' ',
                 allowBlank: true,
                 width: 100,
@@ -301,7 +301,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
             form: false
         }
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Completar Deposito',
 	ActSave:'../../sis_ventas_facturacion/control/Depositos/insertarDepositos',
 	ActDel:'../../sis_ventas_facturacion/control/Depositos/eliminarDepositos',
@@ -410,4 +410,3 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
     }
 	})
 </script>
-

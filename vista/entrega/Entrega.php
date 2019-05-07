@@ -173,7 +173,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					name: 'id_entrega_brinks'
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
         {
             config:{
@@ -228,7 +228,7 @@ header("content-type: text/javascript; charset=UTF-8");
         {
             config:{
                 name: 'arqueo_moneda_local',
-                fieldLabel: 'Importe Total (Bs)',
+                fieldLabel: 'Importe Total M/L.',
                 allowBlank: true,
                 anchor: '80%',
                 gwidth: 150,
@@ -248,7 +248,7 @@ header("content-type: text/javascript; charset=UTF-8");
         {
             config:{
                 name: 'arqueo_moneda_extranjera',
-                fieldLabel: 'Importe Total ($us)',
+                fieldLabel: 'Importe Total M/E.',
                 allowBlank: true,
                 anchor: '80%',
                 gwidth: 150,
@@ -332,7 +332,7 @@ header("content-type: text/javascript; charset=UTF-8");
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -348,7 +348,7 @@ header("content-type: text/javascript; charset=UTF-8");
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -373,7 +373,7 @@ header("content-type: text/javascript; charset=UTF-8");
 				form:false
 		}
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Entrega',
 	ActSave:'../../sis_ventas_facturacion/control/Entrega/insertarEntrega',
 	ActDel:'../../sis_ventas_facturacion/control/Entrega/eliminarEntrega',
@@ -398,7 +398,7 @@ header("content-type: text/javascript; charset=UTF-8");
         {name:'estacion', type: 'string'},
         {name:'codigo', type: 'string'},
         {name:'cajero', type: 'string'}
-		
+
 	],
 	sortInfo:{
 		field: 'id_entrega_brinks',
@@ -475,5 +475,3 @@ header("content-type: text/javascript; charset=UTF-8");
 	}
 )
 </script>
-		
-		

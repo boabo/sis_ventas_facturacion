@@ -462,8 +462,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         'Cerrar Caja Carga',
                         {
                             modal: true,
-                            width: 1200,
-                            height: 700
+                            width: '100%',
+                            height: '100%',
+                            autoScroll: true
                         }, {data: data}, this.idContenedor, 'FormCierreCajaCarga',
                         {
                             config: [{
@@ -478,9 +479,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/apertura_cierre_caja/FormCierreCaja.php',
                         'Cerrar Caja',
                         {
-                            modal: true,
-                            width: 1200,
-                            height: 700
+                          modal: true,
+                          width: '100%',
+                          height: '100%',
+                          //autoScroll: true
                         }, {data: data}, this.idContenedor, 'FormCierreCaja',
                         {
                             config: [{

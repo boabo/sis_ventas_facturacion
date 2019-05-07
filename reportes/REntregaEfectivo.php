@@ -21,7 +21,7 @@ class REntregaEfectivo extends  ReportePDF
     }
 
     function reporteEntrega(){
-        $this->cabezera('BOLIVIANOS');
+        $this->cabezera('MONEDA LOCAL');
         $height = 5;
         $width2 = 20;
         $width3 = 35;
@@ -72,7 +72,7 @@ class REntregaEfectivo extends  ReportePDF
         $this->SetFont('', 'B');
         $this->Cell(50, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Cell(50, 5, 'FECHA DE VENTA', 1, 0, 'C', 0, '', 0);
-        $this->Cell(50, 5, 'IMPORTE (Bs)', 1, 0, 'C', 0, '', 0);
+        $this->Cell(50, 5, 'IMPORTE MONEDA LOCAL.', 1, 0, 'C', 0, '', 0);
         $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Ln();
         foreach ($this->datos  as $value){
@@ -81,7 +81,7 @@ class REntregaEfectivo extends  ReportePDF
                 $this->SetFont('', '');
                 $this->Cell(50, 5, '', 0, 0, 'C', 0, '', 0);
                 $this->Cell(50, 5, $value['fecha_apertura_cierre'], 1, 0, 'C', 0, '', 0);
-                $this->Cell(50, 5, $value['arqueo_moneda_local'], 1, 0, 'R', 0, '', 0);
+                $this->Cell(50, 5, number_format($value['arqueo_moneda_local'],2), 1, 0, 'R', 0, '', 0);
                 $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
                 $this->Ln();
             }
@@ -90,11 +90,11 @@ class REntregaEfectivo extends  ReportePDF
         $this->SetFont('', '');
         $this->Cell(50, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Cell(50, 5, 'TOTAL', 1, 0, 'R', 0, '', 0);
-        $this->Cell(50, 5, $this->datos[0]['total'], 1, 0, 'R', 0, '', 0);
+        $this->Cell(50, 5, number_format($this->datos[0]['total'],2), 1, 0, 'R', 0, '', 0);
         $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Ln(10);
         $this->Cell(25, 5, 'SON:', 0, 0, 'R', 0, '', 0);
-        $this->Cell(150, 5, $this->datos[0]['literial'].'BOLIVIANOS', 1, 0, 'L', 0, '', 0);
+        $this->Cell(150, 5, $this->datos[0]['literial'].$this->datos[0]['moneda_local'], 1, 0, 'L', 0, '', 0);
         $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Ln(30);
         $this->SetFillColor(192,192,192, true);
@@ -127,7 +127,7 @@ class REntregaEfectivo extends  ReportePDF
     }
 
     function reporteEntregaDolares(){
-        $this->cabezera('DOLARES AMERICANOS');
+        $this->cabezera('MONEDA EXTRANJERA');
         $height = 5;
         $width2 = 20;
         $width3 = 35;
@@ -180,7 +180,7 @@ class REntregaEfectivo extends  ReportePDF
         $this->SetFont('', 'B');
         $this->Cell(50, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Cell(50, 5, 'FECHA DE VENTA', 1, 0, 'C', 0, '', 0);
-        $this->Cell(50, 5, 'IMPORTE ($us)', 1, 0, 'C', 0, '', 0);
+        $this->Cell(50, 5, 'IMPORTE MONEDA EXTRANJERA', 1, 0, 'C', 0, '', 0);
         $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Ln();
         foreach ($this->datos2  as $value){
@@ -189,7 +189,7 @@ class REntregaEfectivo extends  ReportePDF
                 $this->SetFont('', '');
                 $this->Cell(50, 5, '', 0, 0, 'C', 0, '', 0);
                 $this->Cell(50, 5, $value['fecha_apertura_cierre'], 1, 0, 'C', 0, '', 0);
-                $this->Cell(50, 5, $value['arqueo_moneda_extranjera'], 1, 0, 'R', 0, '', 0);
+                $this->Cell(50, 5, number_format($value['arqueo_moneda_extranjera'],2), 1, 0, 'R', 0, '', 0);
                 $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
                 $this->Ln();
             }
@@ -198,7 +198,7 @@ class REntregaEfectivo extends  ReportePDF
         $this->SetFont('', '');
         $this->Cell(50, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Cell(50, 5, 'TOTAL', 1, 0, 'R', 0, '', 0);
-        $this->Cell(50, 5, $this->datos2[0]['total'], 1, 0, 'R', 0, '', 0);
+        $this->Cell(50, 5, number_format($this->datos2[0]['total'],2), 1, 0, 'R', 0, '', 0);
         $this->Cell(0, 5, '', 0, 0, 'C', 0, '', 0);
         $this->Ln(10);
         $this->Cell(25, 5, 'SON:', 0, 0, 'R', 0, '', 0);

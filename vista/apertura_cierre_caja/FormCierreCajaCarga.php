@@ -26,188 +26,405 @@ header("content-type: text/javascript; charset=UTF-8");
         constructor:function(config){
             this.maestro=config
             this.Grupos =[{
-                layout: 'column',
-                items:[
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items:[
-                            {
-                                xtype:'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Carga M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items:[],
-                                id_grupo:0,
-                                collapsible:true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-left:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Carga M/E',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 1,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Recibos M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 4,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Facturacion M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 2,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Facturacion M/E',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 3,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cortes Monedas M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 6,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cortes Billetes Carga M/L',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 7,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cortes Billetes Carga M/E',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 8,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Apertura',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 9,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Total Comisiones',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 10,
-                                collapsible: true
-                            }
-                        ]
-                    },
-                    {
-                        bodyStyle: 'padding-right:10px;',
-                        items: [
-                            {
-                                xtype: 'fieldset',
-                                layout: 'form',
-                                border: false,
-                                title: 'Cierre',
-                                bodyStyle: 'padding:0 10px 0;',
-                                columnWidth: 0.5,
-                                items: [],
-                                id_grupo: 5,
-                                collapsible: true
-                            }
-                        ]
-                    }
+              layout: 'column',
+              border: false,
+              xtype: 'fieldset',
+              frame:true,
+              autoScroll: true,
 
+                style:{
+                      background:'#FFBE59',
+                      //border:'2px solid green',
+                      width : '100%',
+                     },
+                    items:/*ABRE*/[
+                        {//ABRE PARA PONER ITEMS
+                          xtype: 'fieldset',
+                          border: false,
+                          layout: 'column',
+                          region: 'north',
+                           style:{
+                          //   //background:'#FFBE59',
+                             width:'100%',
+                            // border:'2px solid red'
+                            },
+                          //autoWidth: true,
+                          //  width: '100%',
+                          //height: '100%',
+                          padding: '0 0 0 10',
+                          items:[
+                            {
+                             border:false,
+                             style:{
+                               border:'1px solid #DEDEDE',
+                               width : '200px',
+                               height : '300px',
+                               marginTop:'2px',
+                              },
+                             items:[
+                               {
+                                   xtype:'fieldset',
+                                   layout: 'form',
+                                   title: 'Total Carga M/L',
+                                   frame: true,
+                                   style:{
+                                     background:'#FF9595',
+                                     height:'300px'
+                                   },
+                                   columnWidth: 0.5,
+                                   items:[],
+                                   id_grupo:0,
+                                   border:false,
+                                   collapsible:false
+                               }
+                            ]
+                          },
+                          {
+                           bodyStyle: 'padding-right:5px;',
+                           autoHeight: true,
+                           style:{
+                             border:'1px solid #DEDEDE',
+                             width : '200px',
+                             height : '300px',
+                             marginTop:'2px',
+                             marginLeft:'2px'
+                           },
+                           border: false,
+                           items:[
+                             {
+                                 xtype: 'fieldset',
+                                 layout: 'form',
+                                 border: false,
+                                 frame: true,
+                                 style:{
+                                   background:'#FF9595',
+                                   height:'300px'
+                                 },
+                                 title: 'Total Carga M/E',
+                                 bodyStyle: 'padding:0 10px 0;',
+                                 columnWidth: 0.5,
+                                 items: [],
+                                 id_grupo: 1,
+                                 collapsible: false
+                             }
+                          ]
+                        },
+                        {
+                         bodyStyle: 'padding-right:5px;',
+                         autoHeight: true,
+                         style:{
+                          border:'1px solid #DEDEDE',
+                           width : '200px',
+                           height : '300px',
+                           marginTop:'2px',
+                           marginLeft:'2px'
+                         },
+                         border: false,
+                         items:[
+                           {
+                               xtype: 'fieldset',
+                               layout: 'form',
+                               border: false,
+                               frame: true,
+                               style:{
+                                 background:'#FFDC95',
+                                 height:'300px'
+                               },
+                               title: 'Total Recibos M/L',
+                               bodyStyle: 'padding:0 10px 0;',
+                               columnWidth: 0.5,
+                               items: [],
+                               id_grupo: 4,
+                               collapsible: false
+                           }
+                        ]
+                      },
+                      {
+                       bodyStyle: 'padding-right:5px;',
+                       autoHeight: true,
+                       style:{
+                         border:'1px solid #DEDEDE',
+                         width : '200px',
+                         height : '300px',
+                         marginTop:'2px',
+                         marginLeft:'2px'
+                       },
+                       border: false,
+                       items:[
+                         {
+                             xtype: 'fieldset',
+                             layout: 'form',
+                             border: false,
+                             frame: true,
+                             style:{
+                               background:'#FFDC95',
+                               height:'300px'
+                             },
+                             title: 'Total Recibos M/E',
+                             bodyStyle: 'padding:0 10px 0;',
+                             columnWidth: 0.5,
+                             items: [],
+                             id_grupo: 11,
+                             collapsible: false
+                         }
+                      ]
+                    },
+                    {
+                     bodyStyle: 'padding-right:5px;',
+                     autoHeight: true,
+                     style:{
+                       border:'1px solid #DEDEDE',
+                       width : '200px',
+                       height : '300px',
+                       marginTop:'2px',
+                       marginLeft:'2px'
+                     },
+                     border: false,
+                     items:[
+                       {
+                          xtype: 'fieldset',
+                          layout: 'form',
+                          border: false,
+                          frame: true,
+                          style:{
+                            background:'#B1FF95',
+                            height:'300px'
+                          },
+                          title: 'Total Facturacion M/L',
+                          bodyStyle: 'padding:0 10px 0;',
+                          columnWidth: 0.5,
+                          items: [],
+                          id_grupo: 2,
+                          collapsible: false
+                       }
+                    ]
+                  },{
+                   bodyStyle: 'padding-right:5px;',
+                   autoHeight: true,
+                   style:{
+                    border:'1px solid #DEDEDE',
+                     width : '200px',
+                     height : '300px',
+                     marginTop:'2px',
+                     marginLeft:'2px'
+                   },
+                   border: false,
+                   items:[
+                     {
+                         xtype: 'fieldset',
+                         layout: 'form',
+                         border: false,
+                         frame: true,
+                         style:{
+                           background:'#B1FF95',
+                           height:'300px'
+                         },
+                         title: 'Total Facturacion M/E',
+                         bodyStyle: 'padding:0 10px 0;',
+                         columnWidth: 0.5,
+                         items: [],
+                         id_grupo: 3,
+                         collapsible: false
+                     }
+                  ]
+                },
+                {
+                 bodyStyle: 'padding-right:5px;',
+                 autoHeight: true,
+                 style:{
+                   border:'1px solid #DEDEDE',
+                   width : '200px',
+                   height : '300px',
+                   marginTop:'2px',
+
+                 },
+                 border: false,
+                 items:[
+                   {
+                       xtype: 'fieldset',
+                       layout: 'form',
+                       border: false,
+                       frame: true,
+                       style:{
+                         background:'#9EC9EA',
+                         height:'300px'
+                       },
+                       title: 'Cortes Monedas M/L',
+                       bodyStyle: 'padding:0 10px 0;',
+                       columnWidth: 0.5,
+                       items: [],
+                       id_grupo: 6,
+                       collapsible: false
+                   }
                 ]
-            }];
+              },
+              {
+               bodyStyle: 'padding-right:5px;',
+               autoHeight: true,
+               style:{
+                border:'1px solid #DEDEDE',
+                 width : '200px',
+                 height : '300px',
+                 marginTop:'2px',
+                 marginLeft:'2px'
+               },
+               border: false,
+               items:[
+                 {
+                     xtype: 'fieldset',
+                     layout: 'form',
+                     border: false,
+                     frame: true,
+                     style:{
+                       background:'#9EC9EA',
+                       height:'300px'
+                     },
+                     title: 'Cortes Billetes M/L',
+                     bodyStyle: 'padding:0 10px 0;',
+                     columnWidth: 0.5,
+                     items: [],
+                     id_grupo: 7,
+                     collapsible: false
+                 }
+              ]
+            },{
+             bodyStyle: 'padding-right:5px;',
+             autoHeight: true,
+             style:{
+              border:'1px solid #DEDEDE',
+               width : '200px',
+               height : '300px',
+               marginTop:'2px',
+               marginLeft:'2px'
+             },
+             border: false,
+             items:[
+               {
+                   xtype: 'fieldset',
+                   layout: 'form',
+                   border: false,
+                   frame: true,
+                   style:{
+                     background:'#9EC9EA',
+                     height:'300px'
+                   },
+                   title: 'Cortes Billetes M/E',
+                   bodyStyle: 'padding:0 10px 0;',
+                   columnWidth: 0.5,
+                   items: [],
+                   hidden:false,
+                   id_grupo: 8,
+                   collapsible: false
+               }
+            ]
+            },{
+             bodyStyle: 'padding-right:5px;',
+             autoHeight: true,
+             style:{
+               border:'1px solid #DEDEDE',
+               width : '200px',
+               height : '196px',
+               marginTop:'2px',
+               marginLeft:'2px'
+             },
+             border: false,
+             items:[
+               {
+                   xtype: 'fieldset',
+                   layout: 'form',
+                   border: false,
+                   frame: true,
+                   style:{
+                     background:'#95E0FF',
+                     height:'196px'
+                   },
+                   title: 'Apertura',
+                   bodyStyle: 'padding:0 10px 0;',
+                   columnWidth: 0.5,
+                   items: [],
+                   id_grupo: 9,
+                   collapsible: false
+               }
+            ]
+          },{
+           bodyStyle: 'padding-right:5px;',
+           autoHeight: true,
+           style:{
+            border:'1px solid #DEDEDE',
+             width : '200px',
+             height : '100px',
+             marginTop : '202px',
+             marginLeft:'-203px'
+           },
+           border: false,
+           items:[
+             {
+                 xtype: 'fieldset',
+                 layout: 'form',
+                 border: false,
+                 frame: true,
+                 style:{
+                   background:'#95E0FF',
+                   height:'100px'
+                 },
+                 title: 'Total Comisiones',
+                 bodyStyle: 'padding:0 10px 0;',
+                 columnWidth: 0.5,
+                 items: [],
+                 id_grupo: 10,
+                 collapsible: false
+             }
+          ]
+          },{
+           bodyStyle: 'padding-right:5px;',
+           autoHeight: true,
+           style:{
+             border:'1px solid #DEDEDE',
+             width : '404px',
+             height : '300px',
+             marginTop:'2px',
+             marginLeft:'2px'
+           },
+           border: false,
+           items:[
+             {
+                xtype: 'fieldset',
+                layout: 'form',
+                border: false,
+                frame: true,
+                style:{
+                  background:'#91DAFF',
+                  height:'300px',
+                  width : '404px',
+                },
+                title: 'Cierre',
+                bodyStyle: 'padding:0 10px 0;',
+                columnWidth: 0.5,
+                items: [],
+                id_grupo: 5,
+                collapsible: false
+            }
+          ]
+        }
+      ]
+    }//CIERRA PONER ITEMS
+    ]/*CIERRA*/
+    }];/*CIERRE FINAL*/
+
             Phx.vista.FormCierreCajaCarga.superclass.constructor.call(this,config);
+            this.tipo_cambio = 0;
+            Ext.Ajax.request({
+                url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/getTipoCambio',
+                params:{fecha_cambio:this.getValues().fecha_apertura_cierre},
+                success: function(resp){
+                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    this.tipo_cambio = reg.ROOT.datos.v_tipo_cambio;
+                    this.moneda_base = reg.ROOT.datos.v_codigo_moneda;
+                },
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
             this.init();
             this.mod = this.maestro.data.modificado;
             this.iniciarEventos();
@@ -299,7 +516,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Inicial M/L',
                     allowBlank: true,
                     disabled: true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:4,
                     allowDecimals: true,
@@ -318,7 +537,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Inicial M/E',
                     allowBlank: true,
                     disabled: true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:4,
                     allowDecimals: true,
@@ -337,7 +558,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Obs. Apertura',
                     disabled: true,
                     allowBlank: true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 200
                 },
                 type:'TextArea',
@@ -352,12 +575,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cash Carga M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:0,
@@ -371,12 +597,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Carga M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    decimalPrecision : 2
                 },
                 type:'NumberField',
                 id_grupo:0,
@@ -390,12 +618,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cta Cte Carga M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
-                    decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    decimalPrecision : 2
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:0,
@@ -409,12 +640,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Otros Carga M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:0,
@@ -428,12 +662,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Total Carga M/L',
                     allowBlank: true,
                     readOnly: true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#A6EFB3'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #A6EFB3;  background-image: none;'
+                    //style: 'background-color: #A6EFB3;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:0,
@@ -447,12 +684,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cash Carga M/E',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:1,
@@ -466,12 +706,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Carga M/E',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:1,
@@ -485,12 +728,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cta Cte Carga M/E',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:1,
@@ -504,12 +750,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Otros Carga M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#F95454'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:1,
@@ -523,12 +772,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Total Carga Moneda M/E',
                     allowBlank: true,
                     readOnly: true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background:'#A6EFB3'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #A6EFB3;  background-image: none;'
+                    //style: 'background-color: #A6EFB3;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:1,
@@ -542,7 +794,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cash Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -560,7 +814,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -578,7 +834,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cta Cte Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -596,7 +854,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe MCO Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -614,7 +874,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Otros Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -632,7 +894,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Total Facturacion M/L',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -650,7 +914,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cash Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -668,7 +934,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -686,7 +954,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cta Cte Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -704,7 +974,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe MCO Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -722,7 +994,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Otros Facturacion M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -740,7 +1014,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Total Facturacion Moneda M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '80%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
@@ -758,12 +1034,16 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Cash Recibos M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '90%',
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:4,
@@ -777,12 +1057,16 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Recibos M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '90%',
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:4,
@@ -790,22 +1074,72 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
-            //
+            {
+                config:{
+                    name: 'monto_cc_recibo_cta_cte_ml',
+                    fieldLabel: 'Importe Recibos Cuenta Corriente  M/L',
+                    allowBlank: true,
+                    disabled:false,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:4,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_mco_recibo_ml',
+                    fieldLabel: 'Importe MCO Recibo M/L',
+                    allowBlank: true,
+                    disabled:false,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:4,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            //nuevo MMV
             {
                 config:{
                     name: 'monto_ca_recibo_me',
                     fieldLabel: 'Importe Cash Recibos M/E',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '90%',
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
-                id_grupo:4,
+                id_grupo:11,
                 grid:true,
                 form:true,
                 valorInicial :0.00
@@ -816,12 +1150,85 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Tarjetas Recibos M/E',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '90%',
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:11,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_cc_recibo_cta_cte_me',
+                    fieldLabel: 'Importe Cuenta Corriente Recibos M/E',
+                    allowBlank: true,
+                    disabled:false,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:11,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_mco_recibo_me',
+                    fieldLabel: 'Importe MCO Recibo M/E',
+                    allowBlank: true,
+                    disabled:false,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:11,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+
+            //
+            {
+                config:{
+                    name: 'monto_recibo_moneda_base',
+                    fieldLabel: 'Total Recibos M/L',
+                    allowBlank: true,
+                    disabled:true,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2
                 },
                 type:'NumberField',
                 id_grupo:4,
@@ -831,20 +1238,23 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_recibo_moneda_base',
-                    fieldLabel: 'Total Recibos M/L',
+                    name: 'monto_recibo_moneda_extranjera',
+                    fieldLabel: 'Total Recibos M/E',
                     allowBlank: true,
                     disabled:true,
-                    anchor: '90%',
+                    //anchor: '100%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
                 type:'NumberField',
-                id_grupo:4,
+                id_grupo:11,
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
@@ -853,12 +1263,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Comisiones M/L',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '90%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:10,
@@ -872,12 +1284,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Comisiones M/E',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '90%',
+                    style:{
+                      width:'60px'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #F95454;  background-image: none;'
+                    //style: 'background-color: #F95454;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:10,
@@ -887,30 +1301,16 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'obs_cierre',
-                    fieldLabel: 'Obs. Cierre',
-                    allowBlank: true,
-                    anchor: '90%',
-                    gwidth: 150
-                },
-                type:'TextArea',
-                filters:{pfiltro:'apcie.obs_cierre',type:'string'},
-                id_grupo:5,
-                grid:true,
-                form:true
-            },
-            {
-                config:{
                     name: 'total_efectivo_ml',
                     fieldLabel: 'Total Efectivo M/L',
                     allowBlank: false,
                     readOnly: true,
-                    anchor: '90%',
+                    anchor: '80%',
                     gwidth: 100,
                     maxLength:16,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #3cf251;  background-image: none;'
+                    //style: 'background-color: #3cf251;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:5,
@@ -923,12 +1323,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Total Efectivo M/E',
                     allowBlank: false,
                     readOnly: true,
-                    anchor: '90%',
+                    anchor: '80%',
                     gwidth: 100,
                     maxLength:16,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #3cf251;  background-image: none;'
+                    //style: 'background-color: #3cf251;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:5,
@@ -941,13 +1341,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'arqueo_moneda_local',
                     fieldLabel: 'Arqueo M/L',
                     allowBlank: false,
-                    anchor: '90%',
+                    anchor: '80%',
                     gwidth: 100,
                     maxLength:16,
                     readOnly:true,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 filters:{pfiltro:'apcie.arqueo_moneda_local',type:'numeric'},
@@ -961,13 +1361,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'arqueo_moneda_extranjera',
                     fieldLabel: 'Arqueo M/E',
                     allowBlank: false,
-                    anchor: '90%',
+                    anchor: '80%',
                     gwidth: 100,
                     maxLength:16,
                     readOnly:true,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
 
                 },
                 type:'NumberField',
@@ -983,18 +1383,32 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Diferencia M/L',
                     allowBlank: true,
                     readOnly: true,
-                    anchor: '90%',
+                    anchor: '80%',
                     gwidth: 100,
                     maxLength:16,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #3cf251;  background-image: none;'
+                    //style: 'background-color: #3cf251;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:5,
                 grid:true,
                 form:true,
                 valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'obs_cierre',
+                    fieldLabel: 'Obs. Cierre',
+                    allowBlank: true,
+                    anchor: '80%',
+                    gwidth: 150
+                },
+                type:'TextArea',
+                filters:{pfiltro:'apcie.obs_cierre',type:'string'},
+                id_grupo:5,
+                grid:true,
+                form:true
             },
             {
                 config:{
@@ -1017,12 +1431,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '5',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1036,12 +1453,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '2',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1055,12 +1475,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '1',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1074,12 +1497,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '0.50',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1087,18 +1513,46 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
+            /***************************aumentando corte de moneda*************************************/
+            {
+                config:{
+                    name: 'monto_moneda_25_ctvs',
+                    fieldLabel: '0.25',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:6,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /*******************************************************************************************/
+
             {
                 config:{
                     name: 'monto_moneda_20_ctvs',
                     fieldLabel: '0.20',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1112,12 +1566,38 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '0.10',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:6,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /********************aumento corte de moneda*********************************/
+            {
+                config:{
+                    name: 'monto_moneda_05_ctvs',
+                    fieldLabel: '0.05',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:6,
@@ -1127,16 +1607,89 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_billete_200_ml',
-                    fieldLabel: '200',
+                    name: 'monto_moneda_01_ctvs',
+                    fieldLabel: '0.01',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:6,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /**************************************************************************************/
+            /************************************aumento de billetes*/
+            {
+                config:{
+                    name: 'monto_billete_1000_ml',
+                    fieldLabel: '1000',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:7,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_500_ml',
+                    fieldLabel: '500',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:7,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /**************************************************************************************/
+
+            {
+                config:{
+                    name: 'monto_billete_200_ml',
+                    fieldLabel: '200',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1150,12 +1703,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '100',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1169,12 +1725,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '50',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1188,12 +1747,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '20',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1207,12 +1769,38 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '10',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:7,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /************************************aumentando IRVA****************************************/
+            {
+                config:{
+                    name: 'monto_billete_5_ml',
+                    fieldLabel: '5',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:7,
@@ -1222,16 +1810,65 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_billete_100_usd',
-                    fieldLabel: '100',
+                    name: 'monto_billete_2_ml',
+                    fieldLabel: '2',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:7,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_billete_1_ml',
+                    fieldLabel: '1',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:7,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /*************************************************************************/
+
+            {
+                config:{
+                    name: 'monto_billete_100_usd',
+                    fieldLabel: '100',
+                    allowBlank: true,
+                    disabled:false,
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
+                    gwidth: 100,
+                    maxLength:8,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1245,12 +1882,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '50',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1264,12 +1904,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '20',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1283,12 +1926,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '10',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1302,12 +1948,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '5',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1321,12 +1970,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '2',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1340,12 +1992,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: '1',
                     allowBlank: true,
                     disabled:false,
-                    anchor: '80%',
+                    style:{
+                      width:'60px',
+                      background: '#C3DFF5'
+                    },
                     gwidth: 100,
                     maxLength:8,
                     allowDecimals: true,
                     decimalPrecision : 2,
-                    style: 'background-color: #f2f23c;  background-image: none;'
+                    //style: 'background-color: #f2f23c;  background-image: none;'
                 },
                 type:'NumberField',
                 id_grupo:8,
@@ -1418,6 +2073,24 @@ header("content-type: text/javascript; charset=UTF-8");
                     console.log('monto',this.maestro.data.id_apertura_cierre_caja);
                     this.Cmp.monto_inicial.setValue(this.maestro.data.monto_inicial);
                     this.Cmp.monto_inicial_moneda_extranjera.setValue(this.maestro.data.monto_inicial_moneda_extranjera);
+
+                    /**********************Recuperamos el Recibo************************************/
+                    var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['mco_recibo_ml']);
+                    var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['mco_recibo_me']);
+                    console.log("Llega aqui el dato",reg.datos[0]);
+                    this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
+                    this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
+                    this.Cmp.monto_mco_recibo_ml.setValue(reg.datos[0]['mco_recibo_ml']);
+                    this.Cmp.monto_cc_recibo_cta_cte_ml.setValue(reg.datos[0]['cuenta_corriente_recibo_ml']);
+                    this.Cmp.monto_recibo_moneda_base.setValue(total_recibos_ml);
+
+                    this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
+                    this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_me']);
+                    this.Cmp.monto_mco_recibo_me.setValue(reg.datos[0]['mco_recibo_me']);
+                    this.Cmp.monto_cc_recibo_cta_cte_me.setValue(reg.datos[0]['cuenta_corriente_recibo_me']);
+                    this.Cmp.monto_recibo_moneda_extranjera.setValue(total_recibos_me);
+                    /****************************************************************************/
+
 
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
 
@@ -1612,25 +2285,80 @@ header("content-type: text/javascript; charset=UTF-8");
 
         iniciarEventos : function () {
 
-            this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    this.Cmp.total_efectivo_ml.setValue(this.calcularTotalBoletos() );
-                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
-                }
+          this.Cmp.monto_ca_recibo_ml.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                  this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
+                  this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
+
+              }
+          }, this);
+
+          this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
+              }
+          }, this);
+
+          this.Cmp.monto_cc_recibo_cta_cte_ml.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
+              }
+          }, this);
+
+          this.Cmp.monto_mco_recibo_ml.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
+              }
+          }, this);
+
+          this.Cmp.monto_ca_recibo_me.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                  this.Cmp.total_efectivo_me.setValue(this.Cmp.monto_ca_boleto_usd.getValue()+this.Cmp.monto_ca_facturacion_usd.getValue() +newValue);
+                  this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
+              }
+          }, this);
+
+          this.Cmp.monto_cc_recibo_me.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
+              }
+          }, this);
+
+          this.Cmp.monto_cc_recibo_cta_cte_me.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
+              }
             }, this);
 
-            this.Cmp.monto_ca_recibo_me.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    this.Cmp.total_efectivo_me.setValue(this.calcularTotalBoletos_uds() );
-                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
-                }
-            }, this);
 
-            this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
-                if (oldValue != newValue) {
-                    //this.Cmp.monto_recibo_moneda_base.setValue(this.Cmp.monto_ca_recibo_ml.getValue() + this.Cmp.monto_cc_recibo_ml.getValue());
-                }
-            }, this);
+          this.Cmp.monto_mco_recibo_me.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
+              }
+          }, this);
+          this.Cmp.monto_moneda_01_ctvs.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                  this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                  this.Cmp.diferencia.setValue(this.calcularDiferencia());
+              }
+          }, this);
+
+          this.Cmp.monto_moneda_05_ctvs.on('change', function (field, newValue, oldValue) {
+              if (oldValue != newValue) {
+                  this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                  this.Cmp.diferencia.setValue(this.calcularDiferencia());
+              }
+          }, this);
 
             this.Cmp.monto_moneda_10_ctvs.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
@@ -1709,6 +2437,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
             }, this);
 
+            this.Cmp.monto_billete_500_ml.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                }
+            }, this);
+
+            this.Cmp.monto_billete_1000_ml.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.arqueo_moneda_local.setValue(this.calcularArqueoMonedaLocal());
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+
+                }
+            }, this);
+
             this.Cmp.monto_billete_1_usd.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
                     this.Cmp.arqueo_moneda_extranjera.setValue(this.calcularArqueoMonedaExtranjera());
@@ -1772,10 +2515,11 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         calcularArqueoMonedaLocal : function () {
-            var total = this.Cmp.monto_moneda_10_ctvs.getValue()*0.10 + this.Cmp.monto_moneda_20_ctvs.getValue()*0.20 +
-                this.Cmp.monto_moneda_50_ctvs.getValue()*0.50 + this.Cmp.monto_moneda_1_ml.getValue() + this.Cmp.monto_moneda_2_ml.getValue()*2 +
-                this.Cmp.monto_moneda_5_ml.getValue()*5 + this.Cmp.monto_billete_10_ml.getValue()*10 + this.Cmp.monto_billete_20_ml.getValue()*20 +
-                this.Cmp.monto_billete_50_ml.getValue()*50 + this.Cmp.monto_billete_100_ml.getValue()*100 + this.Cmp.monto_billete_200_ml.getValue()*200;
+            var total = this.Cmp.monto_moneda_01_ctvs.getValue()*0.01 + this.Cmp.monto_moneda_05_ctvs.getValue()*0.05 +  this.Cmp.monto_moneda_10_ctvs.getValue()*0.10 + this.Cmp.monto_moneda_20_ctvs.getValue()*0.20 +
+                this.Cmp.monto_moneda_25_ctvs.getValue()*0.25 + this.Cmp.monto_moneda_50_ctvs.getValue()*0.50 + this.Cmp.monto_moneda_1_ml.getValue() + this.Cmp.monto_moneda_2_ml.getValue()*2 +
+                this.Cmp.monto_moneda_5_ml.getValue()*5 + this.Cmp.monto_billete_1_ml.getValue()*1 + this.Cmp.monto_billete_2_ml.getValue()*2 + this.Cmp.monto_billete_5_ml.getValue()*5 +
+                this.Cmp.monto_billete_10_ml.getValue()*10 + this.Cmp.monto_billete_20_ml.getValue()*20 + this.Cmp.monto_billete_50_ml.getValue()*50 + this.Cmp.monto_billete_100_ml.getValue()*100 + this.Cmp.monto_billete_200_ml.getValue()*200 + this.Cmp.monto_billete_500_ml.getValue()*500 +
+                this.Cmp.monto_billete_1000_ml.getValue()*1000 ;
             return total;
         },
 
@@ -1787,8 +2531,42 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         calcularDiferencia : function () {
-            var total_efectivo = this.Cmp.total_efectivo_ml.getValue() + (this.Cmp.total_efectivo_me.getValue()*6.96);
-            var total_arqueo = this.Cmp.arqueo_moneda_local.getValue() + (this.Cmp.arqueo_moneda_extranjera.getValue()*6.96);
+          if(this.moneda_base == 'BOB'){
+            this.Cmp.monto_billete_1000_ml.setVisible(false);
+            this.Cmp.monto_billete_500_ml.setVisible(false);
+            this.Cmp.monto_billete_1_ml.setVisible(false);
+            this.Cmp.monto_billete_2_ml.setVisible(false);
+            this.Cmp.monto_billete_5_ml.setVisible(false);
+            this.Cmp.monto_moneda_01_ctvs.setVisible(false);
+            this.Cmp.monto_moneda_25_ctvs.setVisible(false);
+            this.Cmp.monto_moneda_05_ctvs.setVisible(false);
+          }
+          else if(this.moneda_base == 'ARS'){
+            this.Cmp.monto_moneda_20_ctvs.setVisible(false);
+            this.Cmp.monto_moneda_01_ctvs.setVisible(false);
+            this.Cmp.monto_billete_2_ml.setVisible(false);
+            this.Cmp.monto_billete_1_ml.setVisible(false);
+          }
+          else if(this.moneda_base == 'USD'){
+            this.Cmp.monto_billete_200_ml.setVisible(false);
+            this.Cmp.monto_moneda_20_ctvs.setVisible(false);
+            this.Cmp.monto_moneda_50_ctvs.setVisible(false);
+            this.Cmp.monto_moneda_1_ml.setVisible(false);
+            this.Cmp.monto_moneda_2_ml.setVisible(false);
+            this.Cmp.monto_moneda_5_ml.setVisible(false);
+            this.Cmp.monto_billete_100_usd.setVisible(false);
+            this.Cmp.monto_billete_50_usd.setVisible(false);
+            this.Cmp.monto_billete_20_usd.setVisible(false);
+            this.Cmp.monto_billete_10_usd.setVisible(false);
+            this.Cmp.monto_billete_5_usd.setVisible(false);
+            this.Cmp.monto_billete_2_usd.setVisible(false);
+            this.Cmp.monto_billete_1_usd.setVisible(false);
+            // this.ocultarComponente(mon_ext);
+          }
+            console.log('La moneda base es: ',this.moneda_base);
+            console.log('Tipo de Cambio para la fecha: ',this.getValues().fecha_apertura_cierre,'CAMBIO: ',this.tipo_cambio);
+            var total_efectivo = this.Cmp.total_efectivo_ml.getValue() + (this.Cmp.total_efectivo_me.getValue()*this.tipo_cambio);
+            var total_arqueo = this.Cmp.arqueo_moneda_local.getValue() + (this.Cmp.arqueo_moneda_extranjera.getValue()*this.tipo_cambio);
             return total_arqueo - total_efectivo;
         },
         calcularTotalBoletos : function () {

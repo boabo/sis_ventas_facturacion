@@ -7,8 +7,8 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 require_once(dirname(__FILE__).'/../reportes/REntregaEfectivo.php');
-class ACTEntrega extends ACTbase{    
-			
+class ACTEntrega extends ACTbase{
+
 	function listarEntrega(){
 		$this->objParam->defecto('ordenacion','id_entrega_brinks');
 		$this->objParam->defecto('dir_ordenacion','asc');
@@ -21,22 +21,22 @@ class ACTEntrega extends ACTbase{
 			$this->res = $this->objReporte->generarReporteListado('MODEntrega','listarEntrega');
 		} else{
 			$this->objFunc=$this->create('MODEntrega');
-			
+
 			$this->res=$this->objFunc->listarEntrega($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-				
+
 	function insertarEntrega(){
-		$this->objFunc=$this->create('MODEntrega');	
+		$this->objFunc=$this->create('MODEntrega');
 		if($this->objParam->insertar('id_entrega_brinks')){
-			$this->res=$this->objFunc->insertarEntrega($this->objParam);			
-		} else{			
+			$this->res=$this->objFunc->insertarEntrega($this->objParam);
+		} else{
 			$this->res=$this->objFunc->modificarEntrega($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-						
+
 	function eliminarEntrega(){
         $this->objFunc=$this->create('MODEntrega');
 		$this->res=$this->objFunc->eliminarEntrega($this->objParam);
@@ -91,7 +91,7 @@ class ACTEntrega extends ACTbase{
         $this->res=$this->objFunc->getTipoUsuario($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-			
+
 }
 
 ?>

@@ -171,6 +171,17 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->res=$this->objFunc->listarAperturaCierreCajaVentas($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    function getTipoCambio(){
+       $this->objFunc=$this->create('MODAperturaCierreCaja');
+       $this->res=$this->objFunc->getTipoCambio($this->objParam);
+       $this->res->imprimirRespuesta($this->res->generarJson());
+   }
+   function getMonedaBase(){
+      $this->objFunc=$this->create('MODAperturaCierreCaja');
+      $this->res=$this->objFunc->getMonedaBase($this->objParam);
+      $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
 
 
 }

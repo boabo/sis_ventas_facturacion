@@ -16,13 +16,12 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Formula.superclass.constructor.call(this,config);
-		this.init();
-		
+		this.init();	
 		this.load({params:{start:0, limit:this.tam_pag}})
 	},
 	formUrl : '../../../sis_ventas_facturacion/vista/formula/FormFormula.php',
 	formClass : 'FormFormula',
-			
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -32,10 +31,10 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 					name: 'id_formula'
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
-		
-		
+
+
 		 /*{
             config : {
                 name : 'id_tipo_presentacion',
@@ -67,10 +66,10 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
                 lazyRender : true,
                 mode : 'remote',
                 pageSize : 10,
-                queryDelay : 1000,                
+                queryDelay : 1000,
                 gwidth : 150,
                 minChars : 2,
-                renderer: function(value, p, record){                    
+                renderer: function(value, p, record){
                     return String.format('{0}', record.data['nombre_tipo_presentacion']);
                 }
             },
@@ -83,10 +82,10 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
             grid : true,
             form : true
         },*/
-        
-        
-		
-				
+
+
+
+
 		{
 			config:{
 				name: 'nombre',
@@ -118,15 +117,15 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
                 form:true,
                 bottom_filter: true
         },
-        
-		
+
+
         {
             config:{
                 name: 'precio',
-                fieldLabel: 'Precio Actual',                
+                fieldLabel: 'Precio Actual',
                 gwidth: 120
             },
-                type:'NumberField', 
+                type:'NumberField',
                 grid:true,
                 form:false
         },
@@ -145,7 +144,7 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-		
+
 		{
 			config:{
 				name: 'usuario_ai',
@@ -168,7 +167,7 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -214,7 +213,7 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -239,7 +238,7 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 				form:false
 		}
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Fórmula',
 	ActSave:'../../sis_ventas_facturacion/control/Formula/insertarFormula',
 	ActDel:'../../sis_ventas_facturacion/control/Formula/eliminarFormula',
@@ -265,13 +264,13 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+
 	],
 	sortInfo:{
 		field: 'id_formula',
 		direction: 'DESC'
 	},
-	
+
     /*south : {
             url : '../../../sis_ventas_facturacion/vista/formula_detalle/FormulaDetalle.php',
             title : 'Detalle',
@@ -280,12 +279,12 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
     },*/
     onButtonNew : function () {
         //abrir formulario de solicitud
-        this.openForm('new');        
+        this.openForm('new');
     },
     onButtonEdit : function () {
         //abrir formulario de solicitud
-        this.openForm('edit', this.sm.getSelected());        
-    }, 
+        this.openForm('edit', this.sm.getSelected());
+    },
     openForm : function (tipo, record) {
         //abrir formulario de solicitud
            var me = this;
@@ -298,20 +297,20 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
                                     }, {data:{objPadre: me,
                                     		tipo_form : tipo,
                                     		datos_originales: record}
-                                    }, 
+                                    },
                                     this.idContenedor,
                                     this.formClass,
                                     {
                                         config:[{
                                                   event:'successsave',
                                                   delegate: this.onSaveForm,
-                                                  
+
                                                 }],
-                                        
+
                                         scope:this
-                                     });      
+                                     });
     },
-	
+
 	bdel:true,
 	bsave:true,
 	rowExpander: new Ext.ux.grid.RowExpander({
@@ -328,21 +327,19 @@ Phx.vista.Formula=Ext.extend(Phx.gridInterfaz,{
         var data = this.getSelectedData();
         var tb =this.tbar;
         Phx.vista.Formula.superclass.preparaMenu.call(this,n);
-        
+
         return tb;
-     }, 
+     },
      liberaMenu:function(){
         var tb = Phx.vista.Formula.superclass.liberaMenu.call(this);
-        
-        
+
+
        return tb;
    },
-   
-    
+
+
     arrayDefaultColumHidden:['estado_reg','usuario_ai',
     'fecha_reg','fecha_mod','usr_reg','usr_mod','descripcion'],
 	}
 )
 </script>
-		
-		

@@ -70,7 +70,7 @@ $body$
     if(p_transaccion='VF_VEDET_INS')then
 
       begin
-
+      	--raise exception 'llega aquyi la formula %',v_parametros.id_producto ;
         if (v_parametros.tipo = 'formula') then
           v_id_formula = v_parametros.id_producto;
         elsif (v_parametros.tipo = 'servicio' or
@@ -207,8 +207,10 @@ $body$
         set total_venta = round((select sum(round(precio * cantidad,2)) from vef.tventa_detalle where id_venta = v_parametros.id_venta) + v_total,2)
         where id_venta = v_parametros.id_venta;
 
+        --raise exception 'llega auqi tipo %',v_parametros.tipo_factura;
         --verificar si existe el sistema obingresos, si existe actualizar el ib_boleto
-        if ( (v_descripcion != '' and v_descripcion is not null and pxp.f_is_positive_integer(v_descripcion)) and
+        /**************************Comentamos este codigo para revisar facturas**************/
+        /*if ( (v_descripcion != '' and v_descripcion is not null and pxp.f_is_positive_integer(v_descripcion)) and
              exists (
                  select 1
                  from segu.tsubsistema s
@@ -230,7 +232,7 @@ $body$
             set id_boleto = v_id_boleto
             where id_venta_detalle = v_id_venta_detalle;
           end if;
-        end if;
+        end if;*/
 
         --Definicion de la respuesta
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle de Venta almacenado(a) con exito (id_venta_detalle'||v_id_venta_detalle||')');
@@ -341,38 +343,38 @@ $body$
 
       end;
 
-    /*********************************    
+    /*********************************
  	#TRANSACCION:  'VF_VEDETACT_MOD'
  	#DESCRIPCION:	modifica dastos de pediso, obs, estado , serie
- 	#AUTOR:		rac	
+ 	#AUTOR:		rac
  	#FECHA:		01-06-2015 09:21:07
 	***********************************/
 
 	elsif(p_transaccion='VF_VEDETACT_MOD')then
 
 		begin
-        	
-            
-            
-           update vef.tventa_detalle set            
+
+
+
+           update vef.tventa_detalle set
               serie=v_parametros.serie,
               obs = v_parametros.obs,
               estado = v_parametros.estado
             where id_venta_Detalle = v_parametros.id_venta_detalle;
-			
-          
-            
+
+
+
 			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle de Venta modificado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle de Venta modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_venta_detalle',v_parametros.id_venta_detalle::varchar);
-               
+
             --Devuelve la respuesta
             return v_resp;
-            
+
 		end;
-        
-        
-         
+
+
+
     else
 
       raise exception 'Transaccion inexistente: %',p_transaccion;

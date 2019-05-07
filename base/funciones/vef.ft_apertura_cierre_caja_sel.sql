@@ -268,7 +268,7 @@ BEGIN
             	v_tiene_dos_monedas = 'si';
                 v_tipo_cambio = param.f_get_tipo_cambio_v2(v_id_moneda_base, v_id_moneda_tri,v_fecha,'O');
             end if;
-		--raise exception 'llega %',v_tiene_dos_monedas;
+            --raise exception 'llega %',v_parametros.id_apertura_cierre_caja ;
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='with forma_pago as (
                           select fp.id_forma_pago,fp.id_moneda,
@@ -356,56 +356,112 @@ BEGIN
                           end)as otro_boletos_me,
 
 
-                      sum(case  when fp2.codigo = ''CASH'' and fp2.id_moneda = ' || v_id_moneda_base  || ' then
+                      sum(case  when fp2.codigo = ''CASH'' and fp2.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo
                           else
                               0
                           end)as efectivo_ventas_ml,
-                      sum(case  when fp2.codigo = ''CASH'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' then
+                      sum(case  when fp2.codigo = ''CASH'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                           else
                               0
                           end)as efectivo_ventas_me,
-                      sum(case  when fp2.codigo = ''CC'' and fp2.id_moneda = ' || v_id_moneda_base  || ' then
+                      sum(case  when fp2.codigo = ''CC'' and fp2.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo
                           else
                               0
                           end)as tarjeta_ventas_ml,
-                      sum(case  when fp2.codigo = ''CC'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' then
+                      sum(case  when fp2.codigo = ''CC'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                           else
                               0
                           end)as tarjeta_vetas_me,
-                      sum(case  when fp2.codigo = ''CT'' and fp2.id_moneda = ' || v_id_moneda_base  || ' then
+                      sum(case  when fp2.codigo = ''CT'' and fp2.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo
                           else
                               0
                           end)as cuenta_corriente_ventas_ml,
-                      sum(case  when fp2.codigo = ''CT'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' then
+                      sum(case  when fp2.codigo = ''CT'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                           else
                               0
                           end)as cuenta_corriente_ventas_me,
-                      sum(case  when fp2.codigo = ''MCO'' and fp2.id_moneda = ' || v_id_moneda_base  || ' then
+                      sum(case  when fp2.codigo = ''MCO'' and fp2.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo
                           else
                               0
                           end)as mco_ventas_ml,
-                      sum(case  when fp2.codigo = ''MCO'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' then
+                      sum(case  when fp2.codigo = ''MCO'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                           else
                               0
                           end)as mco_ventas_me,
-                      sum(case  when fp2.codigo = ''OTRO'' and fp2.id_moneda = ' || v_id_moneda_base  || ' then
+                      sum(case  when fp2.codigo = ''OTRO'' and fp2.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo
                           else
                               0
                           end)as otro_ventas_ml,
-                      sum(case  when fp2.codigo like ''OTRO'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' then
+                      sum(case  when fp2.codigo like ''OTRO'' and fp2.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura <> ''recibo'' then
                               vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                           else
                               0
                           end)as otro_ventas_me,
+
+                      /**************************Aumentando la condicion**************/
+
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo
+                          else
+                              0
+                          end)as efectivo_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as efectivo_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo
+                          else
+                              0
+                          end)as tarjeta_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as tarjeta_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda =' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_me,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo
+                          else
+                              0
+                          end)as mco_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as mco_recibo_me,
+                      sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo
+                          else
+                              0
+                          end)as otro_recibo_ml,
+                      sum(case  when fp_reci.codigo like ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as otro_recibo_me,
+                      /************************************************************************************************/
+
+
                       COALESCE((	select sum(ven.comision) from vef.tventa ven
                           where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_base  || ' and
                                   ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
@@ -452,6 +508,11 @@ BEGIN
 
                       left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
                       left join forma_pago fp2 on fp2.id_forma_pago = vfp.id_forma_pago
+
+                      /*-----------------Aumentando condicion para recuperar los recibos-----------------*/
+                      left join forma_pago fp_reci on fp_reci.id_forma_pago = vfp.id_forma_pago
+                      /**********************************************************************************/
+
                       where acc.id_apertura_cierre_caja = ' || v_parametros.id_apertura_cierre_caja  || '
                       group by u.desc_persona, acc.fecha_apertura_cierre,
                       ppv.codigo,ps.codigo,lpv.codigo,ls.codigo,
@@ -543,6 +604,61 @@ BEGIN
                                                when fp2.codigo like ''OTRO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as otro_ventas_me,
+
+                                               /**************************Aumentando la condicion**************/
+
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as efectivo_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as efectivo_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as tarjeta_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as tarjeta_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda =' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_me,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as mco_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as mco_recibo_me,
+                      sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as otro_recibo_ml,
+                      sum(case  when fp_reci.codigo like ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as otro_recibo_me,
+                      /************************************************************************************************/
+
                                          0 as comisiones_ml,
                                          0 as comisiones_me,
                                  		 0 as monto_ca_recibo_ml,
@@ -559,6 +675,14 @@ BEGIN
                                                                                           inner join param.tlugar lug on lug.id_lugar=fp.id_lugar
                                                                                           where fp.codigo=vfp.forma and mon.codigo_internacional=vfp.moneda and
                                                                                           lug.codigo=vfp.pais)
+                                       /*-----------------Aumentando condicion para recuperar los recibos-----------------*/
+                                      left join vef.tventa v_rec on v_rec.id_usuario_cajero = u.id_usuario
+                                                      and v_rec.fecha = acc.fecha_apertura_cierre and
+                                                      v_rec.id_punto_venta = acc.id_punto_venta and v_rec.estado = ''finalizado''
+                      				 left join vef.tventa_forma_pago vfp_rec on vfp_rec.id_venta = v_rec.id_venta
+                                     left join forma_pago fp_reci on fp_reci.id_forma_pago = vfp_rec.id_forma_pago
+                                      /**********************************************************************************/
+
                                   where acc.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                   and v.sw_excluir=''no''
                                   group by u.desc_persona,
@@ -1055,6 +1179,59 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                                when fp2.codigo like ''OTRO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as otro_ventas_me,
+                                              /**************************Aumentando la condicion**************/
+
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as efectivo_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as efectivo_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as tarjeta_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as tarjeta_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda =' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_me,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as mco_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as mco_recibo_me,
+                      sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as otro_recibo_ml,
+                      sum(case  when fp_reci.codigo like ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as otro_recibo_me,
+                      /************************************************************************************************/
                                              b.monto_ca_boleto_bs,
                                              b.monto_cc_boleto_bs,
                                              b.monto_cte_boleto_bs,
@@ -1080,6 +1257,14 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                                                                           inner join param.tlugar lug on lug.id_lugar=fp.id_lugar
                                                                                           where fp.codigo=vfp.forma and mon.codigo_internacional=vfp.moneda and
                                                                                           lug.codigo=vfp.pais)
+                      			   /*-----------------Aumentando condicion para recuperar los recibos-----------------*/
+                                      left join vef.tventa v_rec on v_rec.id_usuario_cajero = u.id_usuario
+                                                      and v_rec.fecha = acc.fecha_apertura_cierre and
+                                                      v_rec.id_punto_venta = acc.id_punto_venta and v_rec.estado = ''finalizado''
+                      				 left join vef.tventa_forma_pago vfp_rec on vfp_rec.id_venta = v_rec.id_venta
+                                     left join forma_pago fp_reci on fp_reci.id_forma_pago = vfp_rec.id_forma_pago
+                                      /**********************************************************************************/
+
                                   inner join botetos b on b.id_apertura_cierre_caja = acc.id_apertura_cierre_caja
                                   inner join vef.tdetalle_apertura_cc  d on d.id_apertura_cierre_caja = acc.id_apertura_cierre_caja
                                   where acc.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
@@ -1114,7 +1299,6 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
 
 
             else
-
             v_consulta:='with forma_pago as (
                                       select fp.id_forma_pago,
                                              fp.id_moneda,
@@ -1128,7 +1312,7 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                       from obingresos.tforma_pago fp)
                                   select u.desc_persona::varchar,
                                          to_char(acc.fecha_apertura_cierre, ''DD/MM/YYYY'')::varchar as fecha_apertura_cierre,
-                                         v.pais,
+                                  		 v.pais,
                                          v.estacion,
                                          v.agt::varchar as punto_venta,
                                          acc.obs_cierre::varchar,
@@ -1140,7 +1324,7 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                          '''||v_moneda_extranjera||'''::varchar as moneda_extranjera,
                                          '''||v_cod_moneda_local||'''::varchar as cod_moneda_local,
                                          '''||v_cod_moneda_extranjera||'''::varchar as cod_moneda_extranjera,
-                                         sum(case
+                                        sum(case
                                                when fp2.codigo = ''CASH'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
                                                else 0
                                              end) as efectivo_ventas_ml,
@@ -1180,6 +1364,61 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                                when fp2.codigo like ''OTRO'' and fp2.id_moneda = '||v_id_moneda_tri||' then vfp.importe_pago
                                                else 0
                                              end) as otro_ventas_me,
+
+                                          /**************************Aumentando la condicion**************/
+
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as efectivo_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as efectivo_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as tarjeta_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as tarjeta_recibo_me,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda =' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as cuenta_corriente_recibo_me,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as mco_recibo_ml,
+                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as mco_recibo_me,
+                      sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo
+                          else
+                              0
+                          end)as otro_recibo_ml,
+                      sum(case  when fp_reci.codigo like ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
+                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
+                          else
+                              0
+                          end)as otro_recibo_me,
+                      /************************************************************************************************/
+
                                          0::numeric as monto_ca_boleto_bs,
                                          0::numeric as monto_cc_boleto_bs,
                                          0::numeric as monto_cte_boleto_bs,
@@ -1197,6 +1436,13 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                   from vef.tapertura_cierre_caja acc
                                   inner join vef.tpunto_venta pv on pv.id_punto_venta=acc.id_punto_venta
                                        inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
+                                       /*-----------------Aumentando condicion para recuperar los recibos-----------------*/
+                                      left join vef.tventa v_rec on v_rec.id_usuario_cajero = u.id_usuario
+                                                      and v_rec.fecha = acc.fecha_apertura_cierre and
+                                                      v_rec.id_punto_venta = acc.id_punto_venta and v_rec.estado = ''finalizado''
+                      				 left join vef.tventa_forma_pago vfp_rec on vfp_rec.id_venta = v_rec.id_venta
+                                     left join forma_pago fp_reci on fp_reci.id_forma_pago = vfp_rec.id_forma_pago
+                                      /**********************************************************************************/
                                        inner join vef.tfactucom_endesis v on v.fecha=acc.fecha_apertura_cierre and v.estado_reg=''emitida''
                                        and v.usuario=u.cuenta and v.agt::varchar=pv.codigo
                                        inner join vef.tfactucompag_endesis vfp on vfp.id_factucom=v.id_factucom

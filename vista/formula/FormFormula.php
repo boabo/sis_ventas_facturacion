@@ -2,7 +2,7 @@
 /**
 *@package pXP
 *@file    FormSolicitud.php
-*@author  Rensi Arteaga Copari 
+*@author  Rensi Arteaga Copari
 *@date    30-01-2014
 *@description permites subir archivos a la tabla de documento_sol
 */
@@ -18,18 +18,20 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
     autoScroll: false,
     breset: false,
     labelSubmit: '<i class="fa fa-check"></i> Guardar',
-    
+
     constructor:function(config)
-    {   
-        
+    {
+
         this.addEvents('beforesave');
         this.addEvents('successsave');
-        
+
         this.buildComponentesDetalle();
-        
+
         this.buildDetailGrid();
-        
+
         this.buildGrupos();
+
+
         console.log(config);
         if(config.data.tipo_form == 'edit') {
         	this.breset = true;
@@ -38,17 +40,18 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
         	this.iconReset= '../../../lib/imagenes/print.gif';
         	this.clsReset=  'bsave';
         }
-        
+
         Phx.vista.FormFormula.superclass.constructor.call(this,config);
-        this.init();    
-        this.iniciarEventos();
+        this.init();
+        this.iniciarEventos();      
+
         if(this.data.tipo_form == 'new'){
         	this.onNew();
         }
         else{
         	this.onEdit();
         }
-                
+
     },
     buildComponentesDetalle: function(){
         this.detCmp = {
@@ -64,6 +67,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                             gwidth: 150,
                             store:['producto_servicio','item']
                     }),
+
                    'id_producto': new Ext.form.TrigguerCombo({
                                             name: 'id_producto',
                                             fieldLabel: 'Producto/Servicio',
@@ -72,12 +76,12 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                                             tinit:true,
 										    tasignacion:false,
 										    tname:'id_producto',
-									        tdisplayField:'nombre',   				
+									        tdisplayField:'nombre',
 											turl:'../../../sis_ventas_facturacion/vista/sucursal_producto/SucursalProducto.php',
 											ttitle:'Sucursal Producto',
 											tconfig:{width:'80%',height:'90%'},
 											tdata:{formulario : 'formula'},
-											tcls:'SucursalProducto',		
+											tcls:'SucursalProducto',
                                             store: new Ext.data.JsonStore({
                                                 url: '../../sis_ventas_facturacion/control/SucursalProducto/listarItemsFormula',
                                                 id: 'id_producto',
@@ -109,7 +113,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                                             width : 250,
                                             listWidth:'450',
                                             minChars: 2 ,
-                                            disabled:true                                           
+                                            disabled:true
                                          }),
                     'unidad_medida': new Ext.form.TextField({
                         name: 'unidad_medida',
@@ -127,7 +131,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                                         decimalPrecision : 6,
                                         maxLength:10,
                                         enableKeyEvents : true
-                                        
+
                                 }),
                     'precio_unitario': new Ext.form.NumberField({
                                         name: 'precio_unitario',
@@ -147,68 +151,68 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                                         maxLength:10,
                                         readOnly :true
                                 })
-                    
+
               }
-            
-            
-    }, 
-    
-    iniciarEventos : function () {   	
-        
+
+
+    },
+
+    iniciarEventos : function () {
+
         this.detCmp.tipo.on('select',function(c,r,i) {
             this.cambiarCombo(r.data.field1);
-        },this); 
-        
+        },this);
+
         this.detCmp.id_producto.on('select',function(c,r,i) {
             this.detCmp.unidad_medida.setValue(r.data.unidad_medida);
             this.detCmp.precio_unitario.setValue(Number(r.data.precio));
             this.detCmp.precio_total.setValue(Number(r.data.precio) * Number(this.detCmp.cantidad.getValue()));
-        	
+
         },this);
-        
-        this.detCmp.cantidad.on('keyup',function() {  
+
+        this.detCmp.cantidad.on('keyup',function() {
             this.detCmp.precio_total.setValue(Number(this.detCmp.precio_unitario.getValue()) * Number(this.detCmp.cantidad.getValue()));
-        },this);        
-        
+        },this);
+
     },
-    
+
     cambiarCombo : function (tipo) {
     	this.detCmp.id_producto.setDisabled(false);
-    	this.detCmp.id_producto.store.baseParams.tipo = tipo;    	
+    	this.detCmp.id_producto.store.baseParams.tipo = tipo;
     	this.detCmp.id_producto.modificado = true;
     	this.detCmp.id_producto.reset();
     },
-    
-    onNew: function(){      
-      this.accionFormulario = 'NEW'; 
-      
+
+    onNew: function(){
+      this.accionFormulario = 'NEW';
+
   	},
-    
-    
+
+
     onCancelAdd: function(re,save){
         if(this.sw_init_add){
             this.mestore.remove(this.mestore.getAt(0));
         }
-        
-        this.sw_init_add = false;        
+
+        this.sw_init_add = false;
     },
     onUpdateRegister: function(){
         this.sw_init_add = false;
     },
-    
+
     onAfterEdit:function(re, o, rec, num){
         //set descriptins values ...  in combos boxs
-        
+
         var cmb_rec = this.detCmp['id_producto'].store.getById(rec.get('id_producto'));
         if(cmb_rec) {
-            
-            rec.set('nombre_producto', cmb_rec.get('nombre_producto')); 
-        }        
-        
+
+            rec.set('nombre_producto', cmb_rec.get('nombre_producto'));
+        }
+
     },
-        
+
     buildDetailGrid: function(){
-        
+
         //cantidad,detalle,peso,totalo
         var Items = Ext.data.Record.create([{
                         name: 'cantidad',
@@ -218,7 +222,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                         type: 'int'
                     }
                     ]);
-        
+
         this.mestore = new Ext.data.JsonStore({
                     url: '../../sis_ventas_facturacion/control/FormulaDetalle/listarFormulaDetalle',
                     id: 'id_formula_detalle',
@@ -229,22 +233,22 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                     ],remoteSort: true,
                     baseParams: {dir:'ASC',sort:'id_formula_detalle',limit:'100',start:'0'}
                 });
-        
+
         this.editorDetail = new Ext.ux.grid.RowEditor({
                 saveText: 'Aceptar',
                 name: 'btn_editor'
-               
-            });            
-        
-        this.editorDetail.on('beforeedit', this.onInitAdd , this);         
+
+            });
+
+        this.editorDetail.on('beforeedit', this.onInitAdd , this);
         //al cancelar la edicion
         this.editorDetail.on('canceledit', this.onCancelAdd , this);
-        
+
         //al cancelar la edicion
         this.editorDetail.on('validateedit', this.onUpdateRegister, this);
-        
+
         this.editorDetail.on('afteredit', this.onAfterEdit, this);
-        
+
         this.megrid = new Ext.grid.GridPanel({
                     layout: 'fit',
                     store:  this.mestore,
@@ -260,18 +264,18 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                         text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Componente',
                         scope: this,
                         width: '100',
-                        handler: function() {                                
+                        handler: function() {
                                  var e = new Items({
                                     id_producto: undefined,
                                     cantidad: 0});
-                                
+
                                 this.editorDetail.stopEditing();
                                 this.mestore.insert(0, e);
                                 this.megrid.getView().refresh();
                                 this.megrid.getSelectionModel().selectRow(0);
                                 this.editorDetail.startEditing(0);
                                 this.sw_init_add = true;
-                                                       
+
                         }
                     },{
                         ref: '../removeBtn',
@@ -282,26 +286,26 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                             var s = this.megrid.getSelectionModel().getSelections();
                             for(var i = 0, r; r = s[i]; i++){
                                 this.mestore.remove(r);
-                            }                            
+                            }
                         }
                     }],
-            
+
                     columns: [
                     new Ext.grid.RowNumberer(),
                     {
                         header: 'Tipo',
                         dataIndex: 'tipo',
                         width: 90,
-                        sortable: false,                        
-                        editor: this.detCmp.tipo 
-                    }, 
+                        sortable: false,
+                        editor: this.detCmp.tipo
+                    },
                     {
                         header: 'Producto/Servicio',
                         dataIndex: 'id_producto',
                         width: 350,
                         sortable: false,
                         renderer:function(value, p, record){return String.format('{0}', record.data['nombre_producto']);},
-                        editor: this.detCmp.id_producto 
+                        editor: this.detCmp.id_producto
                     },
                         {
                             header: 'Unidad Medida',
@@ -311,34 +315,35 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                             editor: this.detCmp.unidad_medida
                         },
                         {
-                       
+
                         header: 'Cantidad',
                         dataIndex: 'cantidad',
                         align: 'center',
                         width: 100,
                         align: 'right',
-                        editor: this.detCmp.cantidad 
+                        editor: this.detCmp.cantidad
                     }]
                 });
-        
+
     },
-    onInitAdd : function (r, i) {  
-    	
-        this.detCmp.id_producto.setDisabled(true);       
+    onInitAdd : function (r, i) {
+
+        this.detCmp.id_producto.setDisabled(true);
         var record = this.megrid.store.getAt(i);
         var recTem = new Array();
         recTem['id_producto'] = record.data['id_producto'];
         recTem['nombre_producto'] = record.data['nombre_producto'];
-        
+
         this.detCmp.id_producto.store.add(new Ext.data.Record(this.arrayToObject(this.detCmp.id_producto.store.fields.keys,recTem), record.data['id_producto']));
         this.detCmp.id_producto.store.commitChanges();
         this.detCmp.id_producto.modificado = true;
-        
+
         if (record.data.tipo != '' && record.data.tipo != undefined) {
-            
+
             this.cambiarCombo(record.data.tipo);
         }
     },
+
     buildGrupos: function(){
         this.Grupos = [{
                         layout: 'border',
@@ -361,7 +366,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                             items:[
                                    {
                                     bodyStyle: 'padding-right:5px;',
-                                   
+
                                     autoHeight: true,
                                     border: false,
                                     items:[
@@ -369,10 +374,10 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                                         xtype: 'fieldset',
                                         frame: true,
                                         border: false,
-                                        layout: 'form', 
+                                        layout: 'form',
                                         title: 'Tipo',
                                         width: '40%',
-                                        
+
                                         //margins: '0 0 0 5',
                                         padding: '0 0 0 10',
                                         bodyStyle: 'padding-left:5px;',
@@ -380,18 +385,18 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                                         items: [],
                                      }]
                                  }
-                                 
-                                 
+
+
                               ]
                           },
                             this.megrid
                          ]
                  }];
-        
-        
+
+
     },
-    loadValoresIniciales:function() 
-    {                
+    loadValoresIniciales:function()
+    {
        Phx.vista.FormFormula.superclass.loadValoresIniciales.call(this);
     },
     onReset:function(o){
@@ -406,21 +411,21 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
 					this.onSubmit(o);
 		   		}
 		   },
-		   
+
 		   scope : this,
 		   icon: Ext.MessageBox.QUESTION
 		});
-    	
+
 	},
-	
+
     onSubmit: function(o) {
         //  validar formularios
         var arra = [], i, me = this;
         for (i = 0; i < me.megrid.store.getCount(); i++) {
             record = me.megrid.store.getAt(i);
-            arra[i] = record.data;            
-        }        
-        
+            arra[i] = record.data;
+        }
+
         me.argumentExtraSubmit = { 'json_new_records': JSON.stringify(arra, function replacer(key, value) {
                        if (typeof value === 'string') {
                                     return String(value).replace(/&/g, "%26")
@@ -433,30 +438,30 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
         else{
             alert('no tiene ningun elemento en la formula')
         }
-    },   
-    
+    },
+
     onEdit:function(){
-        
-    	this.accionFormulario = 'EDIT';  
-    	this.loadForm(this.data.datos_originales);    	
-    	
+
+    	this.accionFormulario = 'EDIT';
+    	this.loadForm(this.data.datos_originales);
+
         //load detalle de conceptos
         this.mestore.baseParams.id_formula = this.Cmp.id_formula.getValue();
-        this.mestore.load();      	
-        
-    },    
-    onNew: function(){    	
+        this.mestore.load();
+
+    },
+    onNew: function(){
     	this.accionFormulario = 'NEW';
-	}, 
-    
+	},
+
     successSave:function(resp)
     {
         Phx.CP.loadingHide();
         Phx.CP.getPagina(this.idContenedorPadre).reload();
         this.panel.close();
-    },        
-    
-    
+    },
+
+
     Atributos:[
         {
             //configuracion del componente
@@ -466,9 +471,9 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                     name: 'id_formula'
             },
             type:'Field',
-            form:true 
+            form:true
         },
-        
+
         {
             config:{
                 name: 'nombre',
@@ -478,8 +483,8 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                 gwidth: 200,
                 maxLength:200
             },
-                type:'TextField',                
-                id_grupo:0,                
+                type:'TextField',
+                id_grupo:0,
                 form:true
         },
         {
@@ -490,12 +495,26 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                 anchor: '100%',
                 gwidth: 250
             },
-                type:'TextArea',                
-                id_grupo:0,                
+                type:'TextArea',
+                id_grupo:0,
                 form:true,
-        }          
-        
+        },
+        {
+            //configuracion del componente
+            config:{
+                name: 'id_punto_venta',
+                fieldLabel: 'punto_venta',
+                allowBlank: true,
+                anchor: '100%',
+                disabled:true,
+                gwidth: 200,
+                maxLength:200
+            },
+            type:'Field',
+            form:true
+        },
+
     ],
     title: 'Form Formula'
-})    
+})
 </script>

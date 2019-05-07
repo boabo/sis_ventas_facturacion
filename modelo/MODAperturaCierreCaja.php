@@ -137,7 +137,18 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('mco_ventas_me','numeric');
         $this->captura('otros_ventas_ml','numeric');
         $this->captura('otros_ventas_me','numeric');
-
+        /****************AUMENTO DE RECIBOS********************/
+        $this->captura('efectivo_recibo_ml','numeric');
+        $this->captura('efectivo_recibo_me','numeric');
+        $this->captura('tarjeta_recibo_ml','numeric');
+        $this->captura('tarjeta_recibo_me','numeric');
+        $this->captura('cuenta_corriente_recibo_ml','numeric');
+        $this->captura('cuenta_corriente_recibo_me','numeric');
+        $this->captura('mco_recibo_ml','numeric');
+        $this->captura('mco_recibo_me','numeric');
+        $this->captura('otros_recibo_ml','numeric');
+        $this->captura('otros_recibo_me','numeric');
+        /******************************************************/
 
         $this->captura('comisiones_ml','numeric');
         $this->captura('comisiones_me','numeric');
@@ -410,6 +421,18 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('mco_ventas_me','numeric');
         $this->captura('otros_ventas_ml','numeric');
         $this->captura('otros_ventas_me','numeric');
+        /***************recuperacion recibos*****************/
+        $this->captura('efectivo_recibo_ml','numeric');
+        $this->captura('efectivo_recibo_me','numeric');
+        $this->captura('tarjeta_recibo_ml','numeric');
+        $this->captura('tarjeta_recibo_me','numeric');
+        $this->captura('cuenta_corriente_recibo_ml','numeric');
+        $this->captura('cuenta_corriente_recibo_me','numeric');
+        $this->captura('mco_recibo_ml','numeric');
+        $this->captura('mco_recibo_me','numeric');
+        $this->captura('otros_recibo_ml','numeric');
+        $this->captura('otros_recibo_me','numeric');
+        /************************************************/
         $this->captura('monto_ca_boleto_bs','numeric');
         $this->captura('monto_cc_boleto_bs','numeric');
         $this->captura('monto_cte_boleto_bs','numeric');
@@ -498,7 +521,21 @@ class MODAperturaCierreCaja extends MODbase{
         return $this->respuesta;
     }
 
+    function getTipoCambio(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_ime';
+        $this->transaccion='VF_TIPO_CAMBIO_IME';
+        $this->tipo_procedimiento='IME';//tipo de transaccion
 
+        $this->setParametro('fecha_cambio','fecha_cambio','timestamp');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
 
 }

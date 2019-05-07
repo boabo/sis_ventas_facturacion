@@ -8,17 +8,17 @@
 */
 
 class MODFormula extends MODbase{
-	
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
-			
+
 	function listarFormula(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_formula_sel';
 		$this->transaccion='VF_FORM_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-				
+
 		//Definicion de la lista del resultado del query
 		$this->captura('id_formula','int4');
 		$this->captura('id_tipo_presentacion','int4');
@@ -39,21 +39,22 @@ class MODFormula extends MODbase{
         $this->captura('desc_unidad_medida','text');
         $this->captura('desc_medico','text');
         $this->captura('precio','numeric');
-		
+
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function insertarFormula(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_formula_ime';
 		$this->transaccion='VF_FORM_INS';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_tipo_presentacion','id_tipo_presentacion','int4');
 		$this->setParametro('id_unidad_medida','id_unidad_medida','int4');
@@ -70,36 +71,36 @@ class MODFormula extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-    
+
     function insertarFormulaCompleta() {
         //Abre conexion con PDO
         $cone = new conexion();
         $link = $cone->conectarpdo();
-        $copiado = false;           
+        $copiado = false;
         try {
-            $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);     
+            $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $link->beginTransaction();
-            
+
             /////////////////////////
             //  inserta cabecera de la solicitud de compra
             ///////////////////////
-            
+
             //Definicion de variables para ejecucion del procedimiento
-            $this->procedimiento = 'vef.ft_formula_ime';            
+            $this->procedimiento = 'vef.ft_formula_ime';
             $this->tipo_procedimiento = 'IME';
-			
+
 			if ($this->aParam->getParametro('id_formula') != '') {
-				
-								
+
+
 				//Eliminar detalles
 				$this->transaccion = 'VF_FORALLDET_ELI';
 				$this->setParametro('id_formula','id_formula','int4');
 				//Ejecuta la instruccion
 	            $this->armarConsulta();
-	            $stmt = $link->prepare($this->consulta);         
+	            $stmt = $link->prepare($this->consulta);
 	            $stmt->execute();
-	            $result = $stmt->fetch(PDO::FETCH_ASSOC);             
-	            
+	            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
 	            //recupera parametros devuelto depues de insertar ... (id_formula)
 	            $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
 	            if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
@@ -109,7 +110,7 @@ class MODFormula extends MODbase{
 			} else {
 				$this->transaccion = 'VF_FORM_INS';
 			}
-            
+
             //Define los parametros para la funcion
             $this->setParametro('id_tipo_presentacion','id_tipo_presentacion','int4');
             $this->setParametro('id_unidad_medida','id_unidad_medida','int4');
@@ -120,30 +121,30 @@ class MODFormula extends MODbase{
 			}
             $this->setParametro('estado_reg','estado_reg','varchar');
             $this->setParametro('descripcion','descripcion','text');
-            
+
             //Ejecuta la instruccion
             $this->armarConsulta();
-			
-            $stmt = $link->prepare($this->consulta);          
+
+            $stmt = $link->prepare($this->consulta);
             $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);               
-            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
             //recupera parametros devuelto depues de insertar ... (id_formula)
             $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
             if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
                 throw new Exception("Error al ejecutar en la bd", 3);
             }
-            
+
             $respuesta = $resp_procedimiento['datos'];
-            
+
             $id_formula = $respuesta['id_formula'];
-                       
-            //decodifica JSON  de detalles 
-            $json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_new_records'));           
-            
+
+            //decodifica JSON  de detalles
+            $json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_new_records'));
+
             //var_dump($json_detalle)   ;
             foreach($json_detalle as $f){
-                
+
                 $this->resetParametros();
                 //Definicion de variables para ejecucion del procedimiento
                 $this->procedimiento='vef.ft_formula_detalle_ime';
@@ -153,26 +154,26 @@ class MODFormula extends MODbase{
                 $this->arreglo['id_producto'] = $f['id_producto'];
 				$this->arreglo['tipo'] = $f['tipo'];
                 $this->arreglo['cantidad'] = $f['cantidad'];
-                $this->arreglo['id_formula'] = $id_formula;                
-                
+                $this->arreglo['id_formula'] = $id_formula;
+
                 //Define los parametros para la funcion
                 $this->setParametro('id_producto', 'id_producto', 'int4');
                 $this->setParametro('id_formula', 'id_formula', 'int4');
-                $this->setParametro('cantidad_det', 'cantidad', 'numeric'); 
-				$this->setParametro('tipo', 'tipo', 'varchar');                
-                
+                $this->setParametro('cantidad_det', 'cantidad', 'numeric');
+				$this->setParametro('tipo', 'tipo', 'varchar');
+
                 //Ejecuta la instruccion
                 $this->armarConsulta();
-                $stmt = $link->prepare($this->consulta);          
+                $stmt = $link->prepare($this->consulta);
                 $stmt->execute();
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);               
-                
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
                 //recupera parametros devuelto depues de insertar ... (id_formula)
                 $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
                 if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
                     throw new Exception("Error al insertar detalle  en la bd", 3);
                 }
-                        
+
             }
 
             //si todo va bien confirmamos y regresamos el resultado
@@ -180,8 +181,8 @@ class MODFormula extends MODbase{
             $this->respuesta=new Mensaje();
             $this->respuesta->setMensaje($resp_procedimiento['tipo_respuesta'],$this->nombre_archivo,$resp_procedimiento['mensaje'],$resp_procedimiento['mensaje_tec'],'base',$this->procedimiento,$this->transaccion,$this->tipo_procedimiento,$this->consulta);
             $this->respuesta->setDatos($respuesta);
-        } 
-        catch (Exception $e) {          
+        }
+        catch (Exception $e) {
                 $link->rollBack();
                 $this->respuesta=new Mensaje();
                 if ($e->getCode() == 3) {//es un error de un procedimiento almacenado de pxp
@@ -191,18 +192,18 @@ class MODFormula extends MODbase{
                 } else {//es un error lanzado con throw exception
                     throw new Exception($e->getMessage(), 2);
                 }
-                
-        }    
-        
+
+        }
+
         return $this->respuesta;
     }
-			
+
 	function modificarFormula(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_formula_ime';
 		$this->transaccion='VF_FORM_MOD';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_formula','id_formula','int4');
 		$this->setParametro('id_tipo_presentacion','id_tipo_presentacion','int4');
@@ -221,13 +222,13 @@ class MODFormula extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function eliminarFormula(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_formula_ime';
 		$this->transaccion='VF_FORM_ELI';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_formula','id_formula','int4');
 
@@ -238,6 +239,6 @@ class MODFormula extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 }
 ?>

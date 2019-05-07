@@ -8,11 +8,11 @@
 */
 
 class MODEntrega extends MODbase{
-	
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
-			
+
 	function listarEntrega(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_entrega_sel';
@@ -40,21 +40,21 @@ class MODEntrega extends MODbase{
         $this->captura('codigo','varchar');
         $this->captura('cajero','text');
 
-		
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function insertarEntrega(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_entrega_ime';
 		$this->transaccion='VF_ENG_INS';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('fecha_recojo','fecha_recojo','date');
         $this->setParametro('id_punto_venta','id_punto_venta','int4');
@@ -67,13 +67,13 @@ class MODEntrega extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function modificarEntrega(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_entrega_ime';
 		$this->transaccion='VF_ENG_MOD';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_entrega_brinks','id_entrega_brinks','int4');
 		$this->setParametro('fecha_recojo','fecha_recojo','date');
@@ -86,13 +86,13 @@ class MODEntrega extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function eliminarEntrega(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_entrega_ime';
 		$this->transaccion='VF_ENG_ELI';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_entrega_brinks','id_entrega_brinks','int4');
 
@@ -142,7 +142,9 @@ class MODEntrega extends MODbase{
         $this->captura('denominacion','varchar');
         $this->captura('total','numeric');
         $this->captura('literial','varchar');
-        $this->captura('id_moneda','int4');
+				$this->captura('id_moneda','int4');
+        $this->captura('moneda_local','varchar');
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();

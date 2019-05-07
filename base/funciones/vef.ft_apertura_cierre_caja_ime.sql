@@ -39,6 +39,8 @@ DECLARE
     v_tipo_usuario			varchar;
 	v_m1 numeric;
     v_me numeric;
+    v_tipo_cambio			numeric;
+    v_codigo_moneda			varchar;
 
 BEGIN
 
@@ -584,7 +586,39 @@ BEGIN
 
   	END;
 
-    else
+	 /*********************************
+    #TRANSACCION: 'VF_TIPO_CAMBIO_IME'
+    #DESCRIPCION: RECUPERA EL TIPO DE CAMBIO
+    #AUTOR: FRANKLIN ESPINOZA ALVAREZ
+    #FECHA: 5-12-2018
+    ***********************************/
+
+	elsif (p_transaccion = 'VF_TIPO_CAMBIO_IME') then
+
+  	BEGIN
+      select tc.oficial
+      into v_tipo_cambio
+      from param.ttipo_cambio tc
+      inner join param.tmoneda tm on tm.id_moneda = tc.id_moneda
+      where tm.codigo_internacional = 'USD' and tc.fecha = v_parametros.fecha_cambio::date;
+
+	  select
+      mon.codigo_internacional
+      into v_codigo_moneda
+      from param.tmoneda mon
+      where tipo_moneda='base';
+
+      --Definition of the response
+      	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Tipo Cambio Argentina');
+        v_resp = pxp.f_agrega_clave(v_resp,'v_tipo_cambio',v_tipo_cambio::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'v_codigo_moneda',v_codigo_moneda::varchar);
+
+      --Returns the answer
+        return v_resp;
+
+  	END;
+
+   else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 

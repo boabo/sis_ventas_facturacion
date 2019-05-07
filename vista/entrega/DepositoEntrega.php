@@ -152,13 +152,14 @@ header("content-type: text/javascript; charset=UTF-8");
                          allowDecimals: true,
                          decimalPrecision : 2,
                          renderer: function(value, p, record) {
-                             if(record.data.nombre_punto_venta == 'TOTAL'){
-                                 return String.format('<div ext:qtip="Optimo"><b><font color="blue">{0}</font></b><br></div>', value);
-                             }else{
-                                 var dato =  value.replace('.', ",")
-                                     .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
-                                 return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', dato);
-                             }
+                           if(record.data.nombre_punto_venta == 'TOTAL'){
+               								return  String.format('<div ext:qtip="Optimo"><b><font color="blue">{0}</font></b><br></div>', Ext.util.Format.number(value,'0,000.00'));
+               						}
+                          else{
+                              var dato =  value.replace('.', ",")
+                                  .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                              return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', dato);
+                          }
 
                          }
                      },
@@ -180,10 +181,12 @@ header("content-type: text/javascript; charset=UTF-8");
                          allowDecimals: true,
                          decimalPrecision : 2,
                          renderer: function(value, p, record) {
-                             if(record.data.nombre_punto_venta == 'TOTAL'){
-                                 return String.format('<div ext:qtip="Optimo"><b><font color="red">{0}</font></b><br></div>', value);
-                             }else{
-                                 return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', value);
+                           if(record.data.nombre_punto_venta == 'TOTAL'){
+                               return  String.format('<div ext:qtip="Optimo"><b><font color="red">{0}</font></b><br></div>', Ext.util.Format.number(value,'0,000.00'));
+                           }else{
+                               var dato =  value.replace('.', ",")
+                                   .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                               return String.format('<div ext:qtip="Optimo"><b><font color="black">{0}</font></b><br></div>', dato);
                              }
 
                          }

@@ -7,11 +7,11 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 
-class ACTFormaPago extends ACTbase{    
-			
+class ACTFormaPago extends ACTbase{
+
 	function listarFormaPago(){
 		$this->objParam->defecto('ordenacion','id_forma_pago');
-		
+
 		if($this->objParam->getParametro('id_entidad') != '') {
                 $this->objParam->addFiltro(" forpa.id_entidad = " . $this->objParam->getParametro('id_entidad'));
         }
@@ -19,24 +19,28 @@ class ACTFormaPago extends ACTbase{
 		if($this->objParam->getParametro('sw_tipo_venta') != '') {
 			$this->objParam->addFiltro("''".$this->objParam->getParametro('sw_tipo_venta')."''=any(forpa.sw_tipo_venta)");
 		}
-		
+
 		if($this->objParam->getParametro('defecto') == 'si') {
-                $this->objParam->addFiltro(" forpa.defecto = ''si''");
+            $this->objParam->addFiltro(" forpa.defecto = ''si''");
+						// $this->objParam->addFiltro(" forpa.id_moneda = (select mon.id_moneda
+            //             						 		 from param.tmoneda mon
+            //                              where mon.tipo_moneda=''base'')");
+
 				//$filtro_adicional = " and tipo_moneda = ''moneda_base''";
-				
+
         }
-		
+
 		if($this->objParam->getParametro('id_sucursal') != '') {
-                $this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda 
+                $this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda
                 												from vef.tsucursal_moneda
                 												where id_sucursal = " . $this->objParam->getParametro('id_sucursal') ." $filtro_adicional)");
-				$this->objParam->addFiltro(" forpa.id_entidad in (select id_entidad 
+				$this->objParam->addFiltro(" forpa.id_entidad in (select id_entidad
                 												from vef.tsucursal
                 												where id_sucursal = " . $this->objParam->getParametro('id_sucursal') ." )");
         }
-		
+
 		if($this->objParam->getParametro('id_punto_venta') != '') {
-                $this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda 
+                $this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda
                 												from vef.tsucursal_moneda sm
                 												inner join vef.tpunto_venta pv on pv.id_sucursal = sm.id_sucursal
                 												where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." $filtro_adicional)");
@@ -46,35 +50,35 @@ class ACTFormaPago extends ACTbase{
                 												inner join vef.tsucursal s on s.id_sucursal = pv.id_sucursal
                 												where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." )");
         }
-		
+
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODFormaPago','listarFormaPago');
 		} else{
 			$this->objFunc=$this->create('MODFormaPago');
-			
+
 			$this->res=$this->objFunc->listarFormaPago($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-				
+
 	function insertarFormaPago(){
-		$this->objFunc=$this->create('MODFormaPago');	
+		$this->objFunc=$this->create('MODFormaPago');
 		if($this->objParam->insertar('id_forma_pago')){
-			$this->res=$this->objFunc->insertarFormaPago($this->objParam);			
-		} else{			
+			$this->res=$this->objFunc->insertarFormaPago($this->objParam);
+		} else{
 			$this->res=$this->objFunc->modificarFormaPago($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-						
+
 	function eliminarFormaPago(){
-			$this->objFunc=$this->create('MODFormaPago');	
+			$this->objFunc=$this->create('MODFormaPago');
 		$this->res=$this->objFunc->eliminarFormaPago($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-			
+
 }
 
 ?>
