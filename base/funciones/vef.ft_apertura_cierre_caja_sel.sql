@@ -564,6 +564,7 @@ BEGIN
                                          0 as mco_boletos_me,
                                          0 as otro_boletos_ml,
                                          0 as otro_boletos_me,
+
                                          sum(case
                                                when fp2.codigo = ''CASH'' and fp2.id_moneda = '||v_id_moneda_base||' then vfp.importe_pago
                                                else 0
@@ -605,58 +606,18 @@ BEGIN
                                                else 0
                                              end) as otro_ventas_me,
 
-                                               /**************************Aumentando la condicion**************/
 
-                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as efectivo_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''CASH'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as efectivo_recibo_me,
-                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as tarjeta_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''CC'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as tarjeta_recibo_me,
-                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda =' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as cuenta_corriente_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''CT'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as cuenta_corriente_recibo_me,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as mco_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as mco_recibo_me,
-                      sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as otro_recibo_ml,
-                      sum(case  when fp_reci.codigo like ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as otro_recibo_me,
+                                            0 as efectivo_recibo_ml,
+                                            0 as efectivo_recibo_me,
+                                            0 as tarjeta_recibo_ml,
+                                            0 as tarjeta_recibo_me,
+
+                                            0 as cuenta_corriente_recibo_ml,
+                                            0 as cuenta_corriente_recibo_me,
+                                            0 as mco_recibo_ml,
+                                            0 as mco_recibo_me,
+                                            0 as otro_recibo_ml,
+                                            0 as otro_recibo_me,
                       /************************************************************************************************/
 
                                          0 as comisiones_ml,
@@ -675,13 +636,15 @@ BEGIN
                                                                                           inner join param.tlugar lug on lug.id_lugar=fp.id_lugar
                                                                                           where fp.codigo=vfp.forma and mon.codigo_internacional=vfp.moneda and
                                                                                           lug.codigo=vfp.pais)
-                                       /*-----------------Aumentando condicion para recuperar los recibos-----------------*/
+                                   /*
+                                   /*-----------------Aumentando condicion para recuperar los recibos-----------------*/
                                       left join vef.tventa v_rec on v_rec.id_usuario_cajero = u.id_usuario
                                                       and v_rec.fecha = acc.fecha_apertura_cierre and
                                                       v_rec.id_punto_venta = acc.id_punto_venta and v_rec.estado = ''finalizado''
                       				 left join vef.tventa_forma_pago vfp_rec on vfp_rec.id_venta = v_rec.id_venta
                                      left join forma_pago fp_reci on fp_reci.id_forma_pago = vfp_rec.id_forma_pago
                                       /**********************************************************************************/
+                                      */
 
                                   where acc.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                                   and v.sw_excluir=''no''
@@ -734,6 +697,19 @@ BEGIN
                                                    sum(mco_ventas_me)::numeric as mco_ventas_me,
                                                    sum(otro_ventas_ml)::numeric as otro_ventas_ml,
                                                    sum(otro_ventas_me)::numeric as otro_ventas_me,
+
+                                                   sum(efectivo_recibo_ml)::numeric as efectivo_recibo_ml,
+                                            sum(efectivo_recibo_me)::numeric as efectivo_recibo_me,
+                                            sum(tarjeta_recibo_ml)::numeric as tarjeta_recibo_ml,
+                                            sum(tarjeta_recibo_me)::numeric as tarjeta_recibo_me,
+
+                                            sum(cuenta_corriente_recibo_ml)::numeric as cuenta_corriente_recibo_ml,
+                                            sum(cuenta_corriente_recibo_me)::numeric as cuenta_corriente_recibo_me,
+                                            sum(mco_recibo_ml)::numeric as mco_recibo_ml,
+                                            sum(mco_recibo_me)::numeric as mco_recibo_me,
+                                            sum(otro_recibo_ml)::numeric as otro_recibo_ml,
+                                            sum(otro_recibo_me)::numeric as otro_recibo_me,
+
                                                    sum(comisiones_ml)::numeric as comisiones_ml,
                                                    sum(comisiones_me)::numeric as comisiones_me,
                                                    sum(monto_ca_recibo_ml)::numeric as monto_ca_recibo_ml,
