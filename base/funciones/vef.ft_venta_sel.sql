@@ -1,3 +1,11 @@
+CREATE OR REPLACE FUNCTION vef.ft_venta_sel (
+  p_administrador integer,
+  p_id_usuario integer,
+  p_tabla varchar,
+  p_transaccion varchar
+)
+RETURNS varchar AS
+$body$
 /**************************************************************************
  SISTEMA:		Sistema de Ventas
  FUNCION: 		vef.ft_venta_sel
@@ -29,7 +37,6 @@ DECLARE
     v_columnas_destino	varchar;
     v_join_punto		varchar;
     v_columnas_punto	varchar;
-    v_moneda_base		varchar;
 
 BEGIN
 
@@ -99,15 +106,10 @@ BEGIN
 
     		--Sentencia de la consulta
 			v_consulta:='with forma_pago_temporal as(
-					    	select count(*)as cantidad_forma_pago,
-                            vfp.id_venta,
-					        	pxp.list(fp.id_forma_pago::text) as id_forma_pago,
-                                pxp.list(fp.nombre) as forma_pago,
-                                sum(monto_transaccion) as monto_transaccion,
-                                pxp.list(vfp.numero_tarjeta) as numero_tarjeta,
-                                pxp.list(vfp.codigo_tarjeta) as codigo_tarjeta,
-                                pxp.list(vfp.tipo_tarjeta) as tipo_tarjeta,
-                                pxp.list(vfp.monto::varchar) as monto_forma_pago
+					    	select count(*)as cantidad_forma_pago,vfp.id_venta,
+					        	pxp.list(fp.id_forma_pago::text) as id_forma_pago, pxp.list(fp.nombre) as forma_pago,
+                                sum(monto_transaccion) as monto_transaccion,pxp.list(vfp.numero_tarjeta) as numero_tarjeta,
+                                pxp.list(vfp.codigo_tarjeta) as codigo_tarjeta,pxp.list(vfp.tipo_tarjeta) as tipo_tarjeta
 					        from vef.tventa_forma_pago vfp
 					        inner join vef.tforma_pago fp on fp.id_forma_pago = vfp.id_forma_pago
 					        group by vfp.id_venta
@@ -146,13 +148,7 @@ BEGIN
                         cli.nit,
                         puve.id_punto_venta,
                         puve.nombre as nombre_punto_venta,
-                        forpa.id_forma_pago::varchar,
-                        forpa.forma_pago::varchar,
-                        forpa.monto_forma_pago::varchar,
-                        forpa.numero_tarjeta::varchar,
-                        forpa.codigo_tarjeta::varchar,
-                        forpa.tipo_tarjeta::varchar,
-                        /*(case when (forpa.cantidad_forma_pago > 1) then
+                        (case when (forpa.cantidad_forma_pago > 1) then
                         	0::integer
                         else
                         	forpa.id_forma_pago::integer
@@ -169,22 +165,22 @@ BEGIN
                         end) as monto_forma_pago,
 
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''::varchar
+                        	''''::varchar
                         else
                         	forpa.numero_tarjeta::varchar
                         end) as numero_tarjeta,
 
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''::varchar
+                        	''''::varchar
                         else
                         	forpa.codigo_tarjeta::varchar
                         end) as codigo_tarjeta,
 
                         (case when (forpa.cantidad_forma_pago > 1) then
-                        	''::varchar
+                        	''''::varchar
                         else
                         	forpa.tipo_tarjeta::varchar
-                        end) as tipo_tarjeta,*/
+                        end) as tipo_tarjeta,
                         ven.porcentaje_descuento,
                         ven.id_vendedor_medico,
                         ven.comision,
@@ -595,138 +591,6 @@ BEGIN
 			return v_consulta;
 
 		end;
-    /*********************************
- 	#TRANSACCION:  'VF_VENREC_SEL'
- 	#DESCRIPCION:   Reporte de Recibo o Factura
- 	#AUTOR:		admin
- 	#FECHA:		01-06-2015 05:58:00
-	***********************************/
-
-	elsif(p_transaccion='VF_VENREC_SEL')then
-
-    	begin
-
-             if v_parametros.tipo_factura = 'pedido' then
-               v_join_destino = '	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino';
-               v_columnas_destino = ' clides.nombre_factura as cliente_destino, clides.lugar as lugar_destino ';
-            else
-               v_join_destino = '';
-                v_columnas_destino = ' ''''::varchar as cliente_destino,''''::varchar as lugar_destino  ';
-            end if;
-
-    		--Sentencia de la consulta
-			v_consulta:=' with medico_usuario as(
-                                  select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
-                                  from vef.vmedico med
-                                union all
-                                select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
-                                from segu.vusuario usu
-
-                              )
-                       select
-						en.nombre,
-                        suc.direccion,
-                        suc.telefono,
-                        suc.lugar,
-                        lug.nombre as departamento_sucursal,
-                        to_char(ven.fecha,''DD/MM/YYYY'')::varchar,
-                        ven.correlativo_venta,
-                        mon.codigo as moneda,
-                        ven.total_venta,
-                        ven.total_venta - coalesce(ven.excento,0),
-                        pxp.f_convertir_num_a_letra(ven.total_venta) as total_venta_literal,
-                        ven.observaciones,
-                        upper(ven.nombre_factura)::varchar as nombre_factura,
-                        suc.nombre_comprobante,
-                        ven.nro_factura,
-                        dos.nroaut,
-                        ven.nit,
-                        ven.cod_control,
-                        to_char(dos.fecha_limite,''DD/MM/YYYY''),
-                        dos.glosa_impuestos,
-                        dos.glosa_empresa,
-                        en.pagina_entidad,
-                        ven.id_venta,
-                        to_char(now(),''HH24:MI:SS''),
-                        en.nit,
-                        (select pxp.list(nombre)
-                        from vef.tactividad_economica
-                        where id_actividad_economica =ANY(dos.id_activida_economica))::varchar,
-                        to_char(ven.fecha,''MM/DD/YYYY'')::varchar as fecha_venta_recibo,
-
-                        tc.direccion,
-                        ven.tipo_cambio_venta,
-                        ven.total_venta_msuc,
-                        pxp.f_convertir_num_a_letra(ven.total_venta_msuc) as total_venta_msuc_literal,
-                        mven.codigo,
-                        mon.moneda,
-                        mven.moneda,
-                        ven.transporte_fob,
-                        ven.seguros_fob,
-                        ven.otros_fob,
-                        ven.transporte_cif,
-                        ven.seguros_cif,
-                        ven.otros_cif,
-                        (to_char(ven.fecha,''DD'')::integer || '' de '' ||param.f_literal_periodo(to_char(ven.fecha,''MM'')::integer) || '' de '' || to_char(ven.fecha,''YYYY''))::varchar as fecha_literal,
-			(select count(*) from vef.ttipo_descripcion td where td.estado_reg = ''activo'' and td.id_sucursal = suc.id_sucursal)::integer as descripciones,
-			ven.estado,
-            ven.valor_bruto,
-            ven.descripcion_bulto,
-            (cli.telefono_celular || '' '' || cli.telefono_fijo)::varchar,
-            (to_char(ven.fecha_estimada_entrega,''DD/MM/YYYY'') || '' '' || to_char(ven.hora_estimada_entrega,''HH24:MI''))::varchar,
-            ven.a_cuenta,
-            mu.nombre::varchar as vendedor_medico,
-            ven.nro_tramite,
-            tc.codigo as codigo_cliente,
-            cli.lugar as lugar_cliente,
-
-            '||v_columnas_destino||',
-            suc.codigo as codigo_sucursal,
-            dos.leyenda,
-            suc.zona,
-
-            /*aumentando condicion moneda base*/
-            (select mon.codigo_internacional
-            from param.tmoneda mon
-            where mon.tipo_moneda = ''base'') as moneda_base,
-
-            (select mon.codigo
-            from param.tmoneda mon
-            where mon.tipo_moneda = ''base'') as codigo_moneda,
-
-            COALESCE(to_char((EXTRACT(DAY FROM ven.fecha::date)),''00'')||substring(Upper(to_char(ven.fecha::date,''month''))from 1 for 3)||RIGHT((EXTRACT(YEAR FROM ven.fecha::date))::varchar,2))::varchar as fecha_ingles,
-
-            (select string_agg(pago.codigo,''/'')
-            FROM vef.tventa ven
-            inner join vef.tventa_forma_pago form on form.id_venta = ven.id_venta
-            inner join vef.tforma_pago pago on pago.id_forma_pago = form.id_forma_pago
-            where ven.id_venta = '||v_parametros.id_venta::varchar||')::varchar as forma_pago
-
-            /***********************************/
-
-            from vef.tventa ven
-              inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
-              '||v_join_destino||'
-              inner join vef.tcliente tc on tc.id_cliente = cli.id_cliente
-              inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
-              inner join param.tentidad en on en.id_entidad = suc.id_entidad
-              inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
-              inner join vef.tsucursal_moneda sucmon on sucmon.id_sucursal = suc.id_sucursal
-                  and sucmon.tipo_moneda = ''moneda_base''
-              inner join param.tmoneda mon on mon.id_moneda = sucmon.id_moneda
-              inner join param.tmoneda mven on mven.id_moneda = ven.id_moneda
-              left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-                        left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
-             where  id_venta = '||v_parametros.id_venta::varchar;
-
-
-			--Devuelve la respuesta
-            raise notice 'consulta....%',v_consulta;
-			return v_consulta;
-
-		end;
-
-
    /*********************************
  	#TRANSACCION:  'VF_VENDETREP_SEL'
  	#DESCRIPCION:   Reporte Detalle de Recibo o Factura
@@ -950,3 +814,9 @@ EXCEPTION
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 			raise exception '%',v_resp;
 END;
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
+COST 100;
