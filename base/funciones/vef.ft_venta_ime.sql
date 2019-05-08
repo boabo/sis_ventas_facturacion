@@ -630,7 +630,8 @@ end if;
             monto_mb_efectivo,
             numero_tarjeta,
             codigo_tarjeta,
-            tipo_tarjeta
+            tipo_tarjeta,
+            id_auxiliar
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -646,7 +647,8 @@ end if;
             0,
             v_parametros.numero_tarjeta,
             v_parametros.codigo_tarjeta,
-            v_parametros.tipo_tarjeta
+            v_parametros.tipo_tarjeta,
+            v_parametros.id_auxiliar
           );
         end if;
         if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
@@ -687,8 +689,9 @@ end if;
             cambio,
             monto_mb_efectivo,
             numero_tarjeta,
-            codigo_tarjeta
-            --tipo_tarjeta
+            codigo_tarjeta,
+            tipo_tarjeta,
+            id_auxiliar
           )
 
           values(
@@ -704,8 +707,9 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta_2,
-            v_parametros.codigo_tarjeta_2
-            --v_parametros.tipo_tarjeta
+            v_parametros.codigo_tarjeta_2,
+            v_parametros.tipo_tarjeta_2,
+            v_parametros.id_auxiliar_2
           );
         end if;
 
@@ -1005,6 +1009,7 @@ end if;
             codigo_tarjeta,
             id_auxiliar,
             tipo_tarjeta
+
           )
           values(
             v_parametros._nombre_usuario_ai,
