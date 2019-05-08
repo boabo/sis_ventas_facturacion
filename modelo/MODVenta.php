@@ -990,7 +990,9 @@ class MODVenta extends MODbase{
 		$this->setCount(false);
 
 		$this->setParametro('id_venta','id_venta','integer');
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
 		$this->setParametro('tipo_factura','tipo_factura','varchar');
+
 
 		//Definicion de la lista del resultado del query
 		$this->captura('nombre_entidad','varchar');
@@ -1066,14 +1068,7 @@ class MODVenta extends MODbase{
 		$this->captura('codigo_moneda','varchar');//nuevo mvm
 		$this->captura('fecha_ingles','varchar');//nuevo mvm
 		$this->captura('forma_pago','varchar');//nuevo mvm
-
-
-
-
-
-
-
-
+		$this->captura('codigo_iata','varchar');//nuevo mvm
 
         //Ejecuta la instruccion
 		$this->armarConsulta();
@@ -1142,7 +1137,7 @@ class MODVenta extends MODbase{
 		$this->captura('kg_fino','varchar');
 		$this->captura('descripcion','text');
 		$this->captura('unidad_concepto','varchar');
-				$this->captura('precio_grupo','numeric');
+		$this->captura('precio_grupo','numeric');
 
 
 

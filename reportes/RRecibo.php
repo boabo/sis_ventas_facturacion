@@ -7,7 +7,7 @@ class RRecibo
 		/********************************************REPORTE INGLES******************************************************/
 		if ($datos['moneda_base'] == 'USD') {
 			$cadena_qr = 'Date: '.$datos['fecha_ingles'] . '<br />' .
-					'Total to pay: '.$datos['total_venta'] . '<br />' .
+					'Grand total: '.$datos['total_venta'] . '<br />' .
 					'Client: '.$datos['cliente'];
 
 			$barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,H');
@@ -47,12 +47,12 @@ class RRecibo
 			</tr>
 			<tr >
 					<td colspan="2" style=" text-align: center;" align="center" >
-						Receip N°: <strong>'.$datos['numero_factura'] .'</strong><br />
+						RECEIPT N°: <strong>'.$datos['numero_factura'] .'</strong><br />
 					</td>
 			</tr>
 			<tr >
 					<td colspan="2" style=" text-align: center;" align="center" >
-						Issuing Office: <strong>'. $datos['direccion_sucursal'].'</strong><br />
+						ISSUING OFFICE: <strong>'. $datos['codigo_iata'].'</strong><br />
 					<hr/>
 					</td>
 			</tr>
@@ -61,8 +61,8 @@ class RRecibo
 			</tr>
 			<tr>
 				<td colspan="2">
-					Date of issuance:<strong> '.$datos['fecha_ingles'].'</strong><br/><br/>
-					Client name: <strong>'.trim($datos['cliente']).'</strong>
+					DATE OF ISSUANCE:<strong> '.$datos['fecha_ingles'].'</strong><br/><br/>
+					PAX NAME: <strong>'.trim($datos['cliente']).'</strong>
 				</td>
 			</tr>
 				<table style="width: 295px;">
@@ -73,7 +73,7 @@ class RRecibo
 				<tr>
 					<td colspan="4" align="center" style="text-align: center;"><strong>SERVICE</strong><hr/></td>
 				</tr>
-					<tr><th style="width: 11px;">QTY <hr color="#ccc" size=1 width="40"> </th><th style="width:150px;">REASON <hr color="#ccc" size=1 width="80"></th><th align="center">UP<hr color="#ccc" size=1 width="30"></th><th>AMOUNT <hr color="#ccc" size=1 width="80"></th></tr>
+					<tr><th  align="center" style="width: 11px;">QTY <br><br><hr color="#ccc" size=1 width="40"> </th><th align="center" style="width:150px;">REASON<br><br> <hr color="#ccc" size=1 width="80"></th><th align="center">AMT<br>(AMOUNT)<hr color="#ccc" size=1 width="80	"></th><th align="center">TOTAL<br><br> <hr color="#ccc" size=1 width="80"></th></tr>
 				</thead>
 				<tbody>';
 
@@ -97,11 +97,11 @@ class RRecibo
 							<td colspan="4" align="center" style="text-align: center;"><strong>PAYMENT DETAILS</strong><hr/></td>
 						</tr>
 						<tr>
-							<td colspan="2" align="left">Total to pay</td>
+							<td colspan="2" align="left">GRAND TOTAL</td>
 							<td colspan="2" align="right"><b>' .$datos['codigo_moneda'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b></td>
 						</tr>
 						<tr>
-							<td colspan="2" align="left">Form of payment</td>
+							<td colspan="2" align="left">FORM OF PAYMENT</td>
 							<td colspan="2" align="right"><b>' .$datos['forma_pago'].'</b></td>
 						</tr>
 						<tr>
@@ -111,7 +111,7 @@ class RRecibo
 
 				$html .='
 					<tr>
-							<td colspan="4">OBS: '.$datos['observaciones'].' </td>
+							<td colspan="4">OBS: <strong>'.$datos['observaciones'].'</strong> </td>
 					</tr>
 						<tr>
 
@@ -122,11 +122,11 @@ class RRecibo
 						</td>
 						</tr>
 						<tr>
-							<td colspan="4" style=" text-align: center;" align="center">ATM: ' . $_SESSION["_LOGIN"] . '  Id: ' . $datos['id'] . '  Hour: ' . $datos['hora'] . '
+							<td colspan="4" style=" text-align: center;" align="center">ATM: <strong>' . $_SESSION["_LOGIN"] . '</strong>  Id: <strong>' . $datos['id'] . '</strong>  Hour: <strong>' . $datos['hora'] . '</strong>
 							<br/>
 							'.$datos['leyenda'].'
 							<br/>
-							' . $datos['pagina_entidad'] .'
+							<strong>' . $datos['pagina_entidad'] .'</strong>
 							</td>
 						</tr>
 						</tfoot>

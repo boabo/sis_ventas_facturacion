@@ -679,7 +679,7 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 																		    var me = this;
 																		    Ext.Msg.confirm(
 																		        'Mensaje de Confirmación',
-																		        'Quiere cerrar el Formulario?, se perderán los datos que no han sido Guardados',																				
+																		        'Quiere cerrar el Formulario?, se perderán los datos que no han sido Guardados',
 																		        function(btn) {
 																		            if (btn == 'yes')
 																		                me.hide();
@@ -845,7 +845,8 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 						params : {
 							'id_venta' : data.id_venta,
 							'formato_comprobante' : me.variables_globales.formato_comprobante,
-							'tipo_factura': me.tipo_factura
+							'tipo_factura': me.tipo_factura,
+							'id_punto_venta':data.id_punto_venta
 						},
 						success : me.successExportHtml,
 						failure : me.conexionFailure,
