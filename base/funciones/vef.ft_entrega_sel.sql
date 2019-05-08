@@ -208,7 +208,10 @@ BEGIN
                                pxp.f_convertir_num_a_letra((select sum(r.arqueo_moneda_local)
                                from vef.tapertura_cierre_caja r
                                where r.id_entrega_brinks = e.id_entrega_brinks) ) as literial,
-                               cuen.id_moneda
+                               cuen.id_moneda,
+                               (select upper(mo.moneda)::varchar as moneda_local
+                                from param.tmoneda mo
+                                where mo.id_moneda = (select param.f_get_moneda_base())) as moneda
                               from vef.tentrega e
                               inner join vef.tapertura_cierre_caja a on a.id_entrega_brinks = e.id_entrega_brinks
                               inner join segu.tusuario u on u.id_usuario = a.id_usuario_cajero
@@ -216,10 +219,10 @@ BEGIN
                               inner join vef.tpunto_venta pu on pu.id_punto_venta = a.id_punto_venta
                               inner join vef.tsucursal s on s.id_sucursal = pu.id_sucursal
                               left join tes.tdepto_cuenta_bancaria de on de.id_depto = s.id_depto
-                              left join tes.tcuenta_bancaria cuen on cuen.id_cuenta_bancaria = de.id_cuenta_bancaria and cuen.id_moneda = 1
+                              left join tes.tcuenta_bancaria cuen on cuen.id_cuenta_bancaria = de.id_cuenta_bancaria and cuen.id_moneda = (select param.f_get_moneda_base())
                               inner join param.tlugar l on l.id_lugar = s.id_lugar
                               inner join param.tinstitucion int on int.id_institucion = cuen.id_institucion
-                              where cuen.id_moneda = 1 and e.id_entrega_brinks = '|| v_parametros.id_entrega_brinks;
+                              where cuen.id_moneda = (select param.f_get_moneda_base()) and e.id_entrega_brinks = '|| v_parametros.id_entrega_brinks;
                               v_consulta:=v_consulta||' order by a.fecha_apertura_cierre';
 
 
