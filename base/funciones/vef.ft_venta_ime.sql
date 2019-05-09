@@ -111,6 +111,7 @@ $body$
     v_estado_finalizado		integer;
     v_nombre_producto		varchar;
     v_id_producto			varchar;
+    v_id_formula			varchar;
     v_codigo_tarjeta		varchar;
 
 
@@ -630,8 +631,8 @@ end if;
             monto_mb_efectivo,
             numero_tarjeta,
             codigo_tarjeta,
-            tipo_tarjeta,
-            id_auxiliar
+            id_auxiliar,
+            tipo_tarjeta
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -647,8 +648,8 @@ end if;
             0,
             v_parametros.numero_tarjeta,
             v_parametros.codigo_tarjeta,
-            v_parametros.tipo_tarjeta,
-            v_parametros.id_auxiliar
+            v_parametros.id_auxiliar,
+            v_parametros.tipo_tarjeta
           );
         end if;
         if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
@@ -690,8 +691,8 @@ end if;
             monto_mb_efectivo,
             numero_tarjeta,
             codigo_tarjeta,
-            tipo_tarjeta,
-            id_auxiliar
+            id_auxiliar,
+            tipo_tarjeta
           )
 
           values(
@@ -708,8 +709,8 @@ end if;
             0,
             v_parametros.numero_tarjeta_2,
             v_parametros.codigo_tarjeta_2,
-            v_parametros.tipo_tarjeta_2,
-            v_parametros.id_auxiliar_2
+            v_parametros.id_auxiliar_2,
+            v_parametros.tipo_tarjeta
           );
         end if;
 
@@ -1009,7 +1010,6 @@ end if;
             codigo_tarjeta,
             id_auxiliar,
             tipo_tarjeta
-
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -1028,7 +1028,7 @@ end if;
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta
           );
-
+            --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
              if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
            /*******************************Control para la tarjeta 2******************************/
 
@@ -1052,8 +1052,6 @@ end if;
           /**************************************************************************************/
 
 
-
-           --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago;
          insert into vef.tventa_forma_pago(
             usuario_ai,
             fecha_reg,
@@ -2291,8 +2289,9 @@ end if;
 
           select
           string_agg (ing.desc_ingas, ','),
-          string_agg  (form.id_formula::VARCHAR,',')
-          into v_nombre_producto, v_id_producto
+          string_agg  (form.id_formula::VARCHAR,','),
+          string_agg  (ing.id_concepto_ingas::varchar,',')
+          into v_nombre_producto, v_id_formula,v_id_producto
           from vef.tformula_detalle form
           inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
           --inner join vef.tsucursal_producto pro on pro.id_concepto_ingas = form.id_concepto_ingas
@@ -2303,6 +2302,7 @@ end if;
           --Definition of the response
             v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Contador');
             v_resp = pxp.f_agrega_clave(v_resp,'v_nombre_producto',v_nombre_producto::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_id_formula',v_id_formula::varchar);
            	v_resp = pxp.f_agrega_clave(v_resp,'v_id_producto',v_id_producto::varchar);
 
 
