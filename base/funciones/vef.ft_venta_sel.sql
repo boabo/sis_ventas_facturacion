@@ -758,8 +758,8 @@ BEGIN
 							item.nombre
 						when vedet.id_sucursal_producto is not null then
 							cig.desc_ingas
-						when vedet.id_formula is not null then
-							form.nombre
+						when vedet.id_producto is not null then
+                                cig2.desc_ingas
 						end) as concepto,
                         vedet.cantidad::numeric,
                         vedet.precio,
@@ -776,6 +776,7 @@ BEGIN
 						left join vef.tsucursal_producto sprod on sprod.id_sucursal_producto = vedet.id_sucursal_producto
 						left join vef.tformula form on form.id_formula = vedet.id_formula
 						left join alm.titem item on item.id_item = vedet.id_item
+                        left join param.tconcepto_ingas cig2 on cig2.id_concepto_ingas = vedet.id_producto
                         left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
 				        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida

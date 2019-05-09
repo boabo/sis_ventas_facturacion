@@ -73,7 +73,7 @@ class RRecibo
 				<tr>
 					<td colspan="4" align="center" style="text-align: center;"><strong>SERVICE</strong><hr/></td>
 				</tr>
-					<tr><th  align="center" style="width: 11px;">QTY <br><br><hr color="#ccc" size=1 width="40"> </th><th align="center" style="width:150px;">REASON<br><br> <hr color="#ccc" size=1 width="80"></th><th align="center">AMT<br>(AMOUNT)<hr color="#ccc" size=1 width="80	"></th><th align="center">TOTAL<br><br> <hr color="#ccc" size=1 width="80"></th></tr>
+					<tr><th  align="center" style="width: 11px;">QTY <hr color="#ccc" size=1 width="40"> </th><th align="center" style="width:150px;">REASON <hr color="#ccc" size=1 width="80"></th><th align="center">AMT<hr color="#ccc" size=1 width="80	"></th><th align="center">TOTAL <hr color="#ccc" size=1 width="80"></th></tr>
 				</thead>
 				<tbody>';
 

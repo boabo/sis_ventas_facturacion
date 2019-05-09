@@ -1394,8 +1394,13 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                   var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                   this.nombre_producto = reg.ROOT.datos.v_nombre_producto;
                   this.id_producto_recu = reg.ROOT.datos.v_id_producto;
+                  this.id_formula_recu = reg.ROOT.datos.v_id_formula;
                   this.producto_nombre = this.nombre_producto.split(",");
                   this.producto_id = this.id_producto_recu.split(",");
+                  this.id_formula = this.id_formula_recu.split(",");
+
+                  console.log("llega auqi el ID producto",this.producto_id);
+                console.log("llega auqi el ID formula",this.id_formula);
 
                   var grillaRecord =  Ext.data.Record.create([
                     {name:'id_venta_detalle', type: 'numeric'},
@@ -1424,7 +1429,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                     nombre_producto : this.producto_nombre[i],
                 //     descripcion : request.arguments.nombre_formula,
                     id_producto: this.producto_id[i],
-                    //id_formula: this.producto_id[i],
+                    id_formula: this.id_formula[i],
                     tipo : 'formula',
                     cantidad : '1',
                     precio_unitario : '1',
@@ -1764,12 +1769,13 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
       imprimirNota: function(){
    		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
-        //console.log("llega para imprimir",this);
+        console.log("llega para imprimir",this.data.objPadre.variables_globales.id_punto_venta);
    				Phx.CP.loadingShow();
    				Ext.Ajax.request({
    						url : '../../sis_ventas_facturacion/control/Venta/reporteRecibo',
    						params : {
-   							'id_venta' : this.id_venta,
+                'id_venta' : this.id_venta,
+   							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
    							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
    							'tipo_factura': this.data.objPadre.tipo_factura
    						},

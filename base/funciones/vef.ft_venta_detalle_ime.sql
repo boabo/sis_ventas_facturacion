@@ -70,9 +70,9 @@ $body$
     if(p_transaccion='VF_VEDET_INS')then
 
       begin
-      	--raise exception 'llega aquyi la formula %',v_parametros.id_producto ;
+      		--raise exception 'llega aquyi la formula %',v_parametros.id_producto ;
         if (v_parametros.tipo = 'formula') then
-          v_id_formula = v_parametros.id_producto;
+          v_id_formula = v_parametros.id_formula;
         elsif (v_parametros.tipo = 'servicio' or
                (v_parametros.tipo = 'producto_terminado' and pxp.f_get_variable_global('vef_integracion_almacenes') = 'false'))then
           v_id_sucursal_producto = v_parametros.id_producto;
@@ -157,7 +157,8 @@ $body$
           bruto,
           ley,
           kg_fino,
-          id_unidad_medida
+          id_unidad_medida,
+          id_producto
         ) values(
           v_parametros.id_venta,
           v_id_item,
@@ -179,7 +180,8 @@ $body$
           v_bruto,
           v_ley,
           v_kg_fino,
-          v_id_unidad_medida
+          v_id_unidad_medida,
+          v_parametros.id_producto
         )RETURNING id_venta_detalle into v_id_venta_detalle;
 
 

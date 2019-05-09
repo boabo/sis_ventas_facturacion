@@ -48,8 +48,8 @@ INHERITS (pxp.tbase) WITHOUT OIDS;
 CREATE TABLE vef.tsucursal_usuario (
     id_sucursal_usuario serial NOT NULL,
     tipo_usuario VARCHAR(20) NOT NULL,
-    id_sucursal INTEGER NOT NULL,  
-    id_usuario INTEGER NOT NULL,    
+    id_sucursal INTEGER NOT NULL,
+    id_usuario INTEGER NOT NULL,
     CONSTRAINT pk_tsucursal_usuario__id_sucursal_usuario
     PRIMARY KEY (id_sucursal_usuario))
 INHERITS (pxp.tbase) WITHOUT OIDS;
@@ -57,8 +57,8 @@ INHERITS (pxp.tbase) WITHOUT OIDS;
 CREATE TABLE vef.tsucursal_almacen (
     id_sucursal_almacen serial NOT NULL,
     tipo_almacen VARCHAR(20) NOT NULL,
-    id_sucursal INTEGER NOT NULL, 
-    id_almacen INTEGER NOT NULL,   
+    id_sucursal INTEGER NOT NULL,
+    id_almacen INTEGER NOT NULL,
     CONSTRAINT pk_tsucursal_almacen__id_sucursal_almacen
     PRIMARY KEY (id_sucursal_almacen))
 INHERITS (pxp.tbase) WITHOUT OIDS;
@@ -66,11 +66,11 @@ INHERITS (pxp.tbase) WITHOUT OIDS;
 CREATE TABLE vef.tsucursal_producto (
     id_sucursal_producto serial NOT NULL,
     precio NUMERIC(18,2) NOT NULL,
-    id_sucursal INTEGER NOT NULL, 
+    id_sucursal INTEGER NOT NULL,
     id_item INTEGER,
     tipo_producto VARCHAR(30) NOT NULL,
-    nombre_producto VARCHAR(150) NOT NULL, 
-    descripcion_producto TEXT NOT NULL,   
+    nombre_producto VARCHAR(150) NOT NULL,
+    descripcion_producto TEXT NOT NULL,
     CONSTRAINT pk_tsucursal_item__id_sucursal_producto
     PRIMARY KEY (id_sucursal_producto))
 INHERITS (pxp.tbase) WITHOUT OIDS;
@@ -143,13 +143,13 @@ INHERITS (pxp.tbase) WITHOUT OIDS;
 
 ALTER TABLE vef.tventa
   ADD COLUMN tiene_formula VARCHAR(2) DEFAULT 'no' NOT NULL;
-  
+
 /************************************F-SCP-JRR-VEF-0-17/06/2015*************************************************/
 
 /************************************I-SCP-JRR-VEF-0-05/07/2015*************************************************/
 ALTER TABLE vef.tsucursal
   ADD COLUMN direccion VARCHAR(255);
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN id_movimiento INTEGER;
 
@@ -158,62 +158,62 @@ ALTER TABLE vef.tventa
 /************************************I-SCP-JRR-VEF-0-20/09/2015*************************************************/
 ALTER TABLE vef.tsucursal
   ADD COLUMN id_entidad INTEGER NOT NULL;
-  
+
 ALTER TABLE vef.tsucursal
   ADD COLUMN plantilla_documento_factura VARCHAR (50);
-  
+
 ALTER TABLE vef.tsucursal
   ADD COLUMN plantilla_documento_recibo VARCHAR (50);
-  
+
 ALTER TABLE vef.tsucursal
   ADD COLUMN formato_comprobante VARCHAR (50);
-  
+
 CREATE TABLE vef.tsucursal_moneda (
     id_sucursal_moneda serial NOT NULL,
     tipo_moneda VARCHAR(20) NOT NULL,
-    id_sucursal INTEGER NOT NULL,  
-    id_moneda INTEGER NOT NULL,    
+    id_sucursal INTEGER NOT NULL,
+    id_moneda INTEGER NOT NULL,
     CONSTRAINT pk_tsucursal_moneda__id_sucursal_moneda
     PRIMARY KEY (id_sucursal_moneda))
 INHERITS (pxp.tbase) WITHOUT OIDS;
 
 ALTER TABLE vef.tsucursal
   ADD COLUMN lugar VARCHAR (150);
-  
+
 ALTER TABLE vef.tsucursal_producto
   ADD COLUMN id_concepto_ingas INTEGER;
-  
- 
+
+
 ALTER TABLE vef.tsucursal_producto
   DROP COLUMN nombre_producto;
-  
+
 ALTER TABLE vef.tsucursal_producto
   DROP COLUMN descripcion_producto;
-  
+
 CREATE TABLE vef.tactividad_economica (
     id_actividad_economica serial NOT NULL,
     codigo VARCHAR(50) NOT NULL,
-    nombre VARCHAR(200) NOT NULL, 
-    descripcion TEXT,       
+    nombre VARCHAR(200) NOT NULL,
+    descripcion TEXT,
     CONSTRAINT pk_tactividad_economica__id_actividad_economica
     PRIMARY KEY (id_actividad_economica))
 INHERITS (pxp.tbase) WITHOUT OIDS;
 
 CREATE TABLE vef.tdosificacion (
-  id_dosificacion SERIAL,  
+  id_dosificacion SERIAL,
   tipo VARCHAR(50) NOT NULL,
-  id_sucursal INTEGER NOT NULL,  
+  id_sucursal INTEGER NOT NULL,
   nroaut VARCHAR(150) NOT NULL,
   tipo_generacion VARCHAR(50) NOT NULL,
   inicial INTEGER,
   final INTEGER,
   llave VARCHAR(150),
-  fecha_dosificacion DATE NOT NULL,  
+  fecha_dosificacion DATE NOT NULL,
   fecha_inicio_emi DATE,
-  fecha_limite DATE,  
+  fecha_limite DATE,
   id_activida_economica INTEGER[] NOT NULL,
-  glosa_impuestos VARCHAR(150),  
-  glosa_empresa VARCHAR(150),  
+  glosa_impuestos VARCHAR(150),
+  glosa_empresa VARCHAR(150),
   nro_siguiente INTEGER,
   CONSTRAINT pk_tdosificacion__id_dosificacion PRIMARY KEY(id_dosificacion)
 ) INHERITS (pxp.tbase);
@@ -225,26 +225,26 @@ COMMENT ON COLUMN vef.tdosificacion.tipo_generacion
 IS 'manual|computarizada';
 
 CREATE TABLE vef.tpunto_venta (
-  id_punto_venta SERIAL,  
-  id_sucursal INTEGER NOT NULL, 
+  id_punto_venta SERIAL,
+  id_sucursal INTEGER NOT NULL,
   nombre VARCHAR(100) NOT NULL,
-  descripcion TEXT,  
+  descripcion TEXT,
   CONSTRAINT pk_tpunto_venta__id_punto_venta PRIMARY KEY(id_punto_venta)
 ) INHERITS (pxp.tbase);
 
 ALTER TABLE vef.tsucursal_usuario
   ADD COLUMN id_punto_venta INTEGER;
-  
+
 ALTER TABLE vef.tmedico
   ADD COLUMN fecha_nacimiento date;
-  
-  
+
+
 CREATE TABLE vef.tforma_pago (
-  id_forma_pago SERIAL,  
-  codigo VARCHAR NOT NULL, 
+  id_forma_pago SERIAL,
+  codigo VARCHAR NOT NULL,
   nombre VARCHAR(200) NOT NULL,
-  id_entidad INTEGER NOT NULL,  
-  id_moneda INTEGER NOT NULL,   
+  id_entidad INTEGER NOT NULL,
+  id_moneda INTEGER NOT NULL,
   CONSTRAINT pk_tforma_pago__id_forma_pago PRIMARY KEY(id_forma_pago)
 ) INHERITS (pxp.tbase);
 
@@ -252,38 +252,38 @@ DROP VIEW IF EXISTS vef.vcliente;
 
 ALTER TABLE vef.tcliente
   ALTER COLUMN nombres DROP NOT NULL;
-  
+
 ALTER TABLE vef.tcliente
   ALTER COLUMN primer_apellido DROP NOT NULL;
-  
+
 ALTER TABLE vef.tcliente
   ALTER COLUMN nombre_factura TYPE VARCHAR(200) COLLATE pg_catalog."default";
 
 ALTER TABLE vef.tcliente
   ALTER COLUMN nombre_factura SET NOT NULL;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN id_punto_venta INTEGER;
-  
- 
+
+
 ALTER TABLE vef.tventa
   ADD COLUMN correlativo_venta VARCHAR(20)  DEFAULT '' NOT NULL;
-  
-  
+
+
 CREATE TABLE vef.tventa_forma_pago (
-  id_venta_forma_pago SERIAL,  
-  id_forma_pago INTEGER NOT NULL, 
+  id_venta_forma_pago SERIAL,
+  id_forma_pago INTEGER NOT NULL,
   id_venta INTEGER NOT NULL,
-  monto NUMERIC(18,2) NOT NULL,    
+  monto NUMERIC(18,2) NOT NULL,
   CONSTRAINT pk_tventa_forma_pago__id_venta_forma_pago PRIMARY KEY(id_venta_forma_pago)
 ) INHERITS (pxp.tbase);
 
 ALTER TABLE vef.tforma_pago
   ADD COLUMN defecto VARCHAR(2);
-  
+
 ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN monto_transaccion NUMERIC(18,2) NOT NULL;
-  
+
 ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN cambio NUMERIC(18,2) NOT NULL;
 
@@ -301,32 +301,32 @@ ALTER TABLE vef.tforma_pago
 
 ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN numero_tarjeta VARCHAR(25);
-  
+
 ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN codigo_tarjeta VARCHAR(25);
-  
+
 ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN tipo_tarjeta VARCHAR(10);
-  
+
 /************************************F-SCP-JRR-VEF-0-20/09/2015*************************************************/
 
 /************************************I-SCP-JRR-VEF-0-08/11/2015*************************************************/
 
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN precio_sin_descuento NUMERIC(18,2);
-  
+
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN porcentaje_descuento NUMERIC(5);
-  
+
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN id_vendedor INTEGER;
-  
+
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN id_medico INTEGER;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN porcentaje_descuento NUMERIC(5);
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN id_vendedor_medico VARCHAR(30);
 
@@ -335,13 +335,13 @@ ALTER TABLE vef.tsucursal_producto
 
 ALTER TABLE vef.tsucursal
   ADD COLUMN habilitar_comisiones VARCHAR(2);
-  
+
 ALTER TABLE vef.tpunto_venta
   ADD COLUMN habilitar_comisiones VARCHAR(2);
-  
+
 ALTER TABLE vef.tpunto_venta
   ADD COLUMN codigo VARCHAR(20);
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN comision NUMERIC(18,2);
 
@@ -353,7 +353,7 @@ ALTER TABLE vef.tformula_detalle
 
 ALTER TABLE vef.tformula_detalle
   ALTER COLUMN id_item DROP NOT NULL;
-  
+
 ALTER TABLE vef.tsucursal
   ADD COLUMN id_lugar INTEGER;
 
@@ -369,7 +369,7 @@ ALTER TABLE vef.tformula
 
 ALTER TABLE vef.tformula
   ALTER COLUMN id_medico DROP NOT NULL;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN observaciones TEXT;
 /************************************F-SCP-JRR-VEF-0-19/11/2015*************************************************/
@@ -377,19 +377,19 @@ ALTER TABLE vef.tventa
 /************************************I-SCP-JRR-VEF-0-25/11/2015*************************************************/
 
 CREATE TABLE vef.tboleto (
-  id_boleto SERIAL,  
-  fecha DATE NOT NULL, 
+  id_boleto SERIAL,
+  fecha DATE NOT NULL,
   id_punto_venta INTEGER NOT NULL,
   numero VARCHAR (30) NOT NULL,
-  ruta VARCHAR (50) NOT NULL,     
+  ruta VARCHAR (50) NOT NULL,
   CONSTRAINT pk_tboleto__id_boleto PRIMARY KEY(id_boleto)
 ) INHERITS (pxp.tbase);
 
 CREATE TABLE vef.tboleto_fp (
-  id_boleto_fp SERIAL,  
+  id_boleto_fp SERIAL,
   id_forma_pago INTEGER NOT NULL ,
   id_boleto INTEGER NOT NULL,
-  monto NUMERIC(18,2) NOT NULL,    
+  monto NUMERIC(18,2) NOT NULL,
   CONSTRAINT pk_tboleto_fp__id_boleto_fp PRIMARY KEY(id_boleto_fp)
 ) INHERITS (pxp.tbase);
 
@@ -399,29 +399,29 @@ CREATE TABLE vef.tboleto_fp (
 
 ALTER TABLE vef.tventa
   ADD COLUMN id_dosificacion INTEGER;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN nro_factura INTEGER;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN fecha DATE NOT NULL;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN excento NUMERIC(18,2) DEFAULT 0 NOT NULL;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN tipo_factura VARCHAR(20) DEFAULT 'recibo' NOT NULL;
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN cod_control VARCHAR(15);
-  
+
 CREATE TABLE vef.tpunto_venta_producto (
   id_punto_venta_producto SERIAL,
   id_punto_venta INTEGER NOT NULL,
   id_sucursal_producto INTEGER NOT NULL,
   CONSTRAINT pk_tpunto_venta_producto PRIMARY KEY(id_punto_venta_producto)
 ) INHERITS (pxp.tbase);
-  
+
  /************************************F-SCP-JRR-VEF-0-19/02/2016*************************************************/
 
 
@@ -429,10 +429,10 @@ CREATE TABLE vef.tpunto_venta_producto (
 
 ALTER TABLE vef.tpunto_venta
   ADD COLUMN tipo VARCHAR ;
-  
+
 ALTER TABLE vef.tsucursal_producto
   ADD COLUMN id_moneda INTEGER ;
-  
+
 /************************************F-SCP-JRR-VEF-0-11/03/2016*************************************************/
 
 
@@ -456,26 +456,26 @@ CREATE TABLE vef.tproceso_venta (
   tipos VARCHAR[],
   CONSTRAINT pk_tproceso_venta PRIMARY KEY(id_proceso_venta)
 ) INHERITS (pxp.tbase);
-  
+
 /************************************F-SCP-JRR-VEF-0-22/03/2016*************************************************/
 
 /************************************I-SCP-JRR-VEF-0-29/03/2016*************************************************/
 
 ALTER TABLE vef.tsucursal_producto
   ADD COLUMN contabilizable VARCHAR(2) DEFAULT 'no' NOT NULL;
-  
+
 ALTER TABLE vef.tsucursal_producto
   ADD COLUMN excento VARCHAR(2) DEFAULT 'no' NOT NULL;
-  
+
 CREATE TABLE vef.tventa_boleto (
   id_venta_boleto SERIAL,
   id_venta INTEGER NOT NULL,
   id_boleto INTEGER,
   nro_boleto VARCHAR(20) NOT NULL,
-  monto_moneda_susursal NUMERIC(18,2),  
+  monto_moneda_susursal NUMERIC(18,2),
   CONSTRAINT pk_tventa_boleto PRIMARY KEY(id_venta_boleto)
 ) INHERITS (pxp.tbase);
-  
+
 /************************************F-SCP-JRR-VEF-0-29/03/2016*************************************************/
 
 
@@ -614,8 +614,8 @@ IS 'numeros de fila';
 
 ALTER TABLE vef.ttipo_descripcion
   ADD COLUMN id_sucursal INTEGER;
-  
-  
+
+
  --------------- SQL ---------------
 
 CREATE TABLE vef.tvalor_descripcion (
@@ -627,7 +627,7 @@ CREATE TABLE vef.tvalor_descripcion (
   PRIMARY KEY(id_valor_descripcion)
 ) INHERITS (pxp.tbase)
 
-WITH (oids = false); 
+WITH (oids = false);
 
 
 --------------- SQL ---------------
@@ -681,7 +681,7 @@ ALTER TABLE vef.tventa_detalle
 
 ALTER TABLE vef.tventa_detalle
   ALTER COLUMN kg_fino SET DEFAULT 0;
-  
+
   --------------- SQL ---------------
 
 ALTER TABLE vef.tventa_detalle
@@ -692,7 +692,7 @@ ALTER TABLE vef.tventa_detalle
 
 ALTER TABLE vef.tventa_detalle
   ALTER COLUMN ley SET DEFAULT 0;
-  
+
 --------------- SQL ---------------
 
 ALTER TABLE vef.tventa_detalle
@@ -702,16 +702,16 @@ ALTER TABLE vef.tventa_detalle
   ALTER COLUMN bruto TYPE VARCHAR;
 
 ALTER TABLE vef.tventa_detalle
-  ALTER COLUMN bruto SET DEFAULT 0;  
-  
+  ALTER COLUMN bruto SET DEFAULT 0;
+
 --------------- SQL ---------------
 
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN id_unidad_medida INTEGER;
-  
+
 ALTER TABLE vef.ttipo_venta
   ADD COLUMN id_plantilla INTEGER;
-  
+
 ALTER TABLE vef.tsucursal
   ADD COLUMN id_depto INTEGER;
 
@@ -731,11 +731,11 @@ ALTER TABLE vef.tventa_detalle
 --------------- SQL ---------------
 
 ALTER TABLE vef.tventa_detalle
-  ALTER COLUMN precio_sin_descuento TYPE NUMERIC(18,6);  
-  
+  ALTER COLUMN precio_sin_descuento TYPE NUMERIC(18,6);
+
 ALTER TABLE vef.tsucursal
   ADD COLUMN nombre_comprobante VARCHAR ;
-  
+
 COMMENT ON COLUMN vef.tsucursal.nombre_comprobante
 IS 'El nombre de la sucursal tal como se mostrara en el comprobante de venta. Debe incluir el nombre de la empresa';
 
@@ -849,7 +849,7 @@ ALTER TABLE vef.tcliente
 
 ALTER TABLE vef.tventa
   ADD COLUMN hora_estimada_entrega TIME(0) WITHOUT TIME ZONE;
-  
+
 ALTER TABLE vef.tformula_detalle
   ALTER COLUMN cantidad TYPE NUMERIC(18,6);
 
@@ -858,7 +858,7 @@ ALTER TABLE vef.tformula_detalle
 /************************************I-SCP-JRR-VEF-0-14/08/2016*************************************************/
 ALTER TABLE vef.tmedico
   ADD COLUMN especialidad VARCHAR(200);
-  
+
 ALTER TABLE vef.tventa
   ADD COLUMN forma_pedido VARCHAR(200);
 
@@ -891,7 +891,7 @@ ALTER TABLE vef.tventa
 CREATE INDEX tdosificacion_idx ON vef.tdosificacion
   USING btree (nroaut)
   WHERE estado_reg = 'activo';
-  
+
 /************************************F-SCP-JRR-VEF-0-18/09/2016*************************************************/
 
 
@@ -938,18 +938,18 @@ IS 'registrado, validado';
 
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN obs VARCHAR;
-  
+
 
 --------------- SQL ---------------
 
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN serie VARCHAR(400) DEFAULT '' NOT NULL;
-  
+
   --------------- SQL ---------------
 
 ALTER TABLE vef.tcliente
   ADD COLUMN codigo VARCHAR(20);
-  
+
 
 /************************************F-SCP-RAC-VEF-0-11/11/2016*************************************************/
 
@@ -971,7 +971,7 @@ IS 'Si esta bandera esta habilitada la formas de pago genera cuentas por cobrar 
 
 
 /***********************************I-SCP-RAC-VEF-1-19/09/2017****************************************/
- 
+
 --------------- SQL ---------------
 
 COMMENT ON COLUMN vef.tventa_forma_pago.monto
@@ -1029,7 +1029,7 @@ WITH (oids = false);
 --------------- SQL ---------------
 
 ALTER TABLE vef.tventa
-  ADD COLUMN id_grupo_factura INTEGER;  
+  ADD COLUMN id_grupo_factura INTEGER;
 
 COMMENT ON COLUMN vef.tventa.id_grupo_factura
 IS 'indetifica el grupo usado para la generacion del comprobante';
@@ -1047,5 +1047,12 @@ ALTER TABLE vef.tforma_pago
 
 ALTER TABLE vef.tforma_pago
   ADD COLUMN orden NUMERIC(8,2);
-  
+
 /***********************************F-SCP-RAC-VEF-1-10/10/2017****************************************/
+
+/***********************************I-SCP-IRVA-VEF-1-09/05/2019****************************************/
+
+ALTER TABLE vef.tventa_detalle
+  ADD COLUMN id_producto INTEGER;
+
+/***********************************F-SCP-IRVA-VEF-1-09/05/2019****************************************/
