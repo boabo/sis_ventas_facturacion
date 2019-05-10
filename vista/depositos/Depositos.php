@@ -330,7 +330,7 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
 	],
 	sortInfo:{
 		field: 'id_apertura_cierre_caja',
-		direction: 'ASC'
+		direction: 'DESC'
 	},
     tabsouth :[
         {
@@ -398,7 +398,8 @@ Phx.vista.Depositos=Ext.extend(Phx.gridInterfaz,{
         var data=this.sm.getSelected().data;
         Phx.CP.loadingShow();
         var d = data.fecha_venta;
-        var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' +  d.getFullYear();
+				//var date =  (d.getMonth() + 1) + '/' +  d.getDate()   + '/' +  d.getFullYear();
+        var date =  d.getDate() + '/' +  (d.getMonth() + 1)   + '/' +  d.getFullYear();
         Ext.Ajax.request({
             url:'../../sis_ventas_facturacion/control/ReportesVentas/reporteResumenVentasBoa',
             params:{'id_punto_venta' : data.id_punto_venta,fecha_hasta:date,fecha_desde:date},

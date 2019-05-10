@@ -22,6 +22,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 lazyRender:true,
                 mode: 'local',
                 gwidth: 150,
+								disabled : true,
+								hidden : true,
                 store:['sucursal','punto_venta']
 			},
 			type: 'ComboBox',
@@ -32,7 +34,7 @@ header("content-type: text/javascript; charset=UTF-8");
             config: {
                 name: 'id_sucursal',
                 fieldLabel: 'Sucursal',
-                allowBlank: false,
+                allowBlank: true,
                 emptyText: 'Elija una Suc...',
                 store: new Ext.data.JsonStore({
                     url: '../../sis_ventas_facturacion/control/Sucursal/listarSucursal',
@@ -106,7 +108,8 @@ header("content-type: text/javascript; charset=UTF-8");
 	                renderer : function(value, p, record) {
 	                    return String.format('{0}', record.data['nombre_punto_venta']);
 	                },
-                	hidden : true
+                	hidden : false
+
 	            },
 	            type: 'ComboBox',
 	            id_grupo: 0,
@@ -205,17 +208,20 @@ header("content-type: text/javascript; charset=UTF-8");
 		constructor : function(config) {
 			Phx.vista.ReporteResumenVentas.superclass.constructor.call(this, config);
 			this.init();
+			console.log("llega auqi el combo",this.Cmp.nivel);
+			this.Cmp.nivel.setValue('punto_venta');
+			this.Cmp.nivel.fireEvent('select', this.Cmp.nivel,'punto_venta',0);
 			this.Cmp.nivel.on('select',function(a,b,c) {
 				if (b.data.field1 == 'sucursal') {
 					this.Cmp.id_punto_venta.reset();
 					this.Cmp.id_punto_venta.allowBlank = true;
-					this.ocultarComponente(this.Cmp.id_punto_venta);
+					//this.ocultarComponente(this.Cmp.id_punto_venta);
 					this.Cmp.id_sucursal.allowBlank = false;
-					this.mostrarComponente(this.Cmp.id_sucursal);
+					//this.mostrarComponente(this.Cmp.id_sucursal);
 				} else {
 					this.Cmp.id_sucursal.reset();
 					this.Cmp.id_sucursal.allowBlank = true;
-					this.ocultarComponente(this.Cmp.id_sucursal);
+					//this.ocultarComponente(this.Cmp.id_sucursal);
 					this.Cmp.id_punto_venta.allowBlank = false;
 					this.mostrarComponente(this.Cmp.id_punto_venta);
 				}
@@ -235,7 +241,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		tipo : 'reporte',
 		clsSubmit : 'bprint',
 		agregarArgsExtraSubmit: function() {
-    		this.argumentExtraSubmit.sucursal = this.Cmp.id_sucursal.getRawValue();
+    		//this.argumentExtraSubmit.sucursal = this.Cmp.id_sucursal.getRawValue();
     		this.argumentExtraSubmit.punto_venta = this.Cmp.id_punto_venta.getRawValue();
 
     	},

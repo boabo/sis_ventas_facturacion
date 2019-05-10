@@ -8,11 +8,11 @@
 */
 
 class MODReportesVentas extends MODbase{
-	
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
-			
+
 	function listarReporteDetalle(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_repventa_sel';
@@ -31,11 +31,12 @@ class MODReportesVentas extends MODbase{
 		$this->captura('tipo','varchar');
 		$this->captura('fecha','date');
 		$this->captura('correlativo','varchar');
+		$this->captura('tipo_factura','varchar');
 		$this->captura('pasajero','varchar');
 		$this->captura('boleto','varchar');
 		$this->captura('ruta','varchar');
 		$this->captura('conceptos','varchar');
-		$this->captura('forma_pago','text');		
+		$this->captura('forma_pago','text');
 		$this->captura('monto_cash_usd','numeric');
         $this->captura('monto_cc_usd','numeric');
         $this->captura('monto_cte_usd','numeric');
@@ -50,13 +51,13 @@ class MODReportesVentas extends MODbase{
 		$this->captura('precios_detalles','varchar');
         $this->captura('mensaje_error','varchar');
         $this->captura('comision','numeric');
-		
-		
+
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
         //var_dump($this->respuesta);exit;
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
@@ -66,16 +67,16 @@ class MODReportesVentas extends MODbase{
 		$this->transaccion='VF_REPXPROD_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		$this->setCount(false);
-		
+
 		$this->setParametro('id_sucursal','id_sucursal','integer');
 		$this->setParametro('id_productos','id_productos','varchar');
 		$this->setParametro('fecha_desde','fecha_desde','date');
 		$this->setParametro('fecha_hasta','fecha_hasta','date');
-		
-		$this->captura('estado','varchar');		
-		$this->captura('tipo_documento','varchar');		
-		$this->captura('fecha','varchar');		
-		$this->captura('autorizacion','varchar');		
+
+		$this->captura('estado','varchar');
+		$this->captura('tipo_documento','varchar');
+		$this->captura('fecha','varchar');
+		$this->captura('autorizacion','varchar');
 		$this->captura('nit','varchar');
 		$this->captura('razon_social','varchar');
 		$this->captura('productos','varchar');
@@ -85,12 +86,12 @@ class MODReportesVentas extends MODbase{
 		$this->captura('iva','numeric');
 		$this->captura('it','numeric');
 		$this->captura('ingreso','numeric');
-		
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
-		
+
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
@@ -108,18 +109,18 @@ class MODReportesVentas extends MODbase{
 		$this->setParametro('fecha_hasta','fecha_hasta','date');
 
 		//Definicion de la lista del resultado del query
-		$this->captura('fecha','date');		
+		$this->captura('fecha','date');
 		$this->captura('concepto','varchar');
 		$this->captura('monto_tarjeta','numeric');
 		$this->captura('monto_cash','numeric');
 		$this->captura('monto','numeric');
-		
-		
+
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
-		
+
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
@@ -128,28 +129,28 @@ class MODReportesVentas extends MODbase{
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_repventa_sel';
 		$this->transaccion='VF_CONSUC_SEL';
-		$this->tipo_procedimiento='SEL';//tipo de transaccion		
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		$this->count =false;
-		
+
 		$this->setParametro('id_sucursal','id_sucursal','integer');
 		$this->setParametro('id_punto_venta','id_punto_venta','integer');
 		$this->setParametro('fecha_desde','fecha_desde','date');
 		$this->setParametro('fecha_hasta','fecha_hasta','date');
-		
+
 		//Definicion de la lista del resultado del query
 		$this->captura('nombre','varchar');
 		$this->captura('tipo','varchar');
-				
-		
+
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 
-		
+
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 }
 ?>
