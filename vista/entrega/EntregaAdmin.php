@@ -203,7 +203,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config:{
                         name: 'fecha_recojo',
                         fieldLabel: 'Fecha Recojo',
-                        allowBlank: true,
+                        allowBlank: false,
                         anchor: '80%',
                         gwidth: 225,
                         format: 'd/m/Y',
@@ -490,4 +490,3 @@ header("content-type: text/javascript; charset=UTF-8");
         }
     )
 </script>
-
