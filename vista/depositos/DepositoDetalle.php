@@ -24,6 +24,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 disabled: false,
                 handler: this.archivo
             });
+
+            this.addButton('archivo', {
+                grupo: [0,1],
+                text: 'Sincronizar Ingresos',
+                iconCls:'bsendmail' ,
+                disabled: false,
+                handler: this.sincronizar
+            });
+
             this.finCons = true;
             this.store.baseParams.tipo = 'venta_propia';
         },
@@ -43,6 +52,42 @@ header("content-type: text/javascript; charset=UTF-8");
                     height: 400
                 }, rec, this.idContenedor, 'Archivo');
         },
+
+
+        sincronizar:function(){
+          var rec = this.getSelectedData();
+          Ext.Ajax.request({
+                  url:'../../sis_obingresos/control/Deposito/sincronizarDeposito',
+                  params:{
+                          codigo_padre:this.maestro.codigo_padre,
+                          estacion:this.maestro.estacion,
+                          codigo:this.maestro.codigo,
+                          fecha_venta:this.maestro.fecha_venta.dateFormat('d-m-Y'),
+                          tipo_cambio:this.maestro.tipo_cambio,
+                          fecha:rec.fecha.dateFormat('d-m-Y'),
+                          nro_deposito:rec.nro_deposito,
+                          monto_deposito:rec.monto_deposito,
+                          id_punto_venta:this.maestro.id_punto_venta,
+                          id_moneda_deposito:rec.id_moneda_deposito                         
+
+                        },
+                  success: this.successSincronizar,
+                  failure: this.conexionFailure,
+                  timeout:this.timeout,
+                  scope:this
+          });
+          console.log("llega",rec);
+          console.log("maestro",this);
+        },
+
+        successSincronizar:function(resp){
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if(!reg.ROOT.error){
+                this.reload();
+            }
+        },
+
         bactGroups: [0, 1],
         bexcelGroups: [0, 1],
         Atributos: [
