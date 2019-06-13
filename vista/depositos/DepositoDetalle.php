@@ -35,6 +35,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.finCons = true;
             this.store.baseParams.tipo = 'venta_propia';
+
         },
 
         archivo : function (){
@@ -68,24 +69,21 @@ header("content-type: text/javascript; charset=UTF-8");
                           nro_deposito:rec.nro_deposito,
                           monto_deposito:rec.monto_deposito,
                           id_punto_venta:this.maestro.id_punto_venta,
-                          id_moneda_deposito:rec.id_moneda_deposito                         
+                          id_moneda_deposito:rec.id_moneda_deposito
 
                         },
                   success: this.successSincronizar,
-                  failure: this.conexionFailure,
+                  failure: this.successSincronizar,
                   timeout:this.timeout,
                   scope:this
           });
-          console.log("llega",rec);
-          console.log("maestro",this);
+          console.log("llega aqui",this);
         },
 
         successSincronizar:function(resp){
-            Phx.CP.loadingHide();
-            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-            if(!reg.ROOT.error){
-                this.reload();
-            }
+          var rec=this.sm.getSelected();
+          var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+          Phx.CP.getPagina(this.idContenedorPadre).reload();
         },
 
         bactGroups: [0, 1],
