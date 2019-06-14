@@ -17,6 +17,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 //llama al constructor de la clase padre
                 Phx.vista.AperturaCierreCaja.superclass.constructor.call(this,config);
                 this.init();
+                this.recuperarBase();
                 this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
                 this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'bunlock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
                 this.addButton('boletos',{grupo:[0],text: 'Validar Boletos Amadeus - ERP',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
@@ -595,12 +596,35 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
             },
 
+            recuperarBase : function () {
+              /******************************OBTENEMOS LA MONEDA BASE*******************************************/
+              var fecha = new Date();
+              var dd = fecha.getDate();
+              var mm = fecha.getMonth() + 1; //January is 0!
+              var yyyy = fecha.getFullYear();
+              this.fecha_actual = dd + '/' + mm + '/' + yyyy;
+              Ext.Ajax.request({
+                  url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/getTipoCambio',
+                  params:{fecha_cambio:this.fecha_actual},
+                  success: function(resp){
+                      var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                      //this.tipo_cambio = reg.ROOT.datos.v_tipo_cambio;
+                      this.store.baseParams.moneda_base = reg.ROOT.datos.v_codigo_moneda;
+                  },
+                  failure: this.conexionFailure,
+                  timeout:this.timeout,
+                  scope:this
+              });
+              /***********************************************************************************/
+
+            },
             onActualizarBoletos : function () {
                 var data=this.sm.getSelected().data;
                 Phx.CP.loadingShow();
+                console.log("llega aqui la moneda base",this.store.baseParams.moneda_base);
                 Ext.Ajax.request({
                     url:'../../sis_obingresos/control/Boleto/traerBoletosJsonAnulados',
-                    params: {id_punto_venta: data.id_punto_venta, fecha: data.fecha_apertura_cierre.dateFormat('Ymd'), id_usuario_cajero: data.id_usuario_cajero},
+                    params: {moneda_base:this.store.baseParams.moneda_base,id_punto_venta: data.id_punto_venta, fecha: data.fecha_apertura_cierre.dateFormat('Ymd'), id_usuario_cajero: data.id_usuario_cajero},
                     success:this.successSinc,
                     failure: this.conexionFailure,
                     timeout:this.timeout,
