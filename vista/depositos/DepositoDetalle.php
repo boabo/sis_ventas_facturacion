@@ -36,6 +36,27 @@ header("content-type: text/javascript; charset=UTF-8");
             this.finCons = true;
             this.store.baseParams.tipo = 'venta_propia';
 
+            /*Recuperar moneda base*/
+            /******************************OBTENEMOS LA MONEDA BASE*******************************************/
+            var fecha = new Date();
+            var dd = fecha.getDate();
+            var mm = fecha.getMonth() + 1; //January is 0!
+            var yyyy = fecha.getFullYear();
+            this.fecha_actual = dd + '/' + mm + '/' + yyyy;
+            Ext.Ajax.request({
+                url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/getTipoCambio',
+                params:{fecha_cambio:this.fecha_actual},
+                success: function(resp){
+                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    //this.tipo_cambio = reg.ROOT.datos.v_tipo_cambio;
+                    this.moneda_base = reg.ROOT.datos.v_codigo_moneda;
+                },
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+            /***********************************************************************************/
+            /************************/      
         },
 
         archivo : function (){
@@ -422,8 +443,9 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.vista.DepositoDetalle.superclass.liberaMenu.call(this);
         },
         onReloadPage: function (m) {
+            console.log("maestro",this);
             this.maestro = m;
-            this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja};
+            this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja, mone_base: this.moneda_base};
             this.load({params: {start: 0, limit: 50}});
         },
         onButtonSave:function(){
