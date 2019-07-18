@@ -25,7 +25,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 handler: this.archivo
             });
 
-            this.addButton('archivo', {
+            this.addButton('sincronizar', {
                 grupo: [0,1],
                 text: 'Sincronizar Ingresos',
                 iconCls:'bsendmail' ,
@@ -56,7 +56,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 scope:this
             });
             /***********************************************************************************/
-            /************************/      
+            /************************/
         },
 
         archivo : function (){
@@ -437,14 +437,18 @@ header("content-type: text/javascript; charset=UTF-8");
         preparaMenu: function () {
             Phx.vista.DepositoDetalle.superclass.preparaMenu.call(this);
             this.getBoton('archivo').enable();
+            this.getBoton('sincronizar').enable();
         },
         liberaMenu: function () {
             this.getBoton('archivo').disable();
+            this.getBoton('sincronizar').disable();
             Phx.vista.DepositoDetalle.superclass.liberaMenu.call(this);
         },
         onReloadPage: function (m) {
-            console.log("maestro",this);
             this.maestro = m;
+            if (this.moneda_base != 'BOB') {
+              this.getBoton('sincronizar').setVisible(false);
+            }
             this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja, mone_base: this.moneda_base};
             this.load({params: {start: 0, limit: 50}});
         },
