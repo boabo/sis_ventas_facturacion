@@ -19,16 +19,38 @@ class MODVenta extends MODbase{
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 
-		$this->cone = new conexion();
-		$this->informix = $this->cone->conectarPDOInformix();
-		// conexion a informix
-		$this->link = $this->cone->conectarpdo();
-		//conexion a pxp(postgres)
+		$this->monedaBase();
+		if ($this->monedaBase() == 'BOB') {
+			$this->cone = new conexion();
+			$this->informix = $this->cone->conectarPDOInformix();
+			// conexion a informix
+			$this->link = $this->cone->conectarpdo();
+			//conexion a pxp(postgres)
 
-		$this->tabla_factucom_informix = $_SESSION['tabla_factucom_informix'];
-		$this->tabla_factucomcon_informix = $_SESSION['tabla_factucomcon_informix'];
-		$this->tabla_factucompag_informix = $_SESSION['tabla_factucompag_informix'];
+			$this->tabla_factucom_informix = $_SESSION['tabla_factucom_informix'];
+			$this->tabla_factucomcon_informix = $_SESSION['tabla_factucomcon_informix'];
+			$this->tabla_factucompag_informix = $_SESSION['tabla_factucompag_informix'];
+		}
+
 	}
+
+	function monedaBase(){
+
+		$cone = new conexion();
+		$link = $cone->conectarpdo();
+		$copiado = false;
+
+		$consulta ="select m.codigo_internacional
+																			from param.tmoneda m
+																			where m.tipo_moneda =  'base'";
+
+		$res = $link->prepare($consulta);
+		$res->execute();
+		$result = $res->fetchAll(PDO::FETCH_ASSOC);
+		return $result[0]['codigo_internacional'];
+
+	}
+
 
 	function listarVenta(){
 		//Definicion de variables para ejecucion del procedimientp
