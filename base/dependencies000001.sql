@@ -3,88 +3,88 @@
 ALTER TABLE ONLY vef.tformula
     ADD CONSTRAINT fk_tformula__id_medico
     FOREIGN KEY (id_medico) REFERENCES vef.tmedico(id_medico);
-    
+
 
 ALTER TABLE ONLY vef.tformula_detalle
     ADD CONSTRAINT fk_tformula_detalle__id_item
     FOREIGN KEY (id_item) REFERENCES alm.titem(id_item);
-    
+
 ALTER TABLE ONLY vef.tformula_detalle
     ADD CONSTRAINT fk_tformula_detalle__id_formula
     FOREIGN KEY (id_formula) REFERENCES vef.tformula(id_formula);
-    
+
 
 ALTER TABLE ONLY vef.tsucursal_usuario
     ADD CONSTRAINT fk_tsucursal_usuario__id_sucursal
-    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);    
-    
+    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
+
 ALTER TABLE ONLY vef.tsucursal_usuario
     ADD CONSTRAINT fk_tsucursal_usuario__id_usuario
     FOREIGN KEY (id_usuario) REFERENCES segu.tusuario(id_usuario);
-    
+
 ALTER TABLE ONLY vef.tsucursal_almacen
     ADD CONSTRAINT fk_tsucursal_almacen__id_sucursal
-    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);    
-    
+    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
+
 ALTER TABLE ONLY vef.tsucursal_almacen
     ADD CONSTRAINT fk_tsucursal_almacen__id_almacen
     FOREIGN KEY (id_almacen) REFERENCES alm.talmacen(id_almacen);
-    
+
 ALTER TABLE ONLY vef.tsucursal_producto
     ADD CONSTRAINT fk_tsucursal_producto__id_sucursal
-    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);    
-    
+    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
+
 ALTER TABLE ONLY vef.tsucursal_producto
     ADD CONSTRAINT fk_tsucursal_producto__id_item
-    FOREIGN KEY (id_item) REFERENCES alm.titem(id_item); 
-    
+    FOREIGN KEY (id_item) REFERENCES alm.titem(id_item);
+
 ALTER TABLE ONLY vef.tformula
     ADD CONSTRAINT fk_tformula__id_tipo_presentacion
-    FOREIGN KEY (id_tipo_presentacion) REFERENCES vef.ttipo_presentacion(id_tipo_presentacion); 
-    
+    FOREIGN KEY (id_tipo_presentacion) REFERENCES vef.ttipo_presentacion(id_tipo_presentacion);
+
 ALTER TABLE ONLY vef.tformula
     ADD CONSTRAINT fk_tformula__id_unidad_medida
-    FOREIGN KEY (id_unidad_medida) REFERENCES param.tunidad_medida(id_unidad_medida);   
+    FOREIGN KEY (id_unidad_medida) REFERENCES param.tunidad_medida(id_unidad_medida);
 
 
 
 ALTER TABLE ONLY vef.tventa
     ADD CONSTRAINT fk_tventa__id_cliente
     FOREIGN KEY (id_cliente) REFERENCES vef.tcliente(id_cliente);
-    
+
 ALTER TABLE ONLY vef.tventa
     ADD CONSTRAINT fk_tventa__id_sucursal
-    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal); 
+    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
 
 ALTER TABLE ONLY vef.tventa
     ADD CONSTRAINT fk_tventa__id_proceso_wf
-    FOREIGN KEY (id_proceso_wf) REFERENCES wf.tproceso_wf(id_proceso_wf); 
+    FOREIGN KEY (id_proceso_wf) REFERENCES wf.tproceso_wf(id_proceso_wf);
 
 ALTER TABLE ONLY vef.tventa
     ADD CONSTRAINT fk_tventa__id_estado_wf
-    FOREIGN KEY (id_estado_wf) REFERENCES wf.testado_wf(id_estado_wf);  
-    
+    FOREIGN KEY (id_estado_wf) REFERENCES wf.testado_wf(id_estado_wf);
+
 
 
 ALTER TABLE ONLY vef.tventa_detalle
     ADD CONSTRAINT fk_tventa_detalle__id_venta
     FOREIGN KEY (id_venta) REFERENCES vef.tventa(id_venta);
-    
+
 ALTER TABLE ONLY vef.tventa_detalle
     ADD CONSTRAINT fk_tventa_detalle__id_item
-    FOREIGN KEY (id_item) REFERENCES alm.titem(id_item); 
-    
+    FOREIGN KEY (id_item) REFERENCES alm.titem(id_item);
+
 ALTER TABLE ONLY vef.tventa_detalle
     ADD CONSTRAINT fk_tventa_detalle__id_sucursal_producto
-    FOREIGN KEY (id_sucursal_producto) REFERENCES vef.tsucursal_producto(id_sucursal_producto); 
-    
+    FOREIGN KEY (id_sucursal_producto) REFERENCES vef.tsucursal_producto(id_sucursal_producto);
+
 ALTER TABLE ONLY vef.tventa_detalle
     ADD CONSTRAINT fk_tventa_detalle__id_formula
-    FOREIGN KEY (id_formula) REFERENCES vef.tformula(id_formula);    
+    FOREIGN KEY (id_formula) REFERENCES vef.tformula(id_formula);
 
 
 
-    
+
 
 CREATE OR REPLACE VIEW vef.vmedico(
     id_usuario_reg,
@@ -127,7 +127,7 @@ AS
           ::text) || COALESCE(m.segundo_apellido, '' ::character varying) ::text
            AS nombre_completo
   FROM vef.tmedico m;
-  
+
   CREATE OR REPLACE VIEW vef.vcliente(
     id_usuario_reg,
     id_usuario_mod,
@@ -177,51 +177,51 @@ AS
 /************************************I-DEP-JRR-VEF-0-20/09/2015*************************************************/
 ALTER TABLE ONLY vef.tsucursal
     ADD CONSTRAINT fk_tsucursal__id_entidad
-    FOREIGN KEY (id_entidad) REFERENCES param.tentidad(id_entidad);  
+    FOREIGN KEY (id_entidad) REFERENCES param.tentidad(id_entidad);
 
 ALTER TABLE ONLY vef.tsucursal_moneda
     ADD CONSTRAINT fk_tsucursal_moneda__id_moneda
-    FOREIGN KEY (id_moneda) REFERENCES param.tmoneda(id_moneda);  
-    
+    FOREIGN KEY (id_moneda) REFERENCES param.tmoneda(id_moneda);
+
 ALTER TABLE ONLY vef.tsucursal_moneda
     ADD CONSTRAINT fk_tsucursal_moneda__id_sucursal
-    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal); 
+    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
 
 ALTER TABLE ONLY vef.tsucursal_producto
     ADD CONSTRAINT fk_tsucursal_producto__id_concepto_ingas
-    FOREIGN KEY (id_concepto_ingas) REFERENCES param.tconcepto_ingas(id_concepto_ingas);  
-    
+    FOREIGN KEY (id_concepto_ingas) REFERENCES param.tconcepto_ingas(id_concepto_ingas);
+
 ALTER TABLE ONLY param.tconcepto_ingas
     ADD CONSTRAINT fk_tconcepto_ingas__id_actividad_economica
-    FOREIGN KEY (id_actividad_economica) REFERENCES vef.tactividad_economica(id_actividad_economica); 
+    FOREIGN KEY (id_actividad_economica) REFERENCES vef.tactividad_economica(id_actividad_economica);
 
 ALTER TABLE ONLY vef.tdosificacion
     ADD CONSTRAINT fk_tdosificacion__id_sucursal
-    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);  
-    
+    FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
+
 ALTER TABLE ONLY vef.tsucursal_usuario
     ADD CONSTRAINT fk_tsucursal_usuario__id_punto_venta
-    FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta); 
+    FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta);
 
 ALTER TABLE ONLY vef.tforma_pago
     ADD CONSTRAINT fk_tforma_pago__id_entidad
-    FOREIGN KEY (id_entidad) REFERENCES param.tentidad(id_entidad); 
-    
+    FOREIGN KEY (id_entidad) REFERENCES param.tentidad(id_entidad);
+
 ALTER TABLE ONLY vef.tforma_pago
     ADD CONSTRAINT fk_tforma_pago__id_moneda
-    FOREIGN KEY (id_moneda) REFERENCES param.tmoneda(id_moneda);  
-    
+    FOREIGN KEY (id_moneda) REFERENCES param.tmoneda(id_moneda);
+
 ALTER TABLE ONLY vef.tventa
     ADD CONSTRAINT fk_tventa__id_punto_venta
-    FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta); 
+    FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta);
 
 ALTER TABLE ONLY vef.tventa_forma_pago
     ADD CONSTRAINT fk_tventa_forma_pago__id_forma_pago
-    FOREIGN KEY (id_forma_pago) REFERENCES vef.tforma_pago(id_forma_pago); 
-    
+    FOREIGN KEY (id_forma_pago) REFERENCES vef.tforma_pago(id_forma_pago);
+
 ALTER TABLE ONLY vef.tventa_forma_pago
     ADD CONSTRAINT fk_tventa_forma_pago__id_venta
-    FOREIGN KEY (id_venta) REFERENCES vef.tventa(id_venta); 
+    FOREIGN KEY (id_venta) REFERENCES vef.tventa(id_venta);
 
 CREATE OR REPLACE VIEW vef.vcliente(
     id_usuario_reg,
@@ -273,20 +273,20 @@ AS
 
 ALTER TABLE ONLY vef.tventa_detalle
     ADD CONSTRAINT fk_tventa_detalle__id_vendedor
-    FOREIGN KEY (id_vendedor) REFERENCES segu.tusuario(id_usuario); 
-    
+    FOREIGN KEY (id_vendedor) REFERENCES segu.tusuario(id_usuario);
+
 ALTER TABLE ONLY vef.tventa_detalle
     ADD CONSTRAINT fk_tventa_detalle__id_medico
     FOREIGN KEY (id_medico) REFERENCES vef.tmedico;
-    
+
 ALTER TABLE ONLY vef.tformula_detalle
     ADD CONSTRAINT fk_tformula_detalle__id_concepto_ingas
     FOREIGN KEY (id_concepto_ingas) REFERENCES param.tconcepto_ingas;
-    
+
  ALTER TABLE ONLY vef.tsucursal
     ADD CONSTRAINT fk_tsucursal__id_lugar
     FOREIGN KEY (id_lugar) REFERENCES param.tlugar;
-  
+
 
 /************************************F-DEP-JRR-VEF-0-08/11/2015*************************************************/
 
@@ -294,15 +294,15 @@ ALTER TABLE ONLY vef.tformula_detalle
 
 ALTER TABLE ONLY vef.tboleto
     ADD CONSTRAINT fk_tboleto__id_punto_venta
-    FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta); 
-    
+    FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta);
+
 ALTER TABLE ONLY vef.tboleto_fp
     ADD CONSTRAINT fk_tboleto_fp__id_boleto
     FOREIGN KEY (id_boleto) REFERENCES vef.tboleto(id_boleto);
-    
+
 ALTER TABLE ONLY vef.tboleto_fp
     ADD CONSTRAINT fk_tboleto_fp__id_forma_pago
-    FOREIGN KEY (id_forma_pago) REFERENCES vef.tforma_pago(id_forma_pago);  
+    FOREIGN KEY (id_forma_pago) REFERENCES vef.tforma_pago(id_forma_pago);
 
 /************************************F-DEP-JRR-VEF-0-25/11/2015*************************************************/
 
@@ -312,11 +312,11 @@ ALTER TABLE ONLY vef.tboleto_fp
 ALTER TABLE ONLY vef.tventa
     ADD CONSTRAINT fk_tventa__id_dosificacion
     FOREIGN KEY (id_dosificacion) REFERENCES vef.tdosificacion(id_dosificacion);
-    
+
 ALTER TABLE ONLY vef.tpunto_venta_producto
     ADD CONSTRAINT fk_tpunto_venta_producto__id_punto_venta
     FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta);
-    
+
 ALTER TABLE ONLY vef.tpunto_venta_producto
     ADD CONSTRAINT fk_tpunto_venta_producto__id_sucursal_producto
     FOREIGN KEY (id_sucursal_producto) REFERENCES vef.tsucursal_producto(id_sucursal_producto);
@@ -329,7 +329,7 @@ ALTER TABLE ONLY vef.tpunto_venta_producto
 ALTER TABLE ONLY vef.tsucursal_producto
     ADD CONSTRAINT fk_tsucursal_producto__id_moneda
     FOREIGN KEY (id_moneda) REFERENCES param.tmoneda(id_moneda);
-  
+
 /************************************F-DEP-JRR-VEF-0-14/03/2016*************************************************/
 
 
@@ -362,15 +362,15 @@ ALTER TABLE ONLY vef.tvalor_descripcion
 ALTER TABLE ONLY vef.tapertura_cierre_caja
     ADD CONSTRAINT fk_tapertura_cierre_caja__id_sucursal
     FOREIGN KEY (id_sucursal) REFERENCES vef.tsucursal(id_sucursal);
-    
+
 ALTER TABLE ONLY vef.tapertura_cierre_caja
     ADD CONSTRAINT fk_tapertura_cierre_caja__id_punto_venta
     FOREIGN KEY (id_punto_venta) REFERENCES vef.tpunto_venta(id_punto_venta);
-    
+
 ALTER TABLE ONLY vef.tapertura_cierre_caja
     ADD CONSTRAINT fk_tapertura_cierre_caja__id_usuario_cajero
     FOREIGN KEY (id_usuario_cajero) REFERENCES segu.tusuario(id_usuario);
-    
+
 ALTER TABLE ONLY vef.tapertura_cierre_caja
     ADD CONSTRAINT fk_tapertura_cierre_caja__id_moneda
     FOREIGN KEY (id_moneda) REFERENCES param.tmoneda(id_moneda);
@@ -405,7 +405,7 @@ ALTER TABLE vef.tventa
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
-    
+
 
 /************************************F-DEP-JRR-VEF-0-28/10/2016*************************************************/
 
@@ -413,10 +413,10 @@ ALTER TABLE vef.tventa
 
 /************************************I-DEP-RAC-VEF-0-11/11/2016*************************************************/
 CREATE TRIGGER trig_tcliente
-  AFTER INSERT 
-  ON vef.tcliente FOR EACH ROW 
+  AFTER INSERT
+  ON vef.tcliente FOR EACH ROW
   EXECUTE PROCEDURE vef.f_trig_cliente();
-  
+
   --------------- SQL ---------------
 -- object recreation
 DROP VIEW vef.vcliente;
@@ -540,3 +540,116 @@ CREATE TRIGGER trig_tapertura_cierre_caja
   EXECUTE PROCEDURE vef.f_trig_apertura_cierre_caja();
 
 /************************************F-DEP-GSS-VEF-0-22/11/2017*************************************************/
+
+/************************************I-DEP-IRVA-VEF-0-19/07/2019*************************************************/
+CREATE OR REPLACE VIEW vef.vdepositos (
+    id_punto_venta,
+    id_apertura_cierre_caja,
+    id_entrega_brinks,
+    id_usuario_cajero,
+    codigo_padre,
+    estacion,
+    nombre,
+    codigo,
+    cajero,
+    fecha_recojo,
+    fecha_venta,
+    arqueo_moneda_local,
+    arqueo_moneda_extranjera,
+    deposito_bs,
+    deposito_usd,
+    diferencia_bs,
+    diferencia_usd,
+    tipo_cambio)
+AS
+ WITH punto_venta AS (
+SELECT p.id_punto_venta,
+            l.codigo AS codigo_padre,
+            p.nombre,
+            p.codigo,
+            lu.codigo AS estacion
+FROM vef.tsucursal s_1
+             JOIN vef.tpunto_venta p ON p.id_sucursal = s_1.id_sucursal
+             JOIN param.tlugar l ON l.id_lugar =
+                 param.f_obtener_padre_id_lugar(s_1.id_lugar, 'pais'::character varying)
+             JOIN param.tlugar lu ON lu.id_lugar = s_1.id_lugar
+        )
+    SELECT ap.id_punto_venta,
+    ap.id_apertura_cierre_caja,
+    ap.id_entrega_brinks,
+    ap.id_usuario_cajero,
+    pu.codigo_padre,
+    pu.estacion,
+    pu.nombre,
+    pu.codigo,
+    pe.nombre_completo1 AS cajero,
+    en.fecha_recojo,
+    ap.fecha_apertura_cierre AS fecha_venta,
+    ap.arqueo_moneda_local,
+    ap.arqueo_moneda_extranjera,
+    COALESCE(s.monto_total, 0::numeric) AS deposito_bs,
+    COALESCE(ss.monto_total, 0::numeric) AS deposito_usd,
+        CASE
+            WHEN round(ap.arqueo_moneda_local - COALESCE(s.monto_total,
+                0::numeric)) <> 0::numeric THEN round(ap.arqueo_moneda_local - COALESCE(s.monto_total, 0::numeric))
+            WHEN round(ap.arqueo_moneda_local - COALESCE(s.monto_total,
+                0::numeric)) = 0::numeric THEN 0::numeric
+            ELSE round(ap.arqueo_moneda_local - COALESCE(s.monto_total, 0::numeric))
+        END::numeric(18,2) AS diferencia_bs,
+        CASE
+            WHEN round(ap.arqueo_moneda_extranjera - COALESCE(ss.monto_total,
+                0::numeric)) <> 0::numeric THEN round(ap.arqueo_moneda_extranjera - COALESCE(ss.monto_total, 0::numeric))
+            WHEN round(ap.arqueo_moneda_extranjera - COALESCE(ss.monto_total,
+                0::numeric)) = 0::numeric THEN 0::numeric
+            ELSE round(ap.arqueo_moneda_extranjera - COALESCE(ss.monto_total,
+                0::numeric))
+        END::numeric(18,2) AS diferencia_usd,
+    (
+        SELECT c.oficial
+        FROM param.ttipo_cambio c
+        WHERE c.id_moneda = 2 AND c.fecha = now()::date AND c.fecha_mod IS NULL
+        ) AS tipo_cambio
+    FROM vef.tapertura_cierre_caja ap
+     JOIN punto_venta pu ON pu.id_punto_venta = ap.id_punto_venta
+     JOIN segu.tusuario us ON us.id_usuario = ap.id_usuario_cajero
+     JOIN segu.vpersona pe ON pe.id_persona = us.id_persona
+     LEFT JOIN vef.vdepositos_suma s ON s.id_apertura_cierre_caja =
+         ap.id_apertura_cierre_caja AND s.tipo = (((
+        SELECT mo.codigo_internacional
+        FROM param.tmoneda mo
+        WHERE mo.tipo_moneda::text = 'base'::text
+        ))::text)
+     LEFT JOIN vef.vdepositos_suma ss ON ss.id_apertura_cierre_caja =
+         ap.id_apertura_cierre_caja AND ss.tipo = 'US'::text
+     JOIN vef.tentrega en ON en.id_entrega_brinks = ap.id_entrega_brinks;
+
+/************************************F-DEP-IRVA-VEF-0-19/07/2019*************************************************/
+
+/************************************I-DEP-IRVA-VEF-1-19/07/2019*************************************************/
+CREATE OR REPLACE VIEW vef.vdepositos_suma (
+      id_apertura_cierre_caja,
+      monto_total,
+      tipo)
+  AS
+  SELECT d.id_apertura_cierre_caja,
+      sum(COALESCE(d.monto_total, 0::numeric)) AS monto_total,
+      ((
+      SELECT mo.codigo_internacional
+      FROM param.tmoneda mo
+      WHERE mo.tipo_moneda::text = 'base'::text
+      ))::text AS tipo
+  FROM obingresos.tdeposito d
+  WHERE d.id_moneda_deposito = ((
+      SELECT mo.id_moneda
+      FROM param.tmoneda mo
+      WHERE mo.tipo_moneda::text = 'base'::text
+      )) AND d.id_apertura_cierre_caja IS NOT NULL
+  GROUP BY d.id_apertura_cierre_caja
+  UNION
+  SELECT d.id_apertura_cierre_caja,
+      sum(COALESCE(d.monto_total, 0::numeric)) AS monto_total,
+      'US'::text AS tipo
+  FROM obingresos.tdeposito d
+  WHERE d.id_moneda_deposito = 2 AND d.id_apertura_cierre_caja IS NOT NULL
+  GROUP BY d.id_apertura_cierre_caja;  
+/************************************I-DEP-IRVA-VEF-1-19/07/2019*************************************************/
