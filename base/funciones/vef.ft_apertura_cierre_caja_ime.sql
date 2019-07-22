@@ -41,6 +41,7 @@ DECLARE
     v_me numeric;
     v_tipo_cambio			numeric;
     v_codigo_moneda			varchar;
+    v_tolerancia			varchar;
 
 BEGIN
 
@@ -608,9 +609,40 @@ BEGIN
       from param.tmoneda mon
       where tipo_moneda='base';
 
+      select va.valor into v_tolerancia
+      from pxp.variable_global va
+      where va.variable = 'tolerancia_cierre_caja';
+
       --Definition of the response
       	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Tipo Cambio Argentina');
         v_resp = pxp.f_agrega_clave(v_resp,'v_tipo_cambio',v_tipo_cambio::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'v_codigo_moneda',v_codigo_moneda::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'v_tolerancia',v_tolerancia::varchar);
+
+      --Returns the answer
+        return v_resp;
+
+  	END;
+
+    /*********************************
+    #TRANSACCION: 'VF_MON_BASE_IME'
+    #DESCRIPCION: RECUPERA EL TIPO DE CAMBIO
+    #AUTOR: IRVA
+    #FECHA: 18-7-2019
+    ***********************************/
+
+	elsif (p_transaccion = 'VF_MON_BASE_IME') then
+
+  	BEGIN
+
+	  select
+      mon.codigo_internacional
+      into v_codigo_moneda
+      from param.tmoneda mon
+      where tipo_moneda='base';
+
+      --Definition of the response
+      	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Tipo Cambio Argentina');
         v_resp = pxp.f_agrega_clave(v_resp,'v_codigo_moneda',v_codigo_moneda::varchar);
 
       --Returns the answer
@@ -640,3 +672,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_apertura_cierre_caja_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

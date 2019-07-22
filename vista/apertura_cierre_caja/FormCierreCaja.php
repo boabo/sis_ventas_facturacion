@@ -410,6 +410,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                     this.tipo_cambio = reg.ROOT.datos.v_tipo_cambio;
                     this.moneda_base = reg.ROOT.datos.v_codigo_moneda;
+                    this.tolerancia = reg.ROOT.datos.v_tolerancia;
                 },
                 failure: this.conexionFailure,
                 timeout:this.timeout,
@@ -2150,28 +2151,15 @@ header("content-type: text/javascript; charset=UTF-8");
 
         onSubmit:function(){
             //TODO passar los datos obtenidos del wizard y pasar  el evento save
-          if (this.moneda_base == 'BOB') {
-            console.log("entra aqui BOB");
+
             if (this.form.getForm().isValid()) {
-                if(this.Cmp.diferencia.getValue() >= 1 || this.Cmp.diferencia.getValue() <= -1){
+                if(this.Cmp.diferencia.getValue() >= (this.tolerancia*(1)) || this.Cmp.diferencia.getValue() <= (this.tolerancia*(-1))){
                     alert('Existe diferencia de : '+ this.Cmp.diferencia.getValue());
                 }else{
                     this.fireEvent('beforesave',this,this.getValues());
                     this.getValues();
                 }
             }
-          }else if (this.moneda_base == 'ARS') {
-            console.log("entra aqui ARS");
-            if (this.form.getForm().isValid()) {
-                if(this.Cmp.diferencia.getValue() >= 10 || this.Cmp.diferencia.getValue() <= -10){
-                    alert('Existe diferencia de : '+ this.Cmp.diferencia.getValue() + ', el margen permitido es: +/- 10 en moneda local.');
-                }else{
-                    this.fireEvent('beforesave',this,this.getValues());
-                    this.getValues();
-                }
-            }
-          }
-
         },
 
         getValues:function(){
@@ -2510,6 +2498,7 @@ header("content-type: text/javascript; charset=UTF-8");
         calcularDiferencia : function () {
 
           console.log('La moneda base es: ',this.moneda_base);
+          console.log('La Tolerancia es: ',this.tolerancia);
           // var mon_ext = this.Grupos[0].items[7].items[0];
           // console.log('La moneda base es: ',this);
           if(this.moneda_base == 'BOB'){
