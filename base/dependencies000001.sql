@@ -622,10 +622,12 @@ FROM vef.tsucursal s_1
      LEFT JOIN vef.vdepositos_suma ss ON ss.id_apertura_cierre_caja =
          ap.id_apertura_cierre_caja AND ss.tipo = 'US'::text
      JOIN vef.tentrega en ON en.id_entrega_brinks = ap.id_entrega_brinks;
+     ALTER VIEW vef.vdepositos_suma
+  OWNER TO postgres;
 
 /************************************F-DEP-IRVA-VEF-0-19/07/2019*************************************************/
 
-/************************************I-DEP-IRVA-VEF-1-19/07/2019*************************************************/
+/************************************I-DEP-IRVA-VEF-0-19/07/2019*************************************************/
 CREATE OR REPLACE VIEW vef.vdepositos_suma (
       id_apertura_cierre_caja,
       monto_total,
@@ -651,5 +653,7 @@ CREATE OR REPLACE VIEW vef.vdepositos_suma (
       'US'::text AS tipo
   FROM obingresos.tdeposito d
   WHERE d.id_moneda_deposito = 2 AND d.id_apertura_cierre_caja IS NOT NULL
-  GROUP BY d.id_apertura_cierre_caja;  
-/************************************I-DEP-IRVA-VEF-1-19/07/2019*************************************************/
+  GROUP BY d.id_apertura_cierre_caja;
+  ALTER VIEW vef.vdepositos_suma
+  OWNER TO postgres;
+/************************************I-DEP-IRVA-VEF-0-19/07/2019*************************************************/
