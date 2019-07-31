@@ -98,7 +98,7 @@ header("content-type: text/javascript; charset=UTF-8");
                   timeout:this.timeout,
                   scope:this
           });
-          console.log("llega aqui",this);
+          console.log("llega el punto de venta",this);
         },
 
         successSincronizar:function(resp){
@@ -186,6 +186,17 @@ header("content-type: text/javascript; charset=UTF-8");
                     labelSeparator: '',
                     inputType: 'hidden',
                     name: 'id_punto_venta'
+                },
+                type: 'Field',
+                form: true
+
+            },
+            {
+                //configuracion del componente
+                config: {
+                    labelSeparator: '',
+                    inputType: 'hidden',
+                    name: 'id_usuario_cajero'
                 },
                 type: 'Field',
                 form: true
@@ -463,7 +474,21 @@ header("content-type: text/javascript; charset=UTF-8");
             this.getComponente('estacion').setValue(this.maestro.estacion);
             this.getComponente('codigo').setValue(this.maestro.codigo);
             this.getComponente('fecha_venta').setValue(this.maestro.fecha_venta.dateFormat('d-m-Y'));
+            this.getComponente('id_punto_venta').setValue(this.maestro.id_punto_venta);
+
+            /*AUMENTANDO PARA RECUPERAR EL PUNTO DE VENTA AL EDITAR*/
+            console.log("llega aqui boton EDITAR",this);
+            /******************************************************************/
+
         },
+        /*********************AUMENTANDO PARA QUE SE REGISTRE LOS DEPOSITOS EN EL LIBRO DE VENTAS***/
+        onButtonNew: function() {
+            Phx.vista.DepositoDetalle.superclass.onButtonNew.call(this);
+            this.store.baseParams.id_punto_venta = this.maestro.id_punto_venta;
+            this.store.baseParams.id_usuario_cajero = this.maestro.id_usuario_cajero;
+
+        },
+        /************************************************************************************************/
         onButtonDel: function() {
             Phx.vista.DepositoDetalle.superclass.onButtonDel.call(this);
             this.eliminar();
@@ -478,6 +503,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.getComponente('fecha_venta').setValue(this.maestro.fecha_venta.dateFormat('d-m-Y'));
             this.getComponente('tipo_cambio').setValue(this.maestro.tipo_cambio);
             this.getComponente('id_punto_venta').setValue(this.maestro.id_punto_venta);
+            this.getComponente('id_usuario_cajero').setValue(this.maestro.id_usuario_cajero);
         },
         successSave:function(resp){
             Phx.vista.DepositoDetalle.superclass.successSave.call(this,resp);
