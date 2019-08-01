@@ -78,7 +78,7 @@ header("content-type: text/javascript; charset=UTF-8");
         });
         storeCombo.load({params:{start: 0, limit: this.tam_pag},
             callback : function (r) {
-                if (r.length == 1) {
+                if (r.length == 0) {
                         this.variables_globales.id_punto_venta = r[0].data.id_punto_venta;
                         this.store.baseParams.id_punto_venta = this.variables_globales.id_punto_venta;
                         this.load({params:{start:0, limit:this.tam_pag}});
