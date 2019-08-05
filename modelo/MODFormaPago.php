@@ -8,19 +8,19 @@
 */
 
 class MODFormaPago extends MODbase{
-	
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
-			
+
 	function listarFormaPago(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_forma_pago_sel';
 		$this->transaccion='VF_FORPA_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-		
+
 		$this->setParametro('id_venta','id_venta','int4');
-				
+
 		//Definicion de la lista del resultado del query
 		$this->captura('id_forma_pago','int4');
 		$this->captura('estado_reg','varchar');
@@ -38,7 +38,7 @@ class MODFormaPago extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('desc_moneda','varchar');
 		$this->captura('defecto','varchar');
-		
+
 		$this->captura('registrar_tarjeta','varchar');
 		$this->captura('registrar_tipo_tarjeta','varchar');
 		$this->captura('registrar_cc','varchar');
@@ -46,22 +46,22 @@ class MODFormaPago extends MODbase{
 		$this->captura('numero_tarjeta','varchar');
 		$this->captura('codigo_tarjeta','varchar');
 		$this->captura('tipo_tarjeta','varchar');
-		
-		
+
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function insertarFormaPago(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_forma_pago_ime';
 		$this->transaccion='VF_FORPA_INS';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('codigo','codigo','varchar');
@@ -72,7 +72,8 @@ class MODFormaPago extends MODbase{
 		$this->setParametro('registrar_tarjeta','registrar_tarjeta','varchar');
 		$this->setParametro('registrar_cc','registrar_cc','varchar');
 		$this->setParametro('registrar_tipo_tarjeta','registrar_tipo_tarjeta','varchar');
-		
+		$this->setParametro('sw_tipo_venta','sw_tipo_venta','varchar');
+
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -81,13 +82,13 @@ class MODFormaPago extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function modificarFormaPago(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_forma_pago_ime';
 		$this->transaccion='VF_FORPA_MOD';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_forma_pago','id_forma_pago','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
@@ -107,13 +108,13 @@ class MODFormaPago extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function eliminarFormaPago(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_forma_pago_ime';
 		$this->transaccion='VF_FORPA_ELI';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_forma_pago','id_forma_pago','int4');
 
@@ -124,6 +125,6 @@ class MODFormaPago extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 }
 ?>
