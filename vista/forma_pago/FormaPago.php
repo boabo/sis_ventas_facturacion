@@ -235,7 +235,7 @@ Phx.vista.FormaPago=Ext.extend(Phx.gridInterfaz,{
 					mode:'remote',
 					pageSize:50,
 					queryDelay:500,
-					anchor:"100%",
+					anchor:"44%",
 					gwidth:150,
 					minChars:2,
 					renderer:function (value, p, record){return String.format('{0}', record.data['moneda']);}
@@ -257,6 +257,7 @@ Phx.vista.FormaPago=Ext.extend(Phx.gridInterfaz,{
 							triggerAction: 'all',
 							lazyRender:true,
 							mode: 'local',
+							anchor:"44%",
 						 // displayField: 'descestilo',
 							store:['computarizada','boletos'],
 							enableMultiSelect: true
