@@ -1077,3 +1077,11 @@ WITH (oids = false);
 ALTER TABLE vef.tapertura_cierre_caja_asociada
   OWNER TO postgres;
 /***********************************F-SCP-IRVA-VEF-0-26/08/2019****************************************/
+
+/***********************************I-SCP-IRVA-VEF-1-26/08/2019****************************************/
+ALTER TABLE vef.tventa
+  ADD COLUMN informe TEXT;
+
+ALTER TABLE vef.tventa
+  ADD COLUMN anulado VARCHAR(5);
+/***********************************F-SCP-IRVA-VEF-1-26/08/2019****************************************/
