@@ -705,7 +705,7 @@ ALTER VIEW vef.vdepositos_suma
 /************************************F-DEP-IRVA-VEF-0-26/08/2019*************************************************/
 
 /************************************I-DEP-IRVA-VEF-0-26/08/2019*************************************************/
-CREATE VIEW vef.vdepositos_agrupados (
+CREATE OR REPLACE VIEW vef.vdepositos_agrupados (
     id_deposito,
     estado_reg,
     nro_deposito,
