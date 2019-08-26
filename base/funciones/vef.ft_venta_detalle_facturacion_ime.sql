@@ -77,7 +77,7 @@ BEGIN
         	--Sentencia de la insercion
         	insert into vef.tventa_detalle(
 			id_venta,
-			--descripcion,
+			descripcion,
 			cantidad,
 			tipo,
 			estado_reg,
@@ -89,7 +89,7 @@ BEGIN
 
           	) values(
 			v_parametros.id_venta,
-			--v_parametros.descripcion,
+			v_parametros.descripcion,
 			v_parametros.cantidad_det,
 			v_parametros.tipo,
 			'activo',
@@ -432,7 +432,6 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION vef.ft_venta_detalle_facturacion_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)

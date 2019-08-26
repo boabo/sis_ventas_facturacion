@@ -103,7 +103,8 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_venta_detalle)
+			v_consulta:='select count(id_venta_detalle),
+            			sum(factdet.precio*factdet.cantidad)
 					    from vef.tventa_detalle factdet
 						inner join segu.tusuario usu1 on usu1.id_usuario = factdet.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = factdet.id_usuario_mod
@@ -204,7 +205,6 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION vef.ft_venta_detalle_facturacion_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
