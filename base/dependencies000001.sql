@@ -704,7 +704,7 @@ ALTER VIEW vef.vdepositos_suma
   OWNER TO postgres;
 /************************************F-DEP-IRVA-VEF-0-26/08/2019*************************************************/
 
-/************************************I-DEP-IRVA-VEF-0-26/08/2019*************************************************/
+/************************************I-DEP-IRVA-VEF-1-26/08/2019*************************************************/
 CREATE OR REPLACE VIEW vef.vdepositos_agrupados (
     id_deposito,
     estado_reg,
@@ -803,4 +803,4 @@ GROUP BY dep.id_deposito, us.cuenta, usu2.cuenta, mon.codigo_internacional,
 
 ALTER VIEW vef.vdepositos_agrupados
   OWNER TO postgres;
-/************************************F-DEP-IRVA-VEF-0-26/08/2019*************************************************/
+/************************************F-DEP-IRVA-VEF-1-26/08/2019*************************************************/
