@@ -8,19 +8,22 @@
 */
 
 class MODDepositos extends MODbase{
-	
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
-			
+
 	function listarDepositos(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_depositos_sel';
 		$this->transaccion='VF_CDO_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-				
-		//Definicion de la lista del resultado del query
-		$this->captura('id_apertura_cierre_caja','int4');
+
+				//Definicion de la lista del resultado del query
+				$this->setParametro('relacion_deposito','relacion_deposito','varchar');
+				$this->setParametro('id_moneda_deposito_agrupado','id_moneda_deposito_agrupado','int4');
+
+				$this->captura('id_apertura_cierre_caja','int4');
         $this->captura('id_punto_venta','int4');
         $this->captura('id_entrega_brinks','int4');
         $this->captura('id_usuario_cajero','int4');
@@ -42,11 +45,11 @@ class MODDepositos extends MODbase{
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function insertarDepositos(){
 		//Definicion de variables para ejecucion del procedimiento
 
@@ -84,13 +87,13 @@ class MODDepositos extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function modificarDepositos(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_depositos_ime';
 		$this->transaccion='VF_CDO_MOD';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
 		$this->setParametro('nro_deposito','nro_deposito','varchar');
@@ -119,13 +122,13 @@ class MODDepositos extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
 	function eliminarDepositos(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='vef.ft_depositos_ime';
 		$this->transaccion='VF_CDO_ELI';
 		$this->tipo_procedimiento='IME';
-				
+
 		//Define los parametros para la funcion
 		$this->setParametro('id_apertura_cierre_caja','id_apertura_cierre_caja','int4');
 

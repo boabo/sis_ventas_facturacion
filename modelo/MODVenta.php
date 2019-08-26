@@ -22,7 +22,7 @@ class MODVenta extends MODbase{
 		$this->monedaBase();
 		if ($this->monedaBase() == 'BOB') {
 			$this->cone = new conexion();
-			$this->informix = $this->cone->conectarPDOInformix();
+			//$this->informix = $this->cone->conectarPDOInformix();
 			// conexion a informix
 			$this->link = $this->cone->conectarpdo();
 			//conexion a pxp(postgres)

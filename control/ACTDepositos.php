@@ -7,8 +7,8 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 
-class ACTDepositos extends ACTbase{    
-			
+class ACTDepositos extends ACTbase{
+
 	function listarDepositos(){
 		$this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
 
@@ -27,30 +27,43 @@ class ACTDepositos extends ACTbase{
         }else{
             $this->objParam->addFiltro("(cdo.diferencia_bs =  0  and  cdo.diferencia_usd = 0)");
         }
+
+				/*Solo listar las ventas que no tengan asociado ningun deposito*/
+				if ($this->objParam->getParametro('id_moneda_deposito_agrupado') != '') {
+					if ($this->objParam->getParametro('id_moneda_deposito_agrupado') == 2) {
+						$this->objParam->addFiltro(" cdo.deposito_usd = 0 ");
+					} else {
+						$this->objParam->addFiltro(" cdo.deposito_bs = 0 ");
+					}
+
+
+        }
+				/***************************************************************/
+
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODDepositos','listarDepositos');
 		} else{
 			$this->objFunc=$this->create('MODDepositos');
-			
+
 			$this->res=$this->objFunc->listarDepositos($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-				
+
 	function insertarDepositos(){
-		$this->objFunc=$this->create('MODDepositos');	
+		$this->objFunc=$this->create('MODDepositos');
 		if($this->objParam->insertar('id_apertura_cierre_caja')){
-			$this->res=$this->objFunc->insertarDepositos($this->objParam);			
-		} else{			
+			$this->res=$this->objFunc->insertarDepositos($this->objParam);
+		} else{
 			$this->res=$this->objFunc->modificarDepositos($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-						
+
 	function eliminarDepositos(){
-			$this->objFunc=$this->create('MODDepositos');	
+			$this->objFunc=$this->create('MODDepositos');
 		$this->res=$this->objFunc->eliminarDepositos($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}

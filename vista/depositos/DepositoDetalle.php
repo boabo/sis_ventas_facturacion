@@ -33,6 +33,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 handler: this.sincronizar
             });
 
+
             this.finCons = true;
             this.store.baseParams.tipo = 'venta_propia';
 
@@ -106,6 +107,7 @@ header("content-type: text/javascript; charset=UTF-8");
           var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
           Phx.CP.getPagina(this.idContenedorPadre).reload();
         },
+
 
         bactGroups: [0, 1],
         bexcelGroups: [0, 1],

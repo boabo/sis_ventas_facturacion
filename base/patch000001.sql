@@ -1051,8 +1051,29 @@ ALTER TABLE vef.tforma_pago
 /***********************************F-SCP-RAC-VEF-1-10/10/2017****************************************/
 
 /***********************************I-SCP-IRVA-VEF-1-09/05/2019****************************************/
-
 ALTER TABLE vef.tventa_detalle
   ADD COLUMN id_producto INTEGER;
-
 /***********************************F-SCP-IRVA-VEF-1-09/05/2019****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-26/08/2019****************************************/
+CREATE TABLE vef.tapertura_cierre_caja_asociada (
+  id_apertura_asociada SERIAL,
+  id_apertura_cierre_caja INTEGER,
+  id_deposito INTEGER,
+  CONSTRAINT tapertura_cierre_caja_asociada_pkey PRIMARY KEY(id_apertura_asociada),
+  CONSTRAINT tapertura_cierre_caja_asociada_fk FOREIGN KEY (id_apertura_cierre_caja)
+    REFERENCES vef.tapertura_cierre_caja(id_apertura_cierre_caja)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE,
+  CONSTRAINT tapertura_cierre_caja_asociada_fk1 FOREIGN KEY (id_deposito)
+    REFERENCES obingresos.tdeposito(id_deposito)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+ALTER TABLE vef.tapertura_cierre_caja_asociada
+  OWNER TO postgres;
+/***********************************F-SCP-IRVA-VEF-0-26/08/2019****************************************/

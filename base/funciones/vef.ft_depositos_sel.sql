@@ -31,6 +31,9 @@ DECLARE
     v_filtro			varchar;
     v_fill				varchar;
 
+    v_ventas_agrupadas 	varchar;
+    v_subconsulta_ventas 	varchar;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_depositos_sel';
@@ -46,6 +49,41 @@ BEGIN
 	if(p_transaccion='VF_CDO_SEL')then
 
     	begin
+        	if (pxp.f_existe_parametro(p_tabla,'relacion_deposito')) then
+
+            	  	IF (v_parametros.id_moneda_deposito_agrupado = 2 ) then
+                          select
+                                  list(aso.id_apertura_cierre_caja::varchar) into v_ventas_agrupadas
+                          from vef.vdepositos_agrupados dep
+                          inner join vef.tapertura_cierre_caja_asociada aso on aso.id_deposito = dep.id_deposito
+                          where dep.id_moneda_deposito = v_parametros.id_moneda_deposito_agrupado and dep.diferencia_me = 0
+                          group by dep.diferencia_me, dep.diferencia_ml;
+
+                          v_subconsulta_ventas = 'cdo.id_apertura_cierre_caja not in ('||v_ventas_agrupadas||') and cdo.arqueo_moneda_extranjera <> 0 and';
+
+                    else
+                    	select
+                        		   list(aso.id_apertura_cierre_caja::varchar) into v_ventas_agrupadas
+                          from vef.vdepositos_agrupados dep
+                          inner join vef.tapertura_cierre_caja_asociada aso on aso.id_deposito = dep.id_deposito
+                          where dep.id_moneda_deposito = v_parametros.id_moneda_deposito_agrupado and dep.diferencia_ml = 0
+                          group by dep.diferencia_me, dep.diferencia_ml;
+
+                          v_subconsulta_ventas = 'cdo.id_apertura_cierre_caja not in ('||v_ventas_agrupadas||') and cdo.arqueo_moneda_local <> 0 and';
+
+                    end if;
+
+                    if (v_ventas_agrupadas is null) then
+                    	v_subconsulta_ventas = '';
+                    end if;
+
+
+            else
+            	v_subconsulta_ventas = '';
+
+
+            end if;
+
 
             v_fill = '(1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario ='||p_id_usuario||' ) or (
                                                     '||p_id_usuario||' in (select d.id_usuario
@@ -75,7 +113,7 @@ BEGIN
                                 cdo.diferencia_bs,
                                 cdo.diferencia_usd
                                 from vef.vdepositos cdo
-                                where '||v_fill;
+                                where '||v_subconsulta_ventas||v_fill;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -168,3 +206,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_depositos_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

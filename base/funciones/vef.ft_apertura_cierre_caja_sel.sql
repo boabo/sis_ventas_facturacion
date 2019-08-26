@@ -43,6 +43,9 @@ DECLARE
     v_filtro					varchar;
     v_regitro				 	record;
 
+    v_moneda_desc				varchar;
+    v_fecha_for					varchar;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_apertura_cierre_caja_sel';
@@ -268,6 +271,20 @@ BEGIN
             	v_tiene_dos_monedas = 'si';
                 v_tipo_cambio = param.f_get_tipo_cambio_v2(v_id_moneda_base, v_id_moneda_tri,v_fecha,'O');
             end if;
+
+           /*********************VERIFICAMOS SI EXISTE EL TIPO DE CAMBIO*************************/
+           IF (v_tipo_cambio is null) then
+
+            	select  mon.codigo into v_moneda_desc
+                from param.tmoneda mon
+                where mon.id_moneda = v_id_moneda_tri;
+
+                SELECT to_char(v_fecha,'DD/MM/YYYY') into v_fecha_for;
+
+            	raise exception 'No se pudo recuperar el tipo de cambio para la moneda: % en fecha: %, comuniquese con personal de Contabilidad Ingresos.',v_moneda_desc,v_fecha_for;
+            end if;
+            /***************************************************************************************/
+
             --raise exception 'llega %',v_parametros.id_apertura_cierre_caja ;
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='with forma_pago as (
@@ -1473,3 +1490,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_apertura_cierre_caja_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;
