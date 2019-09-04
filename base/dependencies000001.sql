@@ -795,8 +795,8 @@ FROM obingresos.tdeposito dep
          dep.id_deposito
      LEFT JOIN vef.tapertura_cierre_caja caja ON caja.id_apertura_cierre_caja =
          aper.id_apertura_cierre_caja
-     JOIN tes.tts_libro_bancos lib ON lib.id_deposito = dep.id_deposito
-     JOIN tes.tcuenta_bancaria cuen ON cuen.id_cuenta_bancaria = lib.id_cuenta_bancaria
+      JOIN tes.tts_libro_bancos lib ON lib.id_deposito = dep.id_deposito
+      JOIN tes.tcuenta_bancaria cuen ON cuen.id_cuenta_bancaria = lib.id_cuenta_bancaria
 WHERE dep.tipo::text = 'venta_propia_agrupada'::text
 GROUP BY dep.id_deposito, us.cuenta, usu2.cuenta, mon.codigo_internacional,
     age.codigo_int, age.nombre, pv.fecha_ini, pv.fecha_fin, tp.tipo_cc, cuen.nro_cuenta;
@@ -804,3 +804,104 @@ GROUP BY dep.id_deposito, us.cuenta, usu2.cuenta, mon.codigo_internacional,
 ALTER VIEW vef.vdepositos_agrupados
   OWNER TO postgres;
 /************************************F-DEP-IRVA-VEF-1-26/08/2019*************************************************/
+
+/************************************I-DEP-IRVA-VEF-0-04/09/2019*************************************************/
+CREATE OR REPLACE VIEW vef.vdepositos_agrupados (
+    id_deposito,
+    estado_reg,
+    nro_deposito,
+    nro_deposito_boa,
+    monto_deposito,
+    id_moneda_deposito,
+    id_agencia,
+    fecha,
+    saldo,
+    id_usuario_reg,
+    fecha_reg,
+    id_usuario_ai,
+    usuario_ai,
+    id_usuario_mod,
+    fecha_mod,
+    usr_reg,
+    usr_mod,
+    desc_moneda,
+    agt,
+    fecha_venta,
+    monto_total,
+    nombre_agencia,
+    desc_periodo,
+    estado,
+    id_apertura_cierre_caja,
+    nro_cuenta,
+    monto_total_ml,
+    monto_total_me,
+    diferencia_ml,
+    diferencia_me)
+AS
+SELECT dep.id_deposito,
+    dep.estado_reg,
+    dep.nro_deposito,
+    dep.nro_deposito_boa,
+    dep.monto_deposito,
+    dep.id_moneda_deposito,
+    dep.id_agencia,
+    dep.fecha,
+    dep.saldo,
+    dep.id_usuario_reg,
+    dep.fecha_reg,
+    dep.id_usuario_ai,
+    dep.usuario_ai,
+    dep.id_usuario_mod,
+    dep.fecha_mod,
+    us.cuenta AS usr_reg,
+    usu2.cuenta AS usr_mod,
+    mon.codigo_internacional AS desc_moneda,
+    dep.agt,
+    dep.fecha_venta,
+    dep.monto_total,
+    ((age.codigo_int::text || ' - '::text) || age.nombre::text)::character
+        varying AS nombre_agencia,
+    (((to_char(pv.fecha_ini::timestamp with time zone, 'DD/MM/YYYY'::text) ||
+        '-'::text) || to_char(pv.fecha_fin::timestamp with time zone, 'DD/MM/YYYY'::text)) || ' '::text) || tp.tipo_cc::text AS desc_periodo,
+    dep.estado,
+    dep.id_apertura_cierre_caja,
+    cuen.nro_cuenta,
+        CASE
+            WHEN dep.id_moneda_deposito <> 2 THEN sum(caja.arqueo_moneda_local)
+            ELSE 0.00
+        END AS monto_total_ml,
+        CASE
+            WHEN dep.id_moneda_deposito = 2 THEN sum(caja.arqueo_moneda_extranjera)
+            ELSE 0.00
+        END AS monto_total_me,
+        CASE
+            WHEN dep.id_moneda_deposito <> 2 THEN dep.monto_deposito -
+                sum(caja.arqueo_moneda_local)
+            ELSE 0.00
+        END AS diferencia_ml,
+        CASE
+            WHEN dep.id_moneda_deposito = 2 THEN dep.monto_deposito -
+                sum(caja.arqueo_moneda_extranjera)
+            ELSE 0.00
+        END AS diferencia_me
+FROM obingresos.tdeposito dep
+     JOIN segu.tusuario us ON us.id_usuario = dep.id_usuario_reg
+     LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = dep.id_usuario_mod
+     JOIN param.tmoneda mon ON mon.id_moneda = dep.id_moneda_deposito
+     LEFT JOIN obingresos.tagencia age ON age.id_agencia = dep.id_agencia
+     LEFT JOIN obingresos.tperiodo_venta pv ON pv.id_periodo_venta =
+         dep.id_periodo_venta
+     LEFT JOIN obingresos.ttipo_periodo tp ON tp.id_tipo_periodo = pv.id_tipo_periodo
+     LEFT JOIN vef.tapertura_cierre_caja_asociada aper ON aper.id_deposito =
+         dep.id_deposito
+     LEFT JOIN vef.tapertura_cierre_caja caja ON caja.id_apertura_cierre_caja =
+         aper.id_apertura_cierre_caja
+     LEFT JOIN tes.tts_libro_bancos lib ON lib.id_deposito = dep.id_deposito
+     LEFT JOIN tes.tcuenta_bancaria cuen ON cuen.id_cuenta_bancaria = lib.id_cuenta_bancaria
+WHERE dep.tipo::text = 'venta_propia_agrupada'::text
+GROUP BY dep.id_deposito, us.cuenta, usu2.cuenta, mon.codigo_internacional,
+    age.codigo_int, age.nombre, pv.fecha_ini, pv.fecha_fin, tp.tipo_cc, cuen.nro_cuenta;
+
+ALTER VIEW vef.vdepositos_agrupados
+  OWNER TO postgres;
+/************************************F-DEP-IRVA-VEF-0-04/09/2019*************************************************/

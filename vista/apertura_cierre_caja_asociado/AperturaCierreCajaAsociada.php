@@ -23,11 +23,21 @@ Phx.vista.AperturaCierreCajaAsociada=Ext.extend(Phx.gridInterfaz,{
 		this.tbar.el.dom.style.background='#a3c9f7';
 		this.grid.body.dom.firstChild.firstChild.lastChild.style.background='#DEFAF4';
 		this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#C7EAE3';
-
 		//this.load({params:{start:0, limit:this.tam_pag}})
 	},
 
   iniciarEventos : function () {
+
+		this.addButton('asociar_pv',
+				{   grupo:[2],
+						text: 'Asociar P/V Diferentes',
+						iconCls: 'bincremento_salarial',
+						disabled: true,
+						handler: this.asociar_diferentes,
+						tooltip: '<b>Asociar Puntos de venta</b><br/>Diferentes'
+				}
+		);
+
     // var total = 0;
         this.Cmp.id_apertura_cierre_caja.on('change',function(field,newValue,oldValue){
           Ext.Ajax.request({
@@ -91,7 +101,7 @@ Phx.vista.AperturaCierreCajaAsociada=Ext.extend(Phx.gridInterfaz,{
             allowBlank: true,
             anchor: '80%',
             gwidth: 190,
-            maxLength:-5
+            // maxLength:-5
         },
         type:'TextField',
         filters:{pfiltro:'cdo.cajero',type:'string'},
@@ -352,7 +362,7 @@ Phx.vista.AperturaCierreCajaAsociada=Ext.extend(Phx.gridInterfaz,{
 					totalProperty: 'total',
 					fields: ['id_apertura_cierre_caja', 'nombre_punto_venta', 'cajero', 'fecha_venta', 'arqueo_moneda_local','deposito_bs','arqueo_moneda_extranjera','deposito_usd'],
 					remoteSort: true,
-					baseParams: {par_filtro: 'cdo.cajero',pes_estado:'pendiente', relacion_deposito:'venta_propia_agrupada'}
+					baseParams: {par_filtro: 'cdo.cajero#cdo.nombre',pes_estado:'pendiente', relacion_deposito:'venta_propia_agrupada'}
 				}),
 				valueField: 'id_apertura_cierre_caja',
 				displayField: 'id_apertura_cierre_caja',
@@ -393,7 +403,7 @@ Phx.vista.AperturaCierreCajaAsociada=Ext.extend(Phx.gridInterfaz,{
 			},
 			type: 'AwesomeCombo',
 			id_grupo: 0,
-			filters: {pfiltro: 'cdo.cajero',type: 'string'},
+			filters: {pfiltro: 'cdo.cajero#cdo.nombre',type: 'string'},
 			grid: false,
 			form: true
 		},
@@ -602,12 +612,22 @@ Phx.vista.AperturaCierreCajaAsociada=Ext.extend(Phx.gridInterfaz,{
 
   onButtonNew: function (m) {
     Phx.vista.AperturaCierreCajaAsociada.superclass.onButtonNew.call(this);
-
     this.Cmp.id_deposito.setValue(this.maestro.id_deposito);
 		this.form.el.dom.firstChild.childNodes[0].style.background = '#a3c9f7';
 		this.Cmp.id_punto_venta.setValue(Phx.CP.getPagina(this.idContenedorPadre).id_punto_venta);
-
+		/*CONDICION PARA QUE APLIQUE EL FILTRO*/
+				if (m == 'SI') {
+					this.Cmp.id_apertura_cierre_caja.store.baseParams.id_punto_venta = '';
+				} else {
+					this.Cmp.id_apertura_cierre_caja.store.baseParams.id_punto_venta = Phx.CP.getPagina(this.idContenedorPadre).id_punto_venta;
+				}
+		/******************************************/
   },
+
+	asociar_diferentes : function() {
+		var aso = 'SI';
+		this.onButtonNew(aso);
+	},
 
   onReloadPage: function (m) {
       this.maestro = m;
@@ -629,7 +649,7 @@ Phx.vista.AperturaCierreCajaAsociada=Ext.extend(Phx.gridInterfaz,{
       }
 
 			this.Cmp.id_apertura_cierre_caja.store.baseParams.id_moneda_deposito_agrupado = this.maestro.id_moneda_deposito;
-      this.Cmp.id_apertura_cierre_caja.store.baseParams.id_punto_venta = Phx.CP.getPagina(this.idContenedorPadre).id_punto_venta;
+      //this.Cmp.id_apertura_cierre_caja.store.baseParams.id_punto_venta = Phx.CP.getPagina(this.idContenedorPadre).id_punto_venta;
       this.store.baseParams = {id_deposito: this.maestro.id_deposito};
       this.load({params: {start: 0, limit: 50}});
   },

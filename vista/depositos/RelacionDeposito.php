@@ -400,7 +400,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'monto_total_ml',
-                        fieldLabel: 'Monto Total M/L',
+                        fieldLabel: 'Monto Total Ventas M/L',
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 150,
@@ -424,7 +424,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'monto_total_me',
-                        fieldLabel: 'Monto Total M/E',
+                        fieldLabel: 'Monto Total Ventas M/E',
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 150,
@@ -455,10 +455,12 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 70,
                         renderer:function (value,p,record) {
                         var dato =  value.replace('.', ",")
-                                .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+                              .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
                         if (record.data['id_moneda_deposito'] == 2) {
                           return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="green"><b>'+dato+'</b></font></p></div>';
-                        } else {
+                        } else if (record.data['diferencia_ml'] != '0.00') {
+                          return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
+                        } else if (record.data['id_moneda_deposito'] != 2) {
                           return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
                         }
                         }
@@ -480,11 +482,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         renderer:function (value,p,record) {
                         var dato =  value.replace('.', ",")
                                 .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
-                        if (record.data['id_moneda_deposito'] == 2) {
-                          return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="green"><b>'+dato+'</b></font></p></div>';
-                        } else {
-                          return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
-                        }
+                                if (record.data['id_moneda_deposito'] == 2 && record.data['diferencia_me'] == '0.00') {
+                                  return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="green"><b>'+dato+'</b></font></p></div>';
+                                } else if (record.data['id_moneda_deposito'] == 2 && record.data['diferencia_me'] != '0.00') {
+                                  return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
+                                } else if (record.data['id_moneda_deposito'] != 2) {
+                                  return '<div style="font-size:14px; text-align:right; font-weight:bold; ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
+                                }
+
                         }
                     },
                     type: 'TextField',
