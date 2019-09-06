@@ -101,7 +101,7 @@ class ACTVentaFacturacion extends ACTbase{
 	 $this->objFunc=$this->create('MODVentaFacturacion');
 	 $this->res=$this->objFunc->siguienteEstadoRecibo($this->objParam);
 	 $this->res->imprimirRespuesta($this->res->generarJson());
- }
+ } 
 
  function insertarVentaCompleta(){
 		 $this->objFunc=$this->create('MODVentaFacturacion');

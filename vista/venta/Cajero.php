@@ -22,9 +22,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	//tipo_usuario : 'cajero',
 
 
-
-
-
 	constructor:function(config){
 		this.maestro=config.maestro;
 		//this.tipo_usuario = 'cajero';
@@ -53,11 +50,9 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 					this.capturaFiltros();
 			},this);
 
-
 	},
 
 	successGetVariables : function (response,request) {
-
 			var respuesta = JSON.parse(response.responseText);
 			if('datos' in respuesta){
 					this.variables_globales = respuesta.datos;
@@ -69,6 +64,16 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			this.store.baseParams.tipo_usuario = this.tipo_usuario;
 			this.store.baseParams.pes_estado = 'borrador';
 		//	this.bbar.add(this.cmbPuntoV);
+		this.addButton('ant_estado',{
+				grupo:[1],
+				text :'Regresar a Counter',
+				iconCls : 'batras',
+				disabled: true,
+				handler : this.regresarCounter,
+				tooltip : '<b>Reporte Formulario de Entrega de Remesas</b>'
+		});
+
+
 		this.addButton('completar_pago_2',{
 				grupo:[0],
 				text :'Completar Pago',
@@ -181,7 +186,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		this.grid.body.dom.firstChild.firstChild.lastChild.style.background='#FEFFF4';
 		this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#FFF4EB';
 
-
 	},
 
 
@@ -199,12 +203,14 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 					 /**********CONDICION PARA OCULTAR BOTONES***************************/
 					 if (this.tipo_punto_venta == 'ato') {
-								this.getBoton('completar_pago').setVisible(false);
+						 	this.getBoton('completar_pago').setVisible(false);
+							this.getBoton('ant_estado').setVisible(false);
 								//this.getBoton('completar_pago_2').setVisible(false);
 					 }
 					 else {
 							 this.tbar.items.items[0].setVisible(false);
 							 this.getBoton('completar_pago_2').setVisible(false);
+
 							 //this.getBoton('completar_pago').setVisible(true);
 					 }
 					 /*******************************************************************/
@@ -219,6 +225,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			this.getBoton('btnImprimir').enable();
 			this.getBoton('anular_fact').enable();
 			this.getBoton('completar_pago_2').enable();
+			this.getBoton('ant_estado').enable();
+
 
 			Phx.vista.Cajero.superclass.preparaMenu.call(this);
 		},
@@ -229,8 +237,35 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 				this.getBoton('btnImprimir').disable();
 				this.getBoton('anular_fact').disable();
 				this.getBoton('completar_pago_2').disable();
+				this.getBoton('ant_estado').disable();
 				Phx.vista.Cajero.superclass.liberaMenu.call(this);
 		},
+
+
+		EnableSelect: function(n,extra) {
+        var data = this.getSelectedData();
+        Ext.apply(data,extra);
+
+        this.preparaMenu(n);
+
+
+    },
+
+
+    /**
+     * @function DisableSelect
+     * @autor Rensi Arteaga Copari
+     * se ejecuta al deseleccionar un evento de grid
+     * @param {Ext.tree.node}  n  cuando viene de arbInterfaz, es el nodo selecionado
+     *        {ext.grid.SelectionModel} n   el SelectionModel
+     *
+     */
+
+    DisableSelect: function(n) {
+
+        this.liberaMenu(n)
+
+    },
 
 
 	 bactGroups:  [0,1,2,3],
@@ -375,83 +410,108 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 										return false;
 									}
 								},this)
-									}
+							}
 
 							}, scope : this
 					});
+	},
 
+	onDestroy: function() {
+			//Phx.baseInterfaz.superclass.destroy.call(this,c);
+			this.store.baseParams.id_punto_venta = '';
+			this.fireEvent('closepanel',this);
 
+			if (this.window) {
+					this.window.destroy();
+			}
+			if (this.form) {
+					this.form.destroy();
+			}
+
+			Phx.CP.destroyPage(this.idContenedor);
+			delete this;
 
 	},
 
 	iniciarEventos:function(){
-		console.log("llega auqi botones",this);
-		//recuperamos si tiene apertura de Caja
-		Ext.Ajax.request({
-				url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
-				params:{
-					id_punto_venta:this.variables_globales.id_punto_venta,
-					id_sucursal:this.variables_globales.id_sucursal
-				},
-				success: function(resp){
-						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-						this.aperturaText = reg.ROOT.datos.v_apertura;
-						this.tipo_punto_venta = reg.ROOT.datos.v_tipo_punto_venta;
-						this.variables_globales.aperturaEstado = this.aperturaText;
 
-						if (this.aperturaText == 'SIN APERTURA DE CAJA') {
-							this.bbar.items.items[14].el.dom.style.color='red';
-							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
-							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
-							// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							//
-							// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							this.apertura.setText(this.aperturaText)
-						} else if (this.aperturaText == 'abierto') {
-							this.bbar.items.items[14].el.dom.style.color='green';
-							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
-							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
-
-							console.log("llega aqui",this.bbar.items.items[14].el.dom.style);
-							// this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-							//
-							// this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-							this.apertura.setText('CAJA ABIERTA')
-						}else if (this.aperturaText == 'cerrado') {
-							this.bbar.items.items[14].el.dom.style.color='blue';
-							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
-							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
-							// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							//
-							// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							this.apertura.setText('CAJA CERRADA')
-						}
-
-						/******AQUI PONER CONDICION PARA LOS TIPOS ATO y CTO*************/
-						if (this.tipo_punto_venta == 'ato') {
-								 this.getBoton('completar_pago').setVisible(false);
-
-						} else {
-								this.tbar.items.items[0].setVisible(false);
-								this.getBoton('completar_pago_2').setVisible(false);
-						}
-						/*****************************************************************/
-
-
-
-				},
-				failure: this.conexionFailure,
-				timeout:this.timeout,
+		 /***************/
+ 		 this.timer_id=Ext.TaskMgr.start({
+				run: Ftimer,
+				interval:3000,
 				scope:this
 		});
-		/***************/
+		function Ftimer(){
+			//recuperamos si tiene apertura de Caja
+					if (this.store.baseParams.id_punto_venta != '') {
+
+						Ext.Ajax.request({
+								url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
+								params:{
+									id_punto_venta:this.variables_globales.id_punto_venta,
+									id_sucursal:this.variables_globales.id_sucursal
+								},
+								success: function(resp){
+										var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+										this.aperturaText = reg.ROOT.datos.v_apertura;
+										this.tipo_punto_venta = reg.ROOT.datos.v_tipo_punto_venta;
+										this.variables_globales.aperturaEstado = this.aperturaText;
+
+										if (this.aperturaText == 'SIN APERTURA DE CAJA') {
+											this.bbar.items.items[14].el.dom.style.color='red';
+											this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
+											this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
+											// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+											//
+											// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+											this.apertura.setText(this.aperturaText)
+										} else if (this.aperturaText == 'abierto') {
+											this.bbar.items.items[14].el.dom.style.color='green';
+											this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
+											this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
+
+											console.log("llega aqui",this.bbar.items.items[14].el.dom.style);
+											// this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
+											//
+											// this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
+											this.apertura.setText('CAJA ABIERTA')
+										}else if (this.aperturaText == 'cerrado') {
+											this.bbar.items.items[14].el.dom.style.color='blue';
+											this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
+											this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
+											// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+											//
+											// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+											this.apertura.setText('CAJA CERRADA')
+										}
+
+										/******AQUI PONER CONDICION PARA LOS TIPOS ATO y CTO*************/
+										if (this.tipo_punto_venta == 'ato') {
+												 this.getBoton('completar_pago').setVisible(false);
+												 this.getBoton('ant_estado').setVisible(false);
+
+										} else {
+												this.tbar.items.items[0].setVisible(false);
+												this.getBoton('completar_pago_2').setVisible(false);
+										}
+										/*****************************************************************/
+
+								},
+								failure: this.conexionFailure,
+								timeout:this.timeout,
+								scope:this
+						});
+
+								this.reload();
+								console.log("muestra carga");
+						}
+
+			}
+
+/************************************************/
+
 
 	},
-
-		onButtonAct:function () {
-			this.iniciarEventos();
-			this.reload();
-		},
 
 		openForm : function (tipo, record) {
     	var me = this;
@@ -513,6 +573,24 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			});
 
      },
+
+		 regresarCounter:function(){
+ 			//Phx.CP.loadingShow();
+ 			var d = this.sm.getSelected().data;
+
+ 			Ext.Ajax.request({
+ 					url:'../../sis_ventas_facturacion/control/Cajero/regresarCounter',
+ 					params:{id_estado_wf_act:d.id_estado_wf,
+ 									id_proceso_wf_act:d.id_proceso_wf,
+ 								  tipo:'facturacion'},
+ 					success:this.successWizard,
+ 					failure: this.conexionFailure,
+ 					timeout:this.timeout,
+ 					scope:this
+ 			});
+
+      },
+
 
 		 failureWizard:function(resp1,resp2,resp3,resp4,resp5){
          var resp = resp1;// error conexion
@@ -593,6 +671,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
       wnd.document.write(objetoDatos.html);
       },
 
+	loadMask :false,
 	Atributos:[
 		{
 			//configuracion del componente
@@ -606,36 +685,120 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'nit',
-				fieldLabel: 'NIT',
+				name: 'fecha',
+				fieldLabel: 'Fecha Factura.',
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:25
+							format: 'd/m/Y',
+							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
-				type:'TextField',
-				filters:{pfiltro:'fact.nit',type:'string'},
+				type:'DateField',
+				filters:{pfiltro:'fact.fecha',type:'date'},
 				id_grupo:1,
 				grid:true,
-				bottom_filter:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'nombre_factura',
-				fieldLabel: 'Cliente',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:100
-			},
-				type:'TextField',
-				filters:{pfiltro:'fact.nombre_factura',type:'string'},
-				id_grupo:1,
-				grid:true,
-				bottom_filter:true,
 				form:false
 		},
+		{
+ 		 config:{
+ 			 name: 'nro_factura',
+ 			 fieldLabel: 'Nro Factura',
+ 			 allowBlank: true,
+ 			 anchor: '80%',
+ 			 gwidth: 100,
+ 			 maxLength:4
+ 		 },
+ 			 type:'NumberField',
+ 			 filters:{pfiltro:'ven.nro_factura',type:'numeric'},
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 form:false
+ 	 },
+	 {
+		 config:{
+			 name: 'cod_control',
+			 fieldLabel: 'Codigo Control',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:15
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'ven.cod_control',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'nit',
+			 fieldLabel: 'NIT',
+			 allowBlank: false,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:25
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'fact.nit',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 bottom_filter:true,
+			 form:true
+	 },
+	 {
+		 config:{
+			 name: 'nombre_factura',
+			 fieldLabel: 'Razón Social',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 150,
+			 maxLength:100
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'fact.nombre_factura',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 bottom_filter:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'total_venta',
+			 fieldLabel: 'Importe',
+			 allowBlank: false,
+			 anchor: '80%',
+			 gwidth: 100,
+			 renderer:function (value,p,record) {
+			 var dato =  value.replace('.', ",")
+							 .replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+			 return '<div style="text-align:right; ext:qtip="Optimo"><p>'+dato+'</p></div>';
+
+		 },
+			 decimalPrecision:2,
+			 maxLength:1179650
+		 },
+			 type:'NumberField',
+			 filters:{pfiltro:'fact.total_venta',type:'numeric'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'observaciones',
+			 fieldLabel: 'Observaciones',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 200,
+			 style:'text-transform:uppercase;'
+			 //maxLength:-5
+		 },
+			 type:'TextArea',
+			 filters:{pfiltro:'fact.observaciones',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:true
+	 },
 		{
  		 config : {
  			 name : 'id_cliente',
@@ -688,22 +851,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
  		 id_grupo : 0,
  		 form : true
  	 },
-	 {
-		 config:{
-			 name: 'observaciones',
-			 fieldLabel: 'Observaciones',
-			 allowBlank: true,
-			 anchor: '80%',
-			 gwidth: 100,
-			 style:'text-transform:uppercase;'
-			 //maxLength:-5
-		 },
-			 type:'TextArea',
-			 filters:{pfiltro:'fact.observaciones',type:'string'},
-			 id_grupo:1,
-			 grid:true,
-			 form:true
-	 },
 		{
 			config:{
 				name: 'correlativo_venta',
@@ -716,89 +863,10 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'fact.correlativo_venta',type:'string'},
 				id_grupo:1,
-				grid:true,
+				grid:false,
 				form:false
 		},
-		// {
-		// 	config: {
-		// 		name: 'id_cliente_destino',
-		// 		fieldLabel: 'Destino',
-		// 		allowBlank: true,
-		// 		emptyText: 'Destino...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
-		// 			id : 'id_cliente',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
-		// 			remoteSort : true,
-		// 			baseParams : {
-		// 					par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
-		// 			}
-		// 		}),
-		// 		valueField: 'id_cliente',
-		// 		displayField: 'nombre_factura',
-		// 		gdisplayField: 'cliente_destino',
-		// 		hiddenName: 'id_cliente_destino',
-		// 		forceSelection: false,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		// renderer : function(value, p, record) {
-		// 		// 	return String.format('{0}', record.data['nombre_factura']);
-		// 		// }
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: false
-		// },
-		{
-			config:{
-				name: 'total_venta',
-				fieldLabel: 'Total Venta',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				renderer : function(value, p, record) {
-					return String.format('{0}', (parseFloat( record.data['total_venta'])));
-				},
-				decimalPrecision:2,
-				maxLength:1179650
-			},
-				type:'NumberField',
-				filters:{pfiltro:'fact.total_venta',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:false
-		},
-		{
-			config:{
-				name: 'fecha',
-				fieldLabel: 'Fecha Doc.',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y',
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'fact.fecha',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:false
-		},
+
 		{
 				config: {
 						name: 'id_sucursal',
@@ -839,16 +907,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 				id_grupo: 1,
 				form: true
 		},
-		// {
-		// 	 config:{
-		// 			 name: 'forma_pago',
-		// 			 fieldLabel: 'Forma de Pago',
-		// 			 gwidth: 110
-		// 	 },
-		// 			 type:'TextField',
-		// 			 grid:true,
-		// 			 form:false
-	 // },
 	 {
 		 config:{
 			 name: 'estado',
@@ -866,30 +924,15 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	 },
 	 {
 		 config:{
-			 name: 'nro_factura',
-			 fieldLabel: 'Nro Factura',
-			 allowBlank: true,
+			 name: 'tipo_factura',
+			 fieldLabel: 'Tipo Factura',
+			 allowBlank: false,
 			 anchor: '80%',
 			 gwidth: 100,
-			 maxLength:4
-		 },
-			 type:'NumberField',
-			 filters:{pfiltro:'ven.nro_factura',type:'numeric'},
-			 id_grupo:1,
-			 grid:true,
-			 form:false
-	 },
-	 {
-		 config:{
-			 name: 'cod_control',
-			 fieldLabel: 'Codigo Control',
-			 allowBlank: true,
-			 anchor: '80%',
-			 gwidth: 100,
-			 maxLength:15
+			 maxLength:20
 		 },
 			 type:'TextField',
-			 filters:{pfiltro:'ven.cod_control',type:'string'},
+			 filters:{pfiltro:'fact.tipo_factura',type:'string'},
 			 id_grupo:1,
 			 grid:true,
 			 form:false
@@ -1364,21 +1407,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		// 	form: true
 		// },
 
-		{
-			config:{
-				name: 'tipo_factura',
-				fieldLabel: 'Tipo Factura',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:20
-			},
-				type:'TextField',
-				filters:{pfiltro:'fact.tipo_factura',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:false
-		},
 		// {
 		// 	config:{
 		// 		name: 'seguros_fob',
@@ -1679,6 +1707,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_sucursal', type: 'string'},
+		{name:'id_formula', type: 'numeric'},
 
 	],
 	sortInfo:{

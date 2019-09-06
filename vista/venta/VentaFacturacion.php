@@ -41,7 +41,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				timeout:this.timeout,
 				scope:this
 		});
-		console.log("llega aqui tipo us",this);
+
 		Ext.Ajax.request({
 					url:'../../sis_ventas_facturacion/control/Venta/getVariablesBasicas',
 					params: {'prueba':'uno'},
@@ -71,7 +71,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			Phx.vista.VentaFacturacion.superclass.constructor.call(this,request.arguments);
 			this.store.baseParams.tipo_usuario = this.tipo_usuario;
 			this.store.baseParams.pes_estado = 'borrador';
-		//	this.bbar.add(this.cmbPuntoV);
+			//	this.bbar.add(this.cmbPuntoV);
 			this.addButton('sgt_estado',{
 					grupo:[0],
 					text :'Enviar a Caja',
@@ -152,7 +152,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 			this.campo_fecha.on('select',function(value){
 			this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
-			console.log("LLEGA FECHA SELEC",this.store);
+
 			this.load();
 		},this);
 
@@ -173,11 +173,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
  actualizarSegunTab: function(name, indice){
 			 if(this.finCons){
-			// 	 if (name == 'finalizado'){
-			// 		this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
-			// 	 } else {
-			// 		this.store.baseParams.fecha = '';
-			// 	 }
 					 this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
 					 this.store.baseParams.pes_estado = name;
 					 this.store.baseParams.interfaz = 'vendedor';
@@ -347,68 +342,99 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 	},
 
-	iniciarEventos:function(){
-		/****************/
-		//recuperamos si tiene apertura de Caja
-		Ext.Ajax.request({
-				url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerAperturaCounter',
-				params:{
-					id_punto_venta:this.variables_globales.id_punto_venta,
-					id_sucursal:this.variables_globales.id_sucursal
-				},
-				success: function(resp){
-						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-						this.aperturaText = reg.ROOT.datos.v_apertura;
-						this.variables_globales.aperturaEstado = this.aperturaText;
+	onDestroy: function() {
+			//Phx.baseInterfaz.superclass.destroy.call(this,c);
+			this.variables_globales.id_punto_venta = '';
+			this.fireEvent('closepanel',this);
 
-						console.log("llega aqui avriable",this.aperturaText);
+			if (this.window) {
+					this.window.destroy();
+			}
+			if (this.form) {
+					this.form.destroy();
+			}
 
-						if (this.aperturaText == 'SIN APERTURA DE CAJA') {
-							this.bbar.items.items[14].el.dom.style.color='red';
-							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
-							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
-							// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							//
-							// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							this.apertura.setText(this.aperturaText)
-						} else if (this.aperturaText == 'abierto') {
-							this.bbar.items.items[14].el.dom.style.color='green';
-							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
-							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
-
-							console.log("llega aqui",this.bbar.items.items[14].el.dom.style);
-							// this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-							//
-							// this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-							this.apertura.setText('CAJA ABIERTA')
-						}else if (this.aperturaText == 'cerrado') {
-							this.bbar.items.items[14].el.dom.style.color='blue';
-							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
-							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
-							// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							//
-							// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
-							this.apertura.setText('CAJA CERRADA')
-						}
-
-
-				},
-				failure: this.conexionFailure,
-				timeout:this.timeout,
-				scope:this
-		});
-		/***************/
+			Phx.CP.destroyPage(this.idContenedor);
+			delete this;
 
 	},
 
-		onButtonAct:function () {
-			this.iniciarEventos();
-			this.reload();
-		},
+	iniciarEventos:function(){
+		//recuperamos si tiene apertura de Caja
+		/*********Actualizacion automatica*******/
+		this.timer_id=Ext.TaskMgr.start({
+			 run: Ftimer,
+			 interval:60000,
+			 scope:this
+	 });
+	 function Ftimer(){
+	if (this.variables_globales.id_punto_venta != '') {
+		 Ext.Ajax.request({
+ 				url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerAperturaCounter',
+ 				params:{
+ 					id_punto_venta:this.variables_globales.id_punto_venta,
+ 					id_sucursal:this.variables_globales.id_sucursal
+ 				},
+ 				success: function(resp){
+ 						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+ 						this.aperturaText = reg.ROOT.datos.v_apertura;
+ 						this.variables_globales.aperturaEstado = this.aperturaText;
+
+ 						//console.log("llega aqui avriable",this.aperturaText);
+
+ 						if (this.aperturaText == 'SIN APERTURA DE CAJA') {
+ 							this.bbar.items.items[14].el.dom.style.color='red';
+ 							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
+ 							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
+ 							// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+ 							//
+ 							// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+ 							this.apertura.setText(this.aperturaText)
+ 						} else if (this.aperturaText == 'abierto') {
+ 							this.bbar.items.items[14].el.dom.style.color='green';
+ 							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
+ 							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
+
+ 							//console.log("llega aqui",this.bbar.items.items[14].el.dom.style);
+ 							// this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
+ 							//
+ 							// this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
+ 							this.apertura.setText('CAJA ABIERTA')
+ 						}else if (this.aperturaText == 'cerrado') {
+ 							this.bbar.items.items[14].el.dom.style.color='blue';
+ 							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
+ 							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
+ 							// this.bbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+ 							//
+ 							// this.tbar.el.dom.style.background='linear-gradient(45deg, #ffe2e2 0%,#e09d9d 100%)';
+ 							this.apertura.setText('CAJA CERRADA')
+ 						}
+
+
+ 				},
+ 				failure: this.conexionFailure,
+ 				timeout:this.timeout,
+ 				scope:this
+ 		});
+ 		/***************/
+
+				//this.reload();
+				// Phx.CP.getPagina(this.idContenedor).reload();
+				this.load({params:{start:0, limit:this.tam_pag}});
+		}
+	}
+/************************************************/
+
+	},
+
+		// onButtonAct:function () {
+		// 	this.iniciarEventos();
+		// 	this.reload();
+		// },
 
 		onButtonNew:function () {
 			Phx.vista.VentaFacturacion.superclass.onButtonNew.call(this);
-			console.log("boton new",this);
+			console.log("nuevo",Phx.vista.VentaFacturacion.superclass.onButtonNew);
 			this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
 			this.Cmp.id_punto_venta.store.baseParams.id_punto_venta = this.store.baseParams.id_punto_venta;
 					this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag},
@@ -448,7 +474,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 						 callback : function (r) {
 								this.Cmp.id_cliente.store.baseParams.nit = '';
 								if (r.length == 1) {
-
 									this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
 									}
 
@@ -458,16 +483,46 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			},this);
 
 		},
-		onButtonEdit:function () {
-			Phx.vista.VentaFacturacion.superclass.onButtonEdit.call(this);
-			this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-		},
+			onButtonEdit:function () {
+				Phx.vista.VentaFacturacion.superclass.onButtonEdit.call(this);
+				this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
 
+				var rec = this.sm.getSelected();
+
+				this.Cmp.id_punto_venta.store.baseParams.id_punto_venta = this.store.baseParams.id_punto_venta;
+						this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag},
+							 callback : function (r) {
+										this.Cmp.id_punto_venta.setValue(this.store.baseParams.id_punto_venta);
+										//	this.detCmp.id_producto.store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
+										this.Cmp.id_punto_venta.fireEvent('select',this.Cmp.id_punto_venta, this.Cmp.id_punto_venta.store.getById(this.store.baseParams.id_punto_venta));
+
+								}, scope : this
+						});
+
+				this.Cmp.id_sucursal.store.load({params:{start:0,limit:50},
+					 callback : function (r) {
+							this.Cmp.id_sucursal.setValue(this.variables_globales.id_sucursal);
+							if (this.variables_globales.vef_tiene_punto_venta != 'true') {
+								this.detCmp.id_producto.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
+								}
+								this.Cmp.id_sucursal.fireEvent('select',this.Cmp.id_sucursal, this.Cmp.id_sucursal.store.getById(this.variables_globales.id_sucursal));
+
+						}, scope : this
+				});
+				console.log("llega rec",rec);
+				this.Cmp.id_formula.store.load({params:{start:0,limit:50},
+					 callback : function (r) {
+							this.Cmp.id_formula.setValue(rec.data.id_formula);
+								this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(rec.data.id_formula));
+						}, scope : this
+				});
+
+			},
 
 		sigEstado:function(){
 			//Phx.CP.loadingShow();
 			var d = this.sm.getSelected().data;
-			console.log("llega aqui el id y el proceso",d);
+
 			Ext.Ajax.request({
 					url:'../../sis_ventas_facturacion/control/VentaFacturacion/siguienteEstadoRecibo',
 					params:{id_estado_wf_act:d.id_estado_wf,
@@ -525,7 +580,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		            scope:this
 		        });
 			},
-
+	loadMask :false,
 	Atributos:[
 		{
 			//configuracion del componente
@@ -537,6 +592,52 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true
 		},
+		{
+			config:{
+				name: 'fecha',
+				fieldLabel: 'Fecha Factura.',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+							format: 'd/m/Y',
+							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+			},
+				type:'DateField',
+				filters:{pfiltro:'fact.fecha',type:'date'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{
+ 		 config:{
+ 			 name: 'nro_factura',
+ 			 fieldLabel: 'Nro Factura',
+ 			 allowBlank: true,
+ 			 anchor: '80%',
+ 			 gwidth: 100,
+ 			 maxLength:4
+ 		 },
+ 			 type:'NumberField',
+ 			 filters:{pfiltro:'ven.nro_factura',type:'numeric'},
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 form:false
+ 	 },
+	 {
+		 config:{
+			 name: 'cod_control',
+			 fieldLabel: 'Codigo Control',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:15
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'ven.cod_control',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
 		{
 			config:{
 				name: 'nit',
@@ -553,22 +654,87 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				bottom_filter: true,
 				form:true
 		},
-		// {
-		// 	config:{
-		// 		name: 'nombre_factura',
-		// 		fieldLabel: 'Cliente',
-		// 		allowBlank: true,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:100
-		// 	},
-		// 		type:'TextField',
-		// 		filters:{pfiltro:'fact.nombre_factura',type:'string'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		bottom_filter: true,
-		// 		form:false
-		// },
+		{
+ 		 config:{
+ 			 name: 'nombre_factura',
+ 			 fieldLabel: 'Razón Social',
+ 			 allowBlank: true,
+ 			 anchor: '80%',
+ 			 gwidth: 150,
+ 			 maxLength:100
+ 		 },
+ 			 type:'TextField',
+ 			 filters:{pfiltro:'fact.nombre_factura',type:'string'},
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 bottom_filter:true,
+ 			 form:false
+ 	 },
+	 {
+		 config:{
+			 name: 'total_venta',
+			 fieldLabel: 'Total Venta',
+			 allowBlank: false,
+			 anchor: '80%',
+			 gwidth: 100,
+			 renderer:function (value,p,record) {
+					var dato =  value.replace('.', ",")
+									.replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
+					return '<div style="text-align:right; font-weight:bold; font-size:12px; ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
+
+				},
+			 decimalPrecision:2,
+			 maxLength:1179650
+		 },
+			 type:'NumberField',
+			 filters:{pfiltro:'fact.total_venta',type:'numeric'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'excento',
+			 fieldLabel: 'Excento',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:1179650,
+			 galign:'right',
+			 renderer:function (value,p,record){
+			 return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
+		 }
+		 },
+			 type:'NumberField',
+			 filters:{pfiltro:'ven.excento',type:'numeric'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'credito_fiscal',
+			 fieldLabel: 'Credito Fiscal',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:1179650,
+			 galign:'right',
+			 renderer:function (value,p,record){
+				 if (record.data['excento'] != 0) {
+				 	var credito = (record.data['total_venta'] - record.data['excento']);
+				} else {
+					var credito = 0;
+				}
+			 return  String.format('<div style="font-size:12px; color:green; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(credito,'0,000.00'));
+		 }
+		 },
+			 type:'NumberField',
+			 filters:{pfiltro:'ven.excento',type:'numeric'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
 		{
  		 config : {
  			 name : 'id_cliente',
@@ -627,9 +793,9 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 fieldLabel: 'Observaciones',
 			 allowBlank: true,
 			 anchor: '80%',
-			 gwidth: 100,
-			 style:'text-transform:uppercase;'
-			 //maxLength:-5
+			 gwidth: 200,
+			 style:'text-transform:uppercase;',
+			 minLength:20
 		 },
 			 type:'TextArea',
 			 filters:{pfiltro:'fact.observaciones',type:'string'},
@@ -649,87 +815,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'fact.correlativo_venta',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:false
-		},
-		// {
-		// 	config: {
-		// 		name: 'id_cliente_destino',
-		// 		fieldLabel: 'Destino',
-		// 		allowBlank: true,
-		// 		emptyText: 'Destino...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
-		// 			id : 'id_cliente',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
-		// 			remoteSort : true,
-		// 			baseParams : {
-		// 					par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
-		// 			}
-		// 		}),
-		// 		valueField: 'id_cliente',
-		// 		displayField: 'nombre_factura',
-		// 		gdisplayField: 'cliente_destino',
-		// 		hiddenName: 'id_cliente_destino',
-		// 		forceSelection: false,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		// renderer : function(value, p, record) {
-		// 		// 	return String.format('{0}', record.data['nombre_factura']);
-		// 		// }
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: false
-		// },
-		{
-			config:{
-				name: 'total_venta',
-				fieldLabel: 'Total Venta',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				renderer : function(value, p, record) {
-					return String.format('<div style="font-size:12px; color:red; text-align:right; font-weight:bold;"><b>{0}</b></div>', (parseFloat( record.data['total_venta'])));
-				},
-				decimalPrecision:2,
-				maxLength:1179650
-			},
-				type:'NumberField',
-				filters:{pfiltro:'fact.total_venta',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:false
-		},
-		{
-			config:{
-				name: 'fecha',
-				fieldLabel: 'Fecha Doc.',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y',
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'fact.fecha',type:'date'},
-				id_grupo:1,
-				grid:true,
+				grid:false,
 				form:false
 		},
 		{
@@ -772,16 +858,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				id_grupo: 1,
 				form: true
 		},
-		// {
-		// 	 config:{
-		// 			 name: 'forma_pago',
-		// 			 fieldLabel: 'Forma de Pago',
-		// 			 gwidth: 110
-		// 	 },
-		// 			 type:'TextField',
-		// 			 grid:true,
-		// 			 form:false
-	 // },
+
 	 {
 		 config:{
 			 name: 'estado',
@@ -793,36 +870,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		 },
 			 type:'TextField',
 			 filters:{pfiltro:'ven.estado',type:'string'},
-			 id_grupo:1,
-			 grid:true,
-			 form:false
-	 },
-	 {
-		 config:{
-			 name: 'nro_factura',
-			 fieldLabel: 'Nro Factura',
-			 allowBlank: true,
-			 anchor: '80%',
-			 gwidth: 100,
-			 maxLength:4
-		 },
-			 type:'NumberField',
-			 filters:{pfiltro:'ven.nro_factura',type:'numeric'},
-			 id_grupo:1,
-			 grid:true,
-			 form:false
-	 },
-	 {
-		 config:{
-			 name: 'cod_control',
-			 fieldLabel: 'Codigo Control',
-			 allowBlank: true,
-			 anchor: '80%',
-			 gwidth: 100,
-			 maxLength:15
-		 },
-			 type:'TextField',
-			 filters:{pfiltro:'ven.cod_control',type:'string'},
 			 id_grupo:1,
 			 grid:true,
 			 form:false
@@ -1208,21 +1255,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		// 		form:true
 		// },
 
-		// {
-		// 	config:{
-		// 		name: 'excento',
-		// 		fieldLabel: 'Excento',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.excento',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:false
-		// },
 		// {
 		// 	config:{
 		// 		name: 'valor_bruto',
@@ -1612,6 +1644,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_sucursal', type: 'string'},
+		{name:'id_formula', type: 'numeric'},
 
 	],
 	sortInfo:{

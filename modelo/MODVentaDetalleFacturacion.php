@@ -54,6 +54,8 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('nombre_producto','varchar');
 		$this->captura('total','numeric');
+		$this->captura('excento','numeric');
+		$this->captura('tiene_excento','varchar');
 
 
 		//Ejecuta la instruccion
@@ -79,6 +81,7 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->setParametro('id_producto','id_producto','int4');
 		$this->setParametro('id_sucursal_producto','id_sucursal_producto','int4');
 		$this->setParametro('precio','precio','numeric');
+		$this->setParametro('excento','excento','numeric');
 
 
 		//Ejecuta la instruccion
@@ -106,6 +109,7 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->setParametro('precio','precio','numeric');
 		$this->setParametro('cantidad_det','cantidad','numeric');
 		$this->setParametro('funcion','funcion','varchar');
+		$this->setParametro('excento','excento','numeric');
 
 
 		//Ejecuta la instruccion

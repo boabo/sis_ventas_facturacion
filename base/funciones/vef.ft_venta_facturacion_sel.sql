@@ -97,9 +97,11 @@ BEGIN
 						fact.id_usuario_mod,
 						fact.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod
+						usu2.cuenta as usr_mod,
                         --sucu.nombre
+                        det.id_formula
 						from vef.tventa fact
+                        left join vef.tventa_detalle det on det.id_venta = fact.id_venta
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
@@ -107,6 +109,10 @@ BEGIN
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
+
+            /*Agrupamos*/
+            v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula';
+
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
@@ -205,9 +211,13 @@ BEGIN
 						fact.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-                        fact.informe
+                        fact.informe,
                         --sucu.nombre
+
+                        det.id_formula
+
 						from vef.tventa fact
+                        left join vef.tventa_detalle det on det.id_venta = fact.id_venta
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
@@ -215,6 +225,10 @@ BEGIN
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
+
+            /*Agrupamos*/
+            v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula';
+
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
@@ -387,7 +401,12 @@ BEGIN
             '||v_columnas_destino||',
             suc.codigo as codigo_sucursal,
             dos.leyenda,
-            suc.zona
+            suc.zona,
+
+            /************DATO EXCENTO************/
+            coalesce(ven.excento,0) as excento
+            /************************************/
+
             from vef.tventa ven
               inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
               '||v_join_destino||'

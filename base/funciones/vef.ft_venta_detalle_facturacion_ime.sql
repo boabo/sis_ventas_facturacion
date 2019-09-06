@@ -52,6 +52,8 @@ DECLARE
     v_total_venta				numeric;
     v_id_venta					integer;
 	v_id_concepto_ingas			integer;
+
+    v_excento					numeric;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_detalle_facturacion_ime';
@@ -101,14 +103,20 @@ BEGIN
 
 			)RETURNING id_venta_detalle into v_id_venta_detalle;
 
-
             select sum(ven.precio * ven.cantidad) into v_total_venta
               from vef.tventa_detalle ven
               where  ven.id_venta = v_parametros.id_venta;
 
+            if (v_parametros.excento is null) then
+            	v_excento = 0;
+            else
+            	v_excento = v_parametros.excento;
+            end if;
+
               update vef.tventa set
                 total_venta = v_total_venta,
-                total_venta_msuc = v_total_venta
+                total_venta_msuc = v_total_venta,
+                excento = v_excento
               where id_venta = v_parametros.id_venta;
 
 
@@ -332,15 +340,13 @@ BEGIN
 	elsif(p_transaccion='VF_FACTDET_MOD')then
 
 		begin
-			--Sentencia de la modificacion
 
+			--Sentencia de la modificacion
 			update vef.tventa_detalle set
-			--descripcion = v_parametros.descripcion,
             tipo = v_parametros.tipo,
             id_producto = v_parametros.id_producto,
             cantidad = v_parametros.cantidad_det,
             precio = v_parametros.precio
-            --id_venta = v_parametros.id_venta
 			where id_venta_detalle=v_parametros.id_venta_detalle;
 
             /*Obtenemos el total de la venta*/
@@ -351,7 +357,8 @@ BEGIN
             /***Actualizamos el total de la venta***/
             update vef.tventa set
             total_venta = venta_total,
-            total_venta_msuc = venta_total
+            total_venta_msuc = venta_total,
+            excento = v_parametros.excento
             where id_venta = v_parametros.id_venta;
             /*****************************************/
 

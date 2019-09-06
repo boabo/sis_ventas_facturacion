@@ -116,6 +116,18 @@ DECLARE
     v_reg_tipo_desc			record;
     /********************************************/
 
+
+    /*Variables para conexion*/
+    v_conexion varchar;
+    v_cadena_cnx	varchar;
+    v_sinc	varchar;
+    v_consulta	varchar;
+    v_id_factura	integer;
+    v_res_cone	varchar;
+    v_fecha_factura	varchar;
+    v_cajero		varchar;
+    /*************************/
+
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -954,6 +966,151 @@ BEGIN
 
       end;
 
+    /*********************************
+ 	#TRANSACCION:  'VEF_REGRECOUNTER_IME'
+ 	#DESCRIPCION:	Modificacion de registros
+ 	#AUTOR:		ivaldivia
+ 	#FECHA:		03-09-2019 11:00:00
+	***********************************/
+
+	elsif(p_transaccion='VEF_REGRECOUNTER_IME')then
+
+		begin
+			--Sentencia de la modificacion
+        	/*Recuperamos el id_tipo_estado y el id_estado_wf*/
+       select
+          ew.id_tipo_estado ,
+          ew.id_estado_wf,
+          ew.id_funcionario
+        into
+          v_id_tipo_estado,
+          v_id_estado_wf,
+          v_id_funcionario
+        from wf.testado_wf ew
+          inner join wf.ttipo_estado te on te.id_tipo_estado = ew.id_tipo_estado
+        where ew.id_estado_wf =  v_parametros.id_estado_wf_act;
+       /********************************************************/
+
+       /*Obtenemos los campos de venta el id_entidad y el tipo_base*/
+        select v.*,s.id_entidad,tv.tipo_base into v_venta
+        from vef.tventa v
+          inner join vef.tsucursal s on s.id_sucursal = v.id_sucursal
+          inner join vef.tcliente c on c.id_cliente = v.id_cliente
+          inner join vef.ttipo_venta tv on tv.codigo = v.tipo_factura and tv.estado_reg = 'activo'
+        where v.id_proceso_wf = v_parametros.id_proceso_wf_act;
+        /***********************************************************/
+
+        /*Obtenemos el id del estado finalizado*/
+        v_estado_finalizado = (v_id_tipo_estado-3);
+        /****************************************/
+
+
+        /*Obtenemnos el codigo finalizado*/
+        select te.codigo into v_codigo_estado
+        from wf.ttipo_estado te
+        where te.id_tipo_estado=v_estado_finalizado;
+        /******************************************/
+
+		/*Creamos un nuevo parametro*/
+        v_tabla = pxp.f_crear_parametro(ARRAY[	'_nombre_usuario_ai',
+        '_id_usuario_ai',
+        'id_venta',
+        'tipo_factura',
+        'codigo_estado'],
+                                        ARRAY[	coalesce(v_parametros._nombre_usuario_ai,''),
+                                        coalesce(v_parametros._id_usuario_ai::varchar,''),
+                                        v_venta.id_venta::varchar,
+                                        v_venta.tipo_factura,
+                                        v_codigo_estado],
+                                        ARRAY[	'varchar',
+                                        'integer',
+                                        'integer',
+                                        'varchar',
+                                        'varchar']
+        );
+        /*************************************************/
+
+       	--v_resp = vef.ft_venta_ime(p_administrador,p_id_usuario,v_tabla,'VF_VENVALI_MOD');
+
+        /*Obtenemos el codigo finalizado y fin*/
+       	select
+          te.codigo,te.fin
+        into
+          v_codigo_estado_siguiente,v_es_fin
+        from wf.ttipo_estado te
+        where te.id_tipo_estado = v_estado_finalizado;
+        /*********************************************************************/
+
+
+        /*Verificcar si seran necesario*/
+      	IF  pxp.f_existe_parametro(p_tabla,'id_depto_wf') THEN
+
+          v_id_depto = v_parametros.id_depto_wf;
+
+        END IF;
+
+        IF  pxp.f_existe_parametro(p_tabla,'obs') THEN
+            v_obs=v_parametros.obs;
+        ELSE
+          v_obs='---';
+        END IF;
+       /***************************************************************/
+
+
+        --configurar acceso directo para la alarma
+        v_acceso_directo = '';
+        v_clase = '';
+        v_parametros_ad = '';
+        v_tipo_noti = 'notificacion';
+        v_titulo  = 'Devuelve al Counter';
+
+        -- hay que recuperar el supervidor que seria el estado inmediato,...
+        v_id_estado_actual =  wf.f_registra_estado_wf(v_estado_finalizado /*tengpo*/,
+                                                      v_id_funcionario/*recuperar*/,
+                                                      v_parametros.id_estado_wf_act /*tengo*/,
+                                                      v_parametros.id_proceso_wf_act/*tengo*/,
+                                                      p_id_usuario,
+                                                      v_parametros._id_usuario_ai,
+                                                      v_parametros._nombre_usuario_ai,
+                                                      v_id_depto,
+                                                      v_obs,
+                                                      v_acceso_directo ,
+                                                      v_clase,
+                                                      v_parametros_ad,
+                                                      v_tipo_noti,
+                                                      v_titulo);
+
+         /*Verificar que hace*/
+         IF  vef.f_fun_inicio_venta_wf(p_id_usuario,
+                                      v_parametros._id_usuario_ai,
+                                      v_parametros._nombre_usuario_ai,
+                                      v_id_estado_actual,
+                                      v_parametros.id_proceso_wf_act,
+                                      v_codigo_estado_siguiente) THEN
+
+        END IF;
+		/************************************/
+
+
+
+
+
+        -- si hay mas de un estado disponible  preguntamos al usuario
+        v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado de la planilla)');
+        v_resp = pxp.f_agrega_clave(v_resp,'operacion','cambio_exitoso');
+        v_resp = pxp.f_agrega_clave(v_resp,'estado',v_codigo_estado_siguiente);
+
+        -- Devuelve la respuesta
+        return v_resp;
+
+
+
+
+
+      end;
+
+
+
 	/*********************************
  	#TRANSACCION:  'VF_fact_ELI'
  	#DESCRIPCION:	Eliminacion de registros
@@ -1143,7 +1300,15 @@ BEGIN
           raise exception 'No existe un tipo de venta con el codigo: % consulte con el administrador del sistema',v_tipo_factura;
         end if;
 
-        v_excento = 0;
+        /**********************Regularizamos el dato excento (IRVA) ****************************/
+        	IF (v_parametros.excento is not null) then
+            	v_excento = v_parametros.excento;
+            else
+            	v_excento = 0;
+            end if;
+        /*********************************************************************************/
+
+
         if (v_tipo_base = 'recibo') THEN
           v_fecha = now()::date;
         ELSIF(v_tipo_base = 'manual') then
@@ -1701,9 +1866,8 @@ end if;
           v_id_sucursal = v_parametros.id_sucursal;
         end if;
         /*************************************************************/
-
         v_tipo_factura = 'computarizada';
-        v_excento = 0;
+        v_excento = v_parametros.excento;
 
         /*Obtenemos la moneda base dependiento de la sucursal*/
         if (pxp.f_existe_parametro(p_tabla,'id_moneda')) then
@@ -2265,6 +2429,69 @@ end if;
           v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'FIN',v_venta.id_venta);
         end if;
 
+        /*Para migrar los datos a la nueva base de datos db_facturas_2019*/
+
+          /*Establecemos la conexion con la base de datos*/
+            v_cadena_cnx = migra.f_obtener_cadena_conexion();
+            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+          /*************************************************/
+
+            select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+            into v_id_factura;
+
+            /*Recuperamos el nombre del cajero que esta finalizando la factura*/
+            SELECT per.nombre_completo2 into v_cajero
+            from segu.tusuario usu
+            inner join segu.vpersona2 per on per.id_persona = usu.id_persona
+            where usu.id_usuario = p_id_usuario;
+            /******************************************************************/
+
+
+                v_consulta = '
+                            INSERT INTO sfe.tfactura(
+                            id_factura,
+                            fecha_factura,
+                            nro_factura,
+                            nro_autorizacion,
+                            estado,
+                            nit_ci_cli,
+                            razon_social_cli,
+                            importe_total_venta,
+                            codigo_control,
+                            usuario_reg
+                            )
+                            values(
+                            '||v_id_factura||',
+                            '''||v_venta.fecha||''',
+                            '''||v_nro_factura::varchar||''',
+                            '''||v_dosificacion.nroaut::varchar||''',
+                            '''||v_codigo_estado_siguiente::varchar||''',
+                            '''||v_venta.nit::varchar||''',
+                            '''||v_venta.nombre_factura::varchar||''',
+                            '||v_venta.total_venta::numeric||',
+                            '''||pxp.f_gen_cod_control(v_dosificacion.llave,
+                                                  v_dosificacion.nroaut,
+                                                  v_nro_factura::varchar,
+                                                  v_venta.nit,
+                                                  to_char(v_fecha_venta,'YYYYMMDD')::varchar,
+                                                  round(v_venta.total_venta_msuc,0))||''',
+                            '''||v_cajero||'''
+                            );';
+
+
+              IF(v_conexion!='OK') THEN
+              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+              ELSE
+
+              	perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+              	v_res_cone=(select dblink_disconnect());
+
+              END IF;
+
+              /************************************/
+        /*****************************************************************/
+
 
         -- si hay mas de un estado disponible  preguntamos al usuario
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado de la planilla)');
@@ -2535,6 +2762,79 @@ end if;
         end if;
 
 
+        /*Replicacion a la base de datos DB_FACTURAS 2019*/
+   		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
+
+          /*Establecemos la conexion con la base de datos*/
+            v_cadena_cnx = migra.f_obtener_cadena_conexion();
+            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+          /*************************************************/
+
+            select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+            into v_id_factura;
+
+            /*Recuperamos el nombre del cajero que esta finalizando la factura*/
+            SELECT per.nombre_completo2 into v_cajero
+            from segu.tusuario usu
+            inner join segu.vpersona2 per on per.id_persona = usu.id_persona
+            where usu.id_usuario = p_id_usuario;
+            /******************************************************************/
+
+
+                v_consulta = '
+                            INSERT INTO sfe.tfactura(
+                            id_factura,
+                            fecha_factura,
+                            nro_factura,
+                            nro_autorizacion,
+                            estado,
+                            nit_ci_cli,
+                            razon_social_cli,
+                            importe_total_venta,
+                            codigo_control,
+                            usuario_reg
+                            )
+                            values(
+                            '||v_id_factura||',
+                            '''||v_venta.fecha||''',
+                            '''||v_nro_factura::varchar||''',
+                            '''||v_dosificacion.nroaut::varchar||''',
+                            '''||v_codigo_estado_siguiente::varchar||''',
+                            '''||v_venta.nit::varchar||''',
+                            '''||v_venta.nombre_factura::varchar||''',
+                            '||v_venta.total_venta::numeric||',
+                            '''||pxp.f_gen_cod_control(v_dosificacion.llave,
+                                                  v_dosificacion.nroaut,
+                                                  v_nro_factura::varchar,
+                                                  v_venta.nit,
+                                                  to_char(v_fecha_venta,'YYYYMMDD')::varchar,
+                                                  round(v_venta.total_venta_msuc,0))||''',
+                            '''||v_cajero||'''
+                            );';
+
+
+              IF(v_conexion!='OK') THEN
+              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+              ELSE
+
+              	perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+              	v_res_cone=(select dblink_disconnect());
+
+              END IF;
+
+              /************************************/
+        /*****************************************************************/
+
+
+        /*************************************************/
+
+
+
+
+
+
+
         -- si hay mas de un estado disponible  preguntamos al usuario
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado de la planilla)');
         v_resp = pxp.f_agrega_clave(v_resp,'operacion','cambio_exitoso');
@@ -2708,6 +3008,64 @@ end if;
        /* if (pxp.f_get_variable_global('vef_integracion_lcv') = 'si' and v_es_fin = 'si') then
           v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'FIN',v_venta.id_venta);
         end if;*/
+
+          /*Replicacion a la base de datos DB_FACTURAS 2019*/
+   		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
+
+          /*Establecemos la conexion con la base de datos*/
+            v_cadena_cnx = migra.f_obtener_cadena_conexion();
+            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+          /*************************************************/
+
+            select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+            into v_id_factura;
+
+            /*Recuperamos el nombre del cajero que esta finalizando la factura*/
+            SELECT per.nombre_completo2 into v_cajero
+            from segu.tusuario usu
+            inner join segu.vpersona2 per on per.id_persona = usu.id_persona
+            where usu.id_usuario = p_id_usuario;
+            /******************************************************************/
+
+
+                v_consulta = '
+                            INSERT INTO sfe.tfactura(
+                            id_factura,
+                            fecha_factura,
+                            nro_factura,
+                            estado,
+                            nit_ci_cli,
+                            razon_social_cli,
+                            importe_total_venta,
+                            usuario_reg
+                            )
+                            values(
+                            '||v_id_factura||',
+                            '''||v_venta.fecha||''',
+                            '''||v_venta.nro_factura::varchar||''',
+                            '''||v_codigo_estado::varchar||''',
+                            '''||v_venta.nit::varchar||''',
+                            '''||v_venta.nombre_factura::varchar||''',
+                            '||v_venta.total_venta::numeric||',
+                            '''||v_cajero||'''
+                            );';
+
+
+              IF(v_conexion!='OK') THEN
+              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+              ELSE
+
+              	perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+              	v_res_cone=(select dblink_disconnect());
+
+              END IF;
+
+              /************************************/
+        /*****************************************************************/
+
+
+        /*************************************************/
 
 
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado de la planilla)');

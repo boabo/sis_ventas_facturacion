@@ -74,6 +74,7 @@ class MODVentaFacturacion extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+		$this->captura('id_formula','int4');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion
@@ -233,7 +234,7 @@ class MODVentaFacturacion extends MODbase{
 
 			//Devuelve la respuesta
 			return $this->respuesta;
-	}
+	}	
 
 	function insertarVentaCompleta(){
         //Abre conexion con PDO
@@ -476,6 +477,7 @@ class MODVentaFacturacion extends MODbase{
 				$this->setParametro('id_venta', 'id_venta', 'int4');
 				$this->setParametro('tipo_factura', 'tipo_factura', 'varchar');
 				$this->setParametro('tipo', 'tipo', 'varchar');
+				$this->setParametro('excento', 'excento', 'varchar');
 				//Ejecuta la instruccion
 				$this->armarConsulta();
 				$stmt = $link->prepare($this->consulta);

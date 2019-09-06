@@ -555,7 +555,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.tipo_tarjeta.allowBlank = true;
           this.Cmp.numero_tarjeta_2.reset();
           this.Cmp.codigo_tarjeta_2.reset();
-          this.Cmp.tipo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta_2.reset();
         }
         if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
             this.mostrarComponente(this.Cmp.mco_2);
@@ -780,7 +780,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     	    this.Cmp.id_forma_pago.store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
     		this.Cmp.id_forma_pago.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
         this.Cmp.id_forma_pago_2.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-        
+
     	} else {
     		this.Cmp.id_forma_pago.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
     	}

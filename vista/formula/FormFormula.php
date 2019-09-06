@@ -43,7 +43,7 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
 
         Phx.vista.FormFormula.superclass.constructor.call(this,config);
         this.init();
-        this.iniciarEventos();      
+        this.iniciarEventos();
 
         if(this.data.tipo_form == 'new'){
         	this.onNew();
@@ -499,20 +499,20 @@ Phx.vista.FormFormula=Ext.extend(Phx.frmInterfaz,{
                 id_grupo:0,
                 form:true,
         },
-        {
-            //configuracion del componente
-            config:{
-                name: 'id_punto_venta',
-                fieldLabel: 'punto_venta',
-                allowBlank: true,
-                anchor: '100%',
-                disabled:true,
-                gwidth: 200,
-                maxLength:200
-            },
-            type:'Field',
-            form:true
-        },
+        // {
+        //     //configuracion del componente
+        //     config:{
+        //         name: 'id_punto_venta',
+        //         fieldLabel: 'punto_venta',
+        //         allowBlank: true,
+        //         anchor: '100%',
+        //         disabled:true,
+        //         gwidth: 200,
+        //         maxLength:200
+        //     },
+        //     type:'Field',
+        //     form:true
+        // },
 
     ],
     title: 'Form Formula'

@@ -103,6 +103,28 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 		      });
 		}
 
+    if (this.data.objPadre.tipo_factura == 'computarizada' || this.data.objPadre.tipo_factura == 'manual' || this.data.objPadre.tipo_factura == ''){
+			this.Atributos.push({
+		            config:{
+		                name: 'excento',
+		                fieldLabel: 'Excento',
+		                allowBlank: false,
+		                //anchor: '80%',
+                    width:200,
+                    style:{
+                      background:'#FFD1A4'
+                    },
+		                maxLength:20,
+		                value : 0
+		            },
+		                type:'NumberField',
+		                id_grupo:1,
+		                form:true,
+		                valorInicial:'0'
+		      });
+
+		}
+
 	//	if (this.data.objPadre.tipo_factura == 'manual' || this.data.objPadre.tipo_factura == 'computarizadaexpo'|| this.data.objPadre.tipo_factura == 'computarizadamin'|| this.data.objPadre.tipo_factura == 'computarizadaexpomin'|| this.data.objPadre.tipo_factura == 'pedido') {
 			this.Atributos.push({
 				config:{
@@ -142,16 +164,27 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 	                valueField: 'id_dosificacion',
 	                displayField: 'nroaut',
 	                hiddenName: 'id_dosificacion',
-	                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Autorizacion:</b> {nroaut}</p><p><b>Actividad:</b> {desc_actividad_economica}</p></p><p><b>No Inicio:</b> {inicio}</p><p><b>No Final:</b> {final}</p></div></tpl>',
+                  tpl: new Ext.XTemplate([
+                      '<tpl for=".">',
+                      '<div class="x-combo-list-item">',
+                      '<p><b>N° Autorización:</b><span style="color: green; font-weight:bold;"> {nroaut}</span></p></p>',
+                      '<p><b>Actividad Económica:</b> <span style="color: blue; font-weight:bold;">{desc_actividad_economica}</span></p>',
+                      '<p><b>N° Inicial:</b> <span style="color: #D35000; font-weight:bold;">{inicial}</span></p>',
+                      '<p><b>N° Final:</b> <span style="color: red; font-weight:bold;">{final}</span></p>',
+                      '</div></tpl>'
+                    ]),
+	                //tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Autorizacion:</b> {nroaut}</p><p><b>Actividad:</b> {desc_actividad_economica}</p></p><p><b>No Inicio:</b> {inicial}</p><p><b>No Final:</b> {final}</p></div></tpl>',
 	                forceSelection: true,
 	                typeAhead: false,
 	                triggerAction: 'all',
 	                lazyRender: true,
 	                mode: 'remote',
+                  resizable:true,
 	                pageSize: 15,
 	                queryDelay: 1000,
 	                gwidth: 150,
 	                minChars: 2,
+                  listWidth:'550',
 	                disabled : true
 	            },
 	            type: 'ComboBox',
@@ -177,7 +210,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
           fieldLabel: 'Informe',
           allowBlank: false,
           width:200,
-          //maxLength:30,
+          minLength:20,
         },
           type:'TextArea',
           id_grupo:22,
@@ -285,7 +318,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                     direction: 'ASC'
                                                 },
                                                 totalProperty: 'total',
-                                                fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida'/*,'excento'*/],
+                                                fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida','excento'],
                                                 remoteSort: true,
                                                 baseParams: {par_filtro: 'todo.nombre'}
                                             }),
@@ -294,9 +327,16 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                             gdisplayField: 'nombre_producto',
                                             hiddenName: 'id_producto',
                                             forceSelection: true,
-                                            tpl : new Ext.XTemplate('<tpl for="."><div class="x-combo-list-item">','<tpl if="tipo == \'formula\'">',
-                                            '<p><b>Medico:</b> {medico}</p>','</tpl>',
-                                            '<p><b>Nombre:</b> {nombre_producto}</p><p><b>Descripcion:</b> {descripcion} {codigo_unidad_medida}</p><p><b>Precio:</b> {precio}</p></div></tpl>'),
+                                            tpl: new Ext.XTemplate([
+                                        				'<tpl for=".">',
+                                        				'<div class="x-combo-list-item">',
+                                        				'<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {nombre_producto}</span></p></p>',
+                                        				'<p><b>Descripcion:</b> <span style="color: blue; font-weight:bold;">{descripcion}</span></p>',
+                                        				'<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+                                        				'<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+                                        				'<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+                                        				'</div></tpl>'
+                                        			]),
                                             typeAhead: false,
                                             triggerAction: 'all',
                                             lazyRender: true,
@@ -820,6 +860,12 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         this.iniciarEventosProducto();
         this.obtenersuma();
 
+        /*Ocultar campo excento*/
+        if (this.Cmp.excento.getValue() == 0) {
+          this.ocultarComponente(this.Cmp.excento);
+        } else {
+          this.mostrarComponente(this.Cmp.excento);
+        }
     },
 
     roundTwo: function(can){
@@ -995,6 +1041,14 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                             var rec = this.mestore.getAt(index[0]);
                             this.mestore.remove(rec);
                             this.obtenersuma();
+
+                            /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
+                            if (rec.data.requiere_excento == 'si') {
+                              this.ocultarComponente(this.Cmp.excento);
+                              this.Cmp.excento.reset();
+                            }
+                            /***********************************************************************************/
+
                         }
 
 
@@ -1252,7 +1306,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                                direction: 'ASC'
                                                            },
                                                            totalProperty: 'total',
-                                                           fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida'/*,'excento'*/],
+                                                           fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida','excento'],
                                                            remoteSort: true,
                                                            baseParams: {par_filtro: 'todo.nombre'}
                                                        }),
@@ -1261,9 +1315,16 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                        gdisplayField: 'nombre_producto',
                                                        hiddenName: 'id_producto',
                                                        forceSelection: true,
-                                                       tpl : new Ext.XTemplate('<tpl for="."><div class="x-combo-list-item">','<tpl if="tipo == \'formula\'">',
-                                                       '<p><b>Medico:</b> {medico}</p>','</tpl>',
-                                                       '<p><b>Nombre:</b> {nombre_producto}</p><p><b>Descripcion:</b> {descripcion} {codigo_unidad_medida}</p><p><b>Precio:</b> {precio}</p></div></tpl>'),
+                                                       tpl: new Ext.XTemplate([
+                                                   				'<tpl for=".">',
+                                                   				'<div class="x-combo-list-item">',
+                                                   				'<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {nombre_producto}</span></p></p>',
+                                                   				'<p><b>Descripcion:</b> <span style="color: blue; font-weight:bold;">{descripcion}</span></p>',
+                                                   				'<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+                                                   				'<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+                                                   				'<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+                                                   				'</div></tpl>'
+                                                   			]),
                                                        typeAhead: false,
                                                        triggerAction: 'all',
                                                        lazyRender: true,
@@ -1379,6 +1440,19 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       	    	this.variables.items.items[2].reset();
               }
 
+      /***************Habilitamos el campo Excento****************/
+          if (r.data.excento == 'si') {
+            this.mostrarComponente(this.Cmp.excento);
+          }else{
+            this.ocultarComponente(this.Cmp.excento);
+            this.Cmp.excento.reset();
+          }
+
+          this.requiere_excento = r.data.excento;
+     /***********************************************************/
+
+
+
         },this);
     	} else {
     		this.variables.items.items[1].store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
@@ -1439,6 +1513,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       cantidad: this.variables.items.items[3].getValue(),
       precio_unitario: this.variables.items.items[4].getValue(),
       precio_total:this.variables.items.items[5].getValue() ,
+      requiere_excento:this.requiere_excento,
       id_venta:this.Cmp.id_venta.getValue()        //
       });
       console.log("llega aqui nuevos",this);
@@ -1611,7 +1686,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                             width: '100%',
                             autoScroll:true,
                             style: {
-                                   height:'195px',
+                                   height:'220px',
                                    background: '#90B6E3',
                                    //border:'2px solid green'
                                 },
@@ -1631,7 +1706,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                         width: '90%',
                                         style: {
                                                //height:'120px',
-                                               height:'160px',
+                                               height:'195px',
                                                width:'590px',
                                                //border:'2px solid red'
                                             },
@@ -1652,9 +1727,9 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                       border: false,
                                       layout: 'form',
                                       style: {
-                                             height:'160px',
-                                             width:'300px',
-                                            // border:'2px solid green'
+                                             height:'195px',
+                                             width:'320px',
+                                             //border:'2px solid green'
                                           },
                                       padding: '0 0 0 10',
                                       bodyStyle: 'padding-left:5px;',

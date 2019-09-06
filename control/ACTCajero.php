@@ -104,6 +104,12 @@ class ACTCajero extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+	function regresarCounter(){
+ 	 $this->objFunc=$this->create('MODCajero');
+ 	 $this->res=$this->objFunc->regresarCounter($this->objParam);
+ 	 $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
 	function reporteFactura(){
 		$this->objFunc = $this->create('MODCajero');
 		$datos = array();

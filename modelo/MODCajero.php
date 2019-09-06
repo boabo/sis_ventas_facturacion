@@ -76,6 +76,7 @@ class MODCajero extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('informe','text');
+		$this->captura('id_formula','int4');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion
@@ -267,7 +268,7 @@ class MODCajero extends MODbase{
 			//Ejecuta la instruccion
 			$this->armarConsulta();
 			$this->ejecutarConsulta();
-
+			//var_dump($this->respuesta);
 			//Devuelve la respuesta
 			return $this->respuesta;
 	}
@@ -318,6 +319,26 @@ class MODCajero extends MODbase{
 
 			//Define los parametros para la funcion
 			$this->setParametro('id_venta','id_venta','int4');
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+
+			//Devuelve la respuesta
+			return $this->respuesta;
+	}
+
+	function regresarCounter(){
+			//Definicion de variables para ejecucion del procedimiento
+			$this->procedimiento='vef.ft_venta_facturacion_ime';
+			$this->transaccion='VEF_REGRECOUNTER_IME';
+			$this->tipo_procedimiento='IME';
+
+			//Define los parametros para la funcion
+			$this->setParametro('id_estado_wf_act','id_estado_wf_act','int4');
+			$this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
+			$this->setParametro('tipo','tipo','varchar');
+
 
 			//Ejecuta la instruccion
 			$this->armarConsulta();
@@ -410,6 +431,7 @@ class MODCajero extends MODbase{
     $this->captura('codigo_sucursal','varchar');//nuevo mvm
 		$this->captura('leyenda','varchar');//nuevo mvm
 		$this->captura('zona','varchar');//nuevo mvm
+		$this->captura('excento','numeric');//nuevo excento
 		//$this->captura('moneda_base','varchar');//nuevo mvm
 		//$this->captura('codigo_moneda','varchar');//nuevo mvm
 		//$this->captura('fecha_ingles','varchar');//nuevo mvm

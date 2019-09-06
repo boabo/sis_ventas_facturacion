@@ -126,30 +126,32 @@ class RFactura
 					$html.='</tbody>
 					    <tfoot>
 					    <tr>
-					    	<td colspan="4" align="right">Total '.$datos['codigo_moneda'].'</td>
-					    	<td align="right">'.number_format($datos['total_venta'], 2, '.', ',').'</td>
+					    	<td colspan="4" align="right">Total </td>
+					    	<td align="right">'.$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</td>
 					    </tr>
 						 <tr>
-							<td colspan="4" align="right">Total a Pagar '.$datos['codigo_moneda'].'</td>
-							<td align="right">'.number_format($datos['total_venta'], 2, '.', ',').'</td>
+							<td colspan="4" align="right" style="border-bottom:1px solid black;">Total a Pagar </td>
+							<td align="right" style="border-bottom:1px solid black;">'.$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</td>
 						</tr>
-						<tr>
-						 <td colspan="5" align="right">Son: '.$datos['total_venta_literal']. ' '.strtoupper($datos['desc_moneda_sucursal']).'</td>
-					 </tr>
-					 <tr>
-						<td colspan="4" align="right">Importe Base para Crédito Fiscal:</td>
-						<td align="right">'.number_format($datos['total_venta'], 2, '.', ',').'</td>
-					</tr>
+
 					';
 
 					if ($datos['total_venta'] > $datos['sujeto_credito']) {
-						$html .= '<tr>
-					    	<td colspan="2" align="left"><b>Sujeto a credito fiscal</b> <hr/></td>
-					    	<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['sujeto_credito'], 2, '.', ',').'</b><hr/></td>
-					    </tr>';
+						$html .= '
+								<tr>
+								 <td colspan="4" align="right">Excento:</td>
+								 <td align="right"> <b>'.$datos['moneda_sucursal'].' '.number_format($datos['excento'], 2, '.', ',').'</b></td>
+							 </tr>
+								<tr>
+									<td colspan="4" align="right">Importe Base para Crédito Fiscal:</td>
+									<td align="right" style="border-bottom:2px solid black;"> <b>'.$datos['moneda_sucursal'].' '.number_format($datos['sujeto_credito'], 2, '.', ',').'</b></td>
+							  </tr>';
 					}
 
 					$html .='
+					<tr>
+					 <td colspan="5" align="right">Son: '.$datos['total_venta_literal']. ' '.strtoupper($datos['desc_moneda_sucursal']).'</td>
+				 </tr>
 							<tr>
 							 <td colspan="5" align="center"></br>'.$datos['glosa_impuestos'].'</td>
 						 </tr>
