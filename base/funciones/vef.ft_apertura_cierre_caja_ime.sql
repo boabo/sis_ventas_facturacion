@@ -43,6 +43,17 @@ DECLARE
     v_codigo_moneda			varchar;
     v_tolerancia			varchar;
 
+    --AUMENTO VARIABLES TIPO CAMBIO
+    v_id_sucursal			integer;
+    v_id_moneda_moneda_sucursal	integer;
+    v_id_moneda_tri			integer;
+    v_tipo_cambio_actual		numeric;
+    v_tiene_dos_monedas		varchar;
+    v_moneda_desc			varchar;
+    v_fecha_emision			varchar;
+
+
+
 BEGIN
 
     v_nombre_funcion = 'vef.ft_apertura_cierre_caja_ime';
@@ -58,6 +69,46 @@ BEGIN
 	if(p_transaccion='VF_APCIE_INS')then
 
         begin
+
+        /*************************************************CONTROL PARA EL TIPO DE CAMBIO*********************************************************************/
+        /*****Recuperamos el id_sucursal para obtener la moneda***/
+        select venta.id_sucursal into v_id_sucursal
+        from vef.tpunto_venta venta
+        where venta.id_punto_venta = v_parametros.id_punto_venta;
+		/*********************************************************/
+
+        /*Recuperamos el id_moneda de la sucursal obtenida*/
+        select sm.id_moneda into v_id_moneda_moneda_sucursal
+        from vef.tsucursal s
+        inner join vef.tsucursal_moneda sm on s.id_sucursal = sm.id_sucursal
+        where s.id_sucursal = v_id_sucursal and sm.tipo_moneda = 'moneda_base';
+        /**************************************************/
+
+    	/*Recuperamos el id_moneda de triangulacion*/
+        select m.id_moneda,m.codigo_internacional,m.moneda || ' (' || m.codigo_internacional || ')' into v_id_moneda_tri
+        from param.tmoneda m
+        where m.estado_reg = 'activo' and m.triangulacion = 'si';
+        /*****************************************************************************************************************************************/
+
+        v_tiene_dos_monedas = 'no';
+        v_tipo_cambio_actual = 1;
+
+		if (v_id_moneda_tri != v_id_moneda_moneda_sucursal) then
+            	v_tiene_dos_monedas = 'si';
+                v_tipo_cambio_actual = param.f_get_tipo_cambio_v2(v_id_moneda_moneda_sucursal, v_id_moneda_tri,v_parametros.fecha_apertura_cierre::date,'O');
+        end if;
+           /*********************VERIFICAMOS SI EXISTE EL TIPO DE CAMBIO*************************/
+           IF (v_tipo_cambio_actual is null) then
+
+            	select  mon.codigo into v_moneda_desc
+                from param.tmoneda mon
+                where mon.id_moneda = v_id_moneda_tri;
+
+                SELECT to_char(v_parametros.fecha_apertura_cierre,'DD/MM/YYYY') into v_fecha_emision;
+
+            	raise exception 'No se pudo recuperar el tipo de cambio para la moneda: % en fecha: %, comuniquese con personal de Contabilidad Ingresos.',v_moneda_desc,v_fecha_emision;
+            end if;
+/*******************************************************************************************************************************************************************************************************/
 
         	if (exists (select 1
             			from vef.tapertura_cierre_caja acc
@@ -602,6 +653,7 @@ BEGIN
       from param.ttipo_cambio tc
       inner join param.tmoneda tm on tm.id_moneda = tc.id_moneda
       where tm.codigo_internacional = 'USD' and tc.fecha = v_parametros.fecha_cambio::date;
+
 
 	  select
       mon.codigo_internacional
