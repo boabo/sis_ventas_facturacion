@@ -17,12 +17,25 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
     tipo_factura: 'recibo',
     nombreVista: 'ReciboLista',
 	solicitarSucursal: true, //para indicar si es forzoso o no indicar la sucrsal al iniciar
-	tipo_usuario : 'vendedor',
+	//tipo_usuario : 'vendedor',
 
     constructor:function(config) {
 
 		this.maestro=config.maestro;
 		this.Atributos[this.getIndAtributo('cliente_destino')].grid = true;
+
+		Ext.Ajax.request({
+				url:'../../sis_ventas_facturacion/control/Cajero/getTipoUsuario',
+				params: {'vista':'cajero'},
+				success: function(resp){
+						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+						this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
+				},
+				failure: this.conexionFailure,
+				timeout:this.timeout,
+				scope:this
+		});
+
 		Ext.Ajax.request({
                 url:'../../sis_ventas_facturacion/control/Venta/getVariablesBasicas',
                 params: {'prueba':'uno'},

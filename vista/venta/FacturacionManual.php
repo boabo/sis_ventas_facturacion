@@ -19,7 +19,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
   nombreVista: 'FacturacionManual',
   //tipo_factura: 'manual',
 	solicitarSucursal: true, //para indicar si es forzoso o no indicar la sucrsal al iniciar
-	tipo_usuario : 'cajero',
+//	tipo_usuario : 'cajero',
 
 
 	constructor:function(config){
@@ -29,7 +29,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 
 		Ext.Ajax.request({
 				url:'../../sis_ventas_facturacion/control/Cajero/getTipoUsuario',
-				params: {'vista':'counter'},
+				params: {'vista':'cajero'},
 				success: function(resp){
 						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
 						this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
