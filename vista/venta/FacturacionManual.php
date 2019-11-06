@@ -24,8 +24,21 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
-		this.tipo_usuario = 'cajero';
+		//this.tipo_usuario = 'cajero';
 		//console.log("lelga aqui tipo",this);
+
+		Ext.Ajax.request({
+				url:'../../sis_ventas_facturacion/control/Cajero/getTipoUsuario',
+				params: {'vista':'counter'},
+				success: function(resp){
+						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+						this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
+				},
+				failure: this.conexionFailure,
+				timeout:this.timeout,
+				scope:this
+		});
+
 		Ext.Ajax.request({
 				url:'../../sis_ventas_facturacion/control/Venta/getVariablesBasicas',
 				params: {'prueba':'uno'},

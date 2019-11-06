@@ -2574,10 +2574,10 @@ end if;
         /*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = migra.f_obtener_cadena_conexion_facturacion();
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /*************************************************/
-			
+
             select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
             into v_id_factura;
 
@@ -2914,7 +2914,7 @@ end if;
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = migra.f_obtener_cadena_conexion_facturacion();
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /*************************************************/
 
@@ -3161,7 +3161,7 @@ end if;
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = migra.f_obtener_cadena_conexion_facturacion();
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /*************************************************/
 
@@ -3831,7 +3831,7 @@ end if;
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = migra.f_obtener_cadena_conexion_facturacion();
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /************************************************/
               v_consulta = 'update sfe.tfactura set
@@ -3883,7 +3883,7 @@ end if;
               END IF;
 
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = migra.f_obtener_cadena_conexion_facturacion();
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /************************************************/
 
