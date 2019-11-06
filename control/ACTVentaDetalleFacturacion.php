@@ -58,6 +58,19 @@ class ACTVentaDetalleFacturacion extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+	function verificarExcento(){
+ 		 $this->objFunc=$this->create('MODVentaDetalleFacturacion');
+ 		 $this->res=$this->objFunc->verificarExcento($this->objParam);
+ 		 $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+	function actualizarExcento(){
+ 		 $this->objFunc=$this->create('MODVentaDetalleFacturacion');
+ 		 $this->res=$this->objFunc->actualizarExcento($this->objParam);
+ 		 $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+
 }
 
 ?>

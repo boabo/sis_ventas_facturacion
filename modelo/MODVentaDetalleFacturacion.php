@@ -56,6 +56,8 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->captura('total','numeric');
 		$this->captura('excento','numeric');
 		$this->captura('tiene_excento','varchar');
+		$this->captura('id_moneda','int4');
+		$this->captura('codigo_internacional','varchar');
 
 
 		//Ejecuta la instruccion
@@ -79,9 +81,9 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->setParametro('tipo','tipo','varchar');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('id_producto','id_producto','int4');
-		$this->setParametro('id_sucursal_producto','id_sucursal_producto','int4');
+		//$this->setParametro('id_sucursal_producto','id_sucursal_producto','int4');
 		$this->setParametro('precio','precio','numeric');
-		$this->setParametro('excento','excento','numeric');
+	//	$this->setParametro('excento','excento','numeric');
 
 
 		//Ejecuta la instruccion
@@ -110,6 +112,7 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->setParametro('cantidad_det','cantidad','numeric');
 		$this->setParametro('funcion','funcion','varchar');
 		$this->setParametro('excento','excento','numeric');
+		$this->setParametro('id_moneda','id_moneda','int4');
 
 
 		//Ejecuta la instruccion
@@ -136,6 +139,40 @@ class MODVentaDetalleFacturacion extends MODbase{
 
 		//Devuelve la respuesta
 		return $this->respuesta;
+	}
+
+
+	function verificarExcento(){
+			//Definicion de variables para ejecucion del procedimientp
+			$this->procedimiento='vef.ft_venta_detalle_facturacion_ime';
+			$this->transaccion='VF_FACTEXCEN_INS';
+			$this->tipo_procedimiento='IME';//tipo de transaccion
+
+			$this->setParametro('id_venta','id_venta','int4');
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+
+			//Devuelve la respuesta
+			return $this->respuesta;
+	}
+
+	function actualizarExcento(){
+			//Definicion de variables para ejecucion del procedimientp
+			$this->procedimiento='vef.ft_venta_detalle_facturacion_ime';
+			$this->transaccion='VF_FACTUDT_MOD';
+			$this->tipo_procedimiento='IME';//tipo de transaccion
+
+			$this->setParametro('id_venta','id_venta','int4');
+			$this->setParametro('valor_excento','valor_excento','numeric');
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+
+			//Devuelve la respuesta
+			return $this->respuesta;
 	}
 
 }

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION vef.ft_venta_detalle_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -14,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'vef.tventa_detalle'
  AUTOR: 		 (admin)
  FECHA:	        01-06-2015 09:21:07
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -29,21 +27,21 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-			    
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_venta_detalle_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_VEDET_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 09:21:07
 	***********************************/
 
 	if(p_transaccion='VF_VEDET_SEL')then
-     				
+
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -59,7 +57,7 @@ BEGIN
                             vedet.tipo,
                             vedet.estado_reg,
                             vedet.cantidad,
-                            vedet.precio_sin_descuento,						
+                            vedet.precio_sin_descuento,
                             vedet.id_usuario_ai,
                             vedet.usuario_ai,
                             vedet.fecha_reg,
@@ -68,7 +66,7 @@ BEGIN
                             vedet.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            round(vedet.precio*vedet.cantidad,2) as precio_total,						
+                            round(vedet.precio*vedet.cantidad,2) as precio_total,
                             (case when vedet.id_item is not null then
                                 item.codigo  || '' - '' ||  item.nombre
                             when vedet.id_sucursal_producto is not null then
@@ -76,7 +74,7 @@ BEGIN
                             when vedet.id_formula is not null then
                                 form.nombre
                             end)::varchar as nombre_producto,
-                            vedet.porcentaje_descuento,                       
+                            vedet.porcentaje_descuento,
                             (vedet.precio_sin_descuento * vedet.cantidad)::numeric,
                             (case when vedet.id_medico is not null then
                                 vedet.id_medico || ''_medico''
@@ -119,20 +117,20 @@ BEGIN
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
                         left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
                         where  ';
-			
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_VEDET_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 09:21:07
 	***********************************/
 
@@ -152,24 +150,24 @@ BEGIN
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
                         left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
                         where ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-        
-    /*********************************    
+
+    /*********************************
  	#TRANSACCION:  'VF_VEDETVB_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 09:21:07
 	***********************************/
 
 	elseif(p_transaccion='VF_VEDETVB_SEL')then
-     				
+
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -185,7 +183,7 @@ BEGIN
                             vedet.tipo,
                             vedet.estado_reg,
                             vedet.cantidad,
-                            vedet.precio_sin_descuento,						
+                            vedet.precio_sin_descuento,
                             vedet.id_usuario_ai,
                             vedet.usuario_ai,
                             vedet.fecha_reg,
@@ -194,7 +192,7 @@ BEGIN
                             vedet.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            round(vedet.precio*vedet.cantidad,2) as precio_total,						
+                            round(vedet.precio*vedet.cantidad,2) as precio_total,
                             (case when vedet.id_item is not null then
                                 item.codigo  || '' - '' ||  item.nombre
                             when vedet.id_sucursal_producto is not null then
@@ -202,7 +200,7 @@ BEGIN
                             when vedet.id_formula is not null then
                                 form.nombre
                             end)::varchar as nombre_producto,
-                            vedet.porcentaje_descuento,                       
+                            vedet.porcentaje_descuento,
                             (vedet.precio_sin_descuento * vedet.cantidad)::numeric,
                             (case when vedet.id_medico is not null then
                                 vedet.id_medico || ''_medico''
@@ -242,22 +240,22 @@ BEGIN
                         left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
 				        left join vef.vmedico med on med.id_medico = vedet.id_medico
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
-                        left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida 
+                        left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
                         where  ';
-			
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'VF_VEDETVB_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		01-06-2015 09:21:07
 	***********************************/
 
@@ -276,24 +274,24 @@ BEGIN
 					    left join vef.tmedico med on med.id_medico = vedet.id_medico
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
                         where ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
-		end;    
-    
-    /*********************************    
+		end;
+
+    /*********************************
     #TRANSACCION:  'VF_PEDDETCLI_SEL'
     #DESCRIPCION:   Consulta del detalle de productos por pedido por cliente
-    #AUTOR:         rcm   
+    #AUTOR:         rcm
     #FECHA:         13/11/2016
     ***********************************/
 
     elseif(p_transaccion='VF_PEDDETCLI_SEL')then
-                    
+
         begin
             --Sentencia de la consulta
             v_consulta:='select
@@ -313,23 +311,23 @@ BEGIN
                         on te.id_tipo_estado = ef.id_tipo_estado
                         where ';
 
-            --Definicion de la respuesta            
+            --Definicion de la respuesta
             v_consulta:=v_consulta||v_parametros.filtro;
 
             --Devuelve la respuesta
             return v_consulta;
 
             end;
-        
-					
+
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
@@ -343,3 +341,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_venta_detalle_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

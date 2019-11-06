@@ -25,8 +25,6 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				scope:this
 		});
 
-
-
 	},
 
 	successGetVariables : function (response,request) {
@@ -40,19 +38,18 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		//this.Cmp.id_producto.store.baseParams.tipo='producto_servicio';
 		this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-		this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)'
+		this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
 
-
-
+		this.Cmp.descripcion.setVisible(false);
+		//this.Cmp.excento.setVisible(false);
 	},
 
 	onButtonNew:function () {
 		Phx.vista.VentaDetalleFacturacion.superclass.onButtonNew.call(this);
 		this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
 		this.Cmp.descripcion.setVisible(false);
-		this.Cmp.excento.setVisible(false);
-		this.Cmp.tipo.setValue('servicio');
-		this.Cmp.tipo.fireEvent('select', this.Cmp.tipo,'servicio',0);
+		this.Cmp.tipo.setValue('Servicio');
+		//this.Cmp.tipo.fireEvent('select', this.Cmp.tipo,'Servicio',0);
 
 		this.Cmp.id_venta.setValue(this.maestro.id_venta);
 
@@ -65,9 +62,16 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.comboCambio();
 
 		this.Cmp.id_producto.on('select',function(c,r,i) {
-			this.Cmp.precio.setValue(parseFloat(r.data.precio));
+			this.moneda_servicio = r.data.id_moneda;
+			if (this.moneda_servicio = 2) {
+				var precio = r.data.precio * this.tipo_cambio;
+			} else {
+				var precio = r.data.precio;
+			}
+			this.Cmp.precio.setValue(parseFloat(precio));
 			this.Cmp.cantidad.setValue(1);
-			this.Cmp.total.setValue(parseFloat(r.data.precio*1));
+			this.Cmp.total.setValue(parseFloat(precio*1));
+			console.log("llega aqui ocualtar componente",this);
 			if (r.data.requiere_descripcion == 'si') {
 					this.Cmp.descripcion.setVisible(true);
 					this.Cmp.descripcion.allowBlank = false;
@@ -76,66 +80,70 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				this.Cmp.descripcion.setVisible(false);
 			}
 
-			if (r.data.excento == 'si') {
-					this.Cmp.excento.setVisible(true);
-					this.Cmp.excento.allowBlank = false;
-			} else {
-				this.Cmp.excento.allowBlank = true;
-				this.Cmp.excento.setVisible(false);
-			}
-
+			// if (r.data.excento == 'si') {
+			// 		this.Cmp.excento.setVisible(true);
+			// 		this.Cmp.excento.allowBlank = false;
+			// } else {
+			// 	this.Cmp.excento.allowBlank = true;
+			// 	this.Cmp.excento.setVisible(false);
+			// }
 		},this);
 
 
+
 		this.Cmp.precio.on('change',function(field,newValue,oldValue){
-			this.Cmp.total.setValue(parseFloat(this.Cmp.precio.getValue()*this.Cmp.cantidad.getValue()));
+				var precio = (this.Cmp.precio.getValue());
+			this.Cmp.total.setValue(parseFloat(precio*this.Cmp.cantidad.getValue()));
 		},this);//monto_forma_pago
 
 		this.Cmp.cantidad.on('change',function(field,newValue,oldValue){
-			this.Cmp.total.setValue(parseFloat(this.Cmp.cantidad.getValue()*this.Cmp.precio.getValue()));
+			var precio = (this.Cmp.precio.getValue());
+
+			this.Cmp.total.setValue(parseFloat(this.Cmp.cantidad.getValue()*precio));
 		},this);
 
 
 
 	},
-
-	onButtonEdit:function () {
-		Phx.vista.VentaDetalleFacturacion.superclass.onButtonEdit.call(this);
-		this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
-		this.Cmp.tipo.setValue('servicio');
-		this.Cmp.tipo.fireEvent('select', this.Cmp.tipo,'servicio',0);
-
-
-		this.Cmp.id_venta.setValue(this.store.baseParams.id_venta);
-		this.Cmp.tipo.on('select',function(c,r,i) {
-						this.cambiarCombo(r.data.field1);
-		},this);
-
-
-		this.comboCambio();
-
-		this.Cmp.id_producto.on('select',function(c,r,i) {
-			this.Cmp.funcion.setValue('editar');
-			this.Cmp.precio.setValue(parseFloat(r.data.precio));
-			this.Cmp.cantidad.setValue(1);
-			this.Cmp.total.setValue(parseFloat(r.data.precio*1));
-		},this);
-
-
-		this.Cmp.precio.on('change',function(field,newValue,oldValue){
-			this.Cmp.total.setValue(parseFloat(this.Cmp.precio.getValue()*this.Cmp.cantidad.getValue()));
-		},this);//monto_forma_pago
-
-		this.Cmp.cantidad.on('change',function(field,newValue,oldValue){
-			this.Cmp.total.setValue(parseFloat(this.Cmp.cantidad.getValue()*this.Cmp.precio.getValue()));
-		},this);
-
-
-	},
+	//
+	// onButtonEdit:function () {
+	// 	Phx.vista.VentaDetalleFacturacion.superclass.onButtonEdit.call(this);
+	// 	this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
+	// 	this.Cmp.tipo.setValue('servicio');
+	// 	this.Cmp.tipo.fireEvent('select', this.Cmp.tipo,'servicio',0);
+	//
+	//
+	// 	this.Cmp.id_venta.setValue(this.store.baseParams.id_venta);
+	// 	this.Cmp.tipo.on('select',function(c,r,i) {
+	// 					this.cambiarCombo(r.data.field1);
+	// 	},this);
+	//
+	//
+	// 	this.comboCambio();
+	//
+	// 	this.Cmp.id_producto.on('select',function(c,r,i) {
+	// 		this.Cmp.funcion.setValue('editar');
+	// 		this.Cmp.precio.setValue(parseFloat(r.data.precio));
+	// 		this.Cmp.cantidad.setValue(1);
+	// 		this.Cmp.total.setValue(parseFloat(r.data.precio*1));
+	// 	},this);
+	//
+	//
+	// 	this.Cmp.precio.on('change',function(field,newValue,oldValue){
+	// 		this.Cmp.total.setValue(parseFloat(this.Cmp.precio.getValue()*this.Cmp.cantidad.getValue()));
+	// 	},this);//monto_forma_pago
+	//
+	// 	this.Cmp.cantidad.on('change',function(field,newValue,oldValue){
+	// 		this.Cmp.total.setValue(parseFloat(this.Cmp.cantidad.getValue()*this.Cmp.precio.getValue()));
+	// 	},this);
+	//
+	//
+	// },
 
 
 	cambiarCombo : function (tipo) {
-		this.Cmp.id_producto.store.baseParams.tipo=tipo;
+		console.log("llega aqui el tipo sssssssssssss",tipo);
+		this.Cmp.id_producto.store.baseParams.tipo_serv=tipo;
 		this.comboCambio(tipo);
 	},
 
@@ -147,11 +155,17 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 			}
 	},
 
+	onButtonSave:function(){
+		var rec=this.sm.getSelected();
+		this.Cmp.id_moneda.setValue(rec.data.id_moneda);
+		Phx.vista.VentaDetalleFacturacion.superclass.onButtonSave.call(this);
+	},
+
 	successSave:function(resp){
 			Phx.vista.VentaDetalleFacturacion.superclass.successSave.call(this,resp);
 			Phx.CP.getPagina(this.idContenedorPadre).reload();
 	},
-	
+
 
 	loadMask :false,
 	Atributos:[
@@ -184,6 +198,22 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'id_moneda',
+				fieldLabel: 'id_moneda',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10,
+				hidden:true,
+			},
+				type:'TextField',
+				filters:{pfiltro:'factdet.id_moneda',type:'string'},
+				id_grupo:1,
+				grid:false,
+				form:true
+		},
+		{
+			config:{
 				name: 'funcion',
 				fieldLabel: 'funcion',
 				allowBlank: true,
@@ -210,7 +240,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				lazyRender:true,
 				mode: 'local',
 				gwidth: 150,
-				store:['producto','servicio']
+				store:['Producto','Servicio']
 			},
 				type:'ComboBox',
 				filters:{pfiltro:'factdet.tipo',type:'string'},
@@ -222,25 +252,25 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 			config: {
 				name: 'id_producto',
 				fieldLabel: 'Producto/Servicio',
-				allowBlank: true,
+				allowBlank: false,
+				emptyText: 'Productos...',
 				anchor: '80%',
-				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
-					url: '../../sis_ventas_facturacion/control/SucursalProducto/listarProductoServicioItem',
-					id: 'id_producto',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_producto', 'tipo','nombre_producto','descripcion','medico','requiere_descripcion','precio','ruta_foto','codigo_unidad_medida','excento'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'todo.nombre'}
+						url: '../../sis_ventas_facturacion/control/Servicios/listarServicios',
+						id: 'id_producto',
+						root: 'datos',
+						sortInfo: {
+								field: 'desc_ingas',
+								direction: 'ASC'
+						},
+						totalProperty: 'total',
+						fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
+						remoteSort: true,
+						baseParams: {par_filtro: 'ingas.desc_ingas',irva:'irva'}
 				}),
-				valueField: 'id_producto',
-				displayField: 'nombre_producto',
-				gdisplayField: 'nombre_producto',
+				valueField: 'id_concepto_ingas',
+				displayField: 'desc_ingas',
+				gdisplayField: 'desc_ingas',
 				hiddenName: 'id_producto',
 				forceSelection: true,
 				typeAhead: false,
@@ -254,7 +284,8 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				minChars: 2,
 				renderer:function (value,p,record){
 					if(record.data.tipo_reg != 'summary'){
-						return  String.format('<div><b>{0}</b></div>', Ext.util.Format.number(value));
+						console.log("llega aqui el tipo",record);
+						return  String.format('<div><b>{0}</b></div>', Ext.util.Format.number(record.data.nombre_producto));
 					}
 					else{
 							return '<b><p style="font-size:15px; color:blue; font-weight:bold; text-align:right;">Venta Total: &nbsp;&nbsp; </p></b>';
@@ -265,16 +296,16 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 						delete qe.combo.lastQuery;
 					}
 				},
-			tpl: new Ext.XTemplate([
-				'<tpl for=".">',
-				'<div class="x-combo-list-item">',
-				'<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {nombre_producto}</span></p></p>',
-				'<p><b>Descripcion:</b> <span style="color: blue; font-weight:bold;">{descripcion}</span></p>',
-				'<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-				'<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
-				'<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
-				'</div></tpl>'
-			]),
+				tpl: new Ext.XTemplate([
+					 '<tpl for=".">',
+					 '<div class="x-combo-list-item">',
+					 '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+					 '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
+					 '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+					 '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+					 '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+					 '</div></tpl>'
+				 ]),
 			},
 			type: 'ComboBox',
 			id_grupo: 0,
@@ -282,6 +313,25 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 			grid: true,
 			form: true
 
+		},
+		{
+			config:{
+				name: 'codigo_internacional',
+				fieldLabel: 'Moneda',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10,
+				hidden:false,
+				renderer:function (value,p,record){
+					return  String.format('<div style="font-size:12px; color:red; font-weight:bold;">{0}</div>', record.data['codigo_internacional']);
+				},
+			},
+				type:'TextField',
+				filters:{pfiltro:'factdet.codigo_internacional',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
 		},
 		{
 			config:{
@@ -364,49 +414,49 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config:{
-				name: 'excento',
-				fieldLabel: 'Valor Excento',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:1179650,
-				galign:'right',
-				renderer:function (value,p,record){
-				  if (record.data['tiene_excento'] == 'no') {
-						return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(0,'0,000.00'));
-					} else {
-						return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
-					}
-				}
-			},
-				type:'NumberField',
-				filters:{pfiltro:'ven.excento',type:'numeric'},
-				id_grupo:1,
-				egrid:true,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'tiene_excento',
-				fieldLabel: 'Tiene Excento?',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:1179650,
-				galign:'center',
-				renderer:function (value,p,record){
-				return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value));
-			}
-			},
-				type:'TextField',
-				filters:{pfiltro:'pro.excento',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:false
-		},
+		// {
+		// 	config:{
+		// 		name: 'excento',
+		// 		fieldLabel: 'Valor Excento',
+		// 		allowBlank: true,
+		// 		anchor: '80%',
+		// 		gwidth: 100,
+		// 		maxLength:1179650,
+		// 		galign:'right',
+		// 		renderer:function (value,p,record){
+		// 		  if (record.data['tiene_excento'] == 'no') {
+		// 				return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(0,'0,000.00'));
+		// 			} else {
+		// 				return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
+		// 			}
+		// 		}
+		// 	},
+		// 		type:'NumberField',
+		// 		filters:{pfiltro:'ven.excento',type:'numeric'},
+		// 		id_grupo:1,
+		// 		egrid:true,
+		// 		grid:true,
+		// 		form:true
+		// },
+		// {
+		// 	config:{
+		// 		name: 'tiene_excento',
+		// 		fieldLabel: 'Tiene Excento?',
+		// 		allowBlank: true,
+		// 		anchor: '80%',
+		// 		gwidth: 100,
+		// 		maxLength:1179650,
+		// 		galign:'center',
+		// 		renderer:function (value,p,record){
+		// 		return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value));
+		// 	}
+		// 	},
+		// 		type:'TextField',
+		// 		filters:{pfiltro:'pro.excento',type:'numeric'},
+		// 		id_grupo:1,
+		// 		grid:true,
+		// 		form:false
+		// },
 		{
 			config:{
 				name: 'descripcion',
@@ -414,6 +464,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				gwidth: 200,
 				anchor: '80%',
+				//hidden:true
 				//maxLength:-5
 			},
 				type:'TextArea',
@@ -577,6 +628,8 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'venta_total', type: 'numeric'},
 		{name:'excento', type: 'numeric'},
 		{name:'tiene_excento', type: 'string'},
+		{name:'id_moneda', type: 'numeric'},
+		{name:'codigo_internacional', type: 'string'},
 
 	],
 	sortInfo:{
@@ -591,9 +644,131 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=m;
 		this.store.baseParams={id_venta:this.maestro.id_venta};
 		this.Cmp.id_producto.store.baseParams.id_sucursal=this.maestro.id_sucursal;
-		this.Cmp.id_producto.store.baseParams.id_punto_venta=this.maestro.id_punto_venta;
-		this.Cmp.cantidad.setDisabled(true);
+		this.Cmp.id_producto.store.baseParams.id_punto_venta_producto=this.maestro.id_punto_venta;
+		this.Cmp.id_producto.store.baseParams.tipo_pv=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.tipo_pv;
+		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
+		/*Recuperamos de la venta detalle si existe algun concepto con excento*/
+		Ext.Ajax.request({
+				url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
+				params:{id_venta:this.maestro.id_venta},
+				success: function(resp){
+						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+						this.requiere_excento = reg.ROOT.datos.v_tiene_excento;
+						this.valor_excento = this.maestro.excento;
+						 var that = this;
+						this.crearFormulatio(that);
+				},
+				failure: this.conexionFailure,
+				timeout:this.timeout,
+				scope:this
+		});
+
+		/**********************************************************************/
+
+
 		this.load({params: {start: 0, limit: 50}});
+	},
+
+	crearFormulatio: function (that) {
+		if (this.requiere_excento == 'si' && this.valor_excento == 0) {
+
+			var simple = new Ext.FormPanel({
+			 labelWidth: 75, // label settings here cascade unless overridden
+			 frame:true,
+			 bodyStyle:'padding:5px 5px 0; background:linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%);',
+			 width: 300,
+			 height:70,
+			 defaultType: 'textfield',
+			 items: [
+							  new Ext.form.NumberField({
+																		name: 'excento',
+																		msgTarget: 'title',
+																		fieldLabel: 'Valor Excento',
+																		allowBlank: false,
+																		allowDecimals: true,
+																		decimalPrecision : 2,
+																		style:{
+																			width: '190px'
+																		},
+																		enableKeyEvents : true,
+
+														}),
+								]
+
+	 					});
+				this.excento_formulario = simple;
+
+			var formu_excento = new Ext.Window({
+				title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Excento<p></h1>', //the title of the window
+				width:320,
+				height:150,
+				//closeAction:'hide',
+				modal:true,
+				plain: true,
+				items:simple,
+				buttons: [{
+										text:'<p style="color:green; font-size:15px; font-weight:bold;"><i class="fa fa-floppy-o fa-lg"></i> Guardar</p>',
+										scope:this,
+										handler: function(){
+												this.insertarNuevo(formu_excento);
+										}
+								},{
+										text: '<p style="color:red; font-size:15px; font-weight:bold;"><i class="fa fa-times-circle fa-lg"></i> Cancelar</p>',
+										handler: function(){
+												formu_excento.hide();
+										}
+								}]
+
+			});
+
+
+			// formu_excento.buttons[0].btnEl.dom.style.height = '200px;'
+			formu_excento.show();
+			console.log("llega aquyie la ventana",formu_excento);
+			formu_excento.buttons[0].el.dom.style.width = '100px';
+			formu_excento.buttons[0].el.dom.style.height = '30px';
+
+			console.log("llega fondo boton",formu_excento.buttons[0].el.dom.children[0].childNodes[1]);
+			formu_excento.buttons[1].el.dom.style.width = '100px';
+			formu_excento.buttons[1].el.dom.style.height = '30px';
+			this.excento_formulario.items.items[0].setValue(this.valor_excento);
+
+		}
+	},
+	insertarNuevo : function (formu_excento) {
+		//console.log("llega auqi datos de la ventana",this);
+		if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
+				Ext.Msg.show({
+				 title:'<h1 style="font-size:15px;">Aviso!</h1>',
+				 msg: '<p style="font-weight:bold; font-size:12px;">Tiene un concepto que requiere excento y el valor excento no debe ser vacio o 0!</p>',
+				 buttons: Ext.Msg.OK,
+				 width:320,
+ 				 height:150,
+				 icon: Ext.MessageBox.WARNING,
+				 scope:this
+			});
+		} else {
+		this.guardarDetalles();
+		formu_excento.hide();
+		}
+
+	},
+
+	guardarDetalles : function(){
+		/*Recuperamos de la venta detalle si existe algun concepto con excento*/
+		Ext.Ajax.request({
+				url : '../../sis_ventas_facturacion/control/VentaDetalleFacturacion/actualizarExcento',
+				params : {
+					'id_venta' : this.maestro.id_venta,
+					'valor_excento': this.excento_formulario.items.items[0].getValue()
+				},
+				success : this.successExportHtml,
+				failure : this.conexionFailure,
+				timeout : this.timeout,
+				scope : this
+			});
+			Phx.CP.getPagina(this.idContenedorPadre).reload();
+		/**********************************************************************/
 	},
 
 	loadValoresIniciales: function(){

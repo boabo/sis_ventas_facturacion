@@ -114,6 +114,10 @@ $body$
     v_id_formula			varchar;
     v_codigo_tarjeta		varchar;
 
+    v_precio				varchar;
+	v_requiere_excento		varchar;
+    v_excento_req			varchar;
+    v_codigo_fp				varchar;
 
   BEGIN
 
@@ -130,24 +134,38 @@ $body$
     if(p_transaccion='VF_VEN_INS')then
 
       begin
-        if (v_parametros.id_forma_pago is not null and v_parametros.id_forma_pago != 0) then
+        /*Comentamos para la validacion de tarjetas dscomentar a futuro*/
+      	--if (v_parametros.id_forma_pago is not null and v_parametros.id_forma_pago != 0) then
 
-        select fp.codigo into v_codigo_tarjeta
+        --Comentamos para que ya no recupere de las formas de pago
+        /*select fp.codigo into v_codigo_tarjeta
                 from obingresos.tforma_pago fp
-                where fp.id_forma_pago = v_parametros.id_forma_pago;
-
-        v_codigo_tarjeta = (case when v_codigo_tarjeta like 'CC%' or v_codigo_tarjeta like 'SF%' then
+                where fp.id_forma_pago = v_parametros.id_forma_pago;*/
+        /*v_codigo_tarjeta = (case when v_codigo_tarjeta like 'CC%' or v_codigo_tarjeta like 'SF%' then
                                         substring(v_codigo_tarjeta from 3 for 2)
+                                else
+                                      NULL
+                              end);*/
+        if (v_parametros.id_instancia_pago is not null and v_parametros.id_instancia_pago != 0) then
+
+
+        select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tinstancia_pago ip
+        where ip.id_instancia_pago = v_parametros.id_instancia_pago;
+
+        v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                        v_codigo_tarjeta
                                 else
                                       NULL
                               end);
 
-      	if (v_codigo_tarjeta is not null) then
-                    if (substring(v_parametros.numero_tarjeta::varchar from 1 for 1) != 'X') then
-                		v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta::varchar,v_codigo_tarjeta);
-                	end if;
-                end if;
-        end if;
+          if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+              if (substring(v_parametros.numero_tarjeta::varchar from 1 for 1) != 'X') then
+                  v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta::varchar,v_codigo_tarjeta);
+              end if;
+          end if;
+	    end if;
+
         --raise exception 'llekga el mco %',v_parametros.mco;
         if (left (v_parametros.mco,3)  <> '930' and v_parametros.mco <> '')then
             raise exception 'El numero del MCO tiene que empezar con 930';
@@ -515,7 +533,6 @@ $body$
 
             --fin obtener correlativo
 end if;
-
         --Sentencia de la insercion
         insert into vef.tventa(
           id_venta,
@@ -614,8 +631,9 @@ end if;
 
         ) returning id_venta into v_id_venta;
 
-        if (v_parametros.id_forma_pago != 0 ) then
-
+		/*Aumentamos la instancia de pago por el id_forma_pago*/
+        --if (v_parametros.id_forma_pago != 0 ) then
+		if (v_parametros.id_instancia_pago != 0) then
 
           insert into vef.tventa_forma_pago(
             usuario_ai,
@@ -623,7 +641,9 @@ end if;
             id_usuario_reg,
             id_usuario_ai,
             estado_reg,
-            id_forma_pago,
+            --id_forma_pago,
+            id_instancia_pago,
+            id_moneda,
             id_venta,
             monto_transaccion,
             monto,
@@ -640,7 +660,9 @@ end if;
             p_id_usuario,
             v_parametros._id_usuario_ai,
             'activo',
-            v_parametros.id_forma_pago,
+            --v_parametros.id_forma_pago,
+            v_parametros.id_instancia_pago,
+            v_parametros.id_moneda,
             v_id_venta,
             v_parametros.monto_forma_pago,
             0,
@@ -652,10 +674,12 @@ end if;
             v_parametros.tipo_tarjeta
           );
         end if;
-        if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
+
+--        if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
+		if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0 ) then
          /*******************************Control para la tarjeta 2******************************/
 
-        select fp.codigo into v_codigo_tarjeta
+        /*select fp.codigo into v_codigo_tarjeta
                 from obingresos.tforma_pago fp
                 where fp.id_forma_pago = v_parametros.id_forma_pago_2;
 
@@ -670,11 +694,9 @@ end if;
                 		v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
                 	end if;
         end if;
-
+		*/
 
         /**************************************************************************************/
-
-
 
          --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago;
         insert into vef.tventa_forma_pago(
@@ -683,7 +705,9 @@ end if;
             id_usuario_reg,
             id_usuario_ai,
             estado_reg,
-            id_forma_pago,
+            --id_forma_pago,
+            id_instancia_pago,
+            id_moneda,
             id_venta,
             monto_transaccion,
             monto,
@@ -701,7 +725,9 @@ end if;
             p_id_usuario,
             v_parametros._id_usuario_ai,
             'activo',
-            v_parametros.id_forma_pago_2,
+            --v_parametros.id_forma_pago_2,
+            v_parametros.id_instancia_pago_2,
+            v_parametros.id_moneda_2,
             v_id_venta,
             v_parametros.monto_forma_pago_2,
             0,
@@ -988,8 +1014,9 @@ end if;
         where id_venta=v_parametros.id_venta;
 
 
-
-        if (v_parametros.id_forma_pago != 0 ) then
+		/*Comentamos y aumentamos instancia de pago*/
+       -- if (v_parametros.id_forma_pago != 0 ) then
+	      if (v_parametros.id_instancia_pago != 0 ) then
 
           delete from vef.tventa_forma_pago
           where id_venta = v_parametros.id_venta;
@@ -1000,7 +1027,7 @@ end if;
             id_usuario_reg,
             id_usuario_ai,
             estado_reg,
-            id_forma_pago,
+            --id_forma_pago,
             id_venta,
             monto_transaccion,
             monto,
@@ -1009,7 +1036,11 @@ end if;
             numero_tarjeta,
             codigo_tarjeta,
             id_auxiliar,
-            tipo_tarjeta
+            tipo_tarjeta,
+            /*Aumentando instancia y moneda*/
+            id_instancia_pago,
+            id_moneda
+            /*******************************/
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -1017,7 +1048,7 @@ end if;
             p_id_usuario,
             v_parametros._id_usuario_ai,
             'activo',
-            v_parametros.id_forma_pago,
+            --v_parametros.id_forma_pago,
             v_parametros.id_venta,
             v_parametros.monto_forma_pago,
             0,
@@ -1026,13 +1057,21 @@ end if;
             v_parametros.numero_tarjeta,
             v_parametros.codigo_tarjeta,
             v_parametros.id_auxiliar,
-            v_parametros.tipo_tarjeta
+            v_parametros.tipo_tarjeta,
+            /*Aumentando instancia de pago y id_moneda*/
+            v_parametros.id_instancia_pago,
+            v_parametros.id_moneda
+            /*****************************************/
           );
-            --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
-             if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
+
+           --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
+          	/*Comentando y aumentado la instancia de pago*/
+            -- if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
+           	if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0 ) then
+
            /*******************************Control para la tarjeta 2******************************/
 
-          select fp.codigo into v_codigo_tarjeta
+         /* select fp.codigo into v_codigo_tarjeta
                   from obingresos.tforma_pago fp
                   where fp.id_forma_pago = v_parametros.id_forma_pago_2;
 
@@ -1047,7 +1086,7 @@ end if;
                           v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
                       end if;
           end if;
-
+			*/
 
           /**************************************************************************************/
 
@@ -1058,7 +1097,7 @@ end if;
             id_usuario_reg,
             id_usuario_ai,
             estado_reg,
-            id_forma_pago,
+            --id_forma_pago,
             id_venta,
             monto_transaccion,
             monto,
@@ -1067,7 +1106,10 @@ end if;
             numero_tarjeta,
             codigo_tarjeta,
             id_auxiliar,
-            tipo_tarjeta
+            tipo_tarjeta,
+            /*Aumentando la instancia de pago y el id_moneda*/
+            id_instancia_pago,
+            id_moneda
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -1075,7 +1117,7 @@ end if;
             p_id_usuario,
             v_parametros._id_usuario_ai,
             'activo',
-            v_parametros.id_forma_pago_2,
+            --v_parametros.id_forma_pago_2,
             v_parametros.id_venta,
             v_parametros.monto_forma_pago_2,
             0,
@@ -1084,7 +1126,10 @@ end if;
             v_parametros.numero_tarjeta_2,
             v_parametros.codigo_tarjeta_2,
             v_parametros.id_auxiliar_2,
-            v_parametros.tipo_tarjeta_2
+            v_parametros.tipo_tarjeta_2,
+            /*Aumentando la instancia de pago y el id_moneda*/
+            v_parametros.id_instancia_pago_2,
+            v_parametros.id_moneda_2
           );
           end if;
         end if;
@@ -1305,13 +1350,27 @@ end if;
           --lo que ya se pago es igual a lo que se tenia a cuenta, suponiendo q esta en la moneda base
           v_acumulado_fp = v_venta.a_cuenta;
 
-          for v_registros in (select vfp.id_venta_forma_pago, fp.id_moneda,vfp.monto_transaccion
+           /*******************************Obtenemos la moneda para realizar la converision si es en dolar (IRVA)****************************************/
+                      /*for v_registros in (select vfp.id_venta_forma_pago, fp.id_moneda,vfp.monto_transaccion
+                                          from vef.tventa_forma_pago vfp
+                                            inner join vef.tforma_pago fp on fp.id_forma_pago = vfp.id_forma_pago
+                                          where vfp.id_venta = v_parametros.id_venta)loop */
+          	 for v_registros in (select vfp.id_venta_forma_pago, vfp.id_moneda,vfp.monto_transaccion
                               from vef.tventa_forma_pago vfp
-                                inner join vef.tforma_pago fp on fp.id_forma_pago = vfp.id_forma_pago
                               where vfp.id_venta = v_parametros.id_venta)loop
             --si la moneda de la forma de pago es distinta a al moneda base de la sucursal convertimos a moneda base
 
-            if (v_registros.id_moneda != v_id_moneda_venta) then
+             if (v_registros.id_moneda != v_id_moneda_venta) then
+              IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
+              	v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
+              ELSE
+                v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'O',2,NULL,'si');
+              END IF;
+            else
+              v_monto_fp = v_registros.monto_transaccion;
+            end if;
+
+            /*if (v_registros.id_moneda != v_id_moneda_venta) then
 
               IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
                 v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
@@ -1320,7 +1379,7 @@ end if;
               END IF;
             else
               v_monto_fp = v_registros.monto_transaccion;
-            end if;
+            end if;*/
 
             --si el monto de una d elas formas de pago es mayor q el total de la venta y la cantidad de formas de pago es mayor a 1 lanzo excepcion
             if (v_monto_fp >= v_venta.total_venta and v_cantidad_fp > 1) then
@@ -2290,13 +2349,25 @@ end if;
           select
           string_agg (ing.desc_ingas, ','),
           string_agg  (form.id_formula::VARCHAR,','),
-          string_agg  (ing.id_concepto_ingas::varchar,',')
-          into v_nombre_producto, v_id_formula,v_id_producto
+          string_agg  (ing.id_concepto_ingas::varchar,','),
+          string_agg (ing.precio::varchar, ','),
+          string_agg (ing.excento::varchar, ',')
+          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req
           from vef.tformula_detalle form
           inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
           --inner join vef.tsucursal_producto pro on pro.id_concepto_ingas = form.id_concepto_ingas
           where form.id_formula = v_parametros.id_formula; --and pro.id_sucursal = 16
 
+
+          select distinct (ing.excento) into v_requiere_excento
+          from vef.tformula_detalle form
+          inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
+          where form.id_formula = v_parametros.id_formula and ing.excento = 'si';
+
+
+          if (v_requiere_excento is null) then
+          	v_requiere_excento = 'no';
+          end if;
 
           --raise exception 'LLEGA AQUI EL contador %',v_parametros.id_formula;
           --Definition of the response
@@ -2304,6 +2375,9 @@ end if;
             v_resp = pxp.f_agrega_clave(v_resp,'v_nombre_producto',v_nombre_producto::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_id_formula',v_id_formula::varchar);
            	v_resp = pxp.f_agrega_clave(v_resp,'v_id_producto',v_id_producto::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_precio',v_precio::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_excento_req',v_excento_req::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_requiere_excento',v_requiere_excento::varchar);
 
 
           --Returns the answer
@@ -2335,3 +2409,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_venta_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

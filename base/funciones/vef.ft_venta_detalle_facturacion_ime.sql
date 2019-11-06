@@ -54,6 +54,10 @@ DECLARE
 	v_id_concepto_ingas			integer;
 
     v_excento					numeric;
+    v_tipo_cambio				numeric;
+    v_precio					numeric;
+    v_existe_excento			integer;
+    v_tiene_excento				varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_detalle_facturacion_ime';
@@ -71,11 +75,10 @@ BEGIN
         begin
 
         /*Recuperamos el id_concepto_ingas para registrar en venta detalle*/
-        select pro.id_concepto_ingas into v_concepto_ingas
+        /*select pro.id_concepto_ingas into v_concepto_ingas
         from vef.tsucursal_producto pro
-        where pro.id_sucursal_producto = v_parametros.id_producto;
+        where pro.id_sucursal_producto = v_parametros.id_producto; */
         /******************************************************************/
-
         	--Sentencia de la insercion
         	insert into vef.tventa_detalle(
 			id_venta,
@@ -84,7 +87,7 @@ BEGIN
 			tipo,
 			estado_reg,
 			id_producto,
-			id_sucursal_producto,
+			--id_sucursal_producto,
 			precio,
             id_usuario_reg,
             fecha_reg
@@ -95,8 +98,8 @@ BEGIN
 			v_parametros.cantidad_det,
 			v_parametros.tipo,
 			'activo',
-            v_concepto_ingas,
-			v_parametros.id_producto,
+            v_parametros.id_producto,
+			--v_parametros.id_producto,
 			v_parametros.precio,
             p_id_usuario,
             now()
@@ -107,16 +110,15 @@ BEGIN
               from vef.tventa_detalle ven
               where  ven.id_venta = v_parametros.id_venta;
 
-            if (v_parametros.excento is null) then
+            /*if (v_parametros.excento is null) then
             	v_excento = 0;
             else
             	v_excento = v_parametros.excento;
-            end if;
+            end if;  */
 
               update vef.tventa set
                 total_venta = v_total_venta,
-                total_venta_msuc = v_total_venta,
-                excento = v_excento
+                total_venta_msuc = v_total_venta
               where id_venta = v_parametros.id_venta;
 
 
@@ -146,21 +148,21 @@ BEGIN
         elsif (v_parametros.tipo = 'servicio' or
                (v_parametros.tipo = 'producto_terminado' and pxp.f_get_variable_global('vef_integracion_almacenes') = 'false'))then
 
-               if (pxp.f_existe_parametro(p_tabla,'id_sucursal_producto')) then
+              /* if (pxp.f_existe_parametro(p_tabla,'id_sucursal_producto')) then
                   v_id_sucursal_producto = v_parametros.id_sucursal_producto;
 
                   select suc.id_concepto_ingas into v_id_concepto_ingas
                   from vef.tsucursal_producto suc
                   where suc.id_sucursal_producto = v_parametros.id_sucursal_producto;
 
-               else
-                  v_id_sucursal_producto = v_parametros.id_producto;
+               else*/
+                  v_id_concepto_ingas = v_parametros.id_producto;
 
-                select suc.id_concepto_ingas into v_id_concepto_ingas
+                /*select suc.id_concepto_ingas into v_id_concepto_ingas
                 from vef.tsucursal_producto suc
                 where suc.id_sucursal_producto = v_parametros.id_producto;
 
-               end if;
+               end if;                */
 
 
         else
@@ -225,7 +227,7 @@ BEGIN
         insert into vef.tventa_detalle(
           id_venta,
           id_item,
-          id_sucursal_producto,
+          --id_sucursal_producto,
           id_formula,
           tipo,
           estado_reg,
@@ -248,7 +250,7 @@ BEGIN
         ) values(
           v_parametros.id_venta,
           v_id_item,
-          v_id_sucursal_producto,
+          --v_id_sucursal_producto,
           v_id_formula,
           v_parametros.tipo,
           'activo',
@@ -340,13 +342,28 @@ BEGIN
 	elsif(p_transaccion='VF_FACTDET_MOD')then
 
 		begin
-
+        	--raise exception 'llega auqi el preio del serv %',v_parametros.precio;
 			--Sentencia de la modificacion
+
+            /*if (v_parametros.id_moneda = 2) then
+                    select tc.oficial
+                    into v_tipo_cambio
+                    from param.ttipo_cambio tc
+                    inner join param.tmoneda tm on tm.id_moneda = tc.id_moneda
+                    where tm.codigo_internacional = 'USD' and tc.fecha = now()::date;
+
+		            v_precio = v_parametros.precio * v_tipo_cambio;
+            else  */
+            		v_precio = v_parametros.precio;
+
+            --end if;
+
+
 			update vef.tventa_detalle set
             tipo = v_parametros.tipo,
             id_producto = v_parametros.id_producto,
             cantidad = v_parametros.cantidad_det,
-            precio = v_parametros.precio
+            precio = v_precio
 			where id_venta_detalle=v_parametros.id_venta_detalle;
 
             /*Obtenemos el total de la venta*/
@@ -361,9 +378,6 @@ BEGIN
             excento = v_parametros.excento
             where id_venta = v_parametros.id_venta;
             /*****************************************/
-
-
-
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta_detalle_facturacion modificado(a)');
@@ -412,6 +426,60 @@ BEGIN
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta_detalle_facturacion eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_venta_detalle',v_parametros.id_venta_detalle::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_FACTEXCEN_INS'
+ 	#DESCRIPCION:	Verificacion si algun concepto tiene excento
+ 	#AUTOR:		ivaldivia
+ 	#FECHA:		10-05-2019 19:33:22
+	***********************************/
+
+	elsif(p_transaccion='VF_FACTEXCEN_INS')then
+
+		begin
+        	select count (ing.excento) into v_existe_excento
+            from vef.tventa_detalle det
+            inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = det.id_producto
+            where det.id_venta = v_parametros.id_venta and ing.excento = 'si';
+
+            if (v_existe_excento > 0) then
+            	v_tiene_excento = 'si';
+            ELSE
+            	v_tiene_excento = 'no';
+            end if;
+
+			--Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta_detalle_facturacion modificado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'v_tiene_excento',v_tiene_excento::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_FACTUDT_MOD'
+ 	#DESCRIPCION:	Actualizamos el Valor excento
+ 	#AUTOR:		ivaldivia
+ 	#FECHA:		27-09-2019 17:30:22
+	***********************************/
+
+	elsif(p_transaccion='VF_FACTUDT_MOD')then
+
+		begin
+
+        	update vef.tventa set
+            excento = v_parametros.valor_excento
+			where id_venta=v_parametros.id_venta;
+
+			--Definicion de la respuesta
+             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta_detalle_facturacion modificado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_venta_detalle',v_parametros.id_venta::varchar);
 
             --Devuelve la respuesta
             return v_resp;

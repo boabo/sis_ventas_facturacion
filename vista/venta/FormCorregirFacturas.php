@@ -1,7 +1,7 @@
 <?php
 /**
 *@package pXP
-*@file    FormCajero.php
+*@file    FormCorregirFacturas.php
 *@author  Ismael Valdivia Aranibar
 *@date    11/04/2019
 *@description permites subir archivos a la tabla de documento_sol
@@ -10,8 +10,8 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 
 <script>
-Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
-    ActSave:'../../sis_ventas_facturacion/control/VentaFacturacion/insertarVentaCompleta',
+Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
+    ActSave:'../../sis_ventas_facturacion/control/VentaFacturacion/corregirFactura',
     tam_pag: 10,
     layout: 'fit',
     tabEnter: true,
@@ -73,28 +73,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 	            grid: true,
 	            form: true
 	        },
-          {
-                  config:{
-                      name: 'habilitar_edicion',
-                      fieldLabel: 'Editar?',
-                      allowBlank: true,
-                      width:200,
-                      emptyText:'Editar...',
-                      triggerAction: 'all',
-                      lazyRender:true,
-                      mode: 'local',
-                      displayField: 'text',
-                      valueField: 'value',
-                      store:new Ext.data.SimpleStore({
-      					data : [['SI', 'SI'], ['NO', 'NO']],
-      					id : 'value',
-      					fields : ['value', 'text']
-      				})
-                  },
-                  type:'ComboBox',
-                  id_grupo:1,
-                  form:true
-              },
           {
         config:{
           name: 'observaciones',
@@ -163,8 +141,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         this.buildGrupos();
 
-        this.labelReset = '<div style = "font-size:25px; font-weight:bold; color:#0435FF; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><i style="color:#00AC0D;" class="fa fa-check-circle"></i> Generar</div>';
-        Phx.vista.FormCajero.superclass.constructor.call(this,config);
+        this.labelReset = '<div style = "font-size:25px; font-weight:bold; color:#0435FF; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><img src="../../../lib/imagenes/icono_dibu/dibu_edit.png" style="float:left; vertical-align: middle;">CORREGIR</div>';
+        Phx.vista.FormCorregirFacturas.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
         var fecha = new Date();
@@ -324,6 +302,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     },
 
     iniciarEventosProducto:function(){
+      console.log("llega eventos producto");
     	this.detCmp.id_producto.on('select',function(c,r,i) {
             this.mestore.data.items[0].data.nombre_producto = r.data.nombre_producto;
 
@@ -334,12 +313,14 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         	}
 
         },this);
-
+        //this.obtenersuma();
     },
 
     iniciarEventos : function () {
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
+
+        //this.obtenersuma();
         /*Filtramos la lista de paquetes por la sucursal seleccionada*/
     		//this.Cmp.id_formula.store.baseParams.tipo_punto_venta = this.variables_globales.tipo_pv;
     		this.Cmp.id_formula.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
@@ -360,42 +341,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
 
           /*******************cambiaremos el estilo del boton guardar *********************/
-          if (this.data.tipo_form == 'new'){
-          this.megrid.topToolbar.items.items[0].container.dom.style.width="75px";
-          this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
-          this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
-
-          // this.megrid.topToolbar.items.items[1].setDisabled(false);
-
-          this.megrid.topToolbar.el.dom.style.background="#FFD9BA";
-          this.megrid.topToolbar.el.dom.style.borderRadius="2px";
-          this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#FFF4EB';
-        } else {
-          this.megrid.topToolbar.items.items[0].container.dom.style.width="75px";
-          this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
-          this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
-          // this.megrid.topToolbar.items.items[1].setDisabled(false);
-          this.megrid.topToolbar.el.dom.style.background="#FFD9BA";
-          this.megrid.topToolbar.el.dom.style.borderRadius="2px";
-          this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#FFF4EB';
-
-        }
           //this.arrayBotones[0].scope.form.buttons[0].container.dom.style.border="2px solid red";
           this.arrayBotones[0].scope.form.buttons[0].container.dom.style.width="12px";
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
-          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="150px";
-          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="30px";
+          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="200px";
+          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="50px";
 
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="15px";
 
-          /*irva*/
-          //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="60px";
-          //this.megrid.topToolbar.items.items[0].btnEl.dom.style.border="2px solid blue";
-          //this.megrid.topToolbar.items.items[0].el.dom.style.border="2px solid green";
           /********************************************************************************/
-			this.Cmp.id_punto_venta.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
+
+      this.Cmp.id_punto_venta.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
 	        this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag},
 	           callback : function (r) {
 	                this.Cmp.id_punto_venta.setValue(this.data.objPadre.variables_globales.id_punto_venta);
@@ -408,17 +366,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 	    if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
     	    this.Cmp.id_punto_venta.on('select',function(c,r,i) {
-    	    	if (this.accionFormulario != 'EDIT') {
-                  //Comentado para agregar InstanciaPago
-                  //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-
-                  /*Aumentando para que nos filtre siempre efectivo (CASH)*/
-                  this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
-                	this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
-                  /*********************************************************/
-               }
                 this.cargarFormaPago();
-
             },this);
         }
 
@@ -428,87 +376,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.ocultarComponente(this.Cmp.id_auxiliar_2);
         this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 
-        /*Comentado para agregar instancia de pago*/
-      /*  this.Cmp.id_forma_pago.on('select',function(c,r,i) {
-          // console.log("la tarjeta llega aqui",r.data);
-          // console.log("tbar cambiaremos",this.megrid);
-          // console.log("tbar cambiaremos",this.megrid.tbar);
-          //this.megrid.tbar.dom.style.border = "2px solid red";
-            	if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
-              //this.Cmp.cambio_moneda_extranjera.setValue
-            	this.mostrarComponente(this.Cmp.numero_tarjeta);
-            	this.Cmp.numero_tarjeta.allowBlank = false;
-            	if (r.data.registrar_tarjeta == 'si') {
-					      this.mostrarComponente(this.Cmp.numero_tarjeta);
-	            	this.mostrarComponente(this.Cmp.codigo_tarjeta);
-	            	this.mostrarComponente(this.Cmp.tipo_tarjeta);
-					      this.ocultarComponente(this.Cmp.id_auxiliar);
-                this.ocultarComponente(this.Cmp.mco);
-					      this.Cmp.codigo_tarjeta.allowBlank = false;
-                this.Cmp.tipo_tarjeta.allowBlank = false;
-	            	this.Cmp.mco.allowBlank = true;
-	            } else {
-	            	this.Cmp.codigo_tarjeta.allowBlank = true;
-                this.Cmp.mco.allowBlank = true;
-            		this.Cmp.tipo_tarjeta.allowBlank = true;
-                this.ocultarComponente(this.Cmp.numero_tarjeta);
-					      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-            		this.ocultarComponente(this.Cmp.codigo_tarjeta);
-            		this.ocultarComponente(this.Cmp.tipo_tarjeta);
-					      this.mostrarComponente(this.Cmp.id_auxiliar);
-            		this.Cmp.codigo_tarjeta.reset();
-            		this.Cmp.tipo_tarjeta.reset();
-	            }
-            } else {
-            	this.ocultarComponente(this.Cmp.numero_tarjeta);
-            	this.ocultarComponente(this.Cmp.codigo_tarjeta);
-            	this.ocultarComponente(this.Cmp.tipo_tarjeta);
-				      this.ocultarComponente(this.Cmp.id_auxiliar);
-            	this.Cmp.numero_tarjeta.allowBlank = true;
-            	this.Cmp.codigo_tarjeta.allowBlank = true;
-              this.Cmp.mco.allowBlank = true;
-            	this.Cmp.tipo_tarjeta.allowBlank = true;
-            	this.Cmp.numero_tarjeta.reset();
-            	this.Cmp.codigo_tarjeta.reset();
-            	this.Cmp.tipo_tarjeta.reset();
-            }
-            if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
-                this.mostrarComponente(this.Cmp.mco);
-                this.Cmp.numero_tarjeta.allowBlank = true;
-              	this.Cmp.codigo_tarjeta.allowBlank = true;
-              	this.Cmp.tipo_tarjeta.allowBlank = true;
-                this.Cmp.mco.allowBlank = false;
-            } else {
-                this.ocultarComponente(this.Cmp.mco);
-            }
-
-            if (r.data.codigo == 'CCVI') {
-               //console.log("llega aqui el tipo de tarjeta",this);
-               this.Cmp.tipo_tarjeta.setValue('VI');
-               this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'VI',0);
-            } else if (r.data.codigo == 'CCAX') {
-                 //console.log("llega aqui el tipo de tarjeta",this);
-                 this.Cmp.tipo_tarjeta.setValue('AX');
-                 this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'AX',0);
-              } else if (r.data.codigo == 'CCCA') {
-                //   console.log("llega aqui el tipo de tarjeta",this);
-                   this.Cmp.tipo_tarjeta.setValue('CA');
-                   this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'CA',0);
-                } else {
-                this.Cmp.tipo_tarjeta.reset();
-              }
-
-
-
-            this.moneda = r.data.desc_moneda;
-            this.Cmp.moneda_tarjeta.setValue(this.moneda);
-            //console.log("aqui recuperar codigo moneda",this.moneda);
-        },this);*/
-
         /****************************Aumnetando la instancia de pago********************************/
         this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
 
+          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
           this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
 
           if (codigo_forma_pago == 'CC') {
@@ -643,113 +514,28 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.numero_tarjeta_2.reset();
           }
 
-          if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
-             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
+            if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
+               //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
 
-          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
+            }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
+              //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
 
-          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
-          }
-          else{
-              this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
-          }
+            }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
+              //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
+            }
+            else{
+                //this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+            }
+
 
 
         },this);
 
-
         /************************************Fin agregar instancia de pago***************************************/
 
-          /*Comentando para aumentar el id_instancia_pago_2*/
-        /*this.Cmp.id_forma_pago_2.on('select',function(c,r,i) {
-          if (r.data.codigo == 'CCVI') {
-             //console.log("llega aqui el tipo de tarjeta",this);
-             this.Cmp.tipo_tarjeta_2.setValue('VI');
-             this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'VI',0);
-          } else if (r.data.codigo == 'CCAX') {
-              // console.log("llega aqui el tipo de tarjeta",this);
-               this.Cmp.tipo_tarjeta_2.setValue('AX');
-               this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'AX',0);
-            }else if (r.data.codigo == 'CCCA') {
-                // console.log("llega aqui el tipo de tarjeta",this);
-                 this.Cmp.tipo_tarjeta_2.setValue('CA');
-                 this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'CA',0);
-              } else {
-              this.Cmp.tipo_tarjeta_2.reset();
-            }
-
-          if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
-          this.mostrarComponente(this.Cmp.numero_tarjeta_2);
-          this.Cmp.numero_tarjeta_2.allowBlank = false;
-          if (r.data.registrar_tarjeta == 'si') {
-            this.mostrarComponente(this.Cmp.numero_tarjeta_2);
-            this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
-            this.ocultarComponente(this.Cmp.id_auxiliar_2);
-            this.ocultarComponente(this.Cmp.mco_2);
-            this.Cmp.codigo_tarjeta_2.allowBlank = false;
-            this.Cmp.tipo_tarjeta_2.allowBlank = false;
-            this.Cmp.mco_2.allowBlank = true;
-          } else {
-            this.Cmp.codigo_tarjeta_2.allowBlank = true;
-            this.Cmp.mco_2.allowBlank = true;
-            this.Cmp.tipo_tarjeta_2.allowBlank = true;
-            this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-            this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-            this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.id_auxiliar_2);
-            this.Cmp.codigo_tarjeta_2.reset();
-            this.Cmp.tipo_tarjeta_2.reset();
-          }
-        } else {
-          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-          this.ocultarComponente(this.Cmp.id_auxiliar_2);
-          this.Cmp.numero_tarjeta_2.allowBlank = true;
-          this.Cmp.codigo_tarjeta_2.allowBlank = true;
-          this.Cmp.mco_2.allowBlank = true;
-          this.Cmp.tipo_tarjeta.allowBlank = true;
-          this.Cmp.numero_tarjeta_2.reset();
-          this.Cmp.codigo_tarjeta_2.reset();
-          this.Cmp.tipo_tarjeta.reset();
-        }
-        if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
-            this.mostrarComponente(this.Cmp.mco_2);
-            this.Cmp.numero_tarjeta_2.allowBlank = true;
-            this.Cmp.codigo_tarjeta_2.allowBlank = true;
-            this.Cmp.tipo_tarjeta.allowBlank = true;
-            this.Cmp.mco_2.allowBlank = false;
-        } else {
-            this.ocultarComponente(this.Cmp.mco_2);
-        }
-        this.moneda_2 = r.data.desc_moneda;
-        this.Cmp.moneda_tarjeta_2.setValue(this.moneda_2);
-
-        // console.log("llega los parametros aqui",this.Cmp.moneda_tarjeta_2.value);
-        // console.log("llega el tipo de cambio aqui",this.tipo_cambio);
-         if (this.Cmp.moneda_tarjeta.value != 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD' ) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
-
-         }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD') {
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
-
-         }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value != 'USD') {
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
-         }
-         else{
-             this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
-         }
-
-       },this);*/
-        /**************************************************************************************************************/
         /********************************Aumemtando condicios para el id moneda****************************************/
         this.Cmp.id_moneda.on('select',function(c,r,i) {
-          console.log("llega aqui seleccion moneda",r);
           if(r.data.id_moneda == 2){
-              //console.log("llega el dolar");
             this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
             this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
           } else {
@@ -758,8 +544,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           }
 
           if (r.data.id_moneda == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
-
-
             /**********************************Cambiamos el Style *****************************************/
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
@@ -770,17 +554,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_instancia_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-
-
-
-            /*this.Cmp.id_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-            */
+              if (this.recuperar_monto_automatico == 'SI') {
+                this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
+              }
             }else if (this.Cmp.id_moneda.getValue() != 2 && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
 
-
             /**********************************Cambiamos el Style *****************************************/
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
@@ -791,23 +569,17 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_instancia_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-
-            // this.Cmp.id_forma_pago_2.enable();
-            // this.Cmp.monto_forma_pago_2.enable();
-            // this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-
+            //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
 
           } else{
-            //this.Cmp.id_forma_pago_2.disable();
+
             this.Cmp.id_moneda_2.disable();
             this.Cmp.id_instancia_pago_2.disable();
             this.Cmp.monto_forma_pago_2.disable();
             this.Cmp.monto_forma_pago_2.reset();
-            //this.Cmp.id_forma_pago_2.reset();
             this.Cmp.id_instancia_pago_2.reset();
             this.Cmp.id_moneda_2.reset();
-            //this.Cmp.moneda_tarjeta_2.reset();
+
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
             this.Cmp.cambio.label.dom.control.style.color = "";
@@ -822,30 +594,86 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
         this.Cmp.id_moneda_2.on('select',function(c,r,i) {
-          if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
-             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
 
-          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
+            if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
+               //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
 
-          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
-          }
-          else{
-              this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
-          }
+            }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
+               //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
+
+            }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
+               //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
+            }
+            else{
+               //this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+            }
+
 
         },this);
-
+        /*Formatear numero*/
+        // this.Cmp.codigo_control.on('keyup', function (cmp, e) {
+        //         /*Formatearemos la inserccion*/
+        //         // var dato = cmp.getValue().replace( /[^0-9]/g, '' );
+        //         // if (dato.length = 1 )
+        //         //   dato = dato + ".00";
+        //         // cmp.setValue(dato.toUpperCase());
+        //
+        //         var value = cmp.getValue(), tmp = '', tmp2 = '', sw = 0;
+        //         tmp = value.replace(/,/g, '');
+        //         var number = cmp.getValue().replace( /[^0-9]/g, '' );
+        //
+        //         if( number.length == 0 ) number = "0.00";
+        //         else if( number.length == 1 ) number = "0.0" + number;
+        //         else if( number.length == 2 ) number = "0." + number;
+        //         else number = number.substring( 0, number.length - 2 ) + '.' + number.substring( number.length - 2, number.length );
+        //
+        //           console.log("llega aqui el value",number);
+        //         number = new Number( number );
+        //         number = number.toFixed( 2 );    // only works with the "."
+        //
+        //         //change the splitter to ","
+        //         number = number.replace( /\./g, ',' );
+        //
+        //         // format the amount
+        //         x = number.split( ',' );
+        //         x1 = x[0];
+        //         x2 = x.length > 1 ? ',' + x[1] : '';
+        //
+        //         var rgx = /(\d+)(\d{3})/;
+        //           while( rgx.test( number ) ) {
+        //               number = number.replace( rgx, '$1' + '.' + '$2' );
+        //           }
+        //
+        //         cmp.setValue(number.toUpperCase());
+        //         console.log("llega aqui el value",number);
+        //
+        //         /*var value = cmp.getValue(), tmp = '', tmp2 = '', sw = 0;
+        //         tmp = value.replace(/,/g, '');
+        //         console.log("llega aqui el value",tmp.length);
+        //         for (var i = 0; i < tmp.length; i++) {
+        //             tmp2 = tmp2 + tmp[i];
+        //             if ((i + 1) % 3 == 0 && i != tmp.length - 1) {
+        //                 tmp2 = tmp2 + ',';
+        //             }
+        //         }
+        //         cmp.setValue(tmp2.toUpperCase());*/
+        //     }, this);
 
           this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-            console.log("llega aqui el id moneda para convertir irva",this.Cmp.id_moneda.getValue());
-          this.obtenersuma();
+          //  this.Cmp.monto_forma_pago.setValue(Ext.util.Format.number(this.Cmp.monto_forma_pago.getValue(),'0,0.00'));
+
+            //this.obtenersuma();
           if(this.Cmp.id_moneda.getValue() == 2){
               //console.log("llega el dolar");
             this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
             this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
           } else {
+            //var cambio = parseFloat(this.Cmp.monto_forma_pago.getValue().toString()).toFixed(2);
+            //var coversion_monto = parseFloat(this.Cmp.monto_forma_pago.getValue().replace(/,/g, ''));
+            // console.log("llega aqui",parseFloat(coversion_monto));
+            // this.Cmp.cambio.setValue((coversion_monto-this.suma_total));
+            // this.Cmp.cambio_moneda_extranjera.setValue((coversion_monto-this.suma_total)/this.tipo_cambio);
+
             this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
             this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
           }
@@ -859,11 +687,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio.label.dom.control.style.color = "red";
             this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
             /**********************************Cambiamos el Style *****************************************/
-            //this.Cmp.id_forma_pago_2.enable();
+
             this.Cmp.id_moneda_2.enable();
             this.Cmp.id_instancia_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
+
+            //  this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
+
           }else if (this.Cmp.id_moneda.getValue() != 2 && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
 
 
@@ -874,21 +704,23 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
             /**********************************Cambiamos el Style *****************************************/
 
-            //this.Cmp.id_forma_pago_2.enable();
+
             this.Cmp.id_moneda_2.enable();
             this.Cmp.id_instancia_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
+
+            //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
+
           } else{
-            //this.Cmp.id_forma_pago_2.disable();
+
             this.Cmp.id_moneda_2.disable();
             this.Cmp.id_instancia_pago_2.disable();
             this.Cmp.monto_forma_pago_2.disable();
             this.Cmp.monto_forma_pago_2.reset();
-            //this.Cmp.id_forma_pago_2.reset();
+
             this.Cmp.id_moneda_2.reset();
             this.Cmp.id_instancia_pago_2.reset();
-            //this.Cmp.moneda_tarjeta_2.reset();
+
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
             this.Cmp.cambio.label.dom.control.style.color = "";
@@ -903,77 +735,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         },this);
         /**************************************************************************************************************/
 
-        /*Comentando para aumentar la instancia de pago*/
-        // this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-        //   this.obtenersuma();
-        //   if(this.moneda == 'USD'){
-        //       //console.log("llega el dolar");
-        //     this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
-        //     this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
-        //   } else {
-        //     this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
-        //     this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
-        //   }
-        //
-        //   if (this.moneda == 'USD' && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
-        //
-        //
-        //     /**********************************Cambiamos el Style *****************************************/
-        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-        //     this.Cmp.cambio.label.dom.control.style.color = "red";
-        //     this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-        //     /**********************************Cambiamos el Style *****************************************/
-        //     this.Cmp.id_forma_pago_2.enable();
-        //     this.Cmp.monto_forma_pago_2.enable();
-        //     this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-        //   }else if (this.moneda != 'USD' && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
-        //
-        //
-        //     /**********************************Cambiamos el Style *****************************************/
-        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-        //     this.Cmp.cambio.label.dom.control.style.color = "red";
-        //     this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-        //     /**********************************Cambiamos el Style *****************************************/
-        //
-        //
-        //     this.Cmp.id_forma_pago_2.enable();
-        //     this.Cmp.monto_forma_pago_2.enable();
-        //     this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-        //   } else{
-        //     this.Cmp.id_forma_pago_2.disable();
-        //     this.Cmp.monto_forma_pago_2.disable();
-        //     this.Cmp.monto_forma_pago_2.reset();
-        //     this.Cmp.id_forma_pago_2.reset();
-        //     this.Cmp.moneda_tarjeta_2.reset();
-        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
-        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
-        //     this.Cmp.cambio.label.dom.control.style.color = "";
-        //     this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
-        //     this.ocultarComponente(this.Cmp.mco_2);
-        //     this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-        //     this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-        //     this.ocultarComponente(this.Cmp.id_auxiliar_2);
-        //     this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-        //   }
-        //
-        //
-        //
-        //
-        // },this);
-
         this.Cmp.id_sucursal.on('select',function(c,r,i) {
-        	if (this.accionFormulario != 'EDIT') {
-              /*Comentando para agregar InstanciaPago*/
-              //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-              this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
-            	this.Cmp.id_instancia_pago.store.baseParams.filtrar_base = 'si';
-
-            }
-
             this.cargarFormaPago();
-
         },this);
 
 
@@ -1012,16 +775,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 var formu = r.data.id_formula;
                 if (formu != 0) {
                   this.eliminarAnteriores();
-                  //this.successRecuperarDatos();
+
                 }
             }
         },this);
 
-        this.iniciarEventosProducto();
-        this.obtenersuma();
-
-
-        this.ocultarComponente(this.Cmp.habilitar_edicion);
+        //this.obtenersuma();
         /*Ocultar campo excento*/
         if (this.Cmp.excento.getValue() == 0) {
           this.ocultarComponente(this.Cmp.excento);
@@ -1040,11 +799,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 	    	if (opcion) {
 	    		this.detCmp.descripcion.setDisabled(false);
 	    		this.detCmp.descripcion.allowBlank = false;
-          console.log("llega descripcion 5",this);
 	    	} else {
 	    		this.detCmp.descripcion.setDisabled(true);
 	    		this.detCmp.descripcion.allowBlank = true;
-          console.log("llega descripcion 6",this);
 	    		this.detCmp.descripcion.reset();
 	    	}
     	}
@@ -1064,61 +821,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     	this.detCmp.id_producto.reset();
     },
     cargarFormaPago : function () {
-        if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
-            /*comentando para incluir InstanciaPago*/
-      	    //this.Cmp.id_forma_pago.store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
-            //this.Cmp.id_forma_pago.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-      		  //this.Cmp.id_forma_pago_2.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-    	} else {
-        /*comentando para incluir InstanciaPago*/
-    		//this.Cmp.id_forma_pago.store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-    	}
       if (this.accionFormulario == 'EDIT' || this.accionFormulario == 'NEW' ) {
-
-        /*Aumentando para instancia de pago*/
-        this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
-               callback : function (r) {
-                    if (r.length == 1 ) {
-                          this.Cmp.id_moneda.setValue(r[0].data.id_moneda);
-                          this.Cmp.id_moneda.fireEvent('select', this.Cmp.id_moneda,r[0],0);
-                      }
-                      this.Cmp.id_moneda.fireEvent('select', this.Cmp.id_moneda,this.Cmp.id_moneda.store.getById(this.Cmp.id_moneda.getValue()),0);
-                      this.Cmp.id_moneda.store.baseParams.filtrar_base = 'no';
-
-                }, scope : this
-            });
-
-            this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
-    		           callback : function (r) {
-                              if (r.length == 1 ) {
-                                  this.Cmp.id_instancia_pago.setValue(r[0].data.id_instancia_pago);
-                                  this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,r[0],0);
-                              }
-                                  this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,this.Cmp.id_instancia_pago.store.getById(this.Cmp.id_instancia_pago.getValue()),0);
-                                  this.Cmp.id_instancia_pago.store.baseParams.defecto = 'no';
-
-    		            }, scope : this
-    		        });
-            /***************/
-
-        /*Comentando para incluir InstanciaPago*/
-        /*this.Cmp.id_forma_pago.store.load({params:{start:0,limit:50},
-		           callback : function (r) {
-		           		//if (this.accionFormulario != 'NEW') {
-		           			if (r.length == 1 ) {
-			                    this.Cmp.id_forma_pago.setValue(r[0].data.id_forma_pago);
-			                    this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,r[0],0);
-			                }
-		           		//} else {
-		           			this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.Cmp.id_forma_pago.getValue()),0);
-		           		//}
-		                this.Cmp.id_forma_pago.store.baseParams.defecto = 'no';
-		                this.Cmp.id_forma_pago.modificado = true;
-		            }, scope : this
-		        });*/
+        this.crearStoreFormaPago();
       }
       if (this.accionFormulario == 'EDIT') {
-        this.mostrarComponente(this.Cmp.habilitar_edicion);
+        //this.mostrarComponente(this.Cmp.habilitar_edicion);
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
         /*******************Mostramos si se tiene excento***********************/
@@ -1130,7 +837,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         /**********************************************************************/
 
         /*****************Habilitamos los campos si se pone editar***************/
-        this.Cmp.habilitar_edicion.setValue('NO');
 
         this.Cmp.nit.setDisabled(true);
         this.Cmp.id_cliente.setDisabled(true);
@@ -1138,55 +844,24 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.observaciones.setDisabled(true);
         this.Cmp.id_punto_venta.setDisabled(true);
         this.Cmp.excento.setDisabled(true);
-        console.log("llega",this);
+
+        /*Todos los componentes estan deshabilitados*/
+        this.Cmp.nit.setDisabled(true);
+        this.Cmp.id_cliente.setDisabled(true);
+        this.Cmp.id_formula.setDisabled(true);
+        this.Cmp.observaciones.setDisabled(true);
+        this.Cmp.id_punto_venta.setDisabled(true);
+        this.Cmp.excento.setDisabled(true);
+
+        this.megrid.colModel.config[3].editor='';
+        this.megrid.colModel.config[4].editor='';
+        this.megrid.colModel.config[5].editor='';
 
 
-
-              //  this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(this.data.datos_originales.data.id_formula));
-        this.Cmp.habilitar_edicion.on('select',function(c,r,i) {
-          console.log("llega aqui r",r.data.value);
-          if (r.data.value == 'NO') {
-            this.Cmp.nit.setDisabled(true);
-            this.Cmp.id_cliente.setDisabled(true);
-            this.Cmp.id_formula.setDisabled(true);
-            this.Cmp.observaciones.setDisabled(true);
-            this.Cmp.id_punto_venta.setDisabled(true);
-            this.Cmp.excento.setDisabled(true);
-            this.megrid.topToolbar.items.items[0].setDisabled(true);
-            this.megrid.topToolbar.items.items[1].setDisabled(true);
-            this.megrid.topToolbar.items.items[2].setDisabled(true);
-            this.megrid.topToolbar.items.items[3].setDisabled(true);
-            this.megrid.colModel.config[3].editor='';
-            this.megrid.colModel.config[4].editor='';
-            this.megrid.colModel.config[5].editor='';
-            //this.mestore.rollbChanges();
-            console.log("llega auqi para editar",this.megrid);
-          } else {
-            this.Cmp.nit.setDisabled(false);
-            this.Cmp.id_cliente.setDisabled(false);
-            this.Cmp.id_formula.setDisabled(false);
-            this.Cmp.observaciones.setDisabled(false);
-            this.Cmp.id_punto_venta.setDisabled(false);
-            this.Cmp.excento.setDisabled(false);
-            this.megrid.topToolbar.items.items[0].setDisabled(false);
-            this.megrid.topToolbar.items.items[1].setDisabled(false);
-            this.megrid.topToolbar.items.items[2].setDisabled(false);
-            this.megrid.topToolbar.items.items[3].setDisabled(false);
-
-            /*************************Habilitar la grilla para editar*************************/
-            this.megrid.colModel.config[3].editor=this.editarDescripcion;
-            this.megrid.colModel.config[4].editor=this.detCmp.cantidad;
-            this.megrid.colModel.config[5].editor=this.detCmp.precio_unitario;
-
-          }
-        },this);
         /**************************************************************************/
-        console.log("llega aqui editar",this.data.datos_originales.data.id_formula);
-        /*Aqui cargamos el combo q se selecciono*/
         this.Cmp.id_formula.store.load({params:{start:0,limit:50},
            callback : function (r) {
               this.Cmp.id_formula.setValue(this.data.datos_originales.data.id_formula);
-              //  this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(this.data.datos_originales.data.id_formula));
             }, scope : this
         });
       /*************************************/
@@ -1199,6 +874,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     obtenersuma: function () {
+      console.log("llega aqui la suma");
       var total_datos = this.megrid.store.data.items.length;
       var suma = 0;
       for (var i = 0; i < total_datos; i++) {
@@ -1223,186 +899,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     	if(count == 0){
     		this.bloqueaRequisitos(false);
     	}
-    },
-    buildDetailGridNew: function(){
-
-        //cantidad,detalle,peso,totalo
-        var Items = Ext.data.Record.create([{
-                        name: 'cantidad',
-                        type: 'int'
-                    }, {
-                        name: 'id_producto',
-                        type: 'int'
-                    },{
-                        name: 'tipo',
-                        type: 'string'
-                    }
-                    ]);
-
-        this.mestore = new Ext.data.JsonStore({
-                    url: '../../sis_ventas_facturacion/control/Cajero/listarVentaDetalle',
-                    id: 'id_venta_detalle',
-                    root: 'datos',
-                    totalProperty: 'total',
-                    fields: [
-                        {name:'id_venta_detalle', type: 'numeric'},
-                        {name:'id_venta', type: 'numeric'},
-                        {name:'id_producto', type: 'numeric'},
-                        {name:'id_sucursal_producto', type: 'numeric'},
-                        {name:'nombre_producto', type: 'string'},
-                        {name:'precio_unitario', type: 'numeric'},
-                        {name:'cantidad', type: 'numeric'},
-                        {name:'precio_total', type: 'numeric'},
-                        {name:'descripcion', type: 'string'},
-                        {name:'tipo', type: 'string'},
-                        {name:'estado_reg', type: 'string'},
-                        {name:'id_usuario_ai', type: 'numeric'},
-                        {name:'usuario_ai', type: 'string'},
-                        {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-                        {name:'id_usuario_reg', type: 'numeric'},
-                        {name:'id_usuario_mod', type: 'numeric'},
-                        {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-
-                    ],
-                    remoteSort: true,
-                    baseParams: {dir:'ASC',sort:'id_venta_detalle',limit:'50',start:'0'}
-                });
-
-            this.editorDetail = new Ext.ux.grid.RowEditor({
-
-                });
-
-
-        this.summary = new Ext.ux.grid.GridSummary();
-
-        this.editarDescripcion = new Ext.form.TextField({});
-
-        /*megrid irva condicion*/
-        this.megrid = new Ext.grid.EditorGridPanel({
-                    layout: 'fit',
-                    store:  this.mestore,
-                    region: 'center',
-                    split: true,
-                    border: false,
-                    loadMask : true,
-                    clicksToEdit: 1,
-                    plain: true,
-                    plugins: [this.summary],
-                    stripeRows: true,
-                    tbar: [
-                      {
-                  	    text: '<div style="font-weight:bold; font-size:15px"><i class="fa fa-save fa-lg"></i> Guardar</div>',
-                        scope: this,
-              			    handler: function(btn) {
-                          this.guardarDetalles();
-              			    }
-                      },
-                      {
-                      text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Detalle',
-                      scope: this,
-                        handler : function(){
-                          this.formularioAgregar();
-                          }
-                      },
-                      {
-                        text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
-                        scope: this,
-                          handler : function(){
-                            var index = this.megrid.getSelectionModel().getSelectedCell();
-                            if (!index) {
-                                return false;
-                            }
-                            var rec = this.mestore.getAt(index[0]);
-                            this.mestore.remove(rec);
-                            console.log("llega aqui eliminar",rec);
-                            this.obtenersuma();
-                            /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
-                            if (rec.data.requiere_excento == 'si') {
-                              this.ocultarComponente(this.Cmp.excento);
-                              this.Cmp.excento.reset();
-                            }
-                            /***********************************************************************************/
-                        }
-
-
-                        },
-                    {
-                            text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
-                            scope:this,
-                            handler: function(){
-                                var index = this.megrid.getSelectionModel().getSelectedCell();
-                                if (!index) {
-                                    return false;
-                                }
-                                var rec = this.mestore.getAt(index[0]);
-                                this.onDuplicateDetail(rec);
-                                this.evaluaGrilla();
-                                this.obtenersuma();
-
-                            }
-                    }],
-
-                    columns: [
-                    new Ext.grid.RowNumberer(),
-                    {
-                        header: 'Tipo',
-                        dataIndex: 'tipo',
-                        width: 90,
-                        sortable: false,
-                        //editor: this.detCmp.tipo
-                    },
-                    {
-                        header: 'Producto/Servicio',
-                        dataIndex: 'id_producto',
-                        width: 350,
-                        editable: true,
-                        sortable: false,
-                        renderer:function(value, p, record){
-                          return String.format('{0}', record.data['nombre_producto']);
-                        },
-                        //editor: this.detCmp.id_producto
-                    },
-                    {
-                        header: 'Descripción',
-                        dataIndex: 'descripcion',
-                        width: 300,
-                        //sortable: false,
-                        editor:this.editarDescripcion
-                    },
-                    {
-
-                        header: 'Cantidad',
-                        dataIndex: 'cantidad',
-                        align: 'right',
-                        width: 75,
-                        summaryType: 'sum',
-                        editor: this.detCmp.cantidad
-                    },
-                    {
-                        header: 'P / Unit',
-                        dataIndex: 'precio_unitario',
-                        align: 'right',
-                        selectOnFocus: true,
-                        width: 85,
-                        decimalPrecision : 2,
-                        summaryType: 'sum',
-                        renderer : function(value, p, record) {
-                            return parseFloat(record.data['precio_unitario']);
-                        },
-                        editor: this.detCmp.precio_unitario
-                    },
-                    {
-                        xtype: 'numbercolumn',
-                        header: 'Total',
-                        dataIndex: 'precio_total',
-                        align: 'right',
-                        width: 150,/*irva222*/
-                        format: '0,0.00',
-                        summaryType: 'sum',
-                        //editor: this.detCmp.precio_total
-                    }
-                  ]
-                });
     },
 
     buildDetailGridEdit: function(){
@@ -1467,62 +963,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     plain: true,
                     plugins: [this.summary],
                     stripeRows: true,
-                    tbar: [
-                      {
-                        text: '<div style="font-weight:bold; font-size:15px"><i class="fa fa-save fa-lg"></i> Guardar</div>',
-                        scope: this,
-                        disabled:true,
-                        handler: function(btn) {
-                          this.guardarDetalles();
-                        }
-                      },
-                      {
-                      text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Detalle',
-                      scope: this,
-                      disabled:true,
-                        handler : function(){
-                          this.formularioAgregar();
-                          }
-                      },
-                      {
-                        text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
-                        scope: this,
-                        disabled:true,
-                          handler : function(){
-                            var index = this.megrid.getSelectionModel().getSelectedCell();
-                            if (!index) {
-                                return false;
-                            }
-                            var rec = this.mestore.getAt(index[0]);
-                            this.mestore.remove(rec);
-                            console.log("llega aqui eliminar",rec);
-                            this.obtenersuma();
-                            /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
-                            if (rec.data.requiere_excento == 'si') {
-                              this.ocultarComponente(this.Cmp.excento);
-                              this.Cmp.excento.reset();
-                            }
-                            /***********************************************************************************/
-                        }
-
-
-                        },
-                    {
-                            text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
-                            scope:this,
-                            disabled:true,
-                            handler: function(){
-                                var index = this.megrid.getSelectionModel().getSelectedCell();
-                                if (!index) {
-                                    return false;
-                                }
-                                var rec = this.mestore.getAt(index[0]);
-                                this.onDuplicateDetail(rec);
-                                this.evaluaGrilla();
-                                this.obtenersuma();
-
-                            }
-                    }],
                     columns: [
                     new Ext.grid.RowNumberer(),
                     {
@@ -1586,477 +1026,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 });
     },
 
-    guardarDetalles : function(){
-      for (var i = 0; i < this.megrid.store.data.items.length; i++) {
-        this.megrid.store.data.items[i].data.precio_total=(this.megrid.store.data.items[i].data.precio_unitario * this.megrid.store.data.items[i].data.cantidad);
-      }
-      this.mestore.commitChanges();
-      this.megrid.getView().refresh();
-      this.obtenersuma();
-    },
 
 
-    formularioAgregar : function(){
-      console.log("llega aqui formulario agregar",this);
-      var simple = new Ext.FormPanel({
-       labelWidth: 75, // label settings here cascade unless overridden
-       frame:true,
-       bodyStyle:'padding:5px 5px 0',
-       width: 500,
-       height:300,
-       defaultType: 'textfield',
-       items: [new Ext.form.ComboBox({
-                           name: 'tipo',
-                           fieldLabel: 'Tipo detalle',
-                           allowBlank:false,
-                           emptyText:'Tipo...',
-                           typeAhead: true,
-                           triggerAction: 'all',
-                           lazyRender:true,
-                           mode: 'local',
-                           gwidth: 150,
-                           style:{
-                             width: '200px'
-                           },
-                           store:this.tipoDetalleArray
-                   }),
-                  new Ext.form.ComboBox({
-                                                      name: 'id_producto',
-                                                      fieldLabel: 'Producto/<br>Servicio',
-                                                      allowBlank: false,
-                                                      emptyText: 'Productos...',
-                                                      store: new Ext.data.JsonStore({
-                                                          url: '../../sis_ventas_facturacion/control/Servicios/listarServicios',
-                                                          id: 'id_producto',
-                                                          root: 'datos',
-                                                          sortInfo: {
-                                                              field: 'desc_ingas',
-                                                              direction: 'ASC'
-                                                          },
-                                                          totalProperty: 'total',
-                                                          fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
-                                                          remoteSort: true,
-                                                          baseParams: {par_filtro: 'ingas.desc_ingas',irva:'irva'}
-                                                      }),
-                                                      valueField: 'id_concepto_ingas',
-                                                      displayField: 'desc_ingas',
-                                                      gdisplayField: 'desc_ingas',
-                                                      hiddenName: 'id_producto',
-                                                      forceSelection: true,
-                                                      tpl: new Ext.XTemplate([
-                                                         '<tpl for=".">',
-                                                         '<div class="x-combo-list-item">',
-                                                         '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-                                                         '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
-                                                         '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-                                                         '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
-                                                         '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
-                                                         '</div></tpl>'
-                                                       ]),
-                                                      typeAhead: false,
-                                                      triggerAction: 'all',
-                                                      lazyRender: true,
-                                                      mode: 'remote',
-                                                      resizable:true,
-                                                      pageSize: 15,
-                                                      queryDelay: 1000,
-                                                      //anchor: '100%',
-                                                    //  width : 250,
-                                                      listWidth:'450',
-                                                      minChars: 2 ,
-                                                      disabled:true,
-                                                       style:{
-                                                         width: '200px'
-                                                       },
-
-                                                    }),
-                                                     new Ext.form.TextField({
-                                                            name: 'descripcion',
-                                                            fieldLabel: 'Descripcion',
-                                                            allowBlank:true,
-                                                            style:{
-                                                              width: '190px'
-                                                            },
-                                                            disabled : true,
-                                                            hidden : true
-                                                    }),
-
-                                                    new Ext.form.NumberField({
-                                                                        name: 'cantidad',
-                                                                        msgTarget: 'title',
-                                                                        fieldLabel: 'Cantidad',
-                                                                        allowBlank: false,
-                                                                        style:{
-                                                                          width: '190px'
-                                                                        },
-                                                                        //allowDecimals: me.cantidadAllowDecimals,
-                                                                        decimalPrecision : 2,
-                                                                        enableKeyEvents : true,
-
-
-                                                                }),
-                                                    new Ext.form.NumberField({
-                                                                        name: 'precio_unitario',
-                                                                        msgTarget: 'title',
-                                                                        fieldLabel: 'P/U',
-                                                                        allowBlank: false,
-                                                                        allowDecimals: true,
-                                                                        decimalPrecision : 2,
-                                                                        style:{
-                                                                          width: '190px'
-                                                                        },
-                                                                        enableKeyEvents : true
-                                                                }),
-                                                     new Ext.form.NumberField({
-                                                                        name: 'precio_total',
-                                                                        msgTarget: 'title',
-                                                                        fieldLabel: 'Total',
-                                                                        style:{
-                                                                          width: '190px'
-                                                                        },
-                                                                        allowBlank: false,
-                                                                        allowDecimals: false,
-                                                                        maxLength:10,
-                                                                        readOnly :true
-                                                                })
-                                                  ]
-
-   });
-   this.variables = simple;
-   /*Aumentando para Filtrar los servicios por id_punto_venta y el tipo del PV (ATO CTO)*/
-   this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
-   this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
-   // /************************************************************************************************/
-      var win = new Ext.Window({
-        title: 'Agregar Detalle', //the title of the window
-        width:320,
-        height:250,
-        closeAction:'hide',
-        modal:true,
-        plain: true,
-        items:simple,
-        buttons: [{
-                    text:'<i class="fa fa-floppy-o fa-lg"></i> Guardar',
-                    scope:this,
-                    handler: function(){
-                        this.insertarNuevo(win);
-                    }
-                },{
-                    text: '<i class="fa fa-times-circle fa-lg"></i> Cancelar',
-                    handler: function(){
-                        win.hide();
-                    }
-                }]
-
-      });
-      win.show();
-      this.variables.items.items[0].on('select',function(c,r,i) {
-          this.ComboIdProducto(r.data.field1);
-      },this);
-    },
-
-    ComboIdProducto : function (tipo) {
-    	this.variables.items.items[1].setDisabled(false);
-    	this.variables.items.items[1].store.baseParams.tipo = tipo;
-      //this.variables.items.items[2].setVisible(false)
-    	if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
-    		this.variables.items.items[1].store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
-
-        this.variables.items.items[1].on('select',function(c,r,i) {
-          console.log("vemos para obtener el precio",r);
-          console.log("vemos para obtener el this",this);
-          if (r.data.requiere_descripcion == 'si') {
-            this.variables.items.items[2].setDisabled(false);
-            this.variables.items.items[2].setVisible(true);
-          } else if (r.data.requiere_descripcion != 'si')  {
-              this.variables.items.items[2].setDisabled(true);
-    	    		this.variables.items.items[2].allowBlank = true;
-              this.variables.items.items[2].setVisible(false)
-              console.log("llega descripcion22",this);
-      	    	this.variables.items.items[2].reset();
-              }
-
-      /***************Habilitamos el campo Excento****************/
-      console.log("verificamos el valor excento",this.mestore);
-      if (this.data.datos_originales == undefined) {
-        if (r.data.excento == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
-          this.mostrarComponente(this.Cmp.excento);
-        }else{
-          this.ocultarComponente(this.Cmp.excento);
-          this.Cmp.excento.reset();
-        }
-      } else {
-        if (r.data.excento == 'si' || this.data.datos_originales.data.excento > 0) {
-          this.mostrarComponente(this.Cmp.excento);
-        }else{
-          this.ocultarComponente(this.Cmp.excento);
-          this.Cmp.excento.reset();
-        }
-      }
-
-          this.requiere_excento = r.data.excento;
-
-
-     /***********************************************************/
-
-     /*************************Recuperamos el precio unitario (irva recuperacion dato)************************************/
-          this.variables.items.items[3].setValue(1);
-          console.log("llega el dato r",r);
-          if (r.data.id_moneda == 2) {
-            var precio = (r.data.precio * this.tipo_cambio);
-          } else {
-            var precio = r.data.precio;
-          }
-          this.variables.items.items[4].setValue(precio);
-          this.variables.items.items[5].setValue(this.variables.items.items[3].getValue()*precio);
-
-    /*********************************************************************************************/
-
-        },this);
-    	} else {
-    		this.variables.items.items[1].store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-    	}
-    	this.variables.items.items[1].modificado = true;
-    	this.variables.items.items[1].reset();
-
-      this.variables.items.items[3].on('change',function(field,newValue,oldValue){
-        this.variables.items.items[5].setValue(this.variables.items.items[3].getValue()*this.variables.items.items[4].getValue());
-      },this);//monto_forma_pago
-
-      this.variables.items.items[4].on('change',function(field,newValue,oldValue){
-        this.variables.items.items[5].setValue(this.variables.items.items[3].getValue()*this.variables.items.items[4].getValue());
-      },this);//monto_forma_pago
-
-
-
-    },
-
-
-    insertarNuevo : function (win) {
-      if (this.variables.items.items[0].getValue() == '' || this.variables.items.items[1].getValue() == '' || this.variables.items.items[1].lastSelectionText == ''
-        || this.variables.items.items[3].getValue() == '' || this.variables.items.items[4].getValue() == '' || this.variables.items.items[5].getValue() == '') {
-          Ext.Msg.show({
-  			   title:'Información',
-  			   msg: 'Complete los campos para guardar el detalle!',
-  			   buttons: Ext.Msg.OK,
-           icon: Ext.MessageBox.QUESTION,
-  			   scope:this
-  			});
-      } else {
-      var grillaRecord =  Ext.data.Record.create([
-        {name:'id_venta_detalle', type: 'numeric'},
-          {name:'id_venta', type: 'numeric'},
-          {name:'nombre_producto', type: 'string'},
-          {name:'id_producto', type: 'numeric'},
-          {name:'tipo', type: 'string'},
-          {name:'descripcion', type: 'string'},
-          {name:'requiere_descripcion', type: 'string'},
-          {name:'estado_reg', type: 'string'},
-          {name:'cantidad', type: 'numeric'},
-          {name:'precio_unitario', type: 'numeric'},
-          {name:'precio_total', type: 'numeric'},
-          {name:'id_usuario_ai', type: 'numeric'},
-          {name:'usuario_ai', type: 'string'},
-          {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-          {name:'id_usuario_reg', type: 'numeric'},
-          {name:'id_usuario_mod', type: 'numeric'},
-          {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-          {name:'usr_reg', type: 'string'},
-          {name:'usr_mod', type: 'string'}
-    ]);
-    var myNewRecord = new grillaRecord({
-      tipo: this.variables.items.items[0].getValue(),
-      id_producto: this.variables.items.items[1].getValue(),
-      nombre_producto: this.variables.items.items[1].lastSelectionText,
-      descripcion: this.variables.items.items[2].getValue(),
-      cantidad: this.variables.items.items[3].getValue(),
-      precio_unitario: this.variables.items.items[4].getValue(),
-      precio_total:this.variables.items.items[5].getValue() ,
-      requiere_excento:this.requiere_excento,        //
-      id_venta:this.Cmp.id_venta.getValue()        //
-      });
-      console.log("llega aqui nuevos",this);
-      this.mestore.add(myNewRecord);
-      this.obtenersuma();
-      this.guardarDetalles();
-      win.hide();
-    }
-
-    },
-
-    eliminarAnteriores : function () {
-      console.log("Eliminar todos y verificar excento",this.mestore);
-      for (var i = this.mestore.data.length; i >= 0; i--) {
-              var suma_eli = 0;
-              suma_eli = suma_eli + i;
-              var dato = 0;
-              dato = suma_eli - 1;
-              if(dato == (-1) ){
-                dato = 0;
-              }
-              if (suma_eli == 0 ) {
-                  this.successRecuperarDatos();
-              } else if (suma_eli >= 0 )  {
-                 this.mestore.remove(this.mestore.getAt(dato));
-               }
-        }
-
-          // for (var i = this.mestore.data.length; i >= 0; i--) {
-          //         var suma_eli = 0;
-          //         suma_eli = suma_eli + i;
-          //         var dato = 0;
-          //         dato = suma_eli - 1;
-          //         if(dato == (-1) ){
-          //           dato = 0;
-          //         }
-          //         if (suma_eli == 0 ) {
-          //             this.successRecuperarDatos();
-          //         } else if (suma_eli >= 0 && this.mestore.data.items[(dato)].data.tipo == 'formula')  {
-          //            this.mestore.remove(this.mestore.getAt(dato));
-          //          }
-          //   }
-      },
-
-      successRecuperarDatos : function () {
-          Ext.Ajax.request({
-              url:'../../sis_ventas_facturacion/control/Venta/insertarFormula',
-              params:{id_formula:this.Cmp.id_formula.getValue(),
-                      id_sucursal:this.Cmp.id_sucursal.getValue()},
-              success: function(resp){
-                  var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-                  this.nombre_producto = reg.ROOT.datos.v_nombre_producto;
-                  this.id_producto_recu = reg.ROOT.datos.v_id_producto;
-                  this.id_formula_recu = reg.ROOT.datos.v_id_formula;
-                  this.tiene_excento = reg.ROOT.datos.v_excento_req;
-                  this.excento_formula = reg.ROOT.datos.v_requiere_excento;
-                  this.precio_inde = reg.ROOT.datos.v_precio;
-                  this.producto_nombre = this.nombre_producto.split(",");
-                  this.producto_id = this.id_producto_recu.split(",");
-                  this.id_formula = this.id_formula_recu.split(",");
-                  this.req_excento = this.tiene_excento.split(",");
-                  this.precio_form = this.precio_inde.split(",");
-
-                  var grillaRecord =  Ext.data.Record.create([
-                    {name:'id_venta_detalle', type: 'numeric'},
-                      {name:'id_venta', type: 'numeric'},
-                      {name:'nombre_producto', type: 'string'},
-                      {name:'id_producto', type: 'numeric'},
-                      {name:'tipo', type: 'string'},
-                      {name:'descripcion', type: 'string'},
-                      {name:'requiere_descripcion', type: 'string'},
-                      {name:'estado_reg', type: 'string'},
-                      {name:'cantidad', type: 'numeric'},
-                      {name:'requiere_excento', type: 'string'},
-                      {name:'precio_unitario', type: 'numeric'},
-                      {name:'precio_total', type: 'numeric'},
-                      {name:'id_usuario_ai', type: 'numeric'},
-                      {name:'usuario_ai', type: 'string'},
-                      {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-                      {name:'id_usuario_reg', type: 'numeric'},
-                      {name:'id_usuario_mod', type: 'numeric'},
-                      {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-                      {name:'usr_reg', type: 'string'},
-                      {name:'usr_mod', type: 'string'}
-                ]);
-                  console.log("llega aqui el ex",this);
-                for (var i = 0; i < this.producto_nombre.length; i++) {
-                var myNewRecord = new grillaRecord({
-                    nombre_producto : this.producto_nombre[i],
-                //     descripcion : request.arguments.nombre_formula,
-                    id_producto: this.producto_id[i],
-                    id_formula: this.id_formula[i],
-                    tipo : 'formula',
-                    cantidad : '1',
-                    requiere_excento:this.req_excento[i],
-                    precio_unitario : this.precio_form[i],
-                    precio_total: this.precio_form[i]*1              //
-                  });
-                   this.mestore.add(myNewRecord);
-              }
-
-                  //this.mestore.commitChanges();
-
-                  if (this.excento_formula == 'si') {
-                    this.mostrarComponente(this.Cmp.excento);
-                  }
-
-                  this.obtenersuma();
-                  this.guardarDetalles();
-
-              },
-              failure: this.conexionFailure,
-              timeout:this.timeout,
-              scope:this
-          });
-
-        },
-
-
-    onDuplicateDetail : function (rec) {
-      console.log("llega auqi ", rec);
-        var grillaRecord =  Ext.data.Record.create([
-            {name:'id_venta_detalle', type: 'numeric'},
-            {name:'id_venta', type: 'numeric'},
-            {name:'nombre_producto', type: 'string'},
-            {name:'id_producto', type: 'numeric'},
-            {name:'tipo', type: 'string'},
-            {name:'descripcion', type: 'string'},
-            {name:'requiere_descripcion', type: 'string'},
-            {name:'estado_reg', type: 'string'},
-            {name:'cantidad', type: 'numeric'},
-            {name:'precio_unitario', type: 'numeric'},
-            {name:'precio_total', type: 'numeric'},
-            {name:'id_usuario_ai', type: 'numeric'},
-            {name:'usuario_ai', type: 'string'},
-            {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-            {name:'id_usuario_reg', type: 'numeric'},
-            {name:'id_usuario_mod', type: 'numeric'},
-            {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-            {name:'usr_reg', type: 'string'},
-            {name:'usr_mod', type: 'string'}
-        ]);
-
-        var myNewRecord = new grillaRecord({
-            nombre_producto : rec.data.nombre_producto,
-            descripcion : rec.data.descripcion,
-            id_producto : rec.data.id_producto,
-            tipo : rec.data.tipo,
-            cantidad : rec.data.cantidad,
-            precio_unitario : rec.data.precio_unitario,
-            precio_total: rec.data.precio_total
-
-        });
-        this.mestore.add(myNewRecord);
-
-        //this.mestore.commitChanges();
-    },
-    onInitAdd : function (r, i) {
-    	if(this.data.readOnly===true){
-    		return false
-    	}
-        this.detCmp.id_producto.setDisabled(true);
-        var record = this.megrid.store.getAt(i);
-        var recTem = new Array();
-        recTem['id_producto'] = record.data['id_producto'];
-        recTem['nombre_producto'] = record.data['nombre_producto'];
-
-        this.detCmp.id_producto.store.add(new Ext.data.Record(this.arrayToObject(this.detCmp.id_producto.store.fields.keys,recTem), record.data['id_producto']));
-        this.detCmp.id_producto.store.commitChanges();
-        this.detCmp.id_producto.modificado = true;
-
-        if (record.data.tipo != '' && record.data.tipo != undefined) {
-
-            this.cambiarCombo(record.data.tipo);
-        }
-
-        if (record.data.requiere_descripcion == 'si') {
-            this.habilitarDescripcion(true);
-            console.log("llega descripcion 1",this);
-        } else {
-        	this.habilitarDescripcion(false);
-          console.log("llega descripcion 2",this);
-        }
-    },
     buildGrupos: function(){
         this.Grupos = [{
                         layout: 'border',
@@ -2075,7 +1046,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             autoScroll:true,
                             style: {
                                    height:'130px',
-                                   background: '#8BB9B2',
+                                   background: '#8AC5D2',
                                    //border:'2px solid green'
                                 },
                             padding: '0 0 0 10',
@@ -2158,7 +1129,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                               collapsible: true,
                               style: {
                                        height:'250px',
-                                       background:'#8BB9B2',
+                                       background:'#8AC5D2',
                                       // border:'2px solid blue'
                                      },
                               padding: '0 0 0 10',
@@ -2191,9 +1162,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                              layout: 'form',
                              title: ' Forma de Pago <br> <br>',
                              border: false,
-                             // style: {
-                             //          border:'2px solid red'
-                             //        },
                              width: 280,
                              id_grupo: 10,
                              items: [],
@@ -2247,39 +1215,121 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     },
-    // crearStoreFormaPago : function () {
-    // 	this.storeFormaPago = new Ext.data.JsonStore({
-    // 	url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
-		// 	id: 'id_forma_pago',
-		// 	root: 'datos',
-		// 	sortInfo: {
-		// 		field: 'id_forma_pago',
-		// 		direction: 'ASC'
-		// 	},
-		// 	totalProperty: 'total',
-		// 	fields: [
-	  //          {name: 'id_forma_pago',type: 'numeric'},
-	  //          {name: 'nombre',      type: 'string'},
-	  //          {name: 'valor',     type: 'numeric'},
-	  //          {name: 'numero_tarjeta',     type: 'string'},
-	  //          {name: 'codigo_tarjeta',     type: 'string'},
-	  //          {name: 'registrar_tarjeta',     type: 'string'},
-    //          {name: 'registrar_tipo_tarjeta',     type: 'string'},
-	  //          {name: 'registrar_cc',     type: 'string'},
-	  //          {name: 'tipo_tarjeta',     type: 'string'}
-	  //       ]
-		// });
-		// if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
-		//   this.storeFormaPago.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
-		// }
-		// this.storeFormaPago.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-		// this.storeFormaPago.baseParams.id_venta = this.Cmp.id_venta.getValue();
-		// this.storeFormaPago.load({params:{start:0,limit:100}});
-    // },
+    crearStoreFormaPago : function () {
+
+    	this.storeFormaPago = new Ext.data.JsonStore({
+    	url: '../../sis_ventas_facturacion/control/Cajero/listarInstanciaPago',
+			id: 'id_instancia_pago',
+			root: 'datos',
+			sortInfo: {
+				field: 'id_instancia_pago',
+				direction: 'ASC'
+			},
+			totalProperty: 'total',
+			fields: [
+             {name: 'id_moneda',     type: 'numeric'},
+	           {name: 'id_instancia_pago',type: 'numeric'},
+	           {name: 'nombre',      type: 'string'},
+             {name: 'codigo_tarjeta',     type: 'string'},
+	           {name: 'numero_tarjeta',     type: 'string'},
+	           {name: 'monto_transaccion',     type: 'numeric'},
+             {name: 'id_venta_forma_pago',type: 'numeric'},
+
+	        ]
+		});
+
+		this.storeFormaPago.baseParams.id_venta = this.Cmp.id_venta.getValue();
+    this.storeFormaPago.load({params:{start:0,limit:50},
+           callback : function (r) {
+             var store = r;
+                    if (r.length == 2) {
+                      this.recuperarInstancias(store);
+                    } else{
+                      this.recuperarUnaInstancia(store);
+                    }
+
+            }, scope : this
+        });
+    },
+
+    recuperarUnaInstancia:function(store){
+      this.Cmp.id_venta_forma_pago_1.setValue(store[0].data.id_venta_forma_pago);
+
+      this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
+         callback : function (r) {
+           this.Cmp.id_moneda.setValue(store[0].data.id_moneda);
+           this.Cmp.id_moneda.fireEvent('select',this.Cmp.id_moneda, this.Cmp.id_moneda.store.getById(store[0].data.id_moneda));
+           //this.obtenersuma();
+          }, scope : this
+      });
+      //
+      this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
+         callback : function (r) {
+           this.Cmp.id_instancia_pago.setValue(store[0].data.id_instancia_pago);
+           this.Cmp.id_instancia_pago.fireEvent('select',this.Cmp.id_instancia_pago, this.Cmp.id_instancia_pago.store.getById(store[0].data.id_instancia_pago));
+           //this.obtenersuma();
+          }, scope : this
+      });
+
+        this.Cmp.monto_forma_pago.setValue(parseFloat(store[0].data.monto_transaccion));
+        this.Cmp.codigo_tarjeta.setValue(parseFloat(store[0].data.codigo_tarjeta));
+        this.Cmp.numero_tarjeta.setValue(parseFloat(store[0].data.numero_tarjeta));
+        this.obtenersuma();
+        //this.iniciarEventos();
+        //this.recuperar_monto_automatico = 'NO';
+        //this.ObtenerCondiciones();
+    },
+
+    recuperarInstancias:function(store){
+
+      this.Cmp.id_venta_forma_pago_1.setValue(store[0].data.id_venta_forma_pago);
+
+      this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
+         callback : function (r) {
+           this.Cmp.id_moneda.setValue(store[0].data.id_moneda);
+           this.Cmp.id_moneda.fireEvent('select',this.Cmp.id_moneda, this.Cmp.id_moneda.store.getById(store[0].data.id_moneda));
+           //this.obtenersuma();
+          }, scope : this
+      });
+      //
+      this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
+         callback : function (r) {
+           this.Cmp.id_instancia_pago.setValue(store[0].data.id_instancia_pago);
+           this.Cmp.id_instancia_pago.fireEvent('select',this.Cmp.id_instancia_pago, this.Cmp.id_instancia_pago.store.getById(store[0].data.id_instancia_pago));
+           //this.obtenersuma();
+          }, scope : this
+      });
+
+      this.Cmp.id_venta_forma_pago_2.setValue(store[1].data.id_venta_forma_pago);
+
+      this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+         callback : function (r) {
+           this.Cmp.id_moneda_2.setValue(store[1].data.id_moneda);
+            this.Cmp.id_moneda_2.fireEvent('select',this.Cmp.id_moneda_2, this.Cmp.id_moneda_2.store.getById(store[1].data.id_moneda));
+          }, scope : this
+      });
+
+      this.Cmp.id_instancia_pago_2.store.load({params:{start:0,limit:50},
+         callback : function (r) {
+           this.Cmp.id_instancia_pago_2.setValue(store[1].data.id_instancia_pago);
+            this.Cmp.id_instancia_pago_2.fireEvent('select',this.Cmp.id_instancia_pago_2, this.Cmp.id_instancia_pago_2.store.getById(store[1].data.id_instancia_pago));
+          }, scope : this
+      });
+
+        this.Cmp.monto_forma_pago.setValue(parseFloat(store[0].data.monto_transaccion));
+        this.Cmp.monto_forma_pago_2.setValue(parseFloat(store[1].data.monto_transaccion));
+        this.Cmp.codigo_tarjeta.setValue((store[0].data.codigo_tarjeta));
+        this.Cmp.numero_tarjeta.setValue((store[0].data.numero_tarjeta));
+        this.Cmp.codigo_tarjeta_2.setValue((store[1].data.codigo_tarjeta));
+        this.Cmp.numero_tarjeta_2.setValue((store[1].data.numero_tarjeta));
+        this.obtenersuma();
+        //this.recuperar_monto_automatico = 'NO';
+        //this.ObtenerCondiciones();
+    },
 
     loadValoresIniciales:function()
     {
-       Phx.vista.FormCajero.superclass.loadValoresIniciales.call(this);
+       Phx.vista.FormCorregirFacturas.superclass.loadValoresIniciales.call(this);
     },
     onReset:function(o){
 			this.generar = 'generar';
@@ -2367,6 +1417,24 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             type:'Field',
             form:true
         },
+        {
+            config:{
+                    labelSeparator:'',
+                    inputType:'hidden',
+                    name: 'id_venta_forma_pago_1'
+            },
+            type:'Field',
+            form:true
+        },
+        {
+            config:{
+                    labelSeparator:'',
+                    inputType:'hidden',
+                    name: 'id_venta_forma_pago_2'
+            },
+            type:'Field',
+            form:true
+        },
 		{
 			//configuracion del componente
 			config:{
@@ -2400,16 +1468,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				name : 'id_cliente',
 				fieldLabel : 'Razón Social Cliente',
         style:{
-        //  width:'5000px',
           textTransform:'uppercase',
         },
         width:200,
 				allowBlank : false,
-        // listeners: {
-        //   afterrender: function(field) {
-        //     field.focus(false);
-        //   }
-        // },
 				emptyText : 'Cliente...',
 				store : new Ext.data.JsonStore({
 					url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
@@ -2466,7 +1528,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         resizable: true,
 				emptyText : 'Paquetes...',
 				store : new Ext.data.JsonStore({
-          //url: '../../sis_ventas_facturacion/control/Formula/listarFormula',
           url: '../../sis_ventas_facturacion/control/Formula_v2/listarFormula',
 					id : 'id_formula',
 					root : 'datos',
@@ -2556,21 +1617,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             id_grupo : 0,
             form : false
         },
-
-		// {
-	  //           config:{
-	  //               name:'id_moneda',
-	  //               origen:'MONEDA',
-	  //               allowBlank:false,
-	  //               fieldLabel:'Moneda',
-	  //               gdisplayField:'desc_moneda',
-	  //               gwidth:100,
-		// 		    anchor: '80%'
-	  //            },
-	  //           type:'ComboRec',
-	  //           id_grupo:0,
-	  //           //form:false
-	  //   },
         {
             config:{
                 name: 'tipo_cambio_venta',
@@ -2638,25 +1684,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				grid:true,
 				form:false
 		},
-    // {
-    //   config:{
-    //     name: 'moneda_tarjeta',
-    //     fieldLabel: 'Moneda',
-    //     allowBlank: true,
-    //     width:150,
-    //     disabled:false,
-    //     readOnly:true,
-    //     style: {
-    //       background: '#EFFFD6',
-    //       color: 'red',
-    //       fontWeight:'bold'
-    //     },
-    //     gwidth: 100
-    //   },
-    //     type:'TextField',
-    //     id_grupo: 2,
-    //     form:true
-    // },
     {
         config: {
             name: 'id_moneda',
@@ -2682,7 +1709,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 totalProperty: 'total',
                 fields: ['id_moneda', 'codigo', 'moneda', 'codigo_internacional'],
                 remoteSort: true,
-                baseParams: {filtrar: 'si',par_filtro: 'moneda.moneda#moneda.codigo#moneda.codigo_internacional'}
+                baseParams: {filtrar: 'si',par_filtro: 'moneda.id_moneda#moneda.moneda#moneda.codigo#moneda.codigo_internacional'}
             }),
             valueField: 'id_moneda',
             gdisplayField : 'codigo_internacional',
@@ -2696,59 +1723,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             mode: 'remote',
             pageSize: 15,
             queryDelay: 1000,
-            //disabled:true,
             minChars: 2
         },
         type: 'ComboBox',
         id_grupo: 2,
         form: true
     },
-    // {
-    //     config: {
-    //         name: 'id_forma_pago',
-    //         fieldLabel: 'Forma de Pago',
-    //         allowBlank: false,
-    //         width:150,
-    //         emptyText: 'Forma de Pago...',
-    //         store: new Ext.data.JsonStore({
-    //             url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
-    //             id: 'id_forma_pago',
-    //             root: 'datos',
-    //             sortInfo: {
-    //                 field: 'nombre',
-    //                 direction: 'ASC'
-    //             },
-    //             totalProperty: 'total',
-    //             fields: ['id_forma_pago', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc','codigo'],
-    //             remoteSort: true,
-    //             baseParams: {par_filtro: 'forpa.nombre#mon.codigo#forpa.codigo',sw_tipo_venta:'computarizada'}
-    //         }),
-    //         valueField: 'id_forma_pago',
-    //         displayField: 'nombre',
-    //         gdisplayField: 'forma_pago',
-    //         hiddenName: 'id_forma_pago',
-    //         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo}</font></b></p><p><b>Moneda:<font color="red">{desc_moneda}</font></b></p> </div></tpl>',
-    //         forceSelection: true,
-    //         typeAhead: false,
-    //         triggerAction: 'all',
-    //         lazyRender: true,
-    //         mode: 'remote',
-    //         pageSize: 15,
-    //         queryDelay: 1000,
-    //         gwidth: 150,
-    //         listWidth:250,
-    //         resizable:true,
-    //         minChars: 2,
-    //         disabled:false,
-    //         renderer : function(value, p, record) {
-    //             return String.format('{0}', record.data['forma_pago']);
-    //         }
-    //     },
-    //     type: 'ComboBox',
-    //     id_grupo: 2,
-    //     grid: true,
-    //     form: true
-    // },
     /************************Aumentando instancia de pago*****************************************/
     {
         config: {
@@ -2893,13 +1873,29 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             width:150,
             maxLength:20,
             allowNegative:false,
-            value:0
+            value:0,
+
         },
             type:'NumberField',
             id_grupo:2,
             form:true,
             valorInicial:'0'
     },
+    // {
+    //                 config: {
+    //                     name: 'codigo_control',
+    //                     fieldLabel: 'Código de Control',
+    //                     allowBlank: true,
+    //                     anchor: '85%',
+    //                     gwidth: 100,
+    //                     enableKeyEvents: true,
+    //                     //fieldStyle: 'text-transform: uppercase',
+    //                     //maxLength: 200,
+    //                 },
+    //                 type: 'TextField',
+    //                 id_grupo: 2,
+    //                 form: true
+    //             },
     {
         config:{
             name: 'tipo_tarjeta',
@@ -2915,51 +1911,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             form:true,
             //valorInicial:'0'
     },
-    // {
-    //         config:{
-    //             name: 'tipo_tarjeta',
-    //             fieldLabel: 'Tipo Tarjeta',
-    //             allowBlank: true,
-    //             width:150,
-    //             emptyText:'tipo...',
-    //             triggerAction: 'all',
-    //             lazyRender:true,
-    //             mode: 'local',
-    //             displayField: 'text',
-    //             valueField: 'value',
-    //             store:new Ext.data.SimpleStore({
-		// 			data : [['VI', 'VISA'], ['AX', 'AMERICAN EXPRESS'],
-		// 					['DC', 'DINERS CLUB'],['CA', 'MASTER CARD'],
-		// 					['RE', 'RED ENLACE']],
-		// 			id : 'value',
-		// 			fields : ['value', 'text']
-		// 		})
-    //         },
-    //         type:'ComboBox',
-    //         id_grupo:2,
-    //         form:true
-    //     },
-        // {
-        //   config:{
-        //     name: 'moneda_tarjeta_2',
-        //     fieldLabel: 'Moneda',
-        //     allowBlank: true,
-        //     width:150,
-        //     disabled:false,
-        //     readOnly:true,
-        //     style: {
-        //       background: '#EFFFD6',
-        //       color: 'red',
-        //       fontWeight:'bold',
-        //     //  border:'2px solid blue'
-        //     },
-        //     gwidth: 100
-        //   },
-        //     type:'TextField',
-        //     id_grupo: 10,
-        //     form:true
-        // },
-        {
+    {
             config: {
                 name: 'id_moneda_2',
                 fieldLabel: 'Moneda',
@@ -3053,56 +2005,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             grid: true,
             form: true
         },
-
-
-        // {
-        //     config: {
-        //         name: 'id_forma_pago_2',
-        //         fieldLabel: 'Forma de Pago',
-        //         allowBlank: true,
-        //         disabled:true,
-        //         emptyText: 'Forma de Pago...',
-        //         store: new Ext.data.JsonStore({
-        //             url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
-        //             id: 'id_forma_pago',
-        //             root: 'datos',
-        //             sortInfo: {
-        //                 field: 'nombre',
-        //                 direction: 'ASC'
-        //             },
-        //             totalProperty: 'total',
-        //             fields: ['id_forma_pago', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc','codigo'],
-        //             remoteSort: true,
-        //             baseParams: {par_filtro: 'forpa.nombre#forpa.codigo#mon.codigo_internacional',sw_tipo_venta:'computarizada'}
-        //         }),
-        //         valueField: 'id_forma_pago',
-        //         displayField: 'nombre',
-        //         gdisplayField: 'forma_pago',
-        //         hiddenName: 'id_forma_pago',
-        //         width:150,
-        //         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo}</font></b></p><p><b>Moneda:<font color="red">{desc_moneda}</font></b></p> </div></tpl>',
-        //         forceSelection: true,
-        //         typeAhead: false,
-        //         triggerAction: 'all',
-        //         lazyRender: true,
-        //         mode: 'remote',
-        //         pageSize: 15,
-        //         queryDelay: 1000,
-        //         gwidth: 150,
-        //         listWidth:350,
-        //         resizable:true,
-        //         minChars: 2,
-        //         //disabled:false,
-        //         renderer : function(value, p, record) {
-        //             return String.format('{0}', record.data['forma_pago2']);
-        //         }
-        //     },
-        //     type: 'ComboBox',
-        //     id_grupo: 10,
-        //     grid: true,
-        //     form: true
-        // },
-
         {
     			config: {
     				name: 'id_auxiliar_2',
@@ -3153,7 +2055,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 name: 'numero_tarjeta_2',
                 fieldLabel: 'N° Tarjeta',
                 allowBlank: true,
-                //disabled:true,
                 width:150,
                 gwidth: 150,
                 maxLength:20,
@@ -3172,7 +2073,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 allowBlank: true,
                 width:150,
                 gwidth: 150,
-                //disabled:true,
                 minLength:15,
                 maxLength:20
             },
@@ -3187,7 +2087,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 fieldLabel: 'Codigo de Autorización',
                 allowBlank: true,
                 width:150,
-                //disabled:true,
                 minLength:6,
                 maxLength:6
 
@@ -3221,39 +2120,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 fieldLabel: 'Tipo Tarjeta',
                 allowBlank: false,
                 width:150,
-                //maxLength:20,
-                //allowNegative:false,
-                //value:0
             },
                 type:'TextField',
                 id_grupo:10,
                 form:true,
-                //valorInicial:'0'
         },
-        // {
-        //         config:{
-        //             name: 'tipo_tarjeta_2',
-        //             fieldLabel: 'Tipo Tarjeta',
-        //             allowBlank: true,
-        //             width:150,
-        //             emptyText:'tipo...',
-        //             triggerAction: 'all',
-        //             lazyRender:true,
-        //             mode: 'local',
-        //             displayField: 'text',
-        //             valueField: 'value',
-        //             store:new Ext.data.SimpleStore({
-    		// 			data : [['VI', 'VISA'], ['AX', 'AMERICAN EXPRESS'],
-    		// 					['DC', 'DINERS CLUB'],['CA', 'MASTER CARD'],
-    		// 					['RE', 'RED ENLACE']],
-    		// 			id : 'value',
-    		// 			fields : ['value', 'text']
-    		// 		})
-        //         },
-        //         type:'ComboBox',
-        //         id_grupo:10,
-        //         form:true
-        //     },
         // //modifcado
         {
             config:{
@@ -3326,9 +2197,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
         /*Comentando para incluir InstanciaPago*/
         //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-        this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
-        this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
+        this.Cmp.id_instancia_pago.store.baseParams.defecto = 'no';
+        this.Cmp.id_moneda.store.baseParams.filtrar_base = 'no';
         this.mestore.load();
+        //this.crearStoreFormaPago();
+        //this.obtenersuma();
       //  this.Cmp.id_forma_pago.reset();
 
 
@@ -3346,12 +2219,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             var record = me.megrid.store.getAt(i);
             arra[i] = record.data;
         }
-        if (me.storeFormaPago) {
-	        for (i = 0; i < me.storeFormaPago.getCount(); i++) {
-	            var record = me.storeFormaPago.getAt(i);
-	            formapa[i] = record.data;
-	        }
-	    }
+      //   if (me.storeFormaPago) {
+      //     console.log("llega aqui",me.storeFormaPago.getCount());
+	    //     for (i = 0; i < me.storeFormaPago.getCount(); i++) {
+	    //         var record = me.storeFormaPago.getAt(i);
+	    //         formapa[i] = record.data;
+	    //     }
+	    // }
         me.argumentExtraSubmit = { 'json_new_records': JSON.stringify(arra,
         				function replacer(key, value) {
                        		if (typeof value === 'string') {
@@ -3369,7 +2243,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         'tipo_factura':this.data.objPadre.tipo_factura};
 
         if( i > 0 &&  !this.editorDetail.isVisible()){
-             Phx.vista.FormCajero.superclass.onSubmit.call(this,o);
+             Phx.vista.FormCorregirFacturas.superclass.onSubmit.call(this,o);
         }
         else{
             alert('La venta no tiene registrado ningun detalle');
@@ -3380,42 +2254,15 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
     	var datos_respuesta = JSON.parse(resp.responseText);
     	Phx.CP.loadingHide();
-      if (this.generar == 'generar') {
-        //Phx.CP.loadingShow();
-  			var d = datos_respuesta.ROOT.datos;
-        console.log("datos respuesta es",d);
-        if (this.data.objPadre.tipo_punto_venta == 'ato') {
-        console.log("llega aqui",d);
-  			Ext.Ajax.request({
-  					url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
-  					params:{id_estado_wf_act:d.id_estado_wf,
-  									id_proceso_wf_act:d.id_proceso_wf,
-  								  tipo:'recibo'},
-  					success:this.successWizard,
-  					failure: this.conexionFailure,
-  					timeout:this.timeout,
-  					scope:this
-  			});
-      } else {
-        Ext.Ajax.request({
-  					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
-  					params:{id_estado_wf_act:d.id_estado_wf,
-  									id_proceso_wf_act:d.id_proceso_wf,
-  								  tipo:'recibo'},
-  					success:this.successWizard,
-  					failure: this.conexionFailure,
-  					timeout:this.timeout,
-  					scope:this
-  			});
+      //this.panel.close();
 
-      }
-
-      }
-
+      console.log("llega aqui respuesta cambio",datos_respuesta);
       if ('cambio' in datos_respuesta.ROOT.datos) {
         Ext.Msg.show({
-         title:'DEVOLUCION',
-         msg: 'Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente',
+         title:'<center><h1 style="font-size:20px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><img src="../../../lib/imagenes/obligacion_pago.png" height="30px" style="float:center; vertical-align: middle;"> Cambio</h1></center>',
+         msg: '<center><b style="font-size:15px;">Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente</b></center>',
+         width:290,
+         height:100,
          buttons: Ext.Msg.OK,
          fn: function () {
             Phx.CP.getPagina(this.idContenedorPadre).reload();
@@ -3430,25 +2277,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
     },
 
-    falla:function(resp){
-      var datos_respuesta = JSON.parse(resp.responseText);
-      this.panel.close();
-      if (datos_respuesta.ROOT.error == true) {
-          Ext.Msg.show({
-           title:'<h1 style="color:red"><center>DOSIFICACION INACTIVA</center></h1>',
-           msg: datos_respuesta.ROOT.detalle.mensaje + '.' + '<br><br>Consulte con el administrador de ventas.',
-           buttons: Ext.Msg.OK,
-           fn: function () {
-              Phx.CP.getPagina(this.idContenedorPadre).reload();
-              this.panel.close();
-           },
-           scope:this
-        });
-        } else {
-          Phx.CP.getPagina(this.idContenedorPadre).reload();
-          this.panel.close();
-        }
-     },
+
 
 
 })

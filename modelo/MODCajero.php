@@ -486,6 +486,7 @@ class MODCajero extends MODbase{
 		$this->captura('precio_unitario','numeric');
 		$this->captura('precio_total','numeric');
 		$this->captura('unidad_medida','varchar');
+		$this->captura('cod_producto','varchar');
 		$this->captura('nandina','varchar');
 		$this->captura('bruto','varchar');
 		$this->captura('ley','varchar');
@@ -518,6 +519,32 @@ class MODCajero extends MODbase{
 
 			//Devuelve la respuesta
 			return $this->respuesta;
+	}
+	function listarInstanciaPago(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_venta_facturacion_sel';
+		$this->transaccion='VF_LIST_INST_PA';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		$this->setParametro('id_venta','id_venta','integer');
+
+		//Definicion de la lista del resultado del query
+		$this->captura('id_instancia_pago','int4');
+		$this->captura('nombre','varchar');
+		$this->captura('codigo_tarjeta','varchar');
+		$this->captura('numero_tarjeta','varchar');
+		$this->captura('monto_transaccion','numeric');
+		$this->captura('id_moneda','int4');
+		$this->captura('id_venta_forma_pago','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
 	}
 
 

@@ -15,6 +15,11 @@ class ACTPuntoVenta extends ACTbase{
             $this->objParam->addFiltro(" puve.id_sucursal = " .  $this->objParam->getParametro('id_sucursal'));
         }
 
+		/*********************************Filtro para pv ATO Y CTO********************************/
+		if ($this->objParam->getParametro('tipo_pv') != '') {
+			$this->objParam->addFiltro("puve.tipo in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(''".$this->objParam->getParametro('tipo_pv')."'', '','')))");
+		}
+		/*****************************************************************************************/
 		if ($this->objParam->getParametro('id_punto_venta') != '') {
 			$this->objParam->addFiltro(" puve.id_punto_venta = " .  $this->objParam->getParametro('id_punto_venta'));
 		}
@@ -67,7 +72,8 @@ class ACTPuntoVenta extends ACTbase{
                                                                                             inner join param.tdepto_usuario d on d.id_depto = s.id_depto
                                                                                             where puve.id_punto_venta = p.id_punto_venta
                                                                                             )))");
-        }				
+        }
+
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

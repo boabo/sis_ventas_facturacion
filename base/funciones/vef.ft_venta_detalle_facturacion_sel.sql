@@ -80,11 +80,13 @@ BEGIN
                         /*Aumentando para el excento*/
                         ven.excento,
                         (case when
-                        (pro.excento is not null) then
-                        	pro.excento
+                        (ing.excento is not null) then
+                        	ing.excento
                         else
                         	''no''
-                        end)::varchar as tiene_excento
+                        end)::varchar as tiene_excento,
+                        ing.id_moneda,
+                        mon.codigo_internacional
                         /****************************/
 						from vef.tventa_detalle factdet
 						inner join segu.tusuario usu1 on usu1.id_usuario = factdet.id_usuario_reg
@@ -93,8 +95,9 @@ BEGIN
 
                         /*Aumentando para excento*/
                         inner join vef.tventa ven on ven.id_venta = factdet.id_venta
-                        left join vef.tsucursal_producto pro on pro.id_concepto_ingas = factdet.id_producto and pro.id_sucursal = ven.id_sucursal
-                        /****************************/
+                        --left join vef.tsucursal_producto pro on pro.id_concepto_ingas = factdet.id_producto and pro.id_sucursal = ven.id_sucursal
+            	        left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
+             			/****************************/
                         where  ';
 
 			--Definicion de la respuesta
@@ -123,7 +126,13 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = factdet.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = factdet.id_usuario_mod
                         inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = factdet.id_producto
-					    where ';
+
+                        /*Aumentando para excento*/
+                        inner join vef.tventa ven on ven.id_venta = factdet.id_venta
+                        --left join vef.tsucursal_producto pro on pro.id_concepto_ingas = factdet.id_producto and pro.id_sucursal = ven.id_sucursal
+            	        left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
+             			/****************************/
+                        where ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

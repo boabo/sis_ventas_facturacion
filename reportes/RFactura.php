@@ -102,7 +102,7 @@ class RFactura
 				<table cellpadding="2" cellspacing="0" style="width: 295px;">
 					<thead>
 						<tr>
-							<th align="center" style="width:59px; background:#E9E9E9; border-top:1px solid black; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; color:red; ">C&oacute;digo Producto</th>
+							<th align="center" style="width:59px; background:#E9E9E9; border-top:1px solid black; border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black;">C&oacute;digo Producto</th>
 							<th align="center" style="width:59px; padding-left:5px; background:#E9E9E9; border-top:1px solid black; border-bottom:1px solid black; border-right:1px solid black;">Cantidad</th>
 							<th align="center" style="width:59px; background:#E9E9E9; border-top:1px solid black; border-bottom:1px solid black; border-right:1px solid black; ">Descripci&oacute;n</th>
 							<th align="center" style="width:59px; padding-left:5px; background:#E9E9E9; border-top:1px solid black; border-bottom:1px solid black; border-right:1px solid black; ">Precio Unitario</th>
@@ -113,8 +113,7 @@ class RFactura
 
 					foreach ($datos['detalle'] as $item_detalle) {
 					    $html .= '<tr>
-
-							<td align="right" style="border-left:1px solid black; border-right:1px solid black; border-bottom:1px solid black; ">000001000</td>
+							<td align="right" style="border-left:1px solid black; border-right:1px solid black; border-bottom:1px solid black; ">'.$item_detalle['cod_producto'].'</td>
 							<td align="right" style="border-right:1px solid black; border-bottom:1px solid black;">'.number_format($item_detalle['cantidad'], 2, '.', '').'</td>
 							<td style="border-right:1px solid black; border-bottom:1px solid black;"> '.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
 							<td align="right" style="border-right:1px solid black; border-bottom:1px solid black;">'.number_format($item_detalle['precio_unitario'], 2, '.', '').'</td>

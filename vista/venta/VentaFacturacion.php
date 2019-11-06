@@ -51,9 +51,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 					timeout:this.timeout,
 					scope:this
 			});
-			this.cmbPuntoV.on('select', function( combo, record, index){
-					this.capturaFiltros();
-			},this);
+
 
 
 	},
@@ -78,7 +76,16 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 					iconCls : 'badelante',
 					disabled: true,
 					handler : this.sigEstado,
-					tooltip : '<b>Reporte Formulario de Entrega de Remesas</b>'
+					tooltip : '<b>Enviar venta al cajero para su respectivo cobro</b>'
+			});
+
+			this.addButton('mod_excento',{
+					grupo:[0],
+					text :'Modificar Excento',
+					iconCls : 'bmoney',
+					disabled: true,
+					handler : this.modExcento,
+					tooltip : '<b>Modificar el valor excento de la venta</b>'
 			});
 
 			this.addButton('anular_fact',
@@ -183,12 +190,18 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	preparaMenu: function () {
 			var rec = this.sm.getSelected();
 			this.getBoton('anular_fact').enable();
+			this.getBoton('sgt_estado').enable();
+			if (rec.data.excento > 0) {
+				this.getBoton('mod_excento').enable();
+			}
 			Phx.vista.VentaFacturacion.superclass.preparaMenu.call(this);
 		},
 
 		liberaMenu : function(){
 				var rec = this.sm.getSelected();
 				this.getBoton('anular_fact').disable();
+				this.getBoton('sgt_estado').disable();
+				this.getBoton('mod_excento').disable();
 				Phx.vista.VentaFacturacion.superclass.liberaMenu.call(this);
 		},
 
@@ -213,7 +226,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 													direction: 'ASC'
 											},
 											totalProperty: 'total',
-											fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
+											fields: ['id_punto_venta','tipo', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
 											remoteSort: true,
 											baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura, tipo : this.tipo}
 			});
@@ -236,6 +249,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		}
 
 			storeCombo.load({params:{start: 0, limit: this.tam_pag},
+
 						 callback : function (r) {
 									if (r.length == 0 ) {
 										if (this.variables_globales.vef_tiene_punto_venta === 'true') {
@@ -304,17 +318,19 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 																		this.variables_globales.id_punto_venta = combo2.getValue();
 																		this.variables_globales.id_sucursal = storeCombo.getById(combo2.getValue()).data.id_sucursal;
 																		this.store.baseParams.id_punto_venta = this.variables_globales.id_punto_venta;
+																		this.store.baseParams.tipo = this.variables_globales.tipo;
 																	} else {
 																		this.variables_globales.id_sucursal = combo2.getValue();
 																		this.store.baseParams.id_sucursal = this.variables_globales.id_sucursal;
 																	}
-
+																	this.variables_globales.tipo_pv = storeCombo.getById(combo2.getValue()).data.tipo;
 																	this.store.baseParams.tipo_usuario = this.tipo_usuario;
 																	this.store.baseParams.tipo_factura = 'computarizada';
 																	this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
 																	this.punto_venta.setText(combo2.lastSelectionText)
 																	this.load({params:{start:0, limit:this.tam_pag}});
 																	this.iniciarEventos();
+
 															}
 														},
 										scope: this
@@ -343,7 +359,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	onDestroy: function() {
-			//Phx.baseInterfaz.superclass.destroy.call(this,c);
+			console.log();
 			this.variables_globales.id_punto_venta = '';
 			this.fireEvent('closepanel',this);
 
@@ -359,14 +375,50 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 	},
 
+
 	iniciarEventos:function(){
 		//recuperamos si tiene apertura de Caja
+
+		/*Obtenemos el tipo de cambio*/
+		this.tipo_cambio = 0;
+		var fecha = new Date();
+		var dd = fecha.getDate();
+		var mm = fecha.getMonth() + 1; //January is 0!
+		var yyyy = fecha.getFullYear();
+		this.fecha_actual = dd + '/' + mm + '/' + yyyy;        ;
+		Ext.Ajax.request({
+				url:'../../sis_ventas_facturacion/control/AperturaCierreCaja/getTipoCambio',
+				params:{fecha_cambio:this.fecha_actual},
+				success: function(resp){
+						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+						this.tipo_cambio = reg.ROOT.datos.v_tipo_cambio;
+						this.moneda_base = reg.ROOT.datos.v_codigo_moneda;
+				},
+				failure: this.conexionFailure,
+				timeout:this.timeout,
+				scope:this
+		});
+		/******************************/
+
+		/*Filtramos la lista de paquetes por la sucursal seleccionada*/
+		this.Cmp.id_formula.store.baseParams.tipo_punto_venta = this.variables_globales.tipo_pv;
+		this.Cmp.id_formula.store.baseParams.id_punto_venta = this.variables_globales.id_punto_venta;
+		/*************************************************************/
+
+
 		/*********Actualizacion automatica*******/
 		this.timer_id=Ext.TaskMgr.start({
 			 run: Ftimer,
-			 interval:60000,
+			 interval:3000,
 			 scope:this
 	 });
+
+	 this.timer_id=Ext.TaskMgr.start({
+			run: Ftimer2,
+			interval:300000,
+			scope:this
+	});
+
 	 function Ftimer(){
 	if (this.variables_globales.id_punto_venta != '') {
 		 Ext.Ajax.request({
@@ -420,9 +472,15 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 				//this.reload();
 				// Phx.CP.getPagina(this.idContenedor).reload();
-				this.load({params:{start:0, limit:this.tam_pag}});
+			//	this.load({params:{start:0, limit:this.tam_pag}});
 		}
 	}
+
+	function Ftimer2(){
+			 if (this.variables_globales.id_punto_venta != '') {
+						 this.reload();
+				 }
+			 }
 /************************************************/
 
 	},
@@ -580,6 +638,99 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		            scope:this
 		        });
 			},
+
+			modExcento : function () {
+				var rec=this.sm.getSelected();
+				var simple = new Ext.FormPanel({
+				 labelWidth: 75, // label settings here cascade unless overridden
+				 frame:true,
+				 bodyStyle:'padding:5px 5px 0; background:linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%);',
+				 width: 300,
+				 height:70,
+				 defaultType: 'textfield',
+				 items: [
+								  new Ext.form.NumberField({
+																			name: 'excento',
+																			msgTarget: 'title',
+																			fieldLabel: 'Valor Excento',
+																			allowBlank: false,
+																			allowDecimals: true,
+																			decimalPrecision : 2,
+																			style:{
+																				width: '190px'
+																			},
+																			enableKeyEvents : true,
+
+															}),
+									]
+
+		 					});
+					this.excento_formulario = simple;
+
+				var win = new Ext.Window({
+					title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Excento<p></h1>', //the title of the window
+					width:320,
+					height:150,
+					//closeAction:'hide',
+					modal:true,
+					plain: true,
+					items:simple,
+					buttons: [{
+											text:'<i class="fa fa-floppy-o fa-lg"></i> Guardar',
+											scope:this,
+											handler: function(){
+													this.modificarNuevo(win);
+											}
+									},{
+											text: '<i class="fa fa-times-circle fa-lg"></i> Cancelar',
+											handler: function(){
+													win.hide();
+											}
+									}]
+
+				});
+				win.show();
+				this.excento_formulario.items.items[0].setValue(rec.data.excento);
+
+			},
+			modificarNuevo : function (win) {
+				//console.log("llega auqi datos de la ventana",this);
+				if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
+						Ext.Msg.show({
+						 title:'<h1 style="font-size:15px;">Aviso!</h1>',
+						 msg: '<p style="font-weight:bold; font-size:12px;">Tiene un concepto que requiere excento y el valor excento no debe ser vacio o 0!</p>',
+						 buttons: Ext.Msg.OK,
+						 width:320,
+		 				 height:150,
+						 icon: Ext.MessageBox.WARNING,
+						 scope:this
+					});
+				} else {
+				this.guardarDetalles();
+				win.hide();
+				}
+
+			},
+
+			guardarDetalles : function(){
+				var rec=this.sm.getSelected();
+				console.log("llega aqui para guardar datos",rec);
+				/*Recuperamos de la venta detalle si existe algun concepto con excento*/
+				Ext.Ajax.request({
+						url : '../../sis_ventas_facturacion/control/VentaDetalleFacturacion/actualizarExcento',
+						params : {
+							'id_venta' : rec.data.id_venta,
+							'valor_excento': this.excento_formulario.items.items[0].getValue()
+						},
+						success : this.successExportHtml,
+						failure : this.conexionFailure,
+						timeout : this.timeout,
+						scope : this
+					});
+					this.reload();
+				/**********************************************************************/
+			},
+
 	loadMask :false,
 	Atributos:[
 		{
@@ -929,7 +1080,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 resizable: true,
 			 emptyText : 'Paquetes...',
 			 store : new Ext.data.JsonStore({
-				 url: '../../sis_ventas_facturacion/control/Formula/listarFormula',
+				 url: '../../sis_ventas_facturacion/control/Formula_v2/listarFormula',
 				 id : 'id_formula',
 				 root : 'datos',
 				 sortInfo : {

@@ -92,6 +92,15 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.ReciboLista.superclass.constructor.call(this,request.arguments);
 
 		this.init();
+
+		/*Fondo en el tbar*/
+	this.bbar.el.dom.style.background='#6EC8E3';
+	this.tbar.el.dom.style.background='#6EC8E3';
+	this.grid.body.dom.firstChild.firstChild.lastChild.style.background='#FEFFF4';
+	this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#FFF4EB';
+
+
+
 		//this.load({params:{start:0, limit:this.tam_pag}});
 	},
 	seleccionarPuntoVentaSucursal : function () {

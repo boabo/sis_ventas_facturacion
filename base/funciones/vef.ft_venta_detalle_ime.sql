@@ -139,7 +139,7 @@ $body$
         insert into vef.tventa_detalle(
           id_venta,
           id_item,
-          id_sucursal_producto,
+          --id_sucursal_producto,
           id_formula,
           tipo,
           estado_reg,
@@ -162,7 +162,7 @@ $body$
         ) values(
           v_parametros.id_venta,
           v_id_item,
-          v_id_sucursal_producto,
+          --v_id_sucursal_producto,
           v_id_formula,
           v_parametros.tipo,
           'activo',
@@ -399,3 +399,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_venta_detalle_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

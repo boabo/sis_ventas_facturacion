@@ -25,7 +25,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 	constructor:function(config){
 		this.maestro=config.maestro;
 		this.tipo_usuario = 'cajero';
-		console.log("lelga aqui tipo",this);
+		//console.log("lelga aqui tipo",this);
 		Ext.Ajax.request({
 				url:'../../sis_ventas_facturacion/control/Venta/getVariablesBasicas',
 				params: {'prueba':'uno'},
@@ -65,6 +65,16 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 				handler : this.completar_pago,
 				tooltip : '<b>Formulario para completar el pago</b>'
 		});
+
+		this.addButton('asociar_boletos',
+				{   grupo:[2],
+						text: 'Asociar Boletos',
+						iconCls: 'bchecklist',
+						disabled: true,
+						handler: this.AsociarBoletos,
+						tooltip: '<b>Asociar Boletos</b><br/>Asocia Boletos a la factura emitida.'
+				}
+		);
 
 			this.init();
 
@@ -127,7 +137,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 
 			this.campo_fecha.on('select',function(value){
 			this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
-			console.log("LLEGA FECHA SELEC",this.store);
+			//console.log("LLEGA FECHA SELEC",this.store);
 			this.load();
 		},this);
 
@@ -162,6 +172,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 	preparaMenu: function () {
 			var rec = this.sm.getSelected();
 			this.getBoton('completar_pago_2').enable();
+			this.getBoton('asociar_boletos').enable();
 
 			Phx.vista.FacturacionManual.superclass.preparaMenu.call(this);
 		},
@@ -169,6 +180,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 		liberaMenu : function(){
 				var rec = this.sm.getSelected();
 				this.getBoton('completar_pago_2').disable();
+				this.getBoton('asociar_boletos').disable();
 				Phx.vista.FacturacionManual.superclass.liberaMenu.call(this);
 		},
 
@@ -375,7 +387,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
 							this.bbar.items.items[14].el.dom.style.textShadow='0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)';
 
-							console.log("llega aqui",this.bbar.items.items[14].el.dom.style);
+							//console.log("llega aqui",this.bbar.items.items[14].el.dom.style);
 							// this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
 							//
 							// this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
@@ -452,7 +464,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 		sigEstado:function(){
 			//Phx.CP.loadingShow();
 			var d = this.sm.getSelected().data;
-			console.log("llega aqui el id y el proceso",d);
+			//console.log("llega aqui el id y el proceso",d);
 			Ext.Ajax.request({
 					url:'../../sis_ventas_facturacion/control/VentaFacturacion/siguienteEstadoRecibo',
 					params:{id_estado_wf_act:d.id_estado_wf,
@@ -490,7 +502,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 				 Phx.CP.getPagina(this.idContenedor).reload();
 				 resp.argument.wizard.panel.destroy();
 				 //console.log("ventana",panel);
-				 console.log("this",resp);
+				 //console.log("this",resp);
 
 				 //
 
@@ -517,9 +529,25 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 		        });
 			},
 
+			AsociarBoletos: function(){
+
+		              var rec = {maestro: this.sm.getSelected().data}
+		              console.log('VALOR',	rec);
+		              Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/venta/AsociarBoletos.php',
+		                  '<center><h1 style="font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"> <img src="../../../lib/imagenes/icono_dibu/dibu_zoom.png" style="float:center; vertical-align: middle;"> Asociar Boletos</h1></center>',
+		                  {
+		                      width:1200,
+		                      height:600
+		                  },
+		                  rec,
+		                  this.idContenedor,
+		                  'AsociarBoletos');
+
+		          },
+
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
-        console.log("llega para imprimir",this);
+        //console.log("llega para imprimir",this);
    				Phx.CP.loadingShow();
    				Ext.Ajax.request({
    						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
@@ -1092,7 +1120,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 	],
 	sortInfo:{
 		field: 'id_venta',
-		direction: 'ASC'
+		direction: 'DESC'
 	},
 
 	bdel:true,

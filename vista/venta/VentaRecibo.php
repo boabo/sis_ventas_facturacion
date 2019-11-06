@@ -44,6 +44,16 @@ Phx.vista.VentaRecibo = {
             }
         );
 
+        this.addButton('asociar_boletos',
+    				{   grupo:[1],
+    						text: 'Asociar Boletos',
+    						iconCls: 'bchecklist',
+    						disabled: true,
+    						handler: this.AsociarBoletos,
+    						tooltip: '<b>Asociar Boletos</b><br/>Asocia Boletos a la factura emitida.'
+    				}
+    		);
+
         this.campo_fecha = new Ext.form.DateField({
 	        name: 'fecha_reg',
 	        grupo: this.grupoDateFin,
@@ -92,9 +102,9 @@ Phx.vista.VentaRecibo = {
     	},this);
 
   	},
-  	gruposBarraTareas:[{name:'borrador',title:'<H1 align="center"><i class="fa fa-eye"></i> En Registro</h1>',grupo:0,height:0},
-                       {name:'finalizado',title:'<H1 align="center"><i class="fa fa-eye"></i> Finalizados</h1>',grupo:1,height:0},
-                       {name:'anulado',title:'<H1 align="center"><i class="fa fa-eye"></i> Anulados</h1>',grupo:2,height:0}
+  	gruposBarraTareas:[{name:'borrador',title:'<H1 style="font-size:12px;" align="center"><i style="color:#FFAE00; font-size:15px;" class="fa fa-eraser"></i> En Registro</h1>',grupo:0,height:0},
+                       {name:'finalizado',title:'<H1 style="font-size:12px;" align="center"><i style="color:#B61BFF; font-size:15px;" class="fa fa-check-circle"></i> Finalizados</h1>',grupo:1,height:0},
+                       {name:'anulado',title:'<H1 style="font-size:12px;" align="center"><i style="color:red; font-size:15px;" class="fa fa-ban"></i> Anulados</h1>',grupo:2,height:0}
                        ],
 
 
@@ -129,6 +139,7 @@ Phx.vista.VentaRecibo = {
         }
         this.getBoton('btnImprimir').enable();
         this.getBoton('diagrama_gantt').enable();
+        this.getBoton('asociar_boletos').enable();
         Phx.vista.VentaRecibo.superclass.preparaMenu.call(this);
     },
     liberaMenu:function()
@@ -136,8 +147,25 @@ Phx.vista.VentaRecibo = {
         this.getBoton('diagrama_gantt').disable();
         this.getBoton('anular').disable();
         this.getBoton('sig_estado').disable();
+        this.getBoton('asociar_boletos').disable();
         Phx.vista.VentaRecibo.superclass.liberaMenu.call(this);
-    }
+    },
+
+    AsociarBoletos: function(){
+
+                var rec = {maestro: this.sm.getSelected().data}
+                console.log('VALOR',	rec);
+                Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/venta/AsociarBoletos.php',
+                    '<center><h1 style="font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"> <img src="../../../lib/imagenes/icono_dibu/dibu_zoom.png" style="float:center; vertical-align: middle;"> Asociar Boletos</h1></center>',
+                    {
+                        width:1200,
+                        height:600
+                    },
+                    rec,
+                    this.idContenedor,
+                    'AsociarBoletos');
+
+            },
 
 
 };

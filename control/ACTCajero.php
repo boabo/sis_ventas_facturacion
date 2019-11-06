@@ -16,7 +16,11 @@ class ACTCajero extends ACTbase{
 
 		//var_dump("LLEGA AQUI",$this->objParam->getParametro('tipo_factura'));exit;
 		if ($this->objParam->getParametro('id_punto_venta') != '') {
-				$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."''");
+				if ($this->objParam->getParametro('tipo_factura') == 'todos') {
+					$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''computarizada'' or fact.tipo_factura =''manual'')");
+				} else {
+				 			$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."''");
+				 	}
 			}
 
 		if ($this->objParam->getParametro('pes_estado') != '') {
@@ -141,6 +145,11 @@ class ACTCajero extends ACTbase{
 		 $this->res=$this->objFunc->getTipoUsuario($this->objParam);
 		 $this->res->imprimirRespuesta($this->res->generarJson());
  }
+ function listarInstanciaPago(){
+		$this->objFunc=$this->create('MODCajero');
+		$this->res=$this->objFunc->listarInstanciaPago($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+}
 
 
 }

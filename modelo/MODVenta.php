@@ -244,6 +244,11 @@ class MODVenta extends MODbase{
 			$this->setParametro('id_punto_venta','id_punto_venta','int4');
 			$this->setParametro('id_forma_pago','id_forma_pago','int4');
 			$this->setParametro('id_forma_pago_2','id_forma_pago_2','int4');
+			/*Aumentando la instancia de pago*/
+			$this->setParametro('id_instancia_pago','id_instancia_pago','int4');
+			$this->setParametro('id_instancia_pago_2','id_instancia_pago_2','int4');
+			$this->setParametro('id_moneda_2','id_moneda_2','int4');
+			/********************************/
 			$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
 			$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
 			$this->setParametro('mco','mco','varchar');

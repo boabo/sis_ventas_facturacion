@@ -1085,3 +1085,82 @@ ALTER TABLE vef.tventa
 ALTER TABLE vef.tventa
   ADD COLUMN anulado VARCHAR(5);
 /***********************************F-SCP-IRVA-VEF-1-26/08/2019****************************************/
+
+/***********************************I-SCP-IRVA-VEF-1-31/10/2019****************************************/
+ALTER TABLE vef.tventa_forma_pago
+  ALTER COLUMN tipo_tarjeta TYPE VARCHAR(100) COLLATE pg_catalog."default";
+
+
+ALTER TABLE param.tconcepto_ingas
+  ADD COLUMN tipo_punto_venta VARCHAR(200) [];
+COMMENT ON COLUMN param.tconcepto_ingas.tipo_punto_venta
+IS 'el tipo de punto de venta (ato,cto)';
+
+
+ALTER TABLE param.tconcepto_ingas
+  ADD COLUMN punto_venta_asociado INTEGER [];
+COMMENT ON COLUMN param.tconcepto_ingas.punto_venta_asociado
+IS 'Lista de los puntos de venta que seran asociados';
+
+ALTER TABLE param.tconcepto_ingas
+  ADD COLUMN id_moneda INTEGER;
+
+ ALTER TABLE param.tconcepto_ingas
+  ADD COLUMN precio NUMERIC(18,2);
+
+ALTER TABLE param.tconcepto_ingas
+  ADD COLUMN requiere_descripcion VARCHAR(2);
+
+ALTER TABLE param.tconcepto_ingas
+    ADD COLUMN excento VARCHAR(2);
+
+ALTER TABLE vef.tformula
+  ADD COLUMN punto_venta_asociado INTEGER [];
+
+COMMENT ON COLUMN vef.tformula.punto_venta_asociado
+IS 'Lista de los puntos de venta que seran asociados';
+
+
+ALTER TABLE vef.tformula
+  ADD COLUMN tipo_punto_venta VARCHAR(200) [];
+
+COMMENT ON COLUMN vef.tformula.tipo_punto_venta
+IS 'el tipo de punto de venta (ato,cto)';
+
+ALTER TABLE vef.tventa_forma_pago
+  ADD COLUMN id_instancia_pago INTEGER;
+
+ALTER TABLE vef.tventa_forma_pago
+  ALTER COLUMN id_forma_pago DROP NOT NULL;
+
+ALTER TABLE vef.tventa_forma_pago
+DROP CONSTRAINT fk_tventa_forma_pago__id_forma_pago RESTRICT;
+
+ALTER TABLE vef.tventa_forma_pago
+ADD COLUMN id_moneda INTEGER;
+
+
+CREATE TABLE vef.tboletos_asociados_fact (
+  id_boleto_asociado SERIAL,
+  id_boleto INTEGER NOT NULL,
+  nro_boleto VARCHAR(200),
+  fecha_emision DATE,
+  pasajero VARCHAR(200),
+  nit VARCHAR(200),
+  ruta VARCHAR(200),
+  razon VARCHAR(200),
+  id_venta INTEGER NOT NULL,
+  CONSTRAINT tboletos_asociados_fact_pkey PRIMARY KEY(id_boleto_asociado)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN vef.tboletos_asociados_fact.id_boleto
+IS 'Boleto de la tabla obingresos.tboleto';
+
+COMMENT ON COLUMN vef.tboletos_asociados_fact.id_venta
+IS 'Factura de la tabla vef.tventa';
+
+ALTER TABLE vef.tboletos_asociados_fact
+  OWNER TO postgres;
+
+/***********************************F-SCP-IRVA-VEF-1-31/10/2019****************************************/

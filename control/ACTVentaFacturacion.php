@@ -13,7 +13,7 @@ class ACTVentaFacturacion extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_venta');
 		$this->objParam->defecto('dir_ordenacion','asc');
 
-		//var_dump("LLEGA AQUI",$this->objParam->getParametro('fecha'));
+		//var_dump("LLEGA AQUI",$this->objParam->getParametro('tipo_factura'));
 		if ($this->objParam->getParametro('id_punto_venta') != '') {
 				$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."''");
 			}
@@ -101,7 +101,7 @@ class ACTVentaFacturacion extends ACTbase{
 	 $this->objFunc=$this->create('MODVentaFacturacion');
 	 $this->res=$this->objFunc->siguienteEstadoRecibo($this->objParam);
 	 $this->res->imprimirRespuesta($this->res->generarJson());
- } 
+ }
 
  function insertarVentaCompleta(){
 		 $this->objFunc=$this->create('MODVentaFacturacion');
@@ -114,8 +114,20 @@ class ACTVentaFacturacion extends ACTbase{
 		 $this->res=$this->objFunc->insertarFacturacionManual($this->objParam);
 		 $this->res->imprimirRespuesta($this->res->generarJson());
  }
-
-
+/*Aumentando para Corregir las formas de pago*/
+ function corregirFactura(){
+		$this->objFunc=$this->create('MODVentaFacturacion');
+		$this->res=$this->objFunc->corregirFactura($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+ }
+ /*******************************************/
+ /*Aumentando para asociar boletos*/
+ function listarAsociarBoletos(){
+		$this->objFunc=$this->create('MODVentaFacturacion');
+		$this->res=$this->objFunc->listarAsociarBoletos($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+ }
+ /*********************************/
 
 }
 

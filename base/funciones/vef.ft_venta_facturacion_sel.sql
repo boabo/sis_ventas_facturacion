@@ -217,7 +217,7 @@ BEGIN
                         det.id_formula
 
 						from vef.tventa fact
-                        left join vef.tventa_detalle det on det.id_venta = fact.id_venta
+                        inner join vef.tventa_detalle det on det.id_venta = fact.id_venta
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
@@ -273,7 +273,38 @@ BEGIN
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:='
+            v_consulta:='select
+						(case when vedet.id_item is not null then
+							item.nombre
+						when vedet.id_sucursal_producto is not null then
+							cig2.desc_ingas
+						when vedet.id_producto is not null then
+                                cig2.desc_ingas
+						end) as concepto,
+                        vedet.cantidad::numeric,
+                        vedet.precio,
+                        vedet.precio*vedet.cantidad,
+						um.codigo,
+						cig2.codigo as cod_producto,
+                        cig2.nandina,
+                        vedet.bruto,
+                        vedet.ley,
+                        vedet.kg_fino,
+                        vedet.descripcion,
+                        um.codigo as unidad_concepto,
+                        sum(vedet.precio*vedet.cantidad) OVER (PARTITION BY vedet.descripcion) as precio_grupo
+						from vef.tventa_detalle vedet
+						--left join vef.tsucursal_producto sprod on sprod.id_sucursal_producto = vedet.id_sucursal_producto
+						left join vef.tformula form on form.id_formula = vedet.id_formula
+						left join alm.titem item on item.id_item = vedet.id_item
+                        left join param.tconcepto_ingas cig2 on cig2.id_concepto_ingas = vedet.id_producto
+                        --left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
+                        left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
+				        --left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
+                       where  id_venta = '||v_parametros.id_venta::varchar || '
+                       order by vedet.descripcion,vedet.id_venta_detalle asc';
+
+			/*v_consulta:='
                         select
 						(case when vedet.id_item is not null then
 							item.nombre
@@ -302,7 +333,7 @@ BEGIN
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
 				        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
                        where  id_venta = '||v_parametros.id_venta::varchar || '
-                       order by vedet.descripcion,vedet.id_venta_detalle asc';
+                       order by vedet.descripcion,vedet.id_venta_detalle asc';*/
 
 
 			--Devuelve la respuesta
@@ -451,6 +482,37 @@ BEGIN
 
                        where  vd.id_venta = '||v_parametros.id_venta::varchar||'
                        order by td.columna,td.fila asc';
+
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+    /*********************************
+ 	#TRANSACCION:  'VF_LIST_INST_PA'
+ 	#DESCRIPCION:   Listar instancias de pago
+ 	#AUTOR:		Ismael Valdivia
+ 	#FECHA:		8-10-2019 15:56:00
+	***********************************/
+
+	elsif(p_transaccion='VF_LIST_INST_PA')then
+
+    	begin
+        	--raise exception 'llega aqui el id_venta %',v_parametros.id_venta;
+    		--Sentencia de la consulta
+			v_consulta:='
+                        select ip.id_instancia_pago,
+                               ip.nombre,
+                               fp.codigo_tarjeta,
+                               fp.numero_tarjeta,
+                               fp.monto_transaccion,
+                               fp.id_moneda,
+                               fp.id_venta_forma_pago
+                        from obingresos.tinstancia_pago ip
+                        inner join vef.tventa_forma_pago fp on fp.id_instancia_pago = ip.id_instancia_pago
+                        where fp.id_venta = '||v_parametros.id_venta::integer||'
+                        order by fp.id_venta_forma_pago
+						';
 
 
 			--Devuelve la respuesta
