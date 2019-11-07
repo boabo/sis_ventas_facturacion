@@ -1141,3 +1141,45 @@ ALTER TABLE vef.tboletos_asociados_fact
   OWNER TO postgres;
 
 /***********************************F-SCP-IRVA-VEF-1-31/10/2019****************************************/
+
+/***********************************I-SCP-IRVA-VEF-1-7/11/2019****************************************/
+CREATE TABLE vef.trespaldo_facturas_anuladas (
+  id_factura_anulada SERIAL,
+  id_venta INTEGER NOT NULL,
+  nombre_factura VARCHAR(200),
+  nit VARCHAR(200),
+  cod_control VARCHAR(200),
+  id_dosificacion INTEGER,
+  nro_autorizacion VARCHAR(200),
+  num_factura INTEGER,
+  total_venta NUMERIC(20,2),
+  total_venta_msuc NUMERIC(20,2),
+  id_sucursal INTEGER,
+  id_cliente INTEGER,
+  id_punto_venta INTEGER,
+  observaciones TEXT,
+  id_moneda INTEGER,
+  excento NUMERIC(20,2),
+  fecha DATE,
+  id_sucursal_producto INTEGER,
+  id_formula INTEGER,
+  id_producto INTEGER,
+  cantidad INTEGER,
+  precio NUMERIC(20,2),
+  tipo VARCHAR(200),
+  descripcion VARCHAR(400),
+  id_forma_pago INTEGER,
+  monto NUMERIC(20,2),
+  monto_transaccion NUMERIC(20,2),
+  monto_mb_efectivo NUMERIC(20,2),
+  numero_tarjeta VARCHAR(30),
+  codigo_tarjeta VARCHAR(50),
+  tipo_tarjeta VARCHAR(200),
+  id_auxiliar INTEGER,
+  CONSTRAINT trespaldo_facturas_anuladas_pkey PRIMARY KEY(id_factura_anulada)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+ALTER TABLE vef.trespaldo_facturas_anuladas
+  OWNER TO postgres;
+/***********************************F-SCP-IRVA-VEF-1-31/10/2019****************************************/
