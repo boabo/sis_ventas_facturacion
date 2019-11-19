@@ -217,7 +217,7 @@ BEGIN
                         det.id_formula
 
 						from vef.tventa fact
-                        inner join vef.tventa_detalle det on det.id_venta = fact.id_venta
+                        left join vef.tventa_detalle det on det.id_venta = fact.id_venta
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal

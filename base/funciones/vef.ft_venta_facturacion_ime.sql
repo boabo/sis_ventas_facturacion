@@ -3935,13 +3935,13 @@ end if;
 
             select 'cajero'::varchar as rol into v_tipo_usuario
             from segu.tusuario_rol usurol
-            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and usurol.id_rol = 163;
+            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 163 OR usurol.id_rol = 268);
 
             elsif (v_parametros.vista = 'counter') then
 
             select 'vendedor'::varchar as rol into v_tipo_usuario
             from segu.tusuario_rol usurol
-            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and usurol.id_rol = 189;
+            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 189 OR usurol.id_rol = 267);
 
           end if;
         end if;
