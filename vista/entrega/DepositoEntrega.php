@@ -78,7 +78,7 @@ header("content-type: text/javascript; charset=UTF-8");
                              totalProperty: 'total',
                              fields: ['fecha_cierre','id_punto_venta','nombre_cajero','nombre'],
                              remoteSort: true,
-                             baseParams: {id_punto_venta:'si'}
+                             baseParams: {par_filtro:'ap.fecha_apertura_cierre', id_punto_venta_2:'si'}
                          }),
 
                          valueField: 'fecha_cierre',
@@ -93,15 +93,15 @@ header("content-type: text/javascript; charset=UTF-8");
                          mode: 'remote',
                          pageSize: 15,
                          queryDelay: 1000,
-                         anchor: '62%',
+                         width: 230,
                          gwidth: 150,
-                         listWidth: 305,
+                         listWidth: 350,
                          resizable: true,
                          minChars: 2,
                          renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
                      },
                      type: 'ComboBox',
-                     filters: {pfiltro:'ap.fecha_apertura_cierre', type:'string'},
+                     //filters: {pfiltro:'ap.fecha_apertura_cierre', type:'date'},
                      id_grupo: 1,
                      grid: true,
                      form: true
@@ -224,6 +224,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
              ],
              tam_pag:50,
+             fheight:170,
+             fwidth:430,
              title:'Apertura de Caja',
              ActSave:'../../sis_ventas_facturacion/control/AperturaCierreCaja/insertarFecha',
              ActDel:'../../sis_ventas_facturacion/control/AperturaCierreCaja/eleminarFecha',
@@ -263,11 +265,12 @@ header("content-type: text/javascript; charset=UTF-8");
              this.getComponente('id_entrega_brinks').setValue(this.maestro.id_entrega_brinks);
              this.getComponente('id_punto_venta').setValue(this.maestro.id_punto_venta);
              this.getComponente('id_usuario_cajero').setValue(this.maestro.id_usuario_reg);
+
          },
          onButtonNew:function(){
              Phx.vista.DepositoEntrega.superclass.onButtonNew.call(this);
              this.iniciarEvento();
-             this.Cmp.fecha.store.baseParams ={id_punto_venta:this.maestro.id_punto_venta};
+             //this.Cmp.fecha_cierre.store.baseParams ={id_punto_venta:this.maestro.id_punto_venta};
          },
 
          successSave:function(resp){
@@ -275,7 +278,8 @@ header("content-type: text/javascript; charset=UTF-8");
              Phx.CP.getPagina(this.idContenedorPadre).reload();
          },
          iniciarEvento:function () {
-             this.Cmp.fecha.lastQuery = null;
+             //this.Cmp.fecha_cierre.lastQuery = null;
+             this.Cmp.fecha.store.baseParams.id_punto_venta=this.maestro.id_punto_venta;
          },
          onButtonDel:function(){
              var rec=this.sm.getSelected();

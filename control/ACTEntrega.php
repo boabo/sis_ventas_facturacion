@@ -45,8 +45,8 @@ class ACTEntrega extends ACTbase{
 
     function listarfechaApertura(){
         $this->objParam->defecto('ordenacion','id_punto_venta');
-        $this->objParam->defecto('dir_ordenacion','asc');
-        if($this->objParam->getParametro('id_punto_venta') != '') {
+        $this->objParam->defecto('dir_ordenacion','asc');				
+        if($this->objParam->getParametro('id_punto_venta_2') != '') {
             $this->objParam->addFiltro(" ap.id_punto_venta = ".$this->objParam->getParametro('id_punto_venta'));
         }
 	    $this->objFunc=$this->create('MODEntrega');
