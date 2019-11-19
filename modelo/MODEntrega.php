@@ -106,9 +106,9 @@ class MODEntrega extends MODbase{
     function fechaApertura(){
         //Definicion de variables para ejecucion del procedimientp
         $this->procedimiento='vef.ft_entrega_sel';
-        $this->transaccion='VF_ENG_FECH';
+        $this->transaccion='VF_ENG_FECH_SEL';
         $this->tipo_procedimiento='SEL';//tipo de transaccion
-        $this->setCount(false);
+        //$this->setCount(false);
 
         //Definicion de la lista del resultado del query
         $this->captura('fecha_cierre','varchar');

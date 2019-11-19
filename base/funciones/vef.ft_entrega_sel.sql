@@ -152,12 +152,12 @@ BEGIN
 
 		end;
     /*********************************
- 	#TRANSACCION:  'VF_ENG_FECH'
- 	#DESCRIPCION:	Conteo de registros
+ 	#TRANSACCION:  'VF_ENG_FECH_SEL'
+ 	#DESCRIPCION:	Consulta de datos
  	#AUTOR:		admin
  	#FECHA:		12-09-2017 15:04:26
 	***********************************/
-    elsif(p_transaccion='VF_ENG_FECH')then
+    elsif(p_transaccion='VF_ENG_FECH_SEL')then
 
 		begin
          IF p_administrador THEN
@@ -184,6 +184,39 @@ BEGIN
 
 
 	end ;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_ENG_FECH_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		ivaldivia
+ 	#FECHA:		19-11-2019 10:10:00
+	***********************************/
+
+	elsif(p_transaccion='VF_ENG_FECH_CONT')then
+
+		begin
+         IF p_administrador THEN
+        v_filto = 'ap.id_entrega_brinks is null and ap.estado = ''cerrado'' and ';
+        ELSE
+        v_filto = 'ap.id_entrega_brinks is null and ap.estado =''cerrado'' and ap.id_usuario_cajero='||p_id_usuario||' and ';
+        END IF;
+
+        v_consulta:='select count(ap.id_punto_venta)
+                    from vef.tapertura_cierre_caja ap
+                    inner join segu.vusuario u on u.id_usuario = ap.id_usuario_cajero
+                    inner join vef.tpunto_venta p on p.id_punto_venta = ap.id_punto_venta
+                    where '||v_filto;
+
+
+        --Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+    end ;
+
+
     /*********************************
  	#TRANSACCION:  'VF_ENG_REPRO'
  	#DESCRIPCION:	FORMULARIO DE ENTREGA EFECTIVO
@@ -287,3 +320,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_entrega_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

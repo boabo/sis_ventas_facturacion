@@ -32,6 +32,9 @@ DECLARE
 	v_id_entrega_brinks	integer;
     v_punto_venta		record;
 
+    /*Aumento de variable para controlar*/
+    v_existencia 	integer;
+
 BEGIN
 
     v_nombre_funcion = 'vef.ft_entrega_ime';
@@ -120,13 +123,24 @@ BEGIN
 
 		begin
 			--Sentencia de la eliminacion
-            update vef.tapertura_cierre_caja  set
+
+            /*Control para no eliminar la entrega si existe ventas relacionadas*/
+
+            select count (*) into v_existencia
+            from vef.tapertura_cierre_caja ape
+            where ape.id_entrega_brinks = v_parametros.id_entrega_brinks
+        	limit 1;
+
+            IF (v_existencia > 0) then
+            	raise exception 'Existen Ventas relacionadas a esta entrega, debe eliminar todas las ventas para proceder con la Eliminacion';
+            --Comentando para que se elimine independientemente
+            /*update vef.tapertura_cierre_caja  set
 			id_entrega_brinks  = null
- 			where id_entrega_brinks  = v_parametros.id_entrega_brinks;
-
-			delete from vef.tentrega
-            where id_entrega_brinks=v_parametros.id_entrega_brinks;
-
+ 			where id_entrega_brinks  = v_parametros.id_entrega_brinks;*/
+			else
+              delete from vef.tentrega
+              where id_entrega_brinks=v_parametros.id_entrega_brinks;
+			end if;
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Entrega eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_entrega_brinks',v_parametros.id_entrega_brinks::varchar);
@@ -185,3 +199,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_entrega_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;
