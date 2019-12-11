@@ -1209,25 +1209,9 @@ ALTER TABLE vef.tventa_forma_pago_log
 /***********************************F-SCP-IRVA-VEF-1-8/11/2019****************************************/
 
 /***********************************I-SCP-IRVA-VEF-0-11/12/2019****************************************/
-CREATE TABLE vef.tventa_forma_pago_log (
-  id_venta_forma_pago INTEGER,
-  id_forma_pago INTEGER,
-  id_venta INTEGER NOT NULL,
-  monto NUMERIC(18,2) NOT NULL,
-  monto_transaccion NUMERIC(18,2) NOT NULL,
-  cambio NUMERIC(18,2) NOT NULL,
-  monto_mb_efectivo NUMERIC(18,2) NOT NULL,
-  numero_tarjeta VARCHAR(25),
-  codigo_tarjeta VARCHAR(25),
-  tipo_tarjeta VARCHAR(100),
-  id_auxiliar INTEGER,
-  id_instancia_pago INTEGER,
-  id_moneda INTEGER,
-  "current_user" VARCHAR(200) DEFAULT "current_user"(),
-  accion VARCHAR(200) NOT NULL
-) INHERITS (pxp.tbase)
-WITH (oids = false);
+ALTER TABLE vef.tsucursal
+  ADD COLUMN estado_sucursal VARCHAR(50);
 
-ALTER TABLE vef.tventa_forma_pago_log
-  OWNER TO postgres;
+ALTER TABLE vef.tsucursal
+  ALTER COLUMN estado_sucursal SET DEFAULT 'abierto';
 /***********************************F-SCP-IRVA-VEF-0-11/12/2019****************************************/
