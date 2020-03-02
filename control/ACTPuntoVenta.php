@@ -31,7 +31,7 @@ class ACTPuntoVenta extends ACTbase{
 		if($this->objParam->getParametro('tipo') != '') {
 			$this->objParam->addFiltro(" puve.tipo =''".$this->objParam->getParametro('tipo')."''");
 		}
-
+		//var_dump("llega aqui datos",$this->objParam->getParametro('tipo_usuario'));
 		if($this->objParam->getParametro('tipo_usuario') == 'vendedor') {
                 $this->objParam->addFiltro(" (1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario = " . $_SESSION["ss_id_usuario"] . " and ur.estado_reg = ''activo'' ) or (
                                                 " . $_SESSION["ss_id_usuario"] .  " in (select id_usuario from
@@ -73,6 +73,13 @@ class ACTPuntoVenta extends ACTbase{
                                                                                             where puve.id_punto_venta = p.id_punto_venta
                                                                                             )))");
         }
+
+				/*Aumentando para filtrar puntos de ventas counters*/
+				if($this->objParam->getParametro('puntos_venta') != '') {
+					if ($this->objParam->getParametro('puntos_venta') != 'todos') {
+						$this->objParam->addFiltro("puve.id_punto_venta in (".$this->objParam->getParametro('puntos_venta').")");
+					}
+				}
 
 
 		$this->objParam->defecto('dir_ordenacion','asc');
