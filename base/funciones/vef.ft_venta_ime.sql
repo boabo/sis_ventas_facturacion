@@ -669,7 +669,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta,
-            v_parametros.codigo_tarjeta,
+            replace(upper(v_parametros.codigo_tarjeta),' ',''),
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta
           );
@@ -734,7 +734,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta_2,
-            v_parametros.codigo_tarjeta_2,
+            replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta
           );
@@ -1055,7 +1055,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta,
-            v_parametros.codigo_tarjeta,
+            replace(upper(v_parametros.codigo_tarjeta),' ',''),
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentando instancia de pago y id_moneda*/
@@ -1124,7 +1124,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta_2,
-            v_parametros.codigo_tarjeta_2,
+            replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta_2,
             /*Aumentando la instancia de pago y el id_moneda*/

@@ -2860,7 +2860,10 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
             allowBlank: false,
             width:150,
             minLength:6,
-            maxLength:6
+            maxLength:6,
+            style:'text-transform:uppercase;',
+            maskRe: /[a-zA-Z0-9]+/i,
+            regex: /[a-zA-Z0-9]+/i
 
         },
             type:'TextField',
@@ -3213,7 +3216,10 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                 width:150,
                 //disabled:true,
                 minLength:6,
-                maxLength:6
+                maxLength:6,
+                style:'text-transform:uppercase;',
+                maskRe: /[a-zA-Z0-9]+/i,
+                regex: /[a-zA-Z0-9]+/i
 
             },
             type:'TextField',

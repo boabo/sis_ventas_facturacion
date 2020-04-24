@@ -1796,7 +1796,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta,
-            v_parametros.codigo_tarjeta,
+            replace(upper(v_parametros.codigo_tarjeta),' ',''),
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentamos el id_instancia y el id_moneda*/
@@ -1867,7 +1867,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta_2,
-            v_parametros.codigo_tarjeta_2,
+            replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta
           );
@@ -2213,7 +2213,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta,
-            v_parametros.codigo_tarjeta,
+            replace(upper(v_parametros.codigo_tarjeta),' ',''),
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentando la instancia de pago*/
@@ -2304,7 +2304,7 @@ end if;
             0,
             0,
             v_parametros.numero_tarjeta_2,
-            v_parametros.codigo_tarjeta_2,
+            replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta_2,
             v_parametros.id_instancia_pago_2,
@@ -4014,7 +4014,7 @@ end if;
             0,
             v_parametros.id_venta,
             v_parametros.numero_tarjeta_2,
-            v_parametros.codigo_tarjeta_2
+            replace(upper(v_parametros.codigo_tarjeta_2),' ','')
             );
 
         end if;
@@ -4092,7 +4092,7 @@ end if;
                                   0
                                 end),
           numero_tarjeta = v_parametros.numero_tarjeta,
-          codigo_tarjeta = v_parametros.codigo_tarjeta
+          codigo_tarjeta = replace(upper(v_parametros.codigo_tarjeta),' ','')
           where id_venta_forma_pago = v_parametros.id_venta_forma_pago_1;
           end if;
 
@@ -4173,7 +4173,7 @@ end if;
                                       0
                                     end),
               numero_tarjeta = v_parametros.numero_tarjeta_2,
-              codigo_tarjeta = v_parametros.codigo_tarjeta_2
+              codigo_tarjeta = replace(upper(v_parametros.codigo_tarjeta_2),' ','')
               where id_venta_forma_pago = v_parametros.id_venta_forma_pago_2;
           end if;
           /**********************************************************/
