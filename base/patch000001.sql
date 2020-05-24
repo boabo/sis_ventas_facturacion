@@ -1215,3 +1215,10 @@ ALTER TABLE vef.tsucursal
 ALTER TABLE vef.tsucursal
   ALTER COLUMN estado_sucursal SET DEFAULT 'abierto';
 /***********************************F-SCP-IRVA-VEF-0-11/12/2019****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-23/05/2020****************************************/
+CREATE TYPE vef.detalle_venta AS (
+  id_concepto INTEGER,
+  precio NUMERIC(19,2)
+);
+/***********************************F-SCP-IRVA-VEF-0-23/05/2020****************************************/

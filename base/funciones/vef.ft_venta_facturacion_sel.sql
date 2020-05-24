@@ -274,13 +274,13 @@ BEGIN
     	begin
     		--Sentencia de la consulta
             v_consulta:='select
-						(case when vedet.id_item is not null then
+						/*(case when vedet.id_item is not null then
 							item.nombre
 						when vedet.id_sucursal_producto is not null then
 							cig2.desc_ingas
 						when vedet.id_producto is not null then
                                 cig2.desc_ingas
-						end) as concepto,
+						end)*/ cig2.desc_ingas as concepto,
                         vedet.cantidad::numeric,
                         vedet.precio,
                         vedet.precio*vedet.cantidad,
@@ -416,7 +416,7 @@ BEGIN
                         ven.transporte_cif,
                         ven.seguros_cif,
                         ven.otros_cif,
-                        (to_char(ven.fecha,''DD'')::integer || '' de '' ||param.f_literal_periodo(to_char(ven.fecha,''MM'')::integer) || '' de '' || to_char(ven.fecha,''YYYY''))::varchar as fecha_literal,
+                        (to_char(ven.fecha,''DD'')::integer || '' de '' ||param.f_literal_periodo((to_char(ven.fecha,''MM'')::integer+1)) || '' de '' || to_char(ven.fecha,''YYYY''))::varchar as fecha_literal,
 			(select count(*) from vef.ttipo_descripcion td where td.estado_reg = ''activo'' and td.id_sucursal = suc.id_sucursal)::integer as descripciones,
 			ven.estado,
             ven.valor_bruto,
@@ -435,7 +435,11 @@ BEGIN
             suc.zona,
 
             /************DATO EXCENTO************/
-            coalesce(ven.excento,0) as excento
+            coalesce(ven.excento,0) as excento,
+
+            suc.codigo as sucursal,
+            suc.nombre::varchar as desc_sucursal,
+            lug.nombre::varchar as desc_lugar
             /************************************/
 
             from vef.tventa ven

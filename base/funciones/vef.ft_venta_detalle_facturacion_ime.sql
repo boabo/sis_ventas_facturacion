@@ -222,7 +222,6 @@ BEGIN
           end if;
         end if;
 
-
         --Sentencia de la insercion
         insert into vef.tventa_detalle(
           id_venta,
@@ -249,7 +248,7 @@ BEGIN
           id_producto
         ) values(
           v_parametros.id_venta,
-          v_id_item,
+          v_parametros.id_producto,--v_id_item,
           --v_id_sucursal_producto,
           v_id_formula,
           v_parametros.tipo,
@@ -269,7 +268,7 @@ BEGIN
           v_ley,
           v_kg_fino,
           v_id_unidad_medida,
-          v_id_concepto_ingas
+          v_parametros.id_producto---v_id_concepto_ingas
         )RETURNING id_venta_detalle into v_id_venta_detalle;
 
 

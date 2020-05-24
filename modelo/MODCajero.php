@@ -432,6 +432,11 @@ class MODCajero extends MODbase{
 		$this->captura('leyenda','varchar');//nuevo mvm
 		$this->captura('zona','varchar');//nuevo mvm
 		$this->captura('excento','numeric');//nuevo excento
+
+		$this->captura('sucursal','varchar');//nuevo excento
+		$this->captura('desc_sucursal','varchar');
+		$this->captura('desc_lugar','varchar');
+
 		//$this->captura('moneda_base','varchar');//nuevo mvm
 		//$this->captura('codigo_moneda','varchar');//nuevo mvm
 		//$this->captura('fecha_ingles','varchar');//nuevo mvm
@@ -443,7 +448,7 @@ class MODCajero extends MODbase{
 
 
 		$this->ejecutarConsulta();
-		//var_dump($this->respuesta); exit;
+		//var_dump($this->respuesta);
 		return $this->respuesta;
 	}
 

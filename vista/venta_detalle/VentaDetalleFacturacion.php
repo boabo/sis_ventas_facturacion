@@ -62,8 +62,9 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.comboCambio();
 
 		this.Cmp.id_producto.on('select',function(c,r,i) {
+
 			this.moneda_servicio = r.data.id_moneda;
-			if (this.moneda_servicio = 2) {
+			if (this.moneda_servicio == 2) {
 				var precio = r.data.precio * this.tipo_cambio;
 			} else {
 				var precio = r.data.precio;

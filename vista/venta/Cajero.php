@@ -678,21 +678,37 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
-        //console.log("llega para imprimir",this);
-   				Phx.CP.loadingShow();
+        console.log("llega para imprimir",this);
+   				//Phx.CP.loadingShow();
+					if (this.variables_globales.formato_comprobante == 'Carta' || this.variables_globales.formato_comprobante == 'A4') {
    				Ext.Ajax.request({
-   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
+   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
    						params : {
                 'id_venta' : rec.data.id_venta ,
    							'id_punto_venta' : rec.data.id_punto_venta,
    							'formato_comprobante' : this.variables_globales.formato_comprobante,
    							'tipo_factura': this.store.baseParams.tipo_factura
    						},
-   						success : this.successExportHtml,
+   						success : this.successExport,
    						failure : this.conexionFailure,
    						timeout : this.timeout,
    						scope : this
    					});
+					} else {
+						Ext.Ajax.request({
+	   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
+	   						params : {
+	                'id_venta' : rec.data.id_venta ,
+	   							'id_punto_venta' : rec.data.id_punto_venta,
+	   							'formato_comprobante' : this.variables_globales.formato_comprobante,
+	   							'tipo_factura': this.store.baseParams.tipo_factura
+	   						},
+	   						success : this.successExportHtml,
+	   						failure : this.conexionFailure,
+	   						timeout : this.timeout,
+	   						scope : this
+	   					});
+					}
 
    	},
 

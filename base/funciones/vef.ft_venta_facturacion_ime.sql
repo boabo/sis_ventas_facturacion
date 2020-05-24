@@ -2573,6 +2573,7 @@ end if;
 
         /*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 
+        IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
             v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
@@ -2627,15 +2628,16 @@ end if;
                             );';
 
 
-              IF(v_conexion!='OK') THEN
-              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
-              ELSE
+                IF(v_conexion!='OK') THEN
+                      raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+                ELSE
 
-              	perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+                  perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
 
-              	v_res_cone=(select dblink_disconnect());
+                  v_res_cone=(select dblink_disconnect());
 
-              END IF;
+                END IF;
+          end if;
 
               /************************************/
         /*****************************************************************/
@@ -2912,7 +2914,7 @@ end if;
 
         /*Replicacion a la base de datos DB_FACTURAS 2019*/
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
-
+		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
             v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
@@ -2976,7 +2978,7 @@ end if;
               	v_res_cone=(select dblink_disconnect());
 
               END IF;
-
+		end if;
               /************************************/
         /*****************************************************************/
 
@@ -3159,7 +3161,7 @@ end if;
 
           /*Replicacion a la base de datos DB_FACTURAS 2019*/
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
-
+		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
             v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
@@ -3214,7 +3216,7 @@ end if;
               	v_res_cone=(select dblink_disconnect());
 
               END IF;
-
+		end if;
               /************************************/
         /*****************************************************************/
 
@@ -3829,7 +3831,7 @@ end if;
 
         /*Replicacion a la base de datos DB_FACTURAS 2019*/
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
-
+		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
             v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
@@ -3882,21 +3884,7 @@ end if;
 
               END IF;
 
-          /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
-            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
-          /************************************************/
-
-
-
-              IF(v_conexion!='OK') THEN
-              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
-              	ELSE
-                   perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
-
-              	v_res_cone=(select dblink_disconnect());
-
-              END IF;
+          end if;
               /************************************/
         /*****************************************************************/
 

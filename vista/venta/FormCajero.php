@@ -2315,34 +2315,66 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
    				Phx.CP.loadingShow();
           console.log('condicionmes',this);
          if (this.data.objPadre.tipo_punto_venta == 'ato') {
-   				Ext.Ajax.request({
-   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
-   						params : {
-                'id_venta' : this.id_venta ,
-   							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
-   							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
-   							'tipo_factura': this.data.objPadre.tipo_factura
-   						},
-   						success : this.successExportHtml,
-   						failure : this.conexionFailure,
-   						timeout : this.timeout,
-   						scope : this
-   					});
-        } else {
 
-          Ext.Ajax.request({
-   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
-   						params : {
-                'id_venta' : this.data.datos_originales.data.id_venta ,
-   							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
-   							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
-   							'tipo_factura': this.data.objPadre.tipo_factura
-   						},
-   						success : this.successExportHtml,
-   						failure : this.conexionFailure,
-   						timeout : this.timeout,
-   						scope : this
-   					});
+           if (this.data.objPadre.variables_globales.formato_comprobante == 'Carta' || this.data.objPadre.variables_globales.formato_comprobante == 'A4') {
+           		Ext.Ajax.request({
+           						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
+           						params : {
+                        'id_venta' : this.id_venta ,
+           							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
+           							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
+           							'tipo_factura': this.data.objPadre.tipo_factura
+           						},
+           						success : this.successExport,
+           						failure : this.conexionFailure,
+           						timeout : this.timeout,
+           						scope : this
+           					});
+                }else{
+                  Ext.Ajax.request({
+               						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
+               						params : {
+                            'id_venta' : this.id_venta ,
+               							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
+               							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
+               							'tipo_factura': this.data.objPadre.tipo_factura
+               						},
+               						success : this.successExportHtml,
+               						failure : this.conexionFailure,
+               						timeout : this.timeout,
+               						scope : this
+               					});
+                }
+        } else {
+            if (this.data.objPadre.variables_globales.formato_comprobante == 'Carta' || this.data.objPadre.variables_globales.formato_comprobante == 'A4') {
+              Ext.Ajax.request({
+       						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
+       						params : {
+                    'id_venta' : this.data.datos_originales.data.id_venta ,
+       							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
+       							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
+       							'tipo_factura': this.data.objPadre.tipo_factura
+       						},
+       						success : this.successExport,
+       						failure : this.conexionFailure,
+       						timeout : this.timeout,
+       						scope : this
+       					});
+            } else {
+              Ext.Ajax.request({
+       						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
+       						params : {
+                    'id_venta' : this.data.datos_originales.data.id_venta ,
+       							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
+       							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
+       							'tipo_factura': this.data.objPadre.tipo_factura
+       						},
+       						success : this.successExportHtml,
+       						failure : this.conexionFailure,
+       						timeout : this.timeout,
+       						scope : this
+       					});
+            }
 
         }
 
@@ -3403,6 +3435,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
   					scope:this
   			});
       } else {
+        console.log("esta llegando aqui el dato",this);
         Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
   					params:{id_estado_wf_act:d.id_estado_wf,

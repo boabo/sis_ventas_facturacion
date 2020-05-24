@@ -7,6 +7,7 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 include(dirname(__FILE__).'/../reportes/RFactura.php');
+include(dirname(__FILE__).'/../reportes/RReporteFacturaA4.php');
 
 class ACTCajero extends ACTbase{
 
@@ -140,6 +141,43 @@ class ACTCajero extends ACTbase{
 
 
 	}
+
+	function reporteFacturaCarta()
+	{
+			$this->objFunc = $this->create('MODCajero');
+			$this->res = $this->objFunc->listarFactura($this->objParam);
+
+
+			$this->objFunc = $this->create('MODCajero');
+			$this->detalle = $this->objFunc->listarFacturaDetalle($this->objParam);
+
+
+			//var_dump($this->res);exit;
+			//obtener titulo del reporte
+			$titulo = 'Factura';
+			//Genera el nombre del archivo (aleatorio + titulo)
+			$nombreArchivo = uniqid(md5(session_id()) . $titulo);
+			$nombreArchivo .= '.pdf';
+
+			$this->objParam->addParametro('orientacion', 'P');
+			$this->objParam->addParametro('tamano', 'LETTER');
+			$this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+
+
+			$this->objReporteFormato = new RReporteFacturaA4($this->objParam);
+			$this->objReporteFormato->setDatos($this->res->datos,$this->detalle->datos);
+			$this->objReporteFormato->generarReporte();
+			$this->objReporteFormato->output($this->objReporteFormato->url_archivo, 'F');
+
+			$this->mensajeExito = new Mensaje();
+			$this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado',
+					'Se generó con éxito el reporte: ' .$nombreArchivo, 'control');
+			$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+			$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+
+	}
+
+
 	function getTipoUsuario(){
 		 $this->objFunc=$this->create('MODCajero');
 		 $this->res=$this->objFunc->getTipoUsuario($this->objParam);
