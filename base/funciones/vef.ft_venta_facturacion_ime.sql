@@ -147,6 +147,9 @@ DECLARE
     v_datos_anteriores record;
     v_datos_anteriores_2 record;
     v_existencia_fp2	integer;
+
+    v_id_apertura_cierre		integer;
+    v_punto_venta				varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -797,7 +800,18 @@ BEGIN
 			--raise exception 'llega aqui punto_venta:%. sucursal:%.',v_parametros.id_punto_venta,v_parametros.id_sucursal;
             v_fecha = now ()::date;
 
-            if (v_parametros.id_punto_venta is not null) then
+            if (v_parametros.id_punto_venta = '0' and v_parametros.id_sucursal = '0') then
+            
+                	select acc.id_punto_venta, pv.nombre
+                    	into v_id_apertura_cierre, v_punto_venta
+                    from vef.tapertura_cierre_caja acc
+                    inner join vef.tpunto_venta pv on pv.id_punto_venta = acc.id_punto_venta
+                    where acc.fecha_apertura_cierre = v_fecha and
+                    acc.estado_reg = 'activo' and
+                    acc.id_usuario_reg = p_id_usuario
+                    and acc.estado = 'abierto';
+
+            elsif (v_parametros.id_punto_venta is not null) then
 
                 select acc.estado into v_apertura
                 from vef.tapertura_cierre_caja acc
@@ -844,6 +858,8 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Factura Computarizada modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'v_apertura',v_apertura::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_tipo_punto_venta',v_tipo_punto_venta::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_id_apertura_cierre', v_id_apertura_cierre::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_punto_venta',v_punto_venta::varchar);
 
             --Devuelve la respuesta
             return v_resp;
