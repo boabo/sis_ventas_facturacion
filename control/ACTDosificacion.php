@@ -57,6 +57,19 @@ class ACTDosificacion extends ACTbase{
     function listarDosificacionInte(){
         $this->objParam->defecto('ordenacion','id_dosificacion');
 
+        //29-06-2020 (may) filtro para facturas manuales
+        if ($this->objParam->getParametro('tipo_generacion') == 'manual') {
+            $this->objParam->addFiltro(" dos.tipo_generacion = ''manual'' ");
+        }
+        if ($this->objParam->getParametro('id_sucursal') != '') {
+            $this->objParam->addFiltro(" dos.id_sucursal = " .  $this->objParam->getParametro('id_sucursal') );
+        }
+        if ($this->objParam->getParametro('controlfecha') == 'si') {
+            //$this->objParam->addFiltro(" dos.fecha_limite >= ''" .  $this->objParam->getParametro('fecha')."''");
+            $this->objParam->addFiltro(" dos.fecha_limite <= now() ");
+        }
+        //
+
         $this->objParam->defecto('dir_ordenacion','asc');
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
             
