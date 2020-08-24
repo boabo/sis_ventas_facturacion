@@ -73,6 +73,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 	            grid: true,
 	            form: true
 	        },
+
           {
                   config:{
                       name: 'habilitar_edicion',
@@ -96,18 +97,111 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   form:true
               },
           {
-        config:{
-          name: 'observaciones',
-          fieldLabel: 'Observaciones',
-          allowBlank: true,
-          width:200,
-          //maxLength:30,
-          style:'text-transform:uppercase;'
-        },
-          type:'TextArea',
-          id_grupo:22,
-          form:true
-      });
+            config:{
+              name: 'observaciones',
+              fieldLabel: 'Observaciones',
+              allowBlank: true,
+              width:200,
+              //maxLength:30,
+              style:'text-transform:uppercase;'
+            },
+              type:'TextArea',
+              id_grupo:22,
+              form:true
+          },
+      /*Aumentnado para formato de impresion*/
+      {
+         config : {
+           name : 'formato_factura',
+           fieldLabel : 'Formato Factura',
+           width:200,
+           allowBlank : true,
+           emptyText : 'Formato Factura...',
+           store : new Ext.data.JsonStore({
+             url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+             id : 'id_catalogo',
+             root : 'datos',
+             sortInfo : {
+               field : 'codigo',
+               direction : 'ASC'
+             },
+             totalProperty : 'total',
+             fields: ['codigo','descripcion'],
+             remoteSort : true,
+             baseParams:{
+               par_filtro: 'cat.descripcion',
+              cod_subsistema:'VEF',
+              catalogo_tipo:'tventa_formato_factura'
+            },
+           }),
+           valueField : 'descripcion',
+           displayField : 'descripcion',
+           gdisplayField : 'formato_factura',
+           hiddenName : 'formato_factura',
+           forceSelection : true,
+           typeAhead : false,
+           tpl: new Ext.XTemplate([
+               '<tpl for=".">',
+               '<div class="x-combo-list-item">',
+               '<div>',
+               '<p><b>Codigo: <span style="color: red;">{codigo}</span></b></p>',
+               '</div><p><b>Descripción: <span style="color: blue;">{descripcion}</span></b></p>',
+               '</div></tpl>'
+           ]),
+           triggerAction : 'all',
+           lazyRender : true,
+           mode : 'remote',
+           pageSize : 25,
+           listWidth:'450',
+           maxHeight : 450,
+           queryDelay : 1000,
+           gwidth : 170,
+           minChars : 2,
+           resizable:true,
+           enableMultiSelect: false
+         },
+         type : 'ComboBox',
+         id_grupo : 22,
+         grid: true,
+         form: true
+       },
+       /*Aumentando para enviar por correo o no*/
+       {
+               config:{
+                   name: 'enviar_correo',
+                   fieldLabel: 'Enviar Correo',
+                   allowBlank: true,
+                   width:200,
+                   emptyText:'Enviar correo...',
+                   triggerAction: 'all',
+                   lazyRender:true,
+                   mode: 'local',
+                   displayField: 'text',
+                   valueField: 'value',
+                   store:new Ext.data.SimpleStore({
+             data : [['SI', 'SI'], ['NO', 'NO']],
+             id : 'value',
+             fields : ['value', 'text']
+           })
+               },
+               type:'ComboBox',
+               id_grupo:22,
+               form:true
+           },
+           {
+             config:{
+               name: 'correo_electronico',
+               fieldLabel: 'Correo Electronico',
+               allowBlank: true,
+               hidden:true,
+               width:200
+               //maxLength:30,
+             },
+               type:'TextField',
+               id_grupo:1,
+               form:true
+           },);
+
 		}
 		if (this.data.objPadre.variables_globales.habilitar_comisiones == 'si') {
 			this.Atributos.push({
@@ -338,6 +432,32 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     },
 
     iniciarEventos : function () {
+
+        /*Aqui aumentamos las condiciones para enviar por correo y el formato de la factura*/
+        this.Cmp.enviar_correo.setValue('NO');
+        this.Cmp.enviar_correo.fireEvent('select',this.Cmp.enviar_correo, this.Cmp.enviar_correo.getValue());
+
+        this.Cmp.enviar_correo.on('select',function(c,r,i) {
+          if (r.data.value == 'NO') {
+            this.ocultarComponente(this.Cmp.correo_electronico);
+            this.Cmp.correo_electronico.allowBlank = true;
+            this.Cmp.correo_electronico.reset();
+          } else {
+            this.mostrarComponente(this.Cmp.correo_electronico);
+            this.Cmp.correo_electronico.allowBlank = false;
+          }
+        },this);
+        /**********************************************************************************/
+
+        /*Aumentamos el formato de la factura rollo o carta*/
+        this.Cmp.formato_factura.store.load({params:{start:0,limit:50},
+               callback : function (r) {
+                    this.Cmp.formato_factura.setValue('Rollo');
+                    this.Cmp.formato_factura.fireEvent('select', this.Cmp.formato_factura,'Rollo',0);
+                }, scope : this
+            });
+        /***************************************************/
+
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
         /*Filtramos la lista de paquetes por la sucursal seleccionada*/
@@ -2074,7 +2194,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             width: '100%',
                             autoScroll:true,
                             style: {
-                                   height:'130px',
+                                   height:'160px',
                                    background: '#8BB9B2',
                                    //border:'2px solid green'
                                 },
@@ -2093,7 +2213,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                         title: 'Datos Venta',
                                         width: '90%',
                                         style: {
-                                               height:'120px',
+                                               height:'160px',
                                                width:'590px',
                                             },
                                         padding: '0 0 0 10',
@@ -2104,7 +2224,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                  },
                                  {
                                   bodyStyle: 'padding-right:5px;',
-                                  autoHeight: true,
+                                  //autoHeight: true,
                                   border: false,
                                   items:[
                                      {
@@ -2113,7 +2233,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                       border: false,
                                       layout: 'form',
                                       style: {
-                                             height:'90px',
+                                             height:'160px',
                                              width:'300px',
                                           },
                                       padding: '0 0 0 10',
@@ -2131,7 +2251,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                         frame: true,
                                         layout: 'form',
                                         style: {
-                                               height:'90px',
+                                               height:'160px',
                                                width:'320px'
                                               },
                                         border: false,
@@ -2299,9 +2419,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
      successWizard:function(resp){
          // var rec=this.sm.getSelected();
          var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-         console.log("llega aqui pasar estado",this.tipo_factura);
+         console.log("llega aqui pasar estado",objRes.ROOT.datos);
          if (objRes.ROOT.datos.estado == 'finalizado' && this.tipo_factura != 'manual') {
              this.id_venta = objRes.ROOT.datos.id_venta;
+             this.id_proceso_wf = objRes.ROOT.datos.id_proceso_wf;
              this.imprimirNota();
          }
          Phx.CP.loadingHide();
@@ -2313,14 +2434,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       imprimirNota: function(){
    		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
    				Phx.CP.loadingShow();
-          console.log('condicionmes',this);
          if (this.data.objPadre.tipo_punto_venta == 'ato') {
-
-           if (this.data.objPadre.variables_globales.formato_comprobante == 'Carta' || this.data.objPadre.variables_globales.formato_comprobante == 'A4') {
+           if (this.Cmp.formato_factura.getValue() == 'Carta') {
            		Ext.Ajax.request({
            						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
            						params : {
-                        'id_venta' : this.id_venta ,
+                        'id_proceso_wf' : this.id_proceso_wf ,
            							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
            							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
            							'tipo_factura': this.data.objPadre.tipo_factura
@@ -2330,11 +2449,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
            						timeout : this.timeout,
            						scope : this
            					});
-                }else{
+               } else if (this.Cmp.formato_factura.getValue() == 'Rollo'){
                   Ext.Ajax.request({
                						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
                						params : {
-                            'id_venta' : this.id_venta ,
+                            'id_proceso_wf' : this.id_proceso_wf ,
                							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
                							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
                							'tipo_factura': this.data.objPadre.tipo_factura
@@ -2345,8 +2464,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                						scope : this
                					});
                 }
-        } else {
-            if (this.data.objPadre.variables_globales.formato_comprobante == 'Carta' || this.data.objPadre.variables_globales.formato_comprobante == 'A4') {
+        } else {          
+            if (this.Cmp.formato_factura.getValue() == 'Carta') {
               Ext.Ajax.request({
        						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
        						params : {
@@ -2360,11 +2479,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
        						timeout : this.timeout,
        						scope : this
        					});
-            } else {
+            } else if (this.Cmp.formato_factura.getValue() == 'Rollo'){
               Ext.Ajax.request({
        						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
        						params : {
-                    'id_venta' : this.data.datos_originales.data.id_venta ,
+                    'id_proceso_wf' : this.data.datos_originales.data.id_proceso_wf ,
        							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
        							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
        							'tipo_factura': this.data.objPadre.tipo_factura

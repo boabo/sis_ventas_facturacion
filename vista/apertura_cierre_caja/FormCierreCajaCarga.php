@@ -580,7 +580,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -602,7 +602,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -623,7 +623,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -645,7 +645,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -667,7 +667,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#A6EFB3'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #A6EFB3;  background-image: none;'
@@ -689,7 +689,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -711,7 +711,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -733,7 +733,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -755,7 +755,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#F95454'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -777,7 +777,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background:'#A6EFB3'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #A6EFB3;  background-image: none;'
@@ -798,7 +798,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -818,7 +818,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -838,7 +838,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -858,7 +858,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -878,7 +878,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -898,7 +898,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -918,7 +918,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -938,7 +938,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -958,7 +958,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -978,7 +978,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -998,7 +998,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -1018,7 +1018,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -1040,7 +1040,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1063,7 +1063,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1086,7 +1086,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1109,7 +1109,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1133,7 +1133,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1156,7 +1156,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1179,7 +1179,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1202,7 +1202,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#FFF1B8'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1226,7 +1226,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -1247,7 +1247,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2
                 },
@@ -1267,7 +1267,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -1288,7 +1288,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       width:'60px'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #F95454;  background-image: none;'
@@ -1436,7 +1436,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1458,7 +1458,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1480,7 +1480,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1502,7 +1502,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1525,7 +1525,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1549,7 +1549,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1571,7 +1571,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1594,7 +1594,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1616,7 +1616,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1640,7 +1640,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1662,7 +1662,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1686,7 +1686,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1708,7 +1708,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1730,7 +1730,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1752,7 +1752,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1774,7 +1774,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1797,7 +1797,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1819,7 +1819,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1841,7 +1841,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1865,7 +1865,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1887,7 +1887,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1909,7 +1909,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1931,7 +1931,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1953,7 +1953,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1975,7 +1975,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
@@ -1997,7 +1997,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       background: '#C3DFF5'
                     },
                     gwidth: 100,
-                    maxLength:8,
+                    maxLength:15,
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
