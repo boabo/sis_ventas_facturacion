@@ -390,32 +390,32 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
 //Comentado temporalmente cuando se tenga facturacion computarizada y manual descomentar
-            tabsouth :[
-                {
-                    url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/DepositoApertura.php',
-                    title:'Deposito',
-                    height:'40%',
-                    cls:'DepositoApertura'
-                },
-                {
-                    url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/VendedorComputarizadoApertura.php',
-                    title:'Venta Computarizada',
-                    height:'40%',
-                    cls:'VendedorComputarizadoApertura'
-                },
-                {
-                    url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/VendedorManualApertura.php',
-                    title:'Venta Manual',
-                    height:'40%',
-                    cls:'VendedorManualApertura'
-                },
-                {
-                    url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/AperturaBoletosVenta.php',
-                    title:'Venta Boletos',
-                    height:'40%',
-                    cls:'AperturaBoletosVenta'
-                }
-            ],
+            // tabsouth :[
+            //     {
+            //         url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/DepositoApertura.php',
+            //         title:'Deposito',
+            //         height:'40%',
+            //         cls:'DepositoApertura'
+            //     },
+            //     {
+            //         url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/VendedorComputarizadoApertura.php',
+            //         title:'Venta Computarizada',
+            //         height:'40%',
+            //         cls:'VendedorComputarizadoApertura'
+            //     },
+            //     {
+            //         url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/VendedorManualApertura.php',
+            //         title:'Venta Manual',
+            //         height:'40%',
+            //         cls:'VendedorManualApertura'
+            //     },
+            //     {
+            //         url:'../../../sis_ventas_facturacion/vista/apertura_cierre_caja/AperturaBoletosVenta.php',
+            //         title:'Venta Boletos',
+            //         height:'40%',
+            //         cls:'AperturaBoletosVenta'
+            //     }
+            // ],
             onSubmit: function(o, x, force) {
                 if (!this.Cmp.id_punto_venta.getValue() && !this.Cmp.id_punto_venta.getValue()) {
                     alert('Debe elegir un punto de venta o sucursal para abrir');
