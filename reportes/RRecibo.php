@@ -249,7 +249,7 @@ class RRecibo
 					    <tfoot>
 					    <tr>
 					    	<td colspan="2" align="left"><hr/><b>TOTAL A PAGAR</b><hr/></td>
-					    	<td colspan="2" align="right"><hr/><b>' .$datos['codigo_moneda'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
+					    	<td colspan="2" align="right"><hr/><b>' .$datos['codigo_moneda_recibo'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
 					    </tr>';
 
 					if ($datos['total_venta'] > $datos['sujeto_credito']) {
@@ -261,7 +261,7 @@ class RRecibo
 
 
 					$html .=' <tr>
-						    <td colspan="4">Son: <strong>'.$datos['total_venta_literal']. ' '.strtoupper($datos['desc_moneda_sucursal']).'</strong> </td>
+						    <td colspan="4">Son: <strong>'.$datos['total_venta_literal']. ' '.strtoupper($datos['moneda_literal']).'</strong> </td>
 						</tr>
 						<tr>
 						    <td colspan="4">OBS: <strong>'.$datos['observaciones'].'</strong> </td>

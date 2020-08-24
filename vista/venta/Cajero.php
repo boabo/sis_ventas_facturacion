@@ -94,14 +94,23 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 		this.addButton('btnImprimir',
 				{   grupo:[2,3],
-						text: 'Imprimir',
+						text: 'Imprimir Rollo',
 						iconCls: 'bpdf32',
 						disabled: true,
 						handler: this.imprimirNota,
 						tooltip: '<b>Imprimir Recibo</b><br/>Imprime el Recibo de la venta'
 				}
 		);
-
+		/*Aumentando el boton para imprimir la factura*/
+		this.addButton('btnChequeoDocumentosWf',{
+				text: 'Impresion Carta',
+				grupo: [2,3],
+				iconCls: 'bprint',
+				disabled: true,
+				handler: this.loadCheckDocumentosRecWf,
+				tooltip: '<b>Documentos </b><br/>Subir los documetos requeridos.'
+		});
+    /**********************************************/
 		this.addButton('anular_fact',
 				{   grupo:[2],
 						text: 'Anular',
@@ -123,11 +132,12 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		);
 
 
+
 			this.init();
 
 			this.campo_fecha = new Ext.form.DateField({
-				name: 'fecha_reg',
-				grupo: this.bactGroups,
+			name: 'fecha_reg',
+			grupo: this.bactGroups,
 			fieldLabel: 'Fecha',
 			allowBlank: false,
 			anchor: '80%',
@@ -231,13 +241,22 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 	preparaMenu: function () {
 			var rec = this.sm.getSelected();
+			console.log("llega aqui select",rec);
 			this.getBoton('completar_pago').enable();
 			this.getBoton('btnImprimir').enable();
+			this.getBoton('btnChequeoDocumentosWf').enable();
 			this.getBoton('anular_fact').enable();
 			this.getBoton('completar_pago_2').enable();
 			this.getBoton('ant_estado').enable();
 			this.getBoton('asociar_boletos').enable();
 
+			if (rec.data.formato_factura_emitida == 'Carta') {
+				this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+				this.getBoton('btnImprimir').setVisible(false);
+			} else if (rec.data.formato_factura_emitida == 'Rollo') {
+				this.getBoton('btnChequeoDocumentosWf').setVisible(false);
+				this.getBoton('btnImprimir').setVisible(true);
+			}
 
 
 			Phx.vista.Cajero.superclass.preparaMenu.call(this);
@@ -676,29 +695,31 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 		          },
 
+		/*Comentando esta parte para que se imprima directamente desde WF*/
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
-        console.log("llega para imprimir",this);
+				console.log("llega aqui dato",rec);
+				console.log("llega aqui dato",this.store);
    				//Phx.CP.loadingShow();
-					if (this.variables_globales.formato_comprobante == 'Carta' || this.variables_globales.formato_comprobante == 'A4') {
-   				Ext.Ajax.request({
-   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
-   						params : {
-                'id_venta' : rec.data.id_venta ,
-   							'id_punto_venta' : rec.data.id_punto_venta,
-   							'formato_comprobante' : this.variables_globales.formato_comprobante,
-   							'tipo_factura': this.store.baseParams.tipo_factura
-   						},
-   						success : this.successExport,
-   						failure : this.conexionFailure,
-   						timeout : this.timeout,
-   						scope : this
-   					});
-					} else {
+					// if (this.variables_globales.formato_comprobante == 'Carta' || this.variables_globales.formato_comprobante == 'A4') {
+   				// Ext.Ajax.request({
+   				// 		url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
+   				// 		params : {
+          //       'id_venta' : rec.data.id_venta ,
+   				// 			'id_punto_venta' : rec.data.id_punto_venta,
+   				// 			'formato_comprobante' : this.variables_globales.formato_comprobante,
+   				// 			'tipo_factura': this.store.baseParams.tipo_factura
+   				// 		},
+   				// 		success : this.successExport,
+   				// 		failure : this.conexionFailure,
+   				// 		timeout : this.timeout,
+   				// 		scope : this
+   				// 	});
+					// } else {
 						Ext.Ajax.request({
 	   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
 	   						params : {
-	                'id_venta' : rec.data.id_venta ,
+	                'id_proceso_wf' : rec.data.id_proceso_wf ,
 	   							'id_punto_venta' : rec.data.id_punto_venta,
 	   							'formato_comprobante' : this.variables_globales.formato_comprobante,
 	   							'tipo_factura': this.store.baseParams.tipo_factura
@@ -708,17 +729,32 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	   						timeout : this.timeout,
 	   						scope : this
 	   					});
-					}
+					// }
 
    	},
+		successExportHtml: function (resp) {
+					Phx.CP.loadingHide();
+					var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+					var objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
+					var wnd = window.open("about:blank", "", "_blank");
+			wnd.document.write(objetoDatos.html);
+			},
+		/**************************************************************************************/
+		loadCheckDocumentosRecWf:function() {
+					var rec=this.sm.getSelected();
+					rec.data.nombreVista = this.nombreVista;
+					Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
+							'Chequear documento del WF',
+							{
+									width:'90%',
+									height:500
+							},
+							rec.data,
+							this.idContenedor,
+							'DocumentoWf'
+					)
+			},
 
-    successExportHtml: function (resp) {
-          Phx.CP.loadingHide();
-          var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-          var objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
-          var wnd = window.open("about:blank", "", "_blank");
-      wnd.document.write(objetoDatos.html);
-      },
 
 	loadMask :false,
 	Atributos:[
@@ -1083,6 +1119,36 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		 form : true
 	 },
 
+	 {
+		 config:{
+			 name: 'formato_factura_emitida',
+			 fieldLabel: 'Formato Factura',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:300
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'fact.formato_factura_emitida',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'correo_electronico',
+			 fieldLabel: 'Correo Electronico',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 100,
+			 maxLength:300
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'fact.correo_electronico',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
 		// {
 		// 	config: {
 		// 		name: 'id_usuario_cajero',
@@ -1757,6 +1823,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_sucursal', type: 'string'},
 		{name:'id_formula', type: 'numeric'},
+		{name:'formato_factura_emitida', type: 'string'},
+		{name:'correo_electronico', type: 'string'},
 
 	],
 	sortInfo:{

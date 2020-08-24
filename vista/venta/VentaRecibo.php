@@ -82,7 +82,6 @@ Phx.vista.VentaRecibo = {
           }
       });
 
-      console.log("llega auqi punto de venta",this.tbar);
       //this.load({params:{start:0, limit:this.tam_pag}});
 
 
@@ -97,7 +96,6 @@ Phx.vista.VentaRecibo = {
 
         this.campo_fecha.on('select',function(value){
     		this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
-        console.log("LLEGA FECHA SELEC",this.store);
     		this.load();
     	},this);
 

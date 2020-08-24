@@ -57,7 +57,7 @@ class MODServicios extends MODbase{
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-
+		//var_dump("llega aqui dato",$this->respuesta);
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

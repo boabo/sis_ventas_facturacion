@@ -45,6 +45,8 @@ DECLARE
 
     v_moneda_desc				varchar;
     v_fecha_for					varchar;
+    v_monto_deposito_ml			numeric;
+    v_monto_deposito_me			numeric;
 
 BEGIN
 
@@ -459,16 +461,10 @@ BEGIN
                           else
                               0
                           end)as cuenta_corriente_recibo_me,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as mco_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as mco_recibo_me,
+                      /***********************Despositos***************************/
+                      0::numeric as deposito_recibo_ml,
+                      0::numeric as deposito_recibo_me,
+                      /**************************************/
                       sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
                               vfp.monto_mb_efectivo
                           else
@@ -634,8 +630,8 @@ BEGIN
 
                                             0 as cuenta_corriente_recibo_ml,
                                             0 as cuenta_corriente_recibo_me,
-                                            0 as mco_recibo_ml,
-                                            0 as mco_recibo_me,
+                                            0 as deposito_recibo_ml,
+                                            0 as deposito_recibo_me,
                                             0 as otro_recibo_ml,
                                             0 as otro_recibo_me,
                       /************************************************************************************************/
@@ -725,8 +721,8 @@ BEGIN
 
                                             sum(cuenta_corriente_recibo_ml)::numeric as cuenta_corriente_recibo_ml,
                                             sum(cuenta_corriente_recibo_me)::numeric as cuenta_corriente_recibo_me,
-                                            sum(mco_recibo_ml)::numeric as mco_recibo_ml,
-                                            sum(mco_recibo_me)::numeric as mco_recibo_me,
+                                            sum(deposito_recibo_ml)::numeric as deposito_recibo_ml,
+                                            sum(deposito_recibo_me)::numeric as deposito_recibo_me,
                                             sum(otro_recibo_ml)::numeric as otro_recibo_ml,
                                             sum(otro_recibo_me)::numeric as otro_recibo_me,
 
@@ -758,173 +754,179 @@ BEGIN
                 	END IF;
                 ELSE
                 /*Consulta para recuperar las facturas boletos recibos con las nuevas instancias de pago*/
-                v_consulta:='select u.desc_persona::varchar,
-                      to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
-                      coalesce(ppv.codigo,ps.codigo)::varchar as pais,
-                      COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
-                      coalesce(pv.codigo, s.codigo)::varchar as punto_venta,
-                      acc.obs_cierre::varchar,
-                      acc.arqueo_moneda_local,
-                      acc.arqueo_moneda_extranjera,
-                      acc.monto_inicial,
-                      acc.monto_inicial_moneda_extranjera,
-                      ' || v_tipo_cambio || '::numeric as tipo_cambio,
-                      ''' || v_tiene_dos_monedas || '''::varchar as tiene_dos_monedas,
-                      ''' || v_moneda_local || '''::varchar as moneda_local,
-                      ''' || v_moneda_extranjera || '''::varchar as moneda_extranjera,
-                       ''' || v_cod_moneda_local || '''::varchar as cod_moneda_local,
-                       ''' || v_cod_moneda_extranjera || '''::varchar as cod_moneda_extranjera,
+                v_consulta:='
+           			  select  u.desc_persona::varchar,
+                              to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
+                              coalesce(ppv.codigo,ps.codigo)::varchar as pais,
+                              COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
+                              coalesce(pv.codigo, s.codigo)::varchar as punto_venta,
+                              acc.obs_cierre::varchar,
+                              acc.arqueo_moneda_local,
+                              acc.arqueo_moneda_extranjera,
+                              acc.monto_inicial,
+                              acc.monto_inicial_moneda_extranjera,
+                              ' || v_tipo_cambio || '::numeric as tipo_cambio,
+                              ''' || v_tiene_dos_monedas || '''::varchar as tiene_dos_monedas,
+                              ''' || v_moneda_local || '''::varchar as moneda_local,
+                              ''' || v_moneda_extranjera || '''::varchar as moneda_extranjera,
+                               ''' || v_cod_moneda_local || '''::varchar as cod_moneda_local,
+                               ''' || v_cod_moneda_extranjera || '''::varchar as cod_moneda_extranjera,
 
-                      /*Aqui debemos recuperar los boletos queda pendiente*/
-                      0::numeric as efectivo_boletos_ml,
-                      0::numeric as efectivo_boletos_me,
-                      0::numeric as tarjeta_boletos_ml,
-                      0::numeric as tarjeta_boletos_me,
-                      0::numeric as cuenta_corriente_boletos_ml,
-                      0::numeric as cuenta_corriente_boletos_me,
-                      0::numeric as mco_boletos_ml,
-                      0::numeric as mco_boletos_me,
-                      0::numeric as otro_boletos_ml,
-                      0::numeric as otro_boletos_me,
-                      /****************************************************/
+                              /*Aqui debemos recuperar los boletos queda pendiente*/
+                              0::numeric as efectivo_boletos_ml,
+                              0::numeric as efectivo_boletos_me,
+                              0::numeric as tarjeta_boletos_ml,
+                              0::numeric as tarjeta_boletos_me,
+                              0::numeric as cuenta_corriente_boletos_ml,
+                              0::numeric as cuenta_corriente_boletos_me,
+                              0::numeric as mco_boletos_ml,
+                              0::numeric as mco_boletos_me,
+                              0::numeric as otro_boletos_ml,
+                              0::numeric as otro_boletos_me,
+                              /****************************************************/
 
-					  /******************************************************Recuperamos datos para facturas******************************************************/
-                      /*Inicio recuperacion facturas*/
-                      sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as efectivo_ventas_ml,
-                      sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as efectivo_ventas_me,
+                              /******************************************************Recuperamos datos para facturas******************************************************/
+                              /*Inicio recuperacion facturas*/
+                              sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as efectivo_ventas_ml,
+                              sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as efectivo_ventas_me,
 
-                      sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as tarjeta_ventas_ml,
-                      sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as tarjeta_vetas_me,
-                      sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as cuenta_corriente_ventas_ml,
-                      sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as cuenta_corriente_ventas_me,
-                      sum(case  when ip.codigo_forma_pago = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as mco_ventas_ml,
-                      sum(case  when ip.codigo_forma_pago = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as mco_ventas_me,
-                      sum(case  when ip.codigo_forma_pago = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as otro_ventas_ml,
-                      sum(case  when ip.codigo_forma_pago like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as otro_ventas_me,
-                      /*Fin recuperacion facturas*/
-                      /*****************************************************************************************************************************************/
+                              sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as tarjeta_ventas_ml,
+                              sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as tarjeta_vetas_me,
+                              sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as cuenta_corriente_ventas_ml,
+                              sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as cuenta_corriente_ventas_me,
+                              sum(case  when ip.codigo_forma_pago = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as mco_ventas_ml,
+                              sum(case  when ip.codigo_forma_pago = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as mco_ventas_me,
+                              sum(case  when ip.codigo_forma_pago = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as otro_ventas_ml,
+                              sum(case  when ip.codigo_forma_pago like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as otro_ventas_me,
+                              /*Fin recuperacion facturas*/
+                              /*****************************************************************************************************************************************/
 
-					  /*Recuperamos datos para Recibos*/
-					  /*Inicio recuperacion recibos*/
+                              /*Recuperamos datos para Recibos*/
+                              /*Inicio recuperacion recibos*/
 
-                      sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as efectivo_recibo_ml,
-                      sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as efectivo_recibo_me,
-                      sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as tarjeta_recibo_ml,
-                      sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as tarjeta_recibo_me,
-                      sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as cuenta_corriente_recibo_ml,
-                      sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as cuenta_corriente_recibo_me,
-                      sum(case  when ip.codigo_forma_pago = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as mco_recibo_ml,
-                      sum(case  when ip.codigo_forma_pago = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as mco_recibo_me,
-                      sum(case  when ip.codigo_forma_pago = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo
-                          else
-                              0
-                          end)as otro_recibo_ml,
-                      sum(case  when ip.codigo_forma_pago like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
-                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as otro_recibo_me,
-                      /*Fin recuperacion recibos*/
-                      /************************************************************************************************/
-                      COALESCE((	select sum(ven.comision) from vef.tventa ven
-                          where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
-                                  ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
-                                  and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                  ven.estado = ''finalizado''),0) +
+                              sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as efectivo_recibo_ml,
+                              sum(case  when ip.codigo_forma_pago = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as efectivo_recibo_me,
+                              sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as tarjeta_recibo_ml,
+                              sum(case  when ip.codigo_forma_pago = ''CC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as tarjeta_recibo_me,
+                              sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is null then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as cuenta_corriente_recibo_ml,
+                              sum(case  when ip.codigo_forma_pago = ''CUEC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is null then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as cuenta_corriente_recibo_me,
 
-                      COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
-                          where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 1 and
-                                  bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
-                                  and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''revisado''),0) as comisiones_ml,
+                              /***********************************************Aqui Recuperamos los depositos asociados al Recibo****************************************************/
+                               sum(case  when ip.codigo_forma_pago = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is not null then
+                                    vfp.monto_mb_efectivo
+                                else
+                                    0
+                                end) as deposito_recibo_ml,
 
-                      COALESCE((	select sum(ven.comision) from vef.tventa ven
-                          where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
-                                  ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
-                                  and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                  ven.estado = ''finalizado''),0) +
+                             sum(case  when ip.codigo_forma_pago = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is not null then
+                                    vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                else
+                                    0
+                                end)as deposito_recibo_me,
+                      		  /******************************************************************************************************************************************************/
 
-                      COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
-                          where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 2 and
-                                  bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
-                                   and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''revisado''),0)   as comisiones_me,
+                              sum(case  when ip.codigo_forma_pago = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' then
+                                      vfp.monto_mb_efectivo
+                                  else
+                                      0
+                                  end)as otro_recibo_ml,
+                              sum(case  when ip.codigo_forma_pago like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' then
+                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                  else
+                                      0
+                                  end)as otro_recibo_me,
+                              /*Fin recuperacion recibos*/
+                              /************************************************************************************************/
+                              COALESCE((	select sum(ven.comision) from vef.tventa ven
+                                  where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
+                                          ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
+                                          and ven.id_usuario_cajero = acc.id_usuario_cajero and
+                                          ven.estado = ''finalizado''),0) +
 
-					  acc.monto_ca_recibo_ml,
-                      acc.monto_cc_recibo_ml
+                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
+                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 1 and
+                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
+                                          and bol.id_usuario_cajero = acc.id_usuario_cajero and
+                                          bol.estado = ''revisado''),0) as comisiones_ml,
+
+                              COALESCE((	select sum(ven.comision) from vef.tventa ven
+                                  where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
+                                          ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
+                                          and ven.id_usuario_cajero = acc.id_usuario_cajero and
+                                          ven.estado = ''finalizado''),0) +
+
+                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
+                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 2 and
+                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
+                                           and bol.id_usuario_cajero = acc.id_usuario_cajero and
+                                          bol.estado = ''revisado''),0)   as comisiones_me,
+
+                              acc.monto_ca_recibo_ml,
+                              acc.monto_cc_recibo_ml
                       from vef.tapertura_cierre_caja acc
                       inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
                       left join vef.tsucursal s on acc.id_sucursal = s.id_sucursal

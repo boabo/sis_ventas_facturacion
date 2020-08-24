@@ -122,11 +122,11 @@ class ACTCajero extends ACTbase{
 
 		$datos = $this->res->getDatos();
 		$datos = $datos[0];
-		if ($datos['cantidad_descripciones'] > 0){
-			$this->objFunc = $this->create('MODCajero');
-			$this->res = $this->objFunc->listarFacturaDescripcion($this->objParam);
-			$datos['detalle_descripcion'] = $this->res->getDatos();
-		}
+		// if ($datos['cantidad_descripciones'] > 0){
+		// 	$this->objFunc = $this->create('MODCajero');
+		// 	$this->res = $this->objFunc->listarFacturaDescripcion($this->objParam);
+		// 	$datos['detalle_descripcion'] = $this->res->getDatos();
+		// }
 
 		$this->objFunc = $this->create('MODCajero');
 		$this->res = $this->objFunc->listarFacturaDetalle($this->objParam);
@@ -138,8 +138,7 @@ class ACTCajero extends ACTbase{
 		$temp['html'] = $reporte->generarHtml($this->objParam->getParametro('formato_comprobante'),$datos);
 		$this->res->setDatos($temp);
 		$this->res->imprimirRespuesta($this->res->generarJson());
-
-
+		// var_dump("llega aqui dato",$this->res->generarJson());
 	}
 
 	function reporteFacturaCarta()

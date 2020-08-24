@@ -182,10 +182,11 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         this.buildDetailGrid();
         this.buildGrupos();
 
-        this.labelReset = '<div style = "font-size:20px; font-weight:bold; color:#000000;"><i class="fa fa-list-alt"></i> Generar</div>';
+        this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
         Phx.vista.FormRecibo.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
+        this.instanciasPagoAnticipo = 'no';
         var fecha = new Date();
         var dd = fecha.getDate();
         var mm = fecha.getMonth() + 1; //January is 0!
@@ -331,7 +332,44 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                         allowDecimals: false,
                                         maxLength:10,
                                         readOnly :true
-                                })
+                                }),
+                    'id_moneda_recibo': new Ext.form.ComboBox({
+                                    name: 'id_moneda_recibo',
+                                    fieldLabel: 'Moneda',
+                                    allowBlank: false,
+                                    emptyText: 'Moneda Recibo...',
+                                    store: new Ext.data.JsonStore({
+                                        url: '../../sis_parametros/control/Moneda/listarMoneda',
+                                        id: 'id_moneda',
+                                        root: 'datos',
+                                        sortInfo: {
+                                            field: 'moneda',
+                                            direction: 'ASC'
+                                        },
+                                        totalProperty: 'total',
+                                        fields: ['id_moneda', 'codigo', 'moneda', 'codigo_internacional'],
+                                        remoteSort: true,
+                                        baseParams: {filtrar: 'si',par_filtro: 'moneda.moneda#moneda.codigo#moneda.codigo_internacional'}
+                                    }),
+                                    valueField: 'id_moneda',
+                                    displayField: 'codigo_internacional',
+                                    gdisplayField: 'codigo_internacional',
+                                    hiddenName: 'id_moneda',
+                                    forceSelection: true,
+                                    tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:green;"><b style="color:black;">Moneda:</b> <b>{moneda}</b></p><p style="color:red;"><b style="color:black;">Código:</b> <b>{codigo_internacional}</b></p></div></tpl>',
+                                    typeAhead: false,
+                                    triggerAction: 'all',
+                                    lazyRender: true,
+                                    mode: 'remote',
+                                    resizable:true,
+                                    pageSize: 15,
+                                    queryDelay: 1000,
+                                    //anchor: '100%',
+                                    width : 450,
+                                    listWidth:'450',
+                                    minChars: 2 ,
+
+                                  }),
 
               }
 
@@ -357,7 +395,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     },
 
     iniciarEventos : function () {
-      console.log("llega iniciar",this.Cmp.id_formula.store.baseParams);
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
         this.Cmp.id_formula.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
@@ -375,32 +412,36 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         });
 
         if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
-          console.log("llega iniciar 2",this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6]);
+
           /*******************cambiaremos el estilo del boton guardar *********************/
           this.megrid.topToolbar.items.items[0].container.dom.style.width="75px";
           this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
           this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
 
+          /******************Cambiaremos el estilo del boton agregar detalle************************/
+          this.megrid.topToolbar.items.items[1].container.dom.style.width="75px";
+          this.megrid.topToolbar.items.items[1].container.dom.style.height="35px";
+          this.megrid.topToolbar.items.items[1].btnEl.dom.style.height="35px";
+
+          this.megrid.topToolbar.items.items[2].container.dom.style.width="75px";
+          this.megrid.topToolbar.items.items[2].container.dom.style.height="35px";
+          this.megrid.topToolbar.items.items[2].btnEl.dom.style.height="35px";
+
           this.megrid.topToolbar.el.dom.style.background="#8ACDE7";
           this.megrid.topToolbar.el.dom.style.borderRadius="2px";
           this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#FFF4EB';
 
+          //Aqui el boton generar
           //this.arrayBotones[0].scope.form.buttons[0].container.dom.style.border="2px solid red";
-          this.arrayBotones[0].scope.form.buttons[0].container.dom.style.width="12px";
+          this.arrayBotones[0].scope.form.buttons[0].container.dom.style.width="20px";
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
-          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="150px";
-          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="30px";
+          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="190px";
+          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="50px";
 
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="15px";
-
-
-          /*irva*/
-          //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="60px";
-          //this.megrid.topToolbar.items.items[0].btnEl.dom.style.border="2px solid blue";
-          //this.megrid.topToolbar.items.items[0].el.dom.style.border="2px solid green";
-          /********************************************************************************/
+      /********************************************************************************/
 			this.Cmp.id_punto_venta.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
 	        this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag},
 	           callback : function (r) {
@@ -415,9 +456,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 	    if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
     	    this.Cmp.id_punto_venta.on('select',function(c,r,i) {
     	    	if (this.accionFormulario != 'EDIT') {
-                  //Comentando para agregar Instancia de pago
-                  //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-
                   /*Aumentando para que nos filtre siempre efectivo (CASH)*/
                   this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
                 	this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
@@ -433,404 +471,43 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
         this.ocultarComponente(this.Cmp.id_auxiliar_2);
         this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-      /*Comentando para agregar instancia de pago*/
-      /*  this.Cmp.id_forma_pago.on('select',function(c,r,i) {
-          // console.log("la tarjeta llega aqui",r.data);
-          // console.log("tbar cambiaremos",this.megrid);
-          // console.log("tbar cambiaremos",this.megrid.tbar);
-          //this.megrid.tbar.dom.style.border = "2px solid red";
-            	if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
-              //this.Cmp.cambio_moneda_extranjera.setValue
-            	this.mostrarComponente(this.Cmp.numero_tarjeta);
-            	this.Cmp.numero_tarjeta.allowBlank = false;
-            	if (r.data.registrar_tarjeta == 'si') {
-					      this.mostrarComponente(this.Cmp.numero_tarjeta);
-	            	this.mostrarComponente(this.Cmp.codigo_tarjeta);
-	            	this.mostrarComponente(this.Cmp.tipo_tarjeta);
-					      this.ocultarComponente(this.Cmp.id_auxiliar);
-                this.ocultarComponente(this.Cmp.mco);
-					      this.Cmp.codigo_tarjeta.allowBlank = false;
-                this.Cmp.tipo_tarjeta.allowBlank = false;
-	            	this.Cmp.mco.allowBlank = true;
-	            } else {
-	            	this.Cmp.codigo_tarjeta.allowBlank = true;
-                this.Cmp.mco.allowBlank = true;
-            		this.Cmp.tipo_tarjeta.allowBlank = true;
-                this.ocultarComponente(this.Cmp.numero_tarjeta);
-					      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-            		this.ocultarComponente(this.Cmp.codigo_tarjeta);
-            		this.ocultarComponente(this.Cmp.tipo_tarjeta);
-					      this.mostrarComponente(this.Cmp.id_auxiliar);
-            		this.Cmp.codigo_tarjeta.reset();
-            		this.Cmp.tipo_tarjeta.reset();
-	            }
-            } else {
-            	this.ocultarComponente(this.Cmp.numero_tarjeta);
-            	this.ocultarComponente(this.Cmp.codigo_tarjeta);
-            	this.ocultarComponente(this.Cmp.tipo_tarjeta);
-				      this.ocultarComponente(this.Cmp.id_auxiliar);
-            	this.Cmp.numero_tarjeta.allowBlank = true;
-            	this.Cmp.codigo_tarjeta.allowBlank = true;
-              this.Cmp.mco.allowBlank = true;
-            	this.Cmp.tipo_tarjeta.allowBlank = true;
-            	this.Cmp.numero_tarjeta.reset();
-            	this.Cmp.codigo_tarjeta.reset();
-            	this.Cmp.tipo_tarjeta.reset();
-            }
-            if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
-                this.mostrarComponente(this.Cmp.mco);
-                this.Cmp.numero_tarjeta.allowBlank = true;
-              	this.Cmp.codigo_tarjeta.allowBlank = true;
-              	this.Cmp.tipo_tarjeta.allowBlank = true;
-                this.Cmp.mco.allowBlank = false;
-            } else {
-                this.ocultarComponente(this.Cmp.mco);
-            }
+        this.cargarInstanciaPago();
 
-            if (r.data.codigo == 'CCVI') {
-               //console.log("llega aqui el tipo de tarjeta",this);
-               this.Cmp.tipo_tarjeta.setValue('VI');
-               this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'VI',0);
-            } else if (r.data.codigo == 'CCAX') {
-                 //console.log("llega aqui el tipo de tarjeta",this);
-                 this.Cmp.tipo_tarjeta.setValue('AX');
-                 this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'AX',0);
-              } else if (r.data.codigo == 'CCCA') {
-                //   console.log("llega aqui el tipo de tarjeta",this);
-                   this.Cmp.tipo_tarjeta.setValue('CA');
-                   this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'CA',0);
-                } else {
-                this.Cmp.tipo_tarjeta.reset();
-              }
-
-
-
-            this.moneda = r.data.desc_moneda;
-            this.Cmp.moneda_tarjeta.setValue(this.moneda);
-            //console.log("aqui recuperar codigo moneda",this.moneda);
-        },this); */
-
-        /****************************Aumnetando la instancia de pago********************************/
-        this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
-
-          this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
-
-          if (codigo_forma_pago == 'CC') {
-            this.mostrarComponente(this.Cmp.codigo_tarjeta);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta);
-          	this.mostrarComponente(this.Cmp.numero_tarjeta);
-			      this.ocultarComponente(this.Cmp.id_auxiliar);
-            this.ocultarComponente(this.Cmp.mco);
-            this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
-			      this.Cmp.codigo_tarjeta.allowBlank = false;
-            this.Cmp.tipo_tarjeta.allowBlank = false;
-          	this.Cmp.mco.allowBlank = true;
-          } else if (codigo_forma_pago == 'MC') {
-            this.mostrarComponente(this.Cmp.mco);
-            this.Cmp.numero_tarjeta.allowBlank = true;
-          	this.Cmp.codigo_tarjeta.allowBlank = true;
-          	this.Cmp.tipo_tarjeta.allowBlank = true;
-            this.Cmp.mco.allowBlank = false;
-            this.ocultarComponente(this.Cmp.codigo_tarjeta);
-          	this.ocultarComponente(this.Cmp.tipo_tarjeta);
-			      this.ocultarComponente(this.Cmp.id_auxiliar);
-            this.Cmp.codigo_tarjeta.reset();
-            this.Cmp.tipo_tarjeta.reset();
-            this.Cmp.id_auxiliar.reset();
-            this.Cmp.numero_tarjeta.reset();
-          } else if (codigo_forma_pago == 'CU') {
-            this.mostrarComponente(this.Cmp.id_auxiliar);
-            this.Cmp.numero_tarjeta.allowBlank = true;
-          	this.Cmp.codigo_tarjeta.allowBlank = true;
-            this.Cmp.tipo_tarjeta.allowBlank = true;
-          	this.Cmp.mco.allowBlank = true;
-            this.Cmp.id_auxiliar.allowBlank = false;
-            this.ocultarComponente(this.Cmp.codigo_tarjeta);
-          	this.ocultarComponente(this.Cmp.tipo_tarjeta);
-			      this.ocultarComponente(this.Cmp.numero_tarjeta);
-            this.Cmp.codigo_tarjeta.reset();
-            this.Cmp.tipo_tarjeta.reset();
-            this.Cmp.id_auxiliar.reset();
-            this.Cmp.mco.reset();
-            this.Cmp.numero_tarjeta.reset();
-          }else if (codigo_forma_pago == 'CA') {
-            this.mostrarComponente(this.Cmp.id_auxiliar);
-            this.Cmp.numero_tarjeta.allowBlank = true;
-          	this.Cmp.codigo_tarjeta.allowBlank = true;
-            this.Cmp.tipo_tarjeta.allowBlank = true;
-            this.Cmp.id_auxiliar.allowBlank = true;
-          	this.Cmp.mco.allowBlank = true;
-            this.ocultarComponente(this.Cmp.codigo_tarjeta);
-          	this.ocultarComponente(this.Cmp.tipo_tarjeta);
-            this.ocultarComponente(this.Cmp.numero_tarjeta);
-            this.ocultarComponente(this.Cmp.id_auxiliar);
-			      this.ocultarComponente(this.Cmp.mco);
-            this.Cmp.codigo_tarjeta.reset();
-            this.Cmp.tipo_tarjeta.reset();
-            this.Cmp.id_auxiliar.reset();
-            this.Cmp.mco.reset();
-            this.Cmp.numero_tarjeta.reset();
-          } else {
-            this.Cmp.codigo_tarjeta.reset();
-            this.Cmp.tipo_tarjeta.reset();
-            this.Cmp.id_auxiliar.reset();
-            this.Cmp.mco.reset();
-            this.Cmp.numero_tarjeta.reset();
-          }
-
-        },this);
-
-        this.Cmp.id_instancia_pago_2.on('select',function(c,r,i) {
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
-          this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
-          if (codigo_forma_pago == 'CC') {
-            this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
-          	this.mostrarComponente(this.Cmp.numero_tarjeta_2);
-			      this.ocultarComponente(this.Cmp.id_auxiliar_2);
-            this.ocultarComponente(this.Cmp.mco_2);
-            this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
-			      this.Cmp.codigo_tarjeta_2.allowBlank = false;
-            this.Cmp.tipo_tarjeta_2.allowBlank = false;
-          	this.Cmp.mco_2.allowBlank = true;
-          } else if (codigo_forma_pago == 'MC') {
-            this.mostrarComponente(this.Cmp.mco_2);
-            this.Cmp.numero_tarjeta_2.allowBlank = true;
-          	this.Cmp.codigo_tarjeta_2.allowBlank = true;
-          	this.Cmp.tipo_tarjeta_2.allowBlank = true;
-            this.Cmp.mco_2.allowBlank = false;
-            this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-          	this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-			      this.ocultarComponente(this.Cmp.id_auxiliar_2);
-            this.Cmp.codigo_tarjeta_2.reset();
-            this.Cmp.tipo_tarjeta_2.reset();
-            this.Cmp.id_auxiliar_2.reset();
-            this.Cmp.numero_tarjeta_2.reset();
-          } else if (codigo_forma_pago == 'CU') {
-            this.mostrarComponente(this.Cmp.id_auxiliar_2);
-            this.Cmp.numero_tarjeta_2.allowBlank = true;
-          	this.Cmp.codigo_tarjeta_2.allowBlank = true;
-            this.Cmp.tipo_tarjeta_2.allowBlank = true;
-          	this.Cmp.mco_2.allowBlank = true;
-            this.Cmp.id_auxiliar_2.allowBlank = false;
-            this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-          	this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-			      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-            this.Cmp.codigo_tarjeta_2.reset();
-            this.Cmp.tipo_tarjeta_2.reset();
-            this.Cmp.id_auxiliar_2.reset();
-            this.Cmp.mco_2.reset();
-            this.Cmp.numero_tarjeta_2.reset();
-          }else if (codigo_forma_pago == 'CA') {
-            this.mostrarComponente(this.Cmp.id_auxiliar_2);
-            this.Cmp.numero_tarjeta_2.allowBlank = true;
-          	this.Cmp.codigo_tarjeta_2.allowBlank = true;
-            this.Cmp.tipo_tarjeta_2.allowBlank = true;
-            this.Cmp.id_auxiliar_2.allowBlank = true;
-          	this.Cmp.mco_2.allowBlank = true;
-            this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-          	this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-            this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-            this.ocultarComponente(this.Cmp.id_auxiliar_2);
-			      this.ocultarComponente(this.Cmp.mco_2);
-            this.Cmp.codigo_tarjeta_2.reset();
-            this.Cmp.tipo_tarjeta_2.reset();
-            this.Cmp.id_auxiliar_2.reset();
-            this.Cmp.mco_2.reset();
-            this.Cmp.numero_tarjeta_2.reset();
-          } else {
-            this.Cmp.codigo_tarjeta_2.reset();
-            this.Cmp.tipo_tarjeta_2.reset();
-            this.Cmp.id_auxiliar_2.reset();
-            this.Cmp.mco_2.reset();
-            this.Cmp.numero_tarjeta_2.reset();
-          }
-
-          if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
-             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
-
-          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
-
-          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
-          }
-          else{
-              this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
-          }
-
-
-        },this);
-        /************************************Fin agregar instancia de pago***************************************/
-
-        /*Comentando para aumentar el id_instancia_pago_2*/
-      /*  this.Cmp.id_forma_pago_2.on('select',function(c,r,i) {
-          //console.log("la tarjeta 2 llega aqui",r.data);
-          if (r.data.codigo == 'CCVI') {
-             //console.log("llega aqui el tipo de tarjeta",this);
-             this.Cmp.tipo_tarjeta_2.setValue('VI');
-             this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'VI',0);
-          } else if (r.data.codigo == 'CCAX') {
-              // console.log("llega aqui el tipo de tarjeta",this);
-               this.Cmp.tipo_tarjeta_2.setValue('AX');
-               this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'AX',0);
-            }else if (r.data.codigo == 'CCCA') {
-                // console.log("llega aqui el tipo de tarjeta",this);
-                 this.Cmp.tipo_tarjeta_2.setValue('CA');
-                 this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'CA',0);
-              } else {
-              this.Cmp.tipo_tarjeta_2.reset();
-            }
-
-          if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
-          this.mostrarComponente(this.Cmp.numero_tarjeta_2);
-          this.Cmp.numero_tarjeta_2.allowBlank = false;
-          if (r.data.registrar_tarjeta == 'si') {
-            this.mostrarComponente(this.Cmp.numero_tarjeta_2);
-            this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
-            this.ocultarComponente(this.Cmp.id_auxiliar_2);
-            this.ocultarComponente(this.Cmp.mco_2);
-            this.Cmp.codigo_tarjeta_2.allowBlank = false;
-            this.Cmp.tipo_tarjeta_2.allowBlank = false;
-            this.Cmp.mco_2.allowBlank = true;
-          } else {
-            this.Cmp.codigo_tarjeta_2.allowBlank = true;
-            this.Cmp.mco_2.allowBlank = true;
-            this.Cmp.tipo_tarjeta_2.allowBlank = true;
-            this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-            this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-            this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.id_auxiliar_2);
-            this.Cmp.codigo_tarjeta_2.reset();
-            this.Cmp.tipo_tarjeta_2.reset();
-          }
-        } else {
-          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-          this.ocultarComponente(this.Cmp.id_auxiliar_2);
-          this.Cmp.numero_tarjeta_2.allowBlank = true;
-          this.Cmp.codigo_tarjeta_2.allowBlank = true;
-          this.Cmp.mco_2.allowBlank = true;
-          this.Cmp.tipo_tarjeta.allowBlank = true;
-          this.Cmp.numero_tarjeta_2.reset();
-          this.Cmp.codigo_tarjeta_2.reset();
-          this.Cmp.tipo_tarjeta_2.reset();
-        }
-        if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
-            this.mostrarComponente(this.Cmp.mco_2);
-            this.Cmp.numero_tarjeta_2.allowBlank = true;
-            this.Cmp.codigo_tarjeta_2.allowBlank = true;
-            this.Cmp.tipo_tarjeta.allowBlank = true;
-            this.Cmp.mco_2.allowBlank = false;
-        } else {
-            this.ocultarComponente(this.Cmp.mco_2);
-        }
-        this.moneda_2 = r.data.desc_moneda;
-        this.Cmp.moneda_tarjeta_2.setValue(this.moneda_2);
-
-        // console.log("llega los parametros aqui",this.Cmp.moneda_tarjeta_2.value);
-        // console.log("llega el tipo de cambio aqui",this.tipo_cambio);
-         if (this.Cmp.moneda_tarjeta.value != 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD' ) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
-
-         }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD') {
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
-
-         }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value != 'USD') {
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
-         }
-         else{
-             this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
-         }
-
-       },this);*/
        /********************************Aumemtando condicios para el id moneda****************************************/
        this.Cmp.id_moneda.on('select',function(c,r,i) {
-         console.log("llega aqui seleccion moneda",r);
-         if(r.data.id_moneda == 2){
-             //console.log("llega el dolar");
-           this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
-           this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
-         } else {
-           this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
-           this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
-         }
+         /*Aqui aumentamos para tener el cambio correcto en relacion a la moneda del detalle*/
+         // if (this.id_moneda_recibo_cambio != undefined) {
+         //   if (r.data.id_moneda == 2 && this.id_moneda_recibo_cambio != 2) {
+         //
+         //   }
+         // }
+         /***********************************************************************************/
 
-         if (r.data.id_moneda == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
-
-
-           /**********************************Cambiamos el Style *****************************************/
-           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-           this.Cmp.cambio.label.dom.control.style.color = "red";
-           this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-           /**********************************Cambiamos el Style *****************************************/
-
-           this.Cmp.id_instancia_pago_2.enable();
-           this.Cmp.id_moneda_2.enable();
-           this.Cmp.monto_forma_pago_2.enable();
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-
-
-
-           /*this.Cmp.id_forma_pago_2.enable();
-           this.Cmp.monto_forma_pago_2.enable();
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-           */
-           }else if (this.Cmp.id_moneda.getValue() != 2 && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
-
-
-           /**********************************Cambiamos el Style *****************************************/
-           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-           this.Cmp.cambio.label.dom.control.style.color = "red";
-           this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-           /**********************************Cambiamos el Style *****************************************/
-
-           this.Cmp.id_instancia_pago_2.enable();
-           this.Cmp.id_moneda_2.enable();
-           this.Cmp.monto_forma_pago_2.enable();
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-
-           // this.Cmp.id_forma_pago_2.enable();
-           // this.Cmp.monto_forma_pago_2.enable();
-           // this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-
-
-         } else{
-           //this.Cmp.id_forma_pago_2.disable();
-           this.Cmp.id_moneda_2.disable();
-           this.Cmp.id_instancia_pago_2.disable();
-           this.Cmp.monto_forma_pago_2.disable();
-           this.Cmp.monto_forma_pago_2.reset();
-           //this.Cmp.id_forma_pago_2.reset();
-           this.Cmp.id_instancia_pago_2.reset();
-           this.Cmp.id_moneda_2.reset();
-           //this.Cmp.moneda_tarjeta_2.reset();
-           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
-           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
-           this.Cmp.cambio.label.dom.control.style.color = "";
-           this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
-           this.ocultarComponente(this.Cmp.mco_2);
-           this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-           this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-           this.ocultarComponente(this.Cmp.id_auxiliar_2);
-           this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-         }
+         //if(r.data.id_moneda == 2){
+            this.devolverCambio();
+        //  }
        },this);
 
        this.Cmp.id_moneda_2.on('select',function(c,r,i) {
-         if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
-
+         /*Modificar el monto cambio Ismael Valdivia 2020*/
+         if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2) {
+            if (this.id_moneda_recibo_cambio == 2) {
+              this.Cmp.monto_forma_pago_2.setValue(((this.suma_total*this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
+            } else {
+              this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
+            }
          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
-
+           if (this.id_moneda_recibo_cambio == 2) {
+              this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
+           } else {
+              this.Cmp.monto_forma_pago_2.setValue(((this.suma_total/this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue()));
+            }
          }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
-           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
+           if (this.id_moneda_recibo_cambio == 2) {
+              this.Cmp.monto_forma_pago_2.setValue(((this.suma_total-this.Cmp.monto_forma_pago.getValue())*this.tipo_cambio));
+           } else {
+              this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)));
+            }
          }
          else{
              this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
@@ -838,138 +515,12 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
        },this);
 
-       this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-         console.log("llega aqui el id moneda para convertir irva",this.Cmp.id_moneda.getValue());
+       this.Cmp.monto_forma_pago.on('keyup', function (cmp, e){         
        this.obtenersuma();
-       if(this.Cmp.id_moneda.getValue() == 2){
-           //console.log("llega el dolar");
-         this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
-         this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
-       } else {
-         this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
-         this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
-       }
-
-       if (this.Cmp.id_moneda.getValue() == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
-
-
-         /**********************************Cambiamos el Style *****************************************/
-         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-         this.Cmp.cambio.label.dom.control.style.color = "red";
-         this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-         /**********************************Cambiamos el Style *****************************************/
-         //this.Cmp.id_forma_pago_2.enable();
-         this.Cmp.id_moneda_2.enable();
-         this.Cmp.id_instancia_pago_2.enable();
-         this.Cmp.monto_forma_pago_2.enable();
-         this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-       }else if (this.Cmp.id_moneda.getValue() != 2 && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
-
-
-         /**********************************Cambiamos el Style *****************************************/
-         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-         this.Cmp.cambio.label.dom.control.style.color = "red";
-         this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-         /**********************************Cambiamos el Style *****************************************/
-
-         //this.Cmp.id_forma_pago_2.enable();
-         this.Cmp.id_moneda_2.enable();
-         this.Cmp.id_instancia_pago_2.enable();
-         this.Cmp.monto_forma_pago_2.enable();
-         this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-       } else{
-         //this.Cmp.id_forma_pago_2.disable();
-         this.Cmp.id_moneda_2.disable();
-         this.Cmp.id_instancia_pago_2.disable();
-         this.Cmp.monto_forma_pago_2.disable();
-         this.Cmp.monto_forma_pago_2.reset();
-         //this.Cmp.id_forma_pago_2.reset();
-         this.Cmp.id_moneda_2.reset();
-         this.Cmp.id_instancia_pago_2.reset();
-         //this.Cmp.moneda_tarjeta_2.reset();
-         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
-         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
-         this.Cmp.cambio.label.dom.control.style.color = "";
-         this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
-         this.ocultarComponente(this.Cmp.mco_2);
-         this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-         this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-         this.ocultarComponente(this.Cmp.id_auxiliar_2);
-         this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-       }
+       this.devolverCambio();
 
      },this);
      /**************************************************************************************************************/
-
-
-      //   this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-      //       //console.log("recuperamos la moneda_2",this.moneda);
-      //     if(this.moneda == 'USD'){
-      //         //console.log("llega el dolar");
-      //       this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
-      //       this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
-      //     } else {
-      //       this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
-      //       this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
-      //     }
-      //
-      //     if (this.moneda == 'USD' && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
-      //       // this.Cmp.id_forma_pago_2.store.load({params:{start:0,limit:50},
-      //       //        callback : function (r) {
-      //       //                   console.log("Llega aqui",r);
-      //       //                   this.Cmp.id_forma_pago_2.setValue(r[24].data.id_forma_pago);
-      //       //                   this.Cmp.id_forma_pago_2.fireEvent('select', this.Cmp.id_forma_pago,r[24],0);
-      //       //                 }, scope : this
-      //       //               });
-      //       /**********************************Cambiamos el Style *****************************************/
-      //       this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-      //       this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-      //       this.Cmp.cambio.label.dom.control.style.color = "red";
-      //       this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-      //       /**********************************Cambiamos el Style *****************************************/
-      //       this.Cmp.id_forma_pago_2.enable();
-      //       this.Cmp.monto_forma_pago_2.enable();
-      //       this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
-      //     }else if (this.moneda != 'USD' && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
-      //       // this.Cmp.id_forma_pago_2.store.load({params:{start:0,limit:50},
-      //       //        callback : function (r) {
-      //       //                   console.log("Llega aqui",r);
-      //       //                   this.Cmp.id_forma_pago_2.setValue(r[23].data.id_forma_pago);
-      //       //                   this.Cmp.id_forma_pago_2.fireEvent('select', this.Cmp.id_forma_pago,r[23],0);
-      //       //                 }, scope : this
-      //       //               });
-      //       /**********************************Cambiamos el Style *****************************************/
-      //       this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
-      //       this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
-      //       this.Cmp.cambio.label.dom.control.style.color = "red";
-      //       this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
-      //       /**********************************Cambiamos el Style *****************************************/
-      //       this.Cmp.id_forma_pago_2.enable();
-      //       this.Cmp.monto_forma_pago_2.enable();
-      //       this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
-      //     } else{
-      //       this.Cmp.id_forma_pago_2.disable();
-      //       this.Cmp.monto_forma_pago_2.disable();
-      //       this.Cmp.monto_forma_pago_2.reset();
-      //       this.Cmp.id_forma_pago_2.reset();
-      //       this.Cmp.moneda_tarjeta_2.reset();
-      //       this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
-      //       this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
-      //       this.Cmp.cambio.label.dom.control.style.color = "";
-      //       this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
-      //       this.ocultarComponente(this.Cmp.mco_2);
-      //       this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-      //       this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-      //       this.ocultarComponente(this.Cmp.id_auxiliar_2);
-      //       this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-      //     }
-      //
-      //
-      //   //  console.log("llega ver datos",this.Cmp.monto_forma_pago.getValue());
-      //
-      // },this);//monto_forma_pago*/
 
         this.Cmp.id_sucursal.on('select',function(c,r,i) {
         	if (this.accionFormulario != 'EDIT') {
@@ -1039,7 +590,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.id_formula.on('select',function(c,r,i) {
             if (r.data) {
                 var formu = r.data.id_formula;
-                console.log("llega aqui para eliminar",r.data);
                 if (formu != 0) {
                   this.eliminarAnteriores();
                   //this.successRecuperarDatos();
@@ -1048,17 +598,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         },this);
 
         this.iniciarEventosProducto();
-
-        /*AQUI CONTINUAR*/
-        // this.detCmp.cantidad.on('keyup',function() {
-        //    this.detCmp.precio_total.setValue(this.roundTwo(Number(this.detCmp.precio_unitario.getValue()) * Number(this.detCmp.cantidad.getValue())));
-        //    console.log("llega aqui el total",this.detCmp.precio_total.getValue());
-        // },this);
-        //
-        // this.detCmp.precio_unitario.on('keyup',function() {
-        //     this.detCmp.precio_total.setValue(this.roundTwo(Number(this.detCmp.precio_unitario.getValue()) * Number(this.detCmp.cantidad.getValue())));
-        // },this);
-
 
     },
 
@@ -1078,8 +617,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 	    		this.detCmp.descripcion.reset();
 	    	}
     	}
-
-    	//console.log('opcion', opcion, this.detCmp.descripcion)
 
     },
 
@@ -1152,13 +689,13 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.observaciones.setDisabled(true);
           this.Cmp.id_punto_venta.setDisabled(true);
           this.Cmp.excento.setDisabled(true);
-          console.log("llega",this);
+
 
 
 
                 //  this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(this.data.datos_originales.data.id_formula));
           this.Cmp.habilitar_edicion.on('select',function(c,r,i) {
-            console.log("llega aqui r",r.data.value);
+
             if (r.data.value == 'NO') {
               this.Cmp.nit.setDisabled(true);
               this.Cmp.id_cliente.setDisabled(true);
@@ -1174,7 +711,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
               this.megrid.colModel.config[4].editor='';
               this.megrid.colModel.config[5].editor='';
               //this.mestore.rollbChanges();
-              console.log("llega auqi para editar",this.megrid);
+
             } else {
               this.Cmp.nit.setDisabled(false);
               this.Cmp.id_cliente.setDisabled(false);
@@ -1195,7 +732,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             }
           },this);
           /**************************************************************************/
-          console.log("llega aqui editar",this.data.datos_originales.data.id_formula);
           /*Aqui cargamos el combo q se selecciono*/
           this.Cmp.id_formula.store.load({params:{start:0,limit:50},
              callback : function (r) {
@@ -1206,70 +742,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         /*************************************/
 
       }
-    //   if (this.accionFormulario == 'NEW') {
-    //     this.Cmp.id_forma_pago.store.load({params:{start:0,limit:50},
-		//            callback : function (r) {
-		//            		if (this.accionFormulario != 'EDIT') {
-		//            			if (r.length == 1 ) {
-		// 	                    this.Cmp.id_forma_pago.setValue(r[0].data.id_forma_pago);
-		// 	                    this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,r[0],0);
-		// 	                }
-		//            		} else {
-		//            			this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.Cmp.id_forma_pago.getValue()),0);
-		//            		}
-		//                 this.Cmp.id_forma_pago.store.baseParams.defecto = 'no';
-		//                 this.Cmp.id_forma_pago.modificado = true;
-		//             }, scope : this
-		//         });
-    //   } else {
-    //     console.log("llega tipo formulario",this.accionFormulario);
-    //     this.id_forma_pagos = this.data.datos_originales.json.id_forma_pago.split(",");
-    //     this.montos = this.data.datos_originales.json.monto_forma_pago.split(",");
-    //     console.log("llega auqi el monto",this.data.datos_originales.json);
-	  //   	this.Cmp.id_forma_pago.store.load({params:{start:0,limit:50},
-		//            callback : function (r) {
-    //              /******************************************EDITAR DATOS RECUPERACION****************************************************/
-    //              var total_datos = this.megrid.store.data.items.length;
-    //              var suma = 0;
-    //              for (var i = 0; i < total_datos; i++) {
-    //                  suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
-    //              }
-    //              this.suma_total = suma;
-    //              /**********************************************************************************************************************/
-    //                 if (this.montos.length > 1) {
-    //                   this.Cmp.id_forma_pago.setValue(this.id_forma_pagos[0]);
-    //                   this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.id_forma_pagos[0]),0);
-    //                   this.Cmp.id_forma_pago_2.setValue(this.id_forma_pagos[1]);
-    //                   this.Cmp.id_forma_pago_2.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.id_forma_pagos[1]));
-    //                   this.Cmp.monto_forma_pago.setValue(this.montos[0]);
-    //
-    //                   this.Cmp.id_forma_pago_2.store.load({params:{start:0,limit:50},
-    //                          callback : function (r) {
-    //                               this.Cmp.id_forma_pago_2.setValue(this.id_forma_pagos[1]);
-    //                               this.Cmp.id_forma_pago_2.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.id_forma_pagos[1]));
-    //                               this.Cmp.monto_forma_pago_2.setValue(this.montos[1]);
-    //                           }, scope : this
-    //                       });
-    //
-    //                       console.log("entra aqui",this.data.datos_originales.json);
-    //                       if (parseFloat(this.montos[0])<this.suma_total) {
-    //                         this.Cmp.id_forma_pago_2.enable();
-    //                         this.Cmp.monto_forma_pago_2.enable();
-    //                       }
-    //
-    //
-    //
-    //
-    //                 }else {
-  	// 	           			this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.Cmp.id_forma_pago.getValue()),0);
-  	// 	           		}
-    //
-		//                 this.Cmp.id_forma_pago.store.baseParams.defecto = 'no';
-		//                 this.Cmp.id_forma_pago.modificado = true;
-		//             }, scope : this
-		//         });
-    //
-		// }
     },
 
     onCancelAdd: function(re,save){
@@ -1294,13 +766,21 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         //set descriptins values ...  in combos boxs
         var cmb_rec = this.detCmp['id_producto'].store.getById(rec.get('id_producto'));
         if(cmb_rec) {
-
             if (cmb_rec.get('codigo_unidad_medida')) {
                 rec.set('nombre_producto', cmb_rec.get('nombre_producto') + ' (' + cmb_rec.get('codigo_unidad_medida') + ')');
             } else {
                 rec.set('nombre_producto', cmb_rec.get('nombre_producto'));
             }
         }
+
+        var cmb_rec = this.detCmp['id_moneda_recibo'].store.getById(rec.get('id_moneda_recibo'));
+        console.log("aqui llega el dato para mostrar en la grilla",cmb_rec);
+        if(cmb_rec) {
+
+            rec.set('codigo_internacional', cmb_rec.get('codigo_internacional'));
+        }
+
+
         this.obtenersuma();
 
 
@@ -1404,10 +884,10 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
 
         this.summary = new Ext.ux.grid.GridSummary();
-        console.log('vemos',this);
+
         //Ext.ux.grid.GridSummary.Calculations['total_precio_sum'];
 
-        console.log(Ext.ux.grid.GridSummary);
+
 
         // this.editorDetail.on('beforeedit', this.onInitAdd , this);
         // //al cancelar la edicion
@@ -1416,7 +896,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         // //al cancelar la edicion
         // this.editorDetail.on('validateedit', this.onUpdateRegister, this);
         //
-        // this.editorDetail.on('afteredit', this.onAfterEdit, this);
+        //this.editorDetail.on('afteredit', this.onAfterEdit, this);
         //
         // //eventos de rror en los combos
         // this.detCmp.id_producto.store.on('exception', this.conexionFailure);
@@ -1440,51 +920,66 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                     stripeRows: true,
                     tbar: [
                       {
-                  	    text: '<div style="font-weight:bold; font-size:15px"><i class="fa fa-save fa-lg"></i> Guardar</div>',
+                  	    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
                         scope: this,
               			    handler: function(btn) {
                           this.guardarDetalles();
               			    }
                       },
                       {
-                      text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Detalle',
+                      text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
                       scope: this,
+                      id:'botonAgregar',
                         handler : function(){
                           this.formularioAgregar();
                           }
                       },
                       {
-                        text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
+                        text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
                         scope: this,
                           handler : function(){
-                            console.log('llega auqi para eliminar');
                             var index = this.megrid.getSelectionModel().getSelectedCell();
-                            console.log('llega auqi para eliminar',this);
                             if (!index) {
                                 return false;
                             }
                             var rec = this.mestore.getAt(index[0]);
                             this.mestore.remove(rec);
+                            Ext.getCmp('botonAgregar').show();
+                            Ext.getCmp('segunda_forma_pago').show();
+                            Ext.getCmp('datos_deposito').hide();
+                            this.Cmp.nro_deposito.reset();
+                            this.Cmp.fecha_deposito.reset();
+                            this.Cmp.monto_deposito.reset();
+                            this.Cmp.cuenta_bancaria.reset();
+                            this.Cmp.nro_deposito.allowBlank=true;
+                            this.Cmp.fecha_deposito.allowBlank=true;
+                            this.Cmp.monto_deposito.allowBlank=true;
+                            this.Cmp.cuenta_bancaria.allowBlank=true;
+                            this.ocultarComponente(this.Cmp.nro_deposito);
+                            this.ocultarComponente(this.Cmp.fecha_deposito);
+                            this.ocultarComponente(this.Cmp.monto_deposito);
+                            this.ocultarComponente(this.Cmp.cuenta_bancaria);
                             this.obtenersuma();
                         }
 
 
                         },
-                    {
-                            text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
-                            scope:this,
-                            handler: function(){
-                                var index = this.megrid.getSelectionModel().getSelectedCell();
-                                if (!index) {
-                                    return false;
-                                }
-                                var rec = this.mestore.getAt(index[0]);
-                                this.onDuplicateDetail(rec);
-                                this.evaluaGrilla();
-                                this.obtenersuma();
-
-                            }
-                    }],
+                    // {
+                    //         text: '<div style="font-weight:bold; font-size:15px;"><i class="fa fa-plus-circle fa-lg"></i> Duplicar registro</div>',
+                    //         scope:this,
+                    //         handler: function(){
+                    //             var index = this.megrid.getSelectionModel().getSelectedCell();
+                    //             if (!index) {
+                    //                 return false;
+                    //             }
+                    //             var rec = this.mestore.getAt(index[0]);
+                    //             this.onDuplicateDetail(rec);
+                    //             this.evaluaGrilla();
+                    //             this.obtenersuma();
+                    //
+                    //         }
+                    // }
+                  ],
 
                     columns: [
                     new Ext.grid.RowNumberer(),
@@ -1540,7 +1035,19 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                         format: '0,0.00',
                         summaryType: 'sum',
                         editor: this.detCmp.precio_total
-                    }
+                    },
+                    {
+                        header: 'Moneda',
+                        dataIndex: 'id_moneda_recibo',
+                        width: 350,
+                        editable: true,
+                        sortable: false,
+                        renderer:function(value, p, record){
+                          console.log("aqui llega moneda formato",record);
+                          return String.format('{0}', record.data['desc_moneda_recibo']);
+                        },
+                        //editor: this.detCmp.id_moneda_recibo
+                    },
                   ]
                 });
     },
@@ -1552,17 +1059,40 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       this.mestore.commitChanges();
       this.megrid.getView().refresh();
       this.obtenersuma();
+
+      /*Aqui obtenemos el monto que se pagara*/
+      this.id_moneda_recibo_cambio = this.variables.items.items[6].getValue();
+      /*Reseteamos el valor actual para poner el seleccionado*/
+      this.Cmp.id_moneda_venta_recibo.reset();
+      this.Cmp.id_moneda_venta_recibo.setValue(this.id_moneda_recibo_cambio);
+      /*******************************************************/
+      /*Si la moneda es dolar y la moneda a pagar es Bs el monto convertimos a bs*/
+      if (this.id_moneda_recibo_cambio == 2 && this.Cmp.id_moneda.getValue() != 2) {
+        this.Cmp.monto_forma_pago.setValue(this.suma_total*this.tipo_cambio);
+      }
+      /*Si la moneda es en Bs y la moneda a pagar es a Bs*/
+      else if (this.id_moneda_recibo_cambio != 2 && this.Cmp.id_moneda.getValue() != 2) {
+        this.Cmp.monto_forma_pago.setValue(this.suma_total);
+      }
+      else if (this.id_moneda_recibo_cambio != 2 && this.Cmp.id_moneda.getValue() == 2) {
+        this.Cmp.monto_forma_pago.setValue(this.suma_total/this.tipo_cambio);
+      }
+      else if (this.id_moneda_recibo_cambio == 2 && this.Cmp.id_moneda.getValue() == 2) {
+        this.Cmp.monto_forma_pago.setValue(this.suma_total);
+      }
+      /**************************************/
+      Ext.getCmp('botonAgregar').hide();
     },
 
 
     formularioAgregar : function(){
 
       var simple = new Ext.FormPanel({
-       labelWidth: 75, // label settings here cascade unless overridden
+       labelWidth: 100, // label settings here cascade unless overridden
        frame:true,
-       bodyStyle:'padding:5px 5px 0',
-       width: 500,
-       height:300,
+       bodyStyle:'margin-left:-7px; margin-top:-7px; padding:10px 10px 0; background:#6EC8E3;',
+       width: 650,
+       height:250,
        defaultType: 'textfield',
        items: [new Ext.form.ComboBox({
                            name: 'tipo',
@@ -1570,6 +1100,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                            allowBlank:false,
                            emptyText:'Tipo...',
                            typeAhead: true,
+                           hidden:true,
                            triggerAction: 'all',
                            lazyRender:true,
                            mode: 'local',
@@ -1581,7 +1112,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                    }),
                    new Ext.form.ComboBox({
                                                        name: 'id_producto',
-                                                       fieldLabel: 'Producto/<br>Servicio',
+                                                       fieldLabel: 'Producto/Servicio',
                                                        allowBlank: false,
                                                        emptyText: 'Productos...',
                                                        store: new Ext.data.JsonStore({
@@ -1593,9 +1124,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                                                direction: 'ASC'
                                                            },
                                                            totalProperty: 'total',
-                                                           fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
+                                                           fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','codigo'],
                                                            remoteSort: true,
-                                                           baseParams: {par_filtro: 'ingas.desc_ingas',irva:'irva'}
+                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO'}
                                                        }),
                                                        valueField: 'id_concepto_ingas',
                                                        displayField: 'desc_ingas',
@@ -1606,10 +1137,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                                           '<tpl for=".">',
                                                           '<div class="x-combo-list-item">',
                                                           '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-                                                          '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
-                                                          '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-                                                          '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
-                                                          '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+                                                          '<p><b>COD:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
                                                           '</div></tpl>'
                                                         ]),
                                                        typeAhead: false,
@@ -1620,22 +1148,18 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                                        pageSize: 15,
                                                        queryDelay: 1000,
                                                        //anchor: '100%',
-                                                     //  width : 250,
+                                                       width : 450,
                                                        listWidth:'450',
                                                        minChars: 2 ,
                                                        disabled:true,
-                                                        style:{
-                                                          width: '200px'
-                                                        },
 
                                                      }),
                                                      new Ext.form.TextField({
                                                             name: 'descripcion',
                                                             fieldLabel: 'Descripcion',
                                                             allowBlank:true,
-                                                            style:{
-                                                              width: '190px'
-                                                            },
+                                                            width : 450,
+                                                            hidden:true,
                                                             //anchor:'10',
                                                             //gwidth: 150,
                                                             disabled : true
@@ -1646,9 +1170,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                                                         msgTarget: 'title',
                                                                         fieldLabel: 'Cantidad',
                                                                         allowBlank: false,
-                                                                        style:{
-                                                                          width: '190px'
-                                                                        },
+                                                                        width : 450,
                                                                         //allowDecimals: me.cantidadAllowDecimals,
                                                                         decimalPrecision : 6,
                                                                         enableKeyEvents : true,
@@ -1662,49 +1184,82 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                                                         allowBlank: false,
                                                                         allowDecimals: true,
                                                                         decimalPrecision : 6,
-                                                                        style:{
-                                                                          width: '190px'
-                                                                        },
+                                                                        width : 450,
                                                                         enableKeyEvents : true
                                                                 }),
                                                      new Ext.form.NumberField({
                                                                         name: 'precio_total',
                                                                         msgTarget: 'title',
                                                                         fieldLabel: 'Total',
-                                                                        style:{
-                                                                          width: '190px'
-                                                                        },
+                                                                        width : 450,
                                                                         allowBlank: false,
                                                                         allowDecimals: false,
                                                                         maxLength:10,
                                                                         readOnly :true
-                                                                })
+                                                                }),
+                                                      new Ext.form.ComboBox({
+                                                                      name: 'id_moneda_recibo',
+                                                                      fieldLabel: 'Moneda',
+                                                                      allowBlank: false,
+                                                                      emptyText: 'Moneda Recibo...',
+                                                                      store: new Ext.data.JsonStore({
+                                                                          url: '../../sis_parametros/control/Moneda/listarMoneda',
+                                                                          id: 'id_moneda',
+                                                                          root: 'datos',
+                                                                          sortInfo: {
+                                                                              field: 'moneda',
+                                                                              direction: 'ASC'
+                                                                          },
+                                                                          totalProperty: 'total',
+                                                                          fields: ['id_moneda', 'codigo', 'moneda', 'codigo_internacional'],
+                                                                          remoteSort: true,
+                                                                          baseParams: {filtrar: 'si',par_filtro: 'moneda.moneda#moneda.codigo#moneda.codigo_internacional'}
+                                                                      }),
+                                                                      valueField: 'id_moneda',
+                                                                      displayField: 'codigo_internacional',
+                                                                      gdisplayField: 'codigo_internacional',
+                                                                      hiddenName: 'id_moneda',
+                                                                      forceSelection: true,
+                                                                      tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:green;"><b style="color:black;">Moneda:</b> <b>{moneda}</b></p><p style="color:red;"><b style="color:black;">Código:</b> <b>{codigo_internacional}</b></p></div></tpl>',
+                                                                      typeAhead: false,
+                                                                      triggerAction: 'all',
+                                                                      lazyRender: true,
+                                                                      mode: 'remote',
+                                                                      resizable:true,
+                                                                      pageSize: 15,
+                                                                      queryDelay: 1000,
+                                                                      //anchor: '100%',
+                                                                      width : 450,
+                                                                      listWidth:'450',
+                                                                      minChars: 2 ,
+
+                                                                    }),
                                                   ]
 
    });
    this.variables = simple;
    /*Aumentando para Filtrar los servicios por id_punto_venta y el tipo del PV (ATO CTO)*/
-   this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
-   this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
+   //this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
+   //this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
    // /************************************************************************************************/
 
 
       var win = new Ext.Window({
-        title: 'Agregar Detalle', //the title of the window
-        width:320,
+        title: '<center><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">AGREGAR CONCEPTO</span></center>', //the title of the window
+        width:600,
         height:250,
         closeAction:'hide',
         modal:true,
         plain: true,
         items:simple,
         buttons: [{
-                    text:'<i class="fa fa-floppy-o fa-lg"></i> Guardar',
+                    text:'<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/aceptar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:15px;">Guardar</span></div>',
                     scope:this,
                     handler: function(){
                         this.insertarNuevo(win);
                     }
                 },{
-                    text: '<i class="fa fa-times-circle fa-lg"></i> Cancelar',
+                    text: '<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/cancelar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:13px;">Cancelar</span></div>',
                     handler: function(){
                         win.hide();
                     }
@@ -1712,41 +1267,75 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
       });
       win.show();
-      this.variables.items.items[0].on('select',function(c,r,i) {
-          this.ComboIdProducto(r.data.field1);
-      },this);
+
+      /****************************Aqui recuperaremos por defecto*******************************/
+      this.variables.items.items[0].setValue('servicio');//esta parte hay que ver mas adelante si se cambiara
+      this.variables.items.items[0].fireEvent('select',this.variables.items.items[0],'servicio');
+      this.ComboIdProducto(this.variables.items.items[0].getValue());
+      /*****************************************************************************************/
+
+      // this.variables.items.items[0].on('select',function(c,r,i) {
+      //     this.ComboIdProducto(r.data.field1);
+      // },this);
 
     },
 
     ComboIdProducto : function (tipo) {
+
+      /*Aqui recuperamos el tipo del producto*/
     	this.variables.items.items[1].setDisabled(false);
     	this.variables.items.items[1].store.baseParams.tipo = tipo;
     	if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
     		this.variables.items.items[1].store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
         this.variables.items.items[1].on('select',function(c,r,i) {
-          if (r.data.requiere_descripcion == 'si') {
-            this.variables.items.items[2].setDisabled(false);
-          } else if (r.data.requiere_descripcion != 'si')  {
+          /********************LA CONDICION AQUI DEL CODIGO DE RO*********************/
+            if (r.data.codigo == 'ROAC' || r.data.codigo == 'ROPC') {
+              //this.mostrarComponente(this.Cmp.boleta);
+              this.instanciasPagoAnticipo = 'si';
+              this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank=false;
+              Ext.getCmp('datos_deposito').show();
+              this.fecha_actual_RO =   moment().format("DD/MM/YYYY");
+            } else {
+              this.instanciasPagoAnticipo = 'no';
+              this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.reset();
+              this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+              Ext.getCmp('datos_deposito').hide();
+            }
+          /***************************************************************************/
+            if (r.data.requiere_descripcion == 'si') {
+              this.mostrarComponente(this.variables.items.items[2]);
+              this.variables.items.items[2].setDisabled(false);
+            } else if (r.data.requiere_descripcion != 'si')  {
+              this.ocultarComponente(this.variables.items.items[2]);
               this.variables.items.items[2].setDisabled(true);
     	    		this.variables.items.items[2].allowBlank = true;
       	    	this.variables.items.items[2].reset();
               }
-
               /*************************Recuperamos el precio unitario (irva recuperacion dato)************************************/
-                   this.variables.items.items[3].setValue(1);
-                   console.log("llega el dato r",r);
-                   if (r.data.id_moneda == 2) {
-                     var precio = (r.data.precio * this.tipo_cambio);
-                   } else {
-                     var precio = r.data.precio;
-                   }
-                   this.variables.items.items[4].setValue(precio);
-                   this.variables.items.items[5].setValue(this.variables.items.items[3].getValue()*precio);
-
+               this.variables.items.items[3].setValue(1);
+               var precio = r.data.precio;
+               //this.variables.items.items[4].setValue(0/*precio*/);
+               //this.variables.items.items[5].setValue(this.variables.items.items[3].getValue()*precio);
              /*********************************************************************************************/
 
 
         },this);
+
+          /*Aumentamos para cuando se seleccione la moneda igual se seleccione en el combo de la forma de pago*/
+          this.variables.items.items[6].on('select',function(c,r,i) {
+            this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
+               callback : function (r) {
+               		this.Cmp.id_moneda.setValue(this.variables.items.items[6].getValue());
+                  this.Cmp.id_moneda.fireEvent('select',this.Cmp.id_moneda, this.Cmp.id_moneda.store.getById(this.variables.items.items[6].getValue()));
+                }, scope : this
+            });
+          },this);
+          /****************************************************************************************************/
+
+
+
     	} else {
     		this.variables.items.items[1].store.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
     	}
@@ -1769,7 +1358,8 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
     insertarNuevo : function (win) {
       if (this.variables.items.items[0].getValue() == '' || this.variables.items.items[1].getValue() == '' || this.variables.items.items[1].lastSelectionText == ''
-        || this.variables.items.items[3].getValue() == '' || this.variables.items.items[4].getValue() == '' || this.variables.items.items[5].getValue() == '') {
+        || this.variables.items.items[3].getValue() == '' || this.variables.items.items[4].getValue() == '' || this.variables.items.items[5].getValue() == ''
+        || this.variables.items.items[6].getValue() == '') {
           Ext.Msg.show({
   			   title:'Información',
   			   msg: 'Complete los campos para guardar el detalle!',
@@ -1806,7 +1396,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       descripcion: this.variables.items.items[2].getValue(),
       cantidad: this.variables.items.items[3].getValue(),
       precio_unitario: this.variables.items.items[4].getValue(),
-      precio_total:this.variables.items.items[5].getValue()             //
+      precio_total:this.variables.items.items[5].getValue(),            //
+      id_moneda_recibo:this.variables.items.items[6].getValue(),            //
+      desc_moneda_recibo:this.variables.items.items[6].lastSelectionText,            //
       });
 
       this.mestore.add(myNewRecord);
@@ -1856,9 +1448,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                   this.id_formula = this.id_formula_recu.split(",");
                   this.req_excento = this.tiene_excento.split(",");
                   this.precio_form = this.precio_inde.split(",");
-
-                  console.log("llega auqi el ID producto",this.producto_id);
-                console.log("llega auqi el ID formula",this.id_formula);
 
                   var grillaRecord =  Ext.data.Record.create([
                     {name:'id_venta_detalle', type: 'numeric'},
@@ -1911,7 +1500,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
 
     onDuplicateDetail : function (rec) {
-      console.log("llega auqi ", rec);
         var grillaRecord =  Ext.data.Record.create([
             {name:'id_venta_detalle', type: 'numeric'},
             {name:'id_venta', type: 'numeric'},
@@ -1989,7 +1577,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                             collapseFirst : false,
                             collapsible: true,
                             width: '100%',
-                            autoScroll:true,
+                            autoScroll:false,
                             style: {
                                    height:'100px',
                                    background: '#6ABCDF',
@@ -2090,18 +1678,17 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                        layout: 'form',
                                        title: ' Forma de Pago <br> <br>',
                                        border: false,
-                                       // style: {
-                                       //          border:'2px solid red'
-                                       //        },
                                        width: 280,
                                        id_grupo: 2,
                                        items: [],
                         }]
-                      },{
+                      },
+                      {
                        bodyStyle: 'padding-right:5px;',
-
                        border: false,
                        autoHeight: true,
+                       hidden:true,
+                       id:'segunda_forma_pago',
                        items: [{
                              xtype: 'fieldset',
                              frame: true,
@@ -2118,7 +1705,23 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                       },
                       {
                        bodyStyle: 'padding-right:5px;',
-
+                       border: false,
+                       autoHeight: true,
+                       hidden:true,
+                       id:'datos_deposito',
+                       items: [{
+                             xtype: 'fieldset',
+                             frame: true,
+                             layout: 'form',
+                             title: ' Datos Anticipo <br> <br>',
+                             border: false,
+                             width: 280,
+                             id_grupo: 13,
+                             items: [],
+                           }]
+                      },
+                      {
+                       bodyStyle: 'padding-right:5px;',
                        border: false,
                        autoHeight: true,
                        items: [{
@@ -2135,9 +1738,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                              id_grupo: 11,
                              items: [],
                           }]
-                      },{
+                      },
+                      {
                        bodyStyle: 'padding-right:5px;',
-
                        border: false,
                        autoHeight: true,
                        items: [{
@@ -2153,46 +1756,13 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                              items: [],
                           }]
                       }
-
                       ]
-                            }
-
-
-
+                      }
                          ]
                  }];
 
 
     },
-    // crearStoreFormaPago : function () {
-    // 	this.storeFormaPago = new Ext.data.JsonStore({
-    // 		url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
-		// 	id: 'id_forma_pago',
-		// 	root: 'datos',
-		// 	sortInfo: {
-		// 		field: 'id_forma_pago',
-		// 		direction: 'ASC'
-		// 	},
-		// 	totalProperty: 'total',
-		// 	fields: [
-	  //          {name: 'id_forma_pago',type: 'numeric'},
-	  //          {name: 'nombre',      type: 'string'},
-	  //          {name: 'valor',     type: 'numeric'},
-	  //          {name: 'numero_tarjeta',     type: 'string'},
-	  //          {name: 'codigo_tarjeta',     type: 'string'},
-	  //          {name: 'registrar_tarjeta',     type: 'string'},
-    //            {name: 'registrar_tipo_tarjeta',     type: 'string'},
-	  //          {name: 'registrar_cc',     type: 'string'},
-	  //          {name: 'tipo_tarjeta',     type: 'string'}
-	  //       ]
-		// });
-		// if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
-		//   this.storeFormaPago.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
-		// }
-		// this.storeFormaPago.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
-		// this.storeFormaPago.baseParams.id_venta = this.Cmp.id_venta.getValue();
-		// this.storeFormaPago.load({params:{start:0,limit:100}});
-    // },
 
     loadValoresIniciales:function()
     {
@@ -2227,8 +1797,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       },
 
       imprimirNota: function(){
-   		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
-        console.log("llega para imprimir",this.data.objPadre.variables_globales.id_punto_venta);
    				Phx.CP.loadingShow();
    				Ext.Ajax.request({
    						url : '../../sis_ventas_facturacion/control/Venta/reporteRecibo',
@@ -2260,6 +1828,15 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                     labelSeparator:'',
                     inputType:'hidden',
                     name: 'id_venta'
+            },
+            type:'Field',
+            form:true
+        },
+        {
+            config:{
+                    labelSeparator:'',
+                    inputType:'hidden',
+                    name: 'id_moneda_venta_recibo'
             },
             type:'Field',
             form:true
@@ -2359,6 +1936,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 				fieldLabel : 'Paquetes / Fórmulas',
 				allowBlank : true,
         width:200,
+        hidden:true,
         listWidth:'450',
         maxHeight : 450,
         resizable: true,
@@ -2788,19 +2366,152 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 			form: true
 		},
     {
+			config: {
+				name: 'id_auxiliar_anticipo',
+				fieldLabel: 'Cuenta Corriente',
+				allowBlank: true,
+        width:150,
+				emptyText: 'Cuenta Corriente...',
+				store: new Ext.data.JsonStore({
+					url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
+					id: 'id_auxiliar',
+					root: 'datos',
+					sortInfo: {
+						field: 'codigo_auxiliar',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
+					remoteSort: true,
+					baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si'}
+				}),
+				valueField: 'id_auxiliar',
+				displayField: 'nombre_auxiliar',
+				gdisplayField: 'codigo_auxiliar',
+				hiddenName: 'id_auxiliar',
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+				forceSelection: true,
+				typeAhead: false,
+				triggerAction: 'all',
+				lazyRender: true,
+				mode: 'remote',
+				pageSize: 15,
+				queryDelay: 1000,
+				gwidth: 150,
+				listWidth:350,
+				resizable:true,
+				minChars: 2,
+				renderer : function(value, p, record) {
+					return String.format('{0}', record.data['nombre_auxiliar']);
+				}
+			},
+			type: 'ComboBox',
+			id_grupo: 13,
+			grid: true,
+			form: true
+		},
+    {
         config:{
-            name: 'monto_forma_pago',
-            fieldLabel: 'Importe Recibido',
-            allowBlank: false,
+            name: 'id_deposito',
+            fieldLabel: 'id_deposito',
+            allowBlank: true,
+            hidden:true,
+            width:150,
+        },
+            type:'TextField',
+            id_grupo:13,
+            form:true,
+            //valorInicial:'0'
+    },
+    {
+        config:{
+            name: 'nro_deposito',
+            fieldLabel: 'Nro Depósito',
+            allowBlank: true,
+            hidden:true,
+            width:150,
+            maskRe: /[a-zA-Z0-9]+/i,
+            regex: /[a-zA-Z0-9]+/i
+        },
+            type:'TextField',
+            id_grupo:13,
+            form:true,
+            //valorInicial:'0'
+    },
+    {
+        config:{
+            name: 'fecha_deposito',
+            fieldLabel: 'Fecha Deposito',
+            allowBlank: true,
+            hidden:true,
+            disabled:true,
+            width:150,
+            format: 'd/m/Y',
+            renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+        },
+            type:'DateField',
+            id_grupo:13,
+            form:true,
+            //valorInicial:'0'
+    },
+    {
+        config:{
+            name: 'monto_deposito',
+            fieldLabel: 'Monto Depósito',
+            allowBlank: true,
+            hidden:true,
+            enableKeyEvents: true,
             width:150,
             maxLength:20,
             allowNegative:false,
             value:0
         },
             type:'NumberField',
-            id_grupo:2,
+            id_grupo:13,
             form:true,
             valorInicial:'0'
+    },
+    {
+        config:{
+            name: 'id_cuenta_bancaria',
+            fieldLabel: 'id_cuenta_bancaria',
+            allowBlank: true,
+            hidden:true,
+            width:150,
+            maxLength:20,
+            allowNegative:false
+        },
+            type:'NumberField',
+            id_grupo:13,
+            form:true
+    },
+    {
+        config:{
+            name: 'cuenta_bancaria',
+            fieldLabel: 'Nro Cuenta',
+            allowBlank: true,
+            hidden:true,
+            width:150,
+            maxLength:20,
+            allowNegative:false
+        },
+            type:'NumberField',
+            id_grupo:13,
+            form:true
+    },
+    {
+        config:{
+            name: 'monto_forma_pago',
+            fieldLabel: 'Importe Recibido',
+            allowBlank: false,
+            width:150,
+            maxLength:20,
+            enableKeyEvents: true,
+            allowNegative:false,
+        },
+            type:'NumberField',
+            id_grupo:2,
+            form:true,
     },
     {
         config:{
@@ -3153,6 +2864,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     			grid: true,
     			form: true
     		},
+
         {
             config:{
                 name: 'numero_tarjeta_2',
@@ -3213,6 +2925,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                 width:150,
                 allowDecimals:true,
                 decimalPrecision:2,
+                enableKeyEvents: true,
                 allowNegative : false,
                 disabled:true,
                 gwidth: 125,
@@ -3331,7 +3044,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     onEdit:function(){
     	this.accionFormulario = 'EDIT';
     	this.loadForm(this.data.datos_originales);
-        console.log("llega aqui para ver que es",this);
         //load detalle de conceptos
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
         this.mestore.load();
@@ -3342,6 +3054,582 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     onNew: function(){
     	this.accionFormulario = 'NEW';
 	},
+    devolverCambio: function(){
+      if(this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2){
+        this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
+        this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
+      }
+
+      else if (this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2){
+        this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-(this.suma_total*this.tipo_cambio)));
+        this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()/this.tipo_cambio)-this.suma_total));
+      }
+
+      else if (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio == 2) {
+        this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)*this.tipo_cambio);
+        this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
+      }
+
+      else if (this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio != 2) {
+        this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue())-this.suma_total));
+        this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
+      }
+
+      if ( (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2) && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
+
+        /**********************************Cambiamos el Style *****************************************/
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+        this.Cmp.cambio.label.dom.control.style.color = "red";
+        this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+        /**********************************Cambiamos el Style *****************************************/
+        //this.Cmp.id_forma_pago_2.enable();
+        Ext.getCmp('segunda_forma_pago').show();
+        this.Cmp.id_moneda_2.enable();
+        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)));
+
+
+      }else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) && this.Cmp.monto_forma_pago.getValue() < (this.suma_total*this.tipo_cambio)) {
+
+
+        /**********************************Cambiamos el Style *****************************************/
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+        this.Cmp.cambio.label.dom.control.style.color = "red";
+        this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+        /**********************************Cambiamos el Style *****************************************/
+        Ext.getCmp('segunda_forma_pago').show();
+        //this.Cmp.id_forma_pago_2.enable();
+        this.Cmp.id_moneda_2.enable();
+        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.setValue(((this.suma_total*this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue()));
+
+      } else if ((this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio == 2) && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
+
+
+        /**********************************Cambiamos el Style *****************************************/
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+        this.Cmp.cambio.label.dom.control.style.color = "red";
+        this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+        /**********************************Cambiamos el Style *****************************************/
+        Ext.getCmp('segunda_forma_pago').show();
+        //this.Cmp.id_forma_pago_2.enable();
+        this.Cmp.id_moneda_2.enable();
+        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+      } else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio != 2) && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
+
+        /**********************************Cambiamos el Style *****************************************/
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+        this.Cmp.cambio.label.dom.control.style.color = "red";
+        this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+        /**********************************Cambiamos el Style *****************************************/
+        Ext.getCmp('segunda_forma_pago').show();
+        //this.Cmp.id_forma_pago_2.enable();
+        this.Cmp.id_moneda_2.enable();
+        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.enable();
+        this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+      }
+
+      else{
+        //this.Cmp.id_forma_pago_2.disable();
+        Ext.getCmp('segunda_forma_pago').hide();
+        this.Cmp.id_moneda_2.disable();
+        this.Cmp.id_instancia_pago_2.disable();
+        this.Cmp.monto_forma_pago_2.disable();
+        this.Cmp.monto_forma_pago_2.reset();
+        //this.Cmp.id_forma_pago_2.reset();
+        this.Cmp.id_moneda_2.reset();
+        this.Cmp.id_instancia_pago_2.reset();
+        //this.Cmp.moneda_tarjeta_2.reset();
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
+        this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
+        this.Cmp.cambio.label.dom.control.style.color = "";
+        this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
+        this.ocultarComponente(this.Cmp.mco_2);
+        this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+        this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+        this.ocultarComponente(this.Cmp.id_auxiliar_2);
+        this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+      }
+      /***************************************************************************+*/
+    },
+
+    cargarInstanciaPago: function() {
+      /****************************Aumnetando la instancia de pago********************************/
+      this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
+        var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+        this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+        this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+        if (codigo_forma_pago == 'CC') {
+          Ext.getCmp('segunda_forma_pago').show();
+          this.mostrarComponente(this.Cmp.codigo_tarjeta);
+          this.mostrarComponente(this.Cmp.tipo_tarjeta);
+          this.mostrarComponente(this.Cmp.numero_tarjeta);
+          this.ocultarComponente(this.Cmp.id_auxiliar);
+          this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+          this.Cmp.id_auxiliar_anticipo.reset();
+          this.ocultarComponente(this.Cmp.mco);
+          this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+          this.Cmp.codigo_tarjeta.allowBlank = false;
+          this.Cmp.tipo_tarjeta.allowBlank = false;
+          this.Cmp.mco.allowBlank = true;
+
+          if (this.instanciasPagoAnticipo == 'si') {
+            this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            Ext.getCmp('datos_deposito').show();
+          }else{
+            Ext.getCmp('datos_deposito').hide();
+            this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+            this.Cmp.id_auxiliar_anticipo.reset();
+          }
+
+          this.ocultarComponente(this.Cmp.nro_deposito);
+          this.ocultarComponente(this.Cmp.fecha_deposito);
+          this.ocultarComponente(this.Cmp.monto_deposito);
+          this.ocultarComponente(this.Cmp.cuenta_bancaria);
+          this.Cmp.nro_deposito.allowBlank=true;
+          this.Cmp.fecha_deposito.allowBlank=true;
+          this.Cmp.monto_deposito.allowBlank=true;
+          this.Cmp.cuenta_bancaria.allowBlank=true;
+          this.Cmp.nro_deposito.reset();
+          this.Cmp.fecha_deposito.reset();
+          this.Cmp.monto_deposito.reset();
+          this.Cmp.cuenta_bancaria.reset();
+
+        } else if (codigo_forma_pago == 'MC') {
+          Ext.getCmp('segunda_forma_pago').show();
+          this.mostrarComponente(this.Cmp.mco);
+          this.Cmp.numero_tarjeta.allowBlank = true;
+          this.Cmp.codigo_tarjeta.allowBlank = true;
+          this.Cmp.tipo_tarjeta.allowBlank = true;
+          this.Cmp.mco.allowBlank = false;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta);
+          this.ocultarComponente(this.Cmp.id_auxiliar);
+          this.Cmp.id_auxiliar.allowBlank=true;
+          this.Cmp.id_auxiliar.reset();
+          this.Cmp.codigo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta.reset();
+          //this.Cmp.id_auxiliar.reset();
+          this.Cmp.numero_tarjeta.reset();
+
+          if (this.instanciasPagoAnticipo == 'si') {
+            this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            Ext.getCmp('datos_deposito').show();
+          }else{
+            Ext.getCmp('datos_deposito').hide();
+            this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+            this.Cmp.id_auxiliar_anticipo.reset();
+          }
+
+          this.ocultarComponente(this.Cmp.nro_deposito);
+          this.ocultarComponente(this.Cmp.fecha_deposito);
+          this.ocultarComponente(this.Cmp.monto_deposito);
+          this.ocultarComponente(this.Cmp.cuenta_bancaria);
+          this.Cmp.nro_deposito.allowBlank=true;
+          this.Cmp.fecha_deposito.allowBlank=true;
+          this.Cmp.monto_deposito.allowBlank=true;
+          this.Cmp.cuenta_bancaria.allowBlank=true;
+          this.Cmp.nro_deposito.reset();
+          this.Cmp.fecha_deposito.reset();
+          this.Cmp.monto_deposito.reset();
+          this.Cmp.cuenta_bancaria.reset();
+
+
+        } else if (codigo_forma_pago == 'CU') {
+          Ext.getCmp('segunda_forma_pago').show();
+          this.mostrarComponente(this.Cmp.id_auxiliar);
+          this.Cmp.numero_tarjeta.allowBlank = true;
+          this.Cmp.codigo_tarjeta.allowBlank = true;
+          this.Cmp.tipo_tarjeta.allowBlank = true;
+          this.Cmp.mco.allowBlank = true;
+          this.Cmp.id_auxiliar.allowBlank = false;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta);
+          this.ocultarComponente(this.Cmp.numero_tarjeta);
+          this.Cmp.codigo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta.reset();
+          this.Cmp.id_auxiliar.reset();
+          this.Cmp.mco.reset();
+          this.Cmp.numero_tarjeta.reset();
+
+          if (this.instanciasPagoAnticipo == 'si') {
+            this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            Ext.getCmp('datos_deposito').show();
+          }else{
+            Ext.getCmp('datos_deposito').hide();
+            this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+            this.Cmp.id_auxiliar_anticipo.reset();
+          }
+
+          this.ocultarComponente(this.Cmp.nro_deposito);
+          this.ocultarComponente(this.Cmp.fecha_deposito);
+          this.ocultarComponente(this.Cmp.monto_deposito);
+          this.ocultarComponente(this.Cmp.cuenta_bancaria);
+          this.Cmp.nro_deposito.allowBlank=true;
+          this.Cmp.fecha_deposito.allowBlank=true;
+          this.Cmp.monto_deposito.allowBlank=true;
+          this.Cmp.cuenta_bancaria.allowBlank=true;
+          this.Cmp.nro_deposito.reset();
+          this.Cmp.fecha_deposito.reset();
+          this.Cmp.monto_deposito.reset();
+          this.Cmp.cuenta_bancaria.reset();
+
+
+        }else if (codigo_forma_pago == 'CA') {
+          Ext.getCmp('segunda_forma_pago').show();
+          this.Cmp.numero_tarjeta.allowBlank = true;
+          this.Cmp.codigo_tarjeta.allowBlank = true;
+          this.Cmp.tipo_tarjeta.allowBlank = true;
+          //this.Cmp.id_auxiliar.allowBlank = true;
+          this.Cmp.mco.allowBlank = true;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta);
+          this.ocultarComponente(this.Cmp.numero_tarjeta);
+          this.ocultarComponente(this.Cmp.id_auxiliar);
+          this.Cmp.id_auxiliar.allowBlank=true;
+          this.Cmp.id_auxiliar.reset();
+          this.ocultarComponente(this.Cmp.mco);
+          this.Cmp.codigo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta.reset();
+          //this.Cmp.id_auxiliar.reset();
+          this.Cmp.mco.reset();
+          this.Cmp.numero_tarjeta.reset();
+
+          if (this.instanciasPagoAnticipo == 'si') {
+            this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            Ext.getCmp('datos_deposito').show();
+          }else{
+            Ext.getCmp('datos_deposito').hide();
+            this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+            this.Cmp.id_auxiliar_anticipo.reset();
+          }
+
+          this.ocultarComponente(this.Cmp.nro_deposito);
+          this.ocultarComponente(this.Cmp.fecha_deposito);
+          this.ocultarComponente(this.Cmp.monto_deposito);
+          this.ocultarComponente(this.Cmp.cuenta_bancaria);
+          this.Cmp.nro_deposito.allowBlank=true;
+          this.Cmp.fecha_deposito.allowBlank=true;
+          this.Cmp.monto_deposito.allowBlank=true;
+          this.Cmp.cuenta_bancaria.allowBlank=true;
+          this.Cmp.nro_deposito.reset();
+          this.Cmp.fecha_deposito.reset();
+          this.Cmp.monto_deposito.reset();
+          this.Cmp.cuenta_bancaria.reset();
+
+
+        }
+        /*Aumentando esta parte para la forma de pago*/
+        else if (codigo_forma_pago == 'DE') {
+          Ext.getCmp('datos_deposito').show();
+          if (this.instanciasPagoAnticipo == 'si') {
+            this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
+          }else{
+            this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
+            this.Cmp.id_auxiliar_anticipo.reset();
+          }
+          this.ocultarComponente(this.Cmp.mco);
+          this.ocultarComponente(this.Cmp.codigo_tarjeta);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta);
+          this.ocultarComponente(this.Cmp.numero_tarjeta);
+          this.Cmp.mco.reset();
+          this.Cmp.codigo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta.reset();
+          this.Cmp.numero_tarjeta.reset();
+
+          /**Aqui ponemos las condiciones**/
+          Ext.getCmp('segunda_forma_pago').hide();
+          this.mostrarComponente(this.Cmp.nro_deposito);
+          this.mostrarComponente(this.Cmp.fecha_deposito);
+          this.mostrarComponente(this.Cmp.monto_deposito);
+          this.mostrarComponente(this.Cmp.cuenta_bancaria);
+          this.Cmp.nro_deposito.allowBlank = false;
+          this.Cmp.fecha_deposito.allowBlank = false;
+          this.Cmp.fecha_deposito.setValue(this.fecha_actual_RO);
+          this.Cmp.monto_deposito.allowBlank = false;
+          this.Cmp.cuenta_bancaria.allowBlank = false;
+          this.Cmp.cuenta_bancaria.setDisabled(true);
+          this.Cmp.monto_deposito.setValue(this.suma_total);
+          this.Cmp.monto_forma_pago.setValue(this.suma_total);
+
+          this.devolverCambio();
+
+          this.Cmp.monto_deposito.on('keyup', function (cmp, e) {
+             this.Cmp.monto_forma_pago.setValue(this.Cmp.monto_deposito.getValue());
+             /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+             this.obtenersuma();
+             this.devolverCambio();
+           }, this);
+          /*******************************/
+         /***Aqui validamos para ver si existe la boleta***/
+         Ext.Ajax.request({
+    				url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
+    				params:{
+    					id_punto_venta:this.Cmp.id_punto_venta.getValue(),
+    					id_sucursal:this.Cmp.id_sucursal.getValue(),
+              id_moneda:this.Cmp.id_moneda.getValue()
+    				},
+    				success: function(resp){
+    						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+    						   this.Cmp.cuenta_bancaria.setValue(reg.ROOT.datos.nro_cuenta);
+                   this.Cmp.id_cuenta_bancaria.setValue(reg.ROOT.datos.id_cuenta_bancaria);
+    				},
+    				failure: this.conexionFailure,
+    				timeout:this.timeout,
+    				scope:this
+    		});
+         /*************************************************/
+         /*Aqui volvemos a llamar a la funcion de acuerdo a la moneda seleccionada para la cuenta*/
+          this.Cmp.id_moneda.on('select',function(c,r,i) {
+            if (this.Cmp.id_moneda.getValue() == 2) {
+              this.Cmp.monto_deposito.setValue((this.suma_total/this.tipo_cambio));
+              this.Cmp.monto_forma_pago.setValue((this.suma_total/this.tipo_cambio));
+            } else {
+              this.Cmp.monto_deposito.setValue((this.suma_total));
+              this.Cmp.monto_forma_pago.setValue((this.suma_total));
+            }
+            Ext.Ajax.request({
+     					url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
+     					params:{
+     						id_punto_venta:this.Cmp.id_punto_venta.getValue(),
+     						id_sucursal:this.Cmp.id_sucursal.getValue(),
+                 id_moneda:this.Cmp.id_moneda.getValue()
+     					},
+     					success: function(resp){
+     							var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                      this.Cmp.cuenta_bancaria.setValue(reg.ROOT.datos.nro_cuenta);
+     							   this.Cmp.id_cuenta_bancaria.setValue(reg.ROOT.datos.id_cuenta_bancaria);
+
+     					},
+     					failure: this.conexionFailure,
+     					timeout:this.timeout,
+     					scope:this
+     			});
+
+          if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+                  Ext.Ajax.request({
+          						url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
+          						params:{
+                       nro_deposito:this.Cmp.nro_deposito.getValue(),
+                       id_moneda:this.Cmp.id_moneda.getValue(),
+          						 fecha:this.Cmp.fecha_deposito.getValue(),
+          						},
+          						success: function(resp){
+          								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                            if (reg.ROOT.datos.cantidad_deposito > 0) {
+                              /*Bloqueamos el boton para que no genere si el deposito*/
+                               this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
+                               Ext.Msg.show({
+                                   title: 'Alerta',
+                                   msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
+                                   buttons: Ext.Msg.OK,
+                                   width: 512,
+                                   icon: Ext.Msg.INFO
+                               });
+                               this.Cmp.nro_deposito.reset();
+                             /********************************************************/
+                               // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
+                               // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
+                               // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                               // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
+                               // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
+                               //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                            }else {
+                              this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+                              //this.Cmp.fecha_deposito.reset();
+                              //this.Cmp.nro_deposito.reset();
+                              //this.Cmp.monto_deposito.setValue(0);
+                              //this.Cmp.monto_forma_pago.setValue(0);
+                            }
+                            /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+                            this.obtenersuma();
+
+
+
+          						},
+          						failure: this.conexionFailure,
+          						timeout:this.timeout,
+          						scope:this
+          				});
+                }
+                this.devolverCambio();
+               },this);
+               /*Aqui verificaremos si el deposito existe o no existe ya registrado*/
+              this.Cmp.nro_deposito.on('change',function(field,newValue,oldValue){
+                if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+                Ext.Ajax.request({
+         					url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
+         					params:{
+                     nro_deposito:this.Cmp.nro_deposito.getValue(),
+                     id_moneda:this.Cmp.id_moneda.getValue(),
+         						fecha:this.Cmp.fecha_deposito.getValue(),
+         					},
+         					success: function(resp){
+         							var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                          if (reg.ROOT.datos.cantidad_deposito > 0) {
+                            /*Bloqueamos el boton para que no genere si el deposito*/
+                             this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
+                             Ext.Msg.show({
+           											title: 'Alerta',
+           											msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas e ingrese nuevamente el nro de depósito</p>',
+           											buttons: Ext.Msg.OK,
+           											width: 512,
+           											icon: Ext.Msg.INFO
+           									});
+                             this.Cmp.nro_deposito.reset();
+                           /********************************************************/
+                             // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
+                             // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
+                             // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                             // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
+                             // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
+                             //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                          }else {
+                            this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+                            //this.Cmp.fecha_deposito.reset();
+                            //this.Cmp.nro_deposito.reset();
+                            //this.Cmp.monto_deposito.setValue(0);
+                            //this.Cmp.monto_forma_pago.setValue(0);
+                          }
+
+                          /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+                          this.obtenersuma();
+                          this.devolverCambio();
+
+
+         					},
+         					failure: this.conexionFailure,
+         					timeout:this.timeout,
+         					scope:this
+         			});
+               }
+              },this);
+          // this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+          // this.Cmp.codigo_tarjeta.allowBlank = false;
+          // this.Cmp.tipo_tarjeta.allowBlank = false;
+          // this.Cmp.mco.allowBlank = true;
+        /*********************************************/
+
+        } else {
+          this.Cmp.codigo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta.reset();
+          this.Cmp.id_auxiliar.reset();
+          this.Cmp.mco.reset();
+          this.Cmp.numero_tarjeta.reset();
+        }
+
+      },this);
+
+      this.Cmp.id_instancia_pago_2.on('select',function(c,r,i) {
+        var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+        this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
+        if (codigo_forma_pago == 'CC') {
+          this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
+          this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
+          this.mostrarComponente(this.Cmp.numero_tarjeta_2);
+          this.ocultarComponente(this.Cmp.id_auxiliar_2);
+          this.ocultarComponente(this.Cmp.mco_2);
+          this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
+          this.Cmp.codigo_tarjeta_2.allowBlank = false;
+          this.Cmp.tipo_tarjeta_2.allowBlank = false;
+          this.Cmp.mco_2.allowBlank = true;
+        } else if (codigo_forma_pago == 'MC') {
+          this.mostrarComponente(this.Cmp.mco_2);
+          this.Cmp.numero_tarjeta_2.allowBlank = true;
+          this.Cmp.codigo_tarjeta_2.allowBlank = true;
+          this.Cmp.tipo_tarjeta_2.allowBlank = true;
+          this.Cmp.mco_2.allowBlank = false;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.id_auxiliar_2);
+          this.Cmp.codigo_tarjeta_2.reset();
+          this.Cmp.tipo_tarjeta_2.reset();
+          this.Cmp.id_auxiliar_2.reset();
+          this.Cmp.numero_tarjeta_2.reset();
+        } else if (codigo_forma_pago == 'CU') {
+          this.mostrarComponente(this.Cmp.id_auxiliar_2);
+          this.Cmp.numero_tarjeta_2.allowBlank = true;
+          this.Cmp.codigo_tarjeta_2.allowBlank = true;
+          this.Cmp.tipo_tarjeta_2.allowBlank = true;
+          this.Cmp.mco_2.allowBlank = true;
+          this.Cmp.id_auxiliar_2.allowBlank = false;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+          this.Cmp.codigo_tarjeta_2.reset();
+          this.Cmp.tipo_tarjeta_2.reset();
+          this.Cmp.id_auxiliar_2.reset();
+          this.Cmp.mco_2.reset();
+          this.Cmp.numero_tarjeta_2.reset();
+        }else if (codigo_forma_pago == 'CA') {
+          this.mostrarComponente(this.Cmp.id_auxiliar_2);
+          this.Cmp.numero_tarjeta_2.allowBlank = true;
+          this.Cmp.codigo_tarjeta_2.allowBlank = true;
+          this.Cmp.tipo_tarjeta_2.allowBlank = true;
+          this.Cmp.id_auxiliar_2.allowBlank = true;
+          this.Cmp.mco_2.allowBlank = true;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+          this.ocultarComponente(this.Cmp.id_auxiliar_2);
+          this.ocultarComponente(this.Cmp.mco_2);
+          this.Cmp.codigo_tarjeta_2.reset();
+          this.Cmp.tipo_tarjeta_2.reset();
+          this.Cmp.id_auxiliar_2.reset();
+          this.Cmp.mco_2.reset();
+          this.Cmp.numero_tarjeta_2.reset();
+        } else {
+          this.Cmp.codigo_tarjeta_2.reset();
+          this.Cmp.tipo_tarjeta_2.reset();
+          this.Cmp.id_auxiliar_2.reset();
+          this.Cmp.mco_2.reset();
+          this.Cmp.numero_tarjeta_2.reset();
+        }
+
+        if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2) {
+           if (this.id_moneda_recibo_cambio == 2) {
+             this.Cmp.monto_forma_pago_2.setValue(((this.suma_total*this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
+           } else {
+             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
+           }
+        }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value == 2) {
+          if (this.id_moneda_recibo_cambio == 2) {
+             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
+          } else {
+             this.Cmp.monto_forma_pago_2.setValue(((this.suma_total/this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue()));
+           }
+        }else if (this.Cmp.id_moneda.value == 2 && this.Cmp.id_moneda_2.value != 2) {
+          if (this.id_moneda_recibo_cambio == 2) {
+             this.Cmp.monto_forma_pago_2.setValue(((this.suma_total-this.Cmp.monto_forma_pago.getValue())*this.tipo_cambio));
+          } else {
+             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)));
+           }
+        }
+        else{
+            this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+        }
+
+
+      },this);
+      /************************************Fin agregar instancia de pago***************************************/
+
+    },
+
 
     onSubmit: function(o) {
         //  validar formularios

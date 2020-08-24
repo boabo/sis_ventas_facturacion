@@ -347,6 +347,11 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('hora_estimada_entrega','hora_estimada_entrega','varchar');
 			$this->setParametro('forma_pedido','forma_pedido','varchar');
 
+			/*Aumentando mejora para facturacion enviar correo y registrar el tipo de formato emitido*/
+			$this->setParametro('formato_factura','formato_factura','varchar');
+			$this->setParametro('enviar_correo','enviar_correo','varchar');
+			$this->setParametro('correo_electronico','correo_electronico','varchar');
+			/****************************************************************************************/
 
             //Ejecuta la instruccion
             $this->armarConsulta();
@@ -870,6 +875,41 @@ class MODVentaFacturacion extends MODbase{
 		}
 		/***************************************************************************/
 
+		function ObtenerCuentaBancaria(){
+				//Definicion de variables para ejecucion del procedimientp
+				$this->procedimiento='vef.ft_venta_facturacion_ime';
+				$this->transaccion='VF_CUENBANDEP_IME';
+				$this->tipo_procedimiento='IME';//tipo de transaccion
+
+				$this->setParametro('id_punto_venta','id_punto_venta','integer');
+				$this->setParametro('id_sucursal','id_sucursal','integer');
+				$this->setParametro('id_moneda','id_moneda','integer');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+		}
+
+		function verificarDeposito(){
+				//Definicion de variables para ejecucion del procedimientp
+				$this->procedimiento='vef.ft_venta_facturacion_ime';
+				$this->transaccion='VF_DEPVERI_IME';
+				$this->tipo_procedimiento='IME';//tipo de transaccion
+
+				$this->setParametro('nro_deposito','nro_deposito','varchar');
+				$this->setParametro('id_moneda','id_moneda','integer');
+				$this->setParametro('fecha','fecha','varchar');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+		}
 
 }
 ?>

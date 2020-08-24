@@ -128,6 +128,18 @@ class ACTVentaFacturacion extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
  }
  /*********************************/
+ /*Aqui recuperamos la cuenta bancaria para los depositos*/
+ function ObtenerCuentaBancaria(){
+		$this->objFunc=$this->create('MODVentaFacturacion');
+		$this->res=$this->objFunc->ObtenerCuentaBancaria($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	function verificarDeposito(){
+ 		$this->objFunc=$this->create('MODVentaFacturacion');
+ 		$this->res=$this->objFunc->verificarDeposito($this->objParam);
+ 		$this->res->imprimirRespuesta($this->res->generarJson());
+ 	}
+	/***********************************************************/
 
 }
 

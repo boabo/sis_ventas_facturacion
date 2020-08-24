@@ -1222,3 +1222,38 @@ CREATE TYPE vef.detalle_venta AS (
   precio NUMERIC(19,2)
 );
 /***********************************F-SCP-IRVA-VEF-0-23/05/2020****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-24/08/2020****************************************/
+ALTER TABLE vef.tventa
+  ADD COLUMN id_deposito INTEGER;
+
+COMMENT ON COLUMN vef.tventa.id_deposito
+IS 'Este campo para obtener la relacion con los depositos';
+
+ALTER TABLE vef.tventa
+  ADD COLUMN formato_factura_emitida VARCHAR(100);
+
+COMMENT ON COLUMN vef.tventa.formato_factura_emitida
+IS 'Almacenamos el formato de la factura con la que se emitio al pasajero';
+
+ALTER TABLE vef.tventa
+  ADD COLUMN enviar_correo VARCHAR(5);
+
+COMMENT ON COLUMN vef.tventa.enviar_correo
+IS 'Si se envio el correo';
+
+ALTER TABLE vef.tventa
+  ADD COLUMN correo_electronico VARCHAR(200);
+
+COMMENT ON COLUMN vef.tventa.correo_electronico
+IS 'Campo para registrar el correo donde se enviara la factura';
+
+ALTER TABLE vef.tventa
+  ADD COLUMN id_moneda_venta_recibo INTEGER;
+
+ALTER TABLE vef.tventa
+  ADD COLUMN id_auxiliar_anticipo INTEGER;
+
+COMMENT ON COLUMN vef.tventa.id_auxiliar_anticipo
+IS 'Auxiliar relacionado al deposito para los conceptos del tipo anticipo';
+/***********************************F-SCP-IRVA-VEF-0-24/08/2020****************************************/

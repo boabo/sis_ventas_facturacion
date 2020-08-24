@@ -77,6 +77,8 @@ class MODCajero extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('informe','text');
 		$this->captura('id_formula','int4');
+		$this->captura('formato_factura_emitida','varchar');
+		$this->captura('correo_electronico','varchar');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion
@@ -355,10 +357,10 @@ class MODCajero extends MODbase{
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		$this->setCount(false);
 
-		$this->setParametro('id_venta','id_venta','integer');
+		// $this->setParametro('id_venta','id_venta','integer');
 		$this->setParametro('id_punto_venta','id_punto_venta','integer');
 		$this->setParametro('tipo_factura','tipo_factura','varchar');
-
+		$this->setParametro('id_proceso_wf','id_proceso_wf','integer');
 
 		//Definicion de la lista del resultado del query
 		$this->captura('nombre_entidad','varchar');
@@ -418,7 +420,7 @@ class MODCajero extends MODbase{
     $this->captura('telefono_cliente','varchar');
     $this->captura('fecha_hora_entrega','varchar');
     $this->captura('a_cuenta','numeric');
-    $this->captura('medico_vendedor','varchar');
+
 
 
     $this->captura('nro_tramite','varchar');
@@ -435,7 +437,10 @@ class MODCajero extends MODbase{
 
 		$this->captura('sucursal','varchar');//nuevo excento
 		$this->captura('desc_sucursal','varchar');
-		$this->captura('desc_lugar','varchar');
+			$this->captura('desc_lugar','varchar');
+			$this->captura('logo','varchar');
+		$this->captura('cuenta_cajero','varchar');
+		$this->captura('id_cuenta','integer');
 
 		//$this->captura('moneda_base','varchar');//nuevo mvm
 		//$this->captura('codigo_moneda','varchar');//nuevo mvm
@@ -459,8 +464,8 @@ class MODCajero extends MODbase{
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		$this->setCount(false);
 
-		$this->setParametro('id_venta','id_venta','integer');
-
+		//$this->setParametro('id_venta','id_venta','integer');
+		$this->setParametro('id_proceso_wf','id_proceso_wf','integer');
 		//Definicion de la lista del resultado del query
 		$this->captura('nombre','varchar');
 		$this->captura('columna','numeric');
@@ -483,8 +488,8 @@ class MODCajero extends MODbase{
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		$this->setCount(false);
 
-		$this->setParametro('id_venta','id_venta','integer');
-
+		//$this->setParametro('id_venta','id_venta','integer');
+		$this->setParametro('id_proceso_wf','id_proceso_wf','integer');
 		//Definicion de la lista del resultado del query
 		$this->captura('concepto','varchar');
 		$this->captura('cantidad','numeric');
@@ -506,7 +511,7 @@ class MODCajero extends MODbase{
 		$this->armarConsulta();
 
 		$this->ejecutarConsulta();
-
+		//var_dump($this->respuesta);
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

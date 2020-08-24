@@ -1126,7 +1126,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_recibo_cta_cte_ml',
-                    fieldLabel: 'Importe Recibos Cuenta Corriente  M/L',
+                    fieldLabel: 'Importe Cta Cte Recibos M/L',
                     allowBlank: true,
                     disabled:false,
                     //anchor: '100%',
@@ -1148,8 +1148,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_mco_recibo_ml',
-                    fieldLabel: 'Importe MCO Recibo M/L',
+                    name: 'monto_deposito_recibo_ml',
+                    fieldLabel: 'Importe Depósito M/L',
                     allowBlank: true,
                     disabled:false,
                     //anchor: '100%',
@@ -1219,7 +1219,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_recibo_cta_cte_me',
-                    fieldLabel: 'Importe Cuenta Corriente Recibos M/E',
+                    fieldLabel: 'Importe Cta Cte Recibos M/E',
                     allowBlank: true,
                     disabled:false,
                     //anchor: '100%',
@@ -1241,8 +1241,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             {
                 config:{
-                    name: 'monto_mco_recibo_me',
-                    fieldLabel: 'Importe MCO Recibo M/E',
+                    name: 'monto_deposito_recibo_me',
+                    fieldLabel: 'Importe Déposito Recibo M/E',
                     allowBlank: true,
                     disabled:false,
                     //anchor: '100%',
@@ -2127,18 +2127,18 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.comisiones_me.setValue(reg.datos[0]['comisiones_me']);
 
                 /**********************Recuperamos el Recibo************************************/
-                var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['mco_recibo_ml']);
-                var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['mco_recibo_me']);
-                console.log("Llega aqui el dato",reg.datos[0]);
+                var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']);
+                var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']);
+
                 this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
                 this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
-                this.Cmp.monto_mco_recibo_ml.setValue(reg.datos[0]['mco_recibo_ml']);
+                this.Cmp.monto_deposito_recibo_ml.setValue(reg.datos[0]['deposito_recibo_ml']);
                 this.Cmp.monto_cc_recibo_cta_cte_ml.setValue(reg.datos[0]['cuenta_corriente_recibo_ml']);
                 this.Cmp.monto_recibo_moneda_base.setValue(total_recibos_ml);
 
                 this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
                 this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_me']);
-                this.Cmp.monto_mco_recibo_me.setValue(reg.datos[0]['mco_recibo_me']);
+                this.Cmp.monto_deposito_recibo_me.setValue(reg.datos[0]['deposito_recibo_me']);
                 this.Cmp.monto_cc_recibo_cta_cte_me.setValue(reg.datos[0]['cuenta_corriente_recibo_me']);
                 this.Cmp.monto_recibo_moneda_extranjera.setValue(total_recibos_me);
                 /****************************************************************************/
@@ -2220,7 +2220,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (oldValue != newValue) {
                     this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
-                    var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                    var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
                     this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
 
                 }
@@ -2228,21 +2228,21 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
                   this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_cta_cte_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
                   this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
                 }
             }, this);
 
-            this.Cmp.monto_mco_recibo_ml.on('change', function (field, newValue, oldValue) {
+            this.Cmp.monto_deposito_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_mco_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
                   this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
                 }
             }, this);
@@ -2251,29 +2251,29 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (oldValue != newValue) {
                     this.Cmp.total_efectivo_me.setValue(this.Cmp.monto_ca_boleto_usd.getValue()+this.Cmp.monto_ca_facturacion_usd.getValue() +newValue);
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
-                    var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                    var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
                     this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_me.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
                   this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_cta_cte_me.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
                   this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
               }, this);
 
 
-            this.Cmp.monto_mco_recibo_me.on('change', function (field, newValue, oldValue) {
+            this.Cmp.monto_deposito_recibo_me.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_mco_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
                   this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
             }, this);

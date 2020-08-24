@@ -118,6 +118,10 @@ $body$
 	v_requiere_excento		varchar;
     v_excento_req			varchar;
     v_codigo_fp				varchar;
+    v_id_apertura_cierre_caja	integer;
+    v_id_deposito			integer;
+    v_monto_venta					numeric;
+    v_suma_det_total		numeric;
 
   BEGIN
 
@@ -193,6 +197,7 @@ $body$
           from vef.tsucursal pv
           where id_sucursal = v_parametros.id_sucursal;
         end if;
+
 
         if (pxp.f_existe_parametro(p_tabla,'id_moneda')) then
           v_id_moneda_venta = v_parametros.id_moneda;
@@ -275,20 +280,20 @@ $body$
         if (pxp.f_existe_parametro(p_tabla,'id_punto_venta')) then
           v_id_punto_venta = v_parametros.id_punto_venta;
 
-          if (exists(	select 1
+          if (exists(  select 1
                        from vef.tapertura_cierre_caja acc
                        where acc.fecha_apertura_cierre = v_fecha and
                              acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
-                             acc.id_punto_venta = v_parametros.id_punto_venta)) then
+                             acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
           end if;
 
 
-          if (not exists(	select 1
+          if (not exists(  select 1
                            from vef.tapertura_cierre_caja acc
                            where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
-                                 acc.id_punto_venta = v_parametros.id_punto_venta)) then
+                                 acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
           end if;
 
@@ -299,7 +304,7 @@ $body$
                        from vef.tapertura_cierre_caja acc
                        where acc.fecha_apertura_cierre = v_fecha and
                              acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
-                             acc.id_sucursal = v_parametros.id_sucursal)) then
+                             acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
           end if;
 
@@ -308,7 +313,7 @@ $body$
                            from vef.tapertura_cierre_caja acc
                            where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
-                                 acc.id_sucursal = v_parametros.id_sucursal)) then
+                                 acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
           end if;
 
@@ -578,7 +583,9 @@ end if;
           id_cliente_destino,
           hora_estimada_entrega,
           tiene_formula,
-          forma_pedido
+          forma_pedido,
+          id_moneda_venta_recibo,
+          id_auxiliar_anticipo
 
 
         ) values(
@@ -626,10 +633,60 @@ end if;
           v_id_cliente_destino,
           v_hora_estimada_entrega,
           v_tiene_formula,
-          v_forma_pedido
-
+          v_forma_pedido,
+          v_parametros.id_moneda_venta_recibo,
+	      v_parametros.id_auxiliar_anticipo
 
         ) returning id_venta into v_id_venta;
+
+
+         /*Aqui aumentaremos la condcion para registrar los depositos*/
+        if (pxp.f_existe_parametro(p_tabla,'nro_deposito')) then
+            IF (v_parametros.nro_deposito != '') then
+                 select acc.id_apertura_cierre_caja into v_id_apertura_cierre_caja
+                 from vef.tapertura_cierre_caja acc
+                 where acc.fecha_apertura_cierre = v_fecha and
+                       acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                       acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario;
+            	 insert into obingresos.tdeposito(
+                              id_usuario_reg,
+                              fecha_reg,
+                              estado_reg,
+                              nro_deposito,
+                              monto_deposito,
+                              fecha,
+                              tipo,
+                              monto_total,
+                              estado,
+                              id_moneda_deposito,
+                              id_apertura_cierre_caja
+                            ) values(
+                              p_id_usuario,
+                              now(),
+                              'activo',
+                              v_parametros.nro_deposito,
+                              v_parametros.monto_deposito,
+                              v_parametros.fecha_deposito::date,
+                              'venta_propia',
+                              v_parametros.monto_deposito,
+                              'borrador',
+                              v_parametros.id_moneda,
+                              v_id_apertura_cierre_caja
+                            )returning id_deposito into v_id_deposito;
+
+                update vef.tventa set
+                id_deposito = v_id_deposito
+                where id_venta = v_id_venta;
+
+
+            end if;
+            /********************************************************/
+
+        end if;
+        /************************************************************/
+
+
+
 
 		/*Aumentamos la instancia de pago por el id_forma_pago*/
         --if (v_parametros.id_forma_pago != 0 ) then
@@ -1264,11 +1321,22 @@ end if;
         where id_venta = v_parametros.id_venta;
 
         --si es venta de exportacion operamos con la moneda especificada por el usuario
-        IF  v_venta.tipo_factura in ('computarizadaexpo','computarizadaexpomin') THEN
+        IF  v_venta.tipo_factura in ('computarizadaexpomin') THEN
           v_id_moneda_venta = v_venta.id_moneda;
         ELSE
           v_id_moneda_venta = v_venta.id_moneda_base;
         END IF;
+
+        /*Aqui recuperamos el monto de la venta convertido a la moneda local*/
+
+        if (v_venta.id_moneda_venta_recibo = 2) then
+        	v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+        else
+        	v_monto_venta = v_venta.total_venta;
+        end if;
+
+        /********************************************************************/
+
 
         v_id_moneda_suc = v_venta.id_moneda_base;
 
@@ -1355,12 +1423,25 @@ end if;
                                           from vef.tventa_forma_pago vfp
                                             inner join vef.tforma_pago fp on fp.id_forma_pago = vfp.id_forma_pago
                                           where vfp.id_venta = v_parametros.id_venta)loop */
+
+
           	 for v_registros in (select vfp.id_venta_forma_pago, vfp.id_moneda,vfp.monto_transaccion
                               from vef.tventa_forma_pago vfp
                               where vfp.id_venta = v_parametros.id_venta)loop
             --si la moneda de la forma de pago es distinta a al moneda base de la sucursal convertimos a moneda base
 
-             if (v_registros.id_moneda != v_id_moneda_venta) then
+            /*Aqui aumentamos para hacer el tipo de cambio de las formas de pago*/
+            if (v_registros.id_moneda = 2) then
+			 /*Convertimos a Bs*/
+             v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, NULL,'si');
+            else
+             /*si es Bs mantenemos a Bs*/
+             v_monto_fp = v_registros.monto_transaccion;
+            end if;
+            /**********************************************/
+
+            /*Comentamos esta parte para probar*/
+            /* if (v_registros.id_moneda != v_id_moneda_venta) then
               IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
               	v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
               ELSE
@@ -1368,33 +1449,23 @@ end if;
               END IF;
             else
               v_monto_fp = v_registros.monto_transaccion;
-            end if;
-
-            /*if (v_registros.id_moneda != v_id_moneda_venta) then
-
-              IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
-                v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
-              ELSE
-                v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'O',2,NULL,'si');
-              END IF;
-            else
-              v_monto_fp = v_registros.monto_transaccion;
             end if;*/
 
+
             --si el monto de una d elas formas de pago es mayor q el total de la venta y la cantidad de formas de pago es mayor a 1 lanzo excepcion
-            if (v_monto_fp >= v_venta.total_venta and v_cantidad_fp > 1) then
+            if (v_monto_fp >= v_monto_venta/*v_venta.total_venta*/ and v_cantidad_fp > 1) then
               raise exception 'Se ha definido mas de una forma de pago, pero existe una que supera el valor de la venta(solo se requiere una forma de pago)';
             end if;
 
             update vef.tventa_forma_pago set
               monto = v_monto_fp,
-              cambio = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
-                (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
+              cambio = (case when (v_monto_fp + v_acumulado_fp - v_monto_venta/*v_venta.total_venta*/) > 0 then
+                (v_monto_fp + v_acumulado_fp - v_monto_venta/*v_venta.total_venta*/)
                         else
                           0
                         end),
-              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
-                v_monto_fp - (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
+              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_monto_venta/*v_venta.total_venta*/) > 0 then
+                v_monto_fp - (v_monto_fp + v_acumulado_fp - v_monto_venta/*v_venta.total_venta*/)
                                    else
                                      v_monto_fp
                                    end)
@@ -1406,24 +1477,33 @@ end if;
           from vef.tventa_forma_pago
           where id_venta =   v_parametros.id_venta;
 
+          /*Aqui pondremos la condicion para hacer la conversion*/
           select sum(round(cantidad*precio,2)) into v_suma_det
           from vef.tventa_detalle
           where id_venta =   v_parametros.id_venta;
+
+          if (v_venta.id_moneda_venta_recibo = 2) then
+              v_suma_det_total = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_suma_det,v_venta.fecha::date,'CUS',2, NULL,'si');
+          else
+              v_suma_det_total = v_suma_det;
+          end if;
+          /******************************************************/
+
 
           IF v_parametros.tipo_factura != 'computarizadaexpo' THEN
             v_suma_det = COALESCE(v_suma_det,0) + COALESCE(v_venta.transporte_fob ,0)  + COALESCE(v_venta.seguros_fob ,0)+ COALESCE(v_venta.otros_fob ,0) + COALESCE(v_venta.transporte_cif ,0) +  COALESCE(v_venta.seguros_cif ,0) + COALESCE(v_venta.otros_cif ,0);
           END IF;
 
-          if (v_suma_fp < v_venta.total_venta) then
-            raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
+          if (v_suma_fp < v_monto_venta/*v_venta.total_venta*/) then
+            raise exception 'El importe recibido es menor al valor de la venta, falta %', v_monto_venta - v_suma_fp;
           end if;
 
-          if (v_suma_fp > v_venta.total_venta) then
+          if (v_suma_fp > v_monto_venta/*v_venta.total_venta*/) then
             raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
           end if;
 
-          if (v_suma_det != v_venta.total_venta) then
-            raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',v_suma_det ,v_venta.total_venta, v_parametros.id_venta;
+          if (/*v_suma_det*/v_suma_det_total != v_monto_venta/*v_venta.total_venta*/) then
+            raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',/*v_suma_det*/v_suma_det_total ,v_monto_venta/*v_venta.total_venta*/, v_parametros.id_venta;
           end if;
         end if;
 
@@ -1591,9 +1671,7 @@ end if;
         		v_id_estado_wf
         from vef.tventa ven
         where ven.id_venta = v_parametros.id_venta;
-
         /***************************************************************************************/
-
 
 
         --Definicion de la respuesta

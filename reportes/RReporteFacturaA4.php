@@ -13,7 +13,7 @@ class RReporteFacturaA4 extends  ReportePDF{
 
         $this->SetMargins(11,60,5);
         $this->SetFont('','B',14);
-        $this->Image(dirname(__FILE__).'/../../lib/imagenes/logos/LOGOBN.jpg',22,7,40,20);
+        $this->Image($this->datos[0]['logo'],22,6,40,20);
         $this->SetXY(55,15);
 		    $y_cab=$this->GetY();
 
@@ -144,6 +144,7 @@ class RReporteFacturaA4 extends  ReportePDF{
 
     function  generarReporte()
     {
+      
 
       $this->AddPage();
       //$this->AliasNbPages();

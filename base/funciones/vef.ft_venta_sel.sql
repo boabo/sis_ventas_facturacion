@@ -714,8 +714,10 @@ BEGIN
 
             (select pto_ven.codigo
             from vef.tpunto_venta pto_ven
-            where pto_ven.id_punto_venta = '||v_parametros.id_punto_venta::varchar||')::varchar as codigo_iata
+            where pto_ven.id_punto_venta = '||v_parametros.id_punto_venta::varchar||')::varchar as codigo_iata,
 
+            moneda.codigo::varchar as codigo_moneda_recibo,
+			moneda.moneda::varchar as moneda_literal
             /***********************************/
 
             from vef.tventa ven
@@ -730,7 +732,8 @@ BEGIN
               inner join param.tmoneda mon on mon.id_moneda = sucmon.id_moneda
               inner join param.tmoneda mven on mven.id_moneda = ven.id_moneda
               left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-                        left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
+              left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
+              inner join param.tmoneda moneda on moneda.id_moneda = ven.id_moneda_venta_recibo
              where  id_venta = '||v_parametros.id_venta::varchar;
 
 

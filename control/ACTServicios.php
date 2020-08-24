@@ -14,6 +14,14 @@ class ACTServicios extends ACTbase{
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 
+		/*Aumentando para filtrar solo los conceptos que seran para Recibos Oficiales (Ismael Valdivia 14/07/2020)*/
+		if($this->objParam->getParametro('facturacion')!=''){
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
+		}
+		/**************************************************************************************************************/
+
+
+
 		/*Listamos los conceptos de acuerdo al tipo seleccionado para los paquetes (Ismael Valdivia)*/
 		if($this->objParam->getParametro('tipo_serv') != '') {
 			$this->objParam->addFiltro("(ingas.movimiento = ''ingreso'' or ingas.movimiento = ''recurso'' ) and
@@ -59,7 +67,7 @@ class ACTServicios extends ACTbase{
 		if($this->objParam->getParametro('servicios_productos') == 'SI') {
 			if ($this->objParam->getParametro('tipo_serv') != '') {
 					$this->objParam->addFiltro("ser.tipo = ''".$this->objParam->getParametro('tipo_serv')."''");
-			}		
+			}
 		}
 		/***************************************************************************************************************/
 

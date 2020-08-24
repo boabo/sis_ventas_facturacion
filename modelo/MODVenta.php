@@ -235,59 +235,68 @@ class MODVenta extends MODbase{
 
             //Define los parametros para la funcion
             $this->setParametro('id_cliente','id_cliente','varchar');
-			$this->setParametro('nit','nit','varchar');
+						$this->setParametro('nit','nit','varchar');
             $this->setParametro('id_sucursal','id_sucursal','int4');
             $this->setParametro('nro_tramite','nro_tramite','varchar');
             $this->setParametro('a_cuenta','a_cuenta','numeric');
             $this->setParametro('total_venta','total_venta','numeric');
             $this->setParametro('fecha_estimada_entrega','fecha_estimada_entrega','date');
-			$this->setParametro('id_punto_venta','id_punto_venta','int4');
-			$this->setParametro('id_forma_pago','id_forma_pago','int4');
-			$this->setParametro('id_forma_pago_2','id_forma_pago_2','int4');
-			/*Aumentando la instancia de pago*/
-			$this->setParametro('id_instancia_pago','id_instancia_pago','int4');
-			$this->setParametro('id_instancia_pago_2','id_instancia_pago_2','int4');
-			$this->setParametro('id_moneda_2','id_moneda_2','int4');
-			/********************************/
-			$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
-			$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
-			$this->setParametro('mco','mco','varchar');
-			$this->setParametro('mco_2','mco_2','varchar');
-			$this->setParametro('id_auxiliar','id_auxiliar','integer');
-			$this->setParametro('id_auxiliar_2','id_auxiliar_2','integer');
+						$this->setParametro('id_punto_venta','id_punto_venta','int4');
+						$this->setParametro('id_forma_pago','id_forma_pago','int4');
+						$this->setParametro('id_forma_pago_2','id_forma_pago_2','int4');
+						/*Aumentando la instancia de pago*/
+						$this->setParametro('id_instancia_pago','id_instancia_pago','int4');
+						$this->setParametro('id_instancia_pago_2','id_instancia_pago_2','int4');
+						$this->setParametro('id_moneda_2','id_moneda_2','int4');
+						/********************************/
+						$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
+						$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
+						$this->setParametro('mco','mco','varchar');
+						$this->setParametro('mco_2','mco_2','varchar');
+						$this->setParametro('id_auxiliar','id_auxiliar','integer');
+						$this->setParametro('id_auxiliar_2','id_auxiliar_2','integer');
 
-			$this->setParametro('numero_tarjeta_2','numero_tarjeta_2','varchar');
-			$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
-			$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar');
-			$this->setParametro('codigo_tarjeta_2','codigo_tarjeta_2','varchar');
-			$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar');
-			$this->setParametro('tipo_tarjeta_2','tipo_tarjeta_2','varchar');
+						$this->setParametro('numero_tarjeta_2','numero_tarjeta_2','varchar');
+						$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
+						$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar');
+						$this->setParametro('codigo_tarjeta_2','codigo_tarjeta_2','varchar');
+						$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar');
+						$this->setParametro('tipo_tarjeta_2','tipo_tarjeta_2','varchar');
             $this->setParametro('porcentaje_descuento','porcentaje_descuento','integer');
             $this->setParametro('id_vendedor_medico','id_vendedor_medico','varchar');
-			$this->setParametro('comision','comision','numeric');
-			$this->setParametro('observaciones','observaciones','text');
+						$this->setParametro('comision','comision','numeric');
+						$this->setParametro('observaciones','observaciones','text');
 
-			$this->setParametro('tipo_factura','tipo_factura','varchar');
-			$this->setParametro('fecha','fecha','date');
+						$this->setParametro('tipo_factura','tipo_factura','varchar');
+						$this->setParametro('fecha','fecha','date');
             $this->setParametro('nro_factura','nro_factura','varchar');
-			$this->setParametro('id_dosificacion','id_dosificacion','integer');
-			$this->setParametro('excento','excento','numeric');
+						$this->setParametro('id_dosificacion','id_dosificacion','integer');
+						$this->setParametro('excento','excento','numeric');
 
-			$this->setParametro('id_moneda','id_moneda','int4');
-			$this->setParametro('tipo_cambio_venta','tipo_cambio_venta','numeric');
-			$this->setParametro('total_venta_msuc','total_venta_msuc','numeric');
-			$this->setParametro('transporte_fob','transporte_fob','numeric');
-			$this->setParametro('seguros_fob','seguros_fob','numeric');
-			$this->setParametro('otros_fob','otros_fob','numeric');
-			$this->setParametro('transporte_cif','transporte_cif','numeric');
-			$this->setParametro('seguros_cif','seguros_cif','numeric');
-			$this->setParametro('otros_cif','otros_cif','numeric');
-			$this->setParametro('valor_bruto','valor_bruto','numeric');
-			$this->setParametro('descripcion_bulto','descripcion_bulto','varchar');
-			$this->setParametro('id_cliente_destino','id_cliente_destino','varchar');
-			$this->setParametro('hora_estimada_entrega','hora_estimada_entrega','varchar');
-			$this->setParametro('forma_pedido','forma_pedido','varchar');
-
+						$this->setParametro('id_moneda','id_moneda','int4');
+						$this->setParametro('tipo_cambio_venta','tipo_cambio_venta','numeric');
+						$this->setParametro('total_venta_msuc','total_venta_msuc','numeric');
+						$this->setParametro('transporte_fob','transporte_fob','numeric');
+						$this->setParametro('seguros_fob','seguros_fob','numeric');
+						$this->setParametro('otros_fob','otros_fob','numeric');
+						$this->setParametro('transporte_cif','transporte_cif','numeric');
+						$this->setParametro('seguros_cif','seguros_cif','numeric');
+						$this->setParametro('otros_cif','otros_cif','numeric');
+						$this->setParametro('valor_bruto','valor_bruto','numeric');
+						$this->setParametro('descripcion_bulto','descripcion_bulto','varchar');
+						$this->setParametro('id_cliente_destino','id_cliente_destino','varchar');
+						$this->setParametro('hora_estimada_entrega','hora_estimada_entrega','varchar');
+						$this->setParametro('forma_pedido','forma_pedido','varchar');
+						/*Aumentando para registrar el deposito*/
+						$this->setParametro('id_deposito', 'id_deposito', 'integer');
+						$this->setParametro('nro_deposito', 'nro_deposito', 'varchar');
+						$this->setParametro('monto_deposito', 'monto_deposito', 'numeric');
+						$this->setParametro('fecha_deposito', 'fecha_deposito', 'varchar');
+						/***************************************/
+						/*********Mandamos la moneda del recibo (18/08/2020 Ismael Valdivia)********/
+						$this->setParametro('id_moneda_venta_recibo', 'id_moneda_venta_recibo', 'integer');
+						$this->setParametro('id_auxiliar_anticipo', 'id_auxiliar_anticipo', 'integer');
+						/***********************************************************************************/
 
             //Ejecuta la instruccion
             $this->armarConsulta();
@@ -310,7 +319,6 @@ class MODVenta extends MODbase{
 
             //var_dump($json_detalle)   ;
             foreach($json_detalle as $f){
-
                 $this->resetParametros();
                 //Definicion de variables para ejecucion del procedimiento
                 $this->procedimiento='vef.ft_venta_detalle_ime';
@@ -327,13 +335,13 @@ class MODVenta extends MODbase{
                 $this->arreglo['sw_porcentaje_formula'] = $f['sw_porcentaje_formula'];
                 $this->arreglo['porcentaje_descuento'] = $f['porcentaje_descuento'];
                 $this->arreglo['id_vendedor_medico'] = $f['id_vendedor_medico'];
-				$this->arreglo['descripcion'] = $f['descripcion'];
+								$this->arreglo['descripcion'] = $f['descripcion'];
                 $this->arreglo['id_venta'] = $id_venta;
 
-				$this->arreglo['bruto'] = $f['bruto'];
-				$this->arreglo['ley'] = $f['ley'];
-				$this->arreglo['kg_fino'] = $f['kg_fino'];
-				$this->arreglo['id_unidad_medida'] = $f['id_unidad_medida'];
+								$this->arreglo['bruto'] = $f['bruto'];
+								$this->arreglo['ley'] = $f['ley'];
+								$this->arreglo['kg_fino'] = $f['kg_fino'];
+								$this->arreglo['id_unidad_medida'] = $f['id_unidad_medida'];
 
                 //Define los parametros para la funcion
                 $this->setParametro('id_venta','id_venta','int4');
@@ -347,12 +355,12 @@ class MODVenta extends MODbase{
                 $this->setParametro('sw_porcentaje_formula','sw_porcentaje_formula','varchar');
                 $this->setParametro('porcentaje_descuento','porcentaje_descuento','int4');
                 $this->setParametro('id_vendedor_medico','id_vendedor_medico','varchar');
-				$this->setParametro('descripcion','descripcion','text');
-				$this->setParametro('id_unidad_medida','id_unidad_medida','int4');
-				$this->setParametro('bruto','bruto','varchar');
-				$this->setParametro('ley','ley','varchar');
-				$this->setParametro('kg_fino','kg_fino','varchar');
-				$this->setParametro('tipo_factura','tipo_factura','varchar');
+								$this->setParametro('descripcion','descripcion','text');
+								$this->setParametro('id_unidad_medida','id_unidad_medida','int4');
+								$this->setParametro('bruto','bruto','varchar');
+								$this->setParametro('ley','ley','varchar');
+								$this->setParametro('kg_fino','kg_fino','varchar');
+								$this->setParametro('tipo_factura','tipo_factura','varchar');
 
                 //Ejecuta la instruccion
                 $this->armarConsulta();
@@ -422,6 +430,7 @@ class MODVenta extends MODbase{
 				$this->setParametro('id_venta', 'id_venta', 'int4');
 				$this->setParametro('tipo_factura', 'tipo_factura', 'varchar');
 				$this->setParametro('tipo', 'tipo', 'varchar');
+
 				//Ejecuta la instruccion
 				$this->armarConsulta();
 				$stmt = $link->prepare($this->consulta);
@@ -1096,6 +1105,8 @@ class MODVenta extends MODbase{
 		$this->captura('fecha_ingles','varchar');//nuevo mvm
 		$this->captura('forma_pago','varchar');//nuevo mvm
 		$this->captura('codigo_iata','varchar');//nuevo mvm
+		$this->captura('codigo_moneda_recibo','varchar');//nuevo mvm
+		$this->captura('moneda_literal','varchar');//nuevo mvm
 
         //Ejecuta la instruccion
 		$this->armarConsulta();

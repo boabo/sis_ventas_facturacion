@@ -241,6 +241,8 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 					            closeAction: 'close'
 					        });
 					      VentanaInicio.show();
+								VentanaInicio.mask.dom.style.background='black';
+								VentanaInicio.body.dom.childNodes[0].firstChild.firstChild.style.background='#6EC8E3';
 					      VentanaInicio.on('beforeclose', function (){
 					      	if (!validado) {
 					      		alert('Debe seleccionar el punto de venta o sucursal de trabajo');
@@ -692,7 +694,7 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
     openForm : function (tipo, record) {
     	var me = this;
            me.objSolForm = Phx.CP.loadWindows(this.formUrl,
-                                    '<div style="height:30px;"><img src="../../../lib/imagenes/logos/boa_mini_logo.png" style="position:absolute;"><h1 style="font-size:20px; text-align:center;">Recibo Oficial</h1></div>',
+                                    '<center><img src="../../../lib/imagenes/facturacion/ReciboIcon.png" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> RECIBO OFICIAL</span></center>',
                                     {
                                         modal:true,
                                         width:'100%',
@@ -728,7 +730,43 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 
     onButtonNew : function () {
         //abrir formulario de solicitud
-        this.openForm('new');
+				Ext.Ajax.request({
+						url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
+						params:{
+							id_punto_venta:this.variables_globales.id_punto_venta,
+							id_sucursal:this.variables_globales.id_sucursal
+						},
+						success: function(resp){
+								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+								// this.aperturaText = reg.ROOT.datos.v_apertura;
+								if (reg.ROOT.datos.v_apertura == 'SIN APERTURA DE CAJA') {
+									Ext.Msg.show({
+											title: 'Alerta',
+											msg: '<p>Estimado Usuario debe aperturar una caja para proceder con las ventas.</p>',
+											buttons: Ext.Msg.OK,
+											width: 512,
+											icon: Ext.Msg.INFO
+									});
+								} else if (reg.ROOT.datos.v_apertura == 'cerrado') {
+									Ext.Msg.show({
+											title: 'Alerta',
+											msg: '<p>Estimado Usuario la apertura de caja esta actualmente cerrada.</p>',
+											buttons: Ext.Msg.OK,
+											width: 512,
+											icon: Ext.Msg.INFO
+									});
+								} else if (reg.ROOT.datos.v_apertura == 'abierto') {
+									  this.openForm('new');
+								}
+
+						},
+						failure: this.conexionFailure,
+						timeout:this.timeout,
+						scope:this
+				});
+
+
+        //this.openForm('new');
     },
 
     onButtonEdit : function () {
@@ -743,9 +781,7 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
     sigEstado:function(){
       //var rec=this.sm.getSelected();
 			Phx.CP.loadingShow();
-			var d = this.sm.getSelected().data;
-			console.log('DATOS:',d);
-			console.log('DATOS 2222:',this);
+			var d = this.sm.getSelected().data;			
 			//d.estado = 'cargado';
 			Ext.Ajax.request({
 					url:'../../sis_ventas_facturacion/control/Venta/siguienteEstadoRecibo',

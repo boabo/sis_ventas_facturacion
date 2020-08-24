@@ -147,9 +147,23 @@ DECLARE
     v_datos_anteriores record;
     v_datos_anteriores_2 record;
     v_existencia_fp2	integer;
-
-    v_id_apertura_cierre		integer;
+    v_id_apertura_cierre			integer;
     v_punto_venta				varchar;
+
+    /*Recuperamos para cuenta bancaria*/
+    v_nro_cuenta	varchar;
+	v_denominacion	varchar;
+    v_id_cuenta_bancaria integer;
+    v_cantidad_deposito  integer;
+    v_id_deposito		integer;
+    v_nro_deposito		varchar;
+    v_fecha_deposito	varchar;
+    v_monto_deposito	numeric;
+    v_formato_factura	varchar;
+    v_enviar_correo		varchar;
+    v_correo_electronico	varchar;
+
+
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -457,6 +471,7 @@ BEGIN
               NULL,
               NULL,
               v_codigo_proceso);
+
 		/****************************************************************************************************************************/
           if (pxp.f_existe_parametro(p_tabla,'transporte_fob')) then
             v_transporte_fob = v_parametros.transporte_fob;
@@ -800,16 +815,16 @@ BEGIN
 			--raise exception 'llega aqui punto_venta:%. sucursal:%.',v_parametros.id_punto_venta,v_parametros.id_sucursal;
             v_fecha = now ()::date;
 
-            if (v_parametros.id_punto_venta = '0' and v_parametros.id_sucursal = '0') then
-            
-                	select acc.id_punto_venta, pv.nombre
-                    	into v_id_apertura_cierre, v_punto_venta
-                    from vef.tapertura_cierre_caja acc
-                    inner join vef.tpunto_venta pv on pv.id_punto_venta = acc.id_punto_venta
-                    where acc.fecha_apertura_cierre = v_fecha and
-                    acc.estado_reg = 'activo' and
-                    acc.id_usuario_reg = p_id_usuario
-                    and acc.estado = 'abierto';
+
+    		if (v_parametros.id_punto_venta = '0' and v_parametros.id_sucursal = '0') then
+            	select acc.id_punto_venta, pv.nombre
+                	into v_id_apertura_cierre, v_punto_venta
+                from vef.tapertura_cierre_caja acc
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = acc.id_punto_venta
+                where acc.fecha_apertura_cierre = v_fecha and
+                acc.estado_reg = 'activo' and
+                acc.id_usuario_cajero = p_id_usuario
+                and acc.estado = 'abierto';
 
             elsif (v_parametros.id_punto_venta is not null) then
 
@@ -817,7 +832,7 @@ BEGIN
                 from vef.tapertura_cierre_caja acc
                 where acc.fecha_apertura_cierre = v_fecha and
                 acc.estado_reg = 'activo' and
-                acc.id_usuario_reg = p_id_usuario and
+                acc.id_usuario_cajero = p_id_usuario and
                 acc.id_punto_venta = v_parametros.id_punto_venta::integer;
 
                 	if (v_apertura is null or v_apertura = '') then
@@ -837,7 +852,7 @@ BEGIN
                 from vef.tapertura_cierre_caja acc
                 where acc.fecha_apertura_cierre = v_fecha and
                 acc.estado_reg = 'activo' and
-                acc.id_usuario_reg = p_id_usuario and
+                acc.id_usuario_cajero = p_id_usuario and
                 acc.id_sucursal = v_parametros.id_sucursal::integer;
 
                 	if (v_apertura is null or v_apertura = '') then
@@ -1658,20 +1673,40 @@ BEGIN
         end if;
 
 
-   if (v_tipo_factura = 'recibo') then
-     -- obtener correlativo
-            v_nro_factura =   param.f_obtener_correlativo(
-                'RECI', --codigo documento
-                         NULL,-- par_id,
-                        NULL, --id_uo
-                        1, --depto
-                        1, --usuario
-                        'VEF', --codigo depto
-                        NULL,--formato
-                        1); --id_empresa
+         if (v_tipo_factura = 'recibo') then
+           -- obtener correlativo
+                  v_nro_factura =   param.f_obtener_correlativo(
+                      'RECI', --codigo documento
+                               NULL,-- par_id,
+                              NULL, --id_uo
+                              1, --depto
+                              1, --usuario
+                              'VEF', --codigo depto
+                              NULL,--formato
+                              1); --id_empresa
 
-            --fin obtener correlativo
-end if;
+                  --fin obtener correlativo
+          end if;
+
+        /*Poniendo la condicion de facturacion*/
+        if (pxp.f_existe_parametro(p_tabla,'formato_factura')) then
+        	v_formato_factura = v_parametros.formato_factura;
+        else
+        	v_formato_factura = null;
+        end if;
+
+        if (pxp.f_existe_parametro(p_tabla,'enviar_correo')) then
+        	v_enviar_correo = v_parametros.enviar_correo;
+        else
+        	v_enviar_correo = null;
+        end if;
+
+        if (pxp.f_existe_parametro(p_tabla,'correo_electronico')) then
+        	v_correo_electronico = v_parametros.correo_electronico;
+        else
+        	v_correo_electronico = null;
+        end if;
+        /**************************************/
 
         --Sentencia de la insercion
         insert into vef.tventa(
@@ -1720,9 +1755,12 @@ end if;
           tiene_formula,
           forma_pedido,
           informe,
-          anulado
-
-
+          anulado,
+          /*Aumentando para registrar nuevos campos*/
+          formato_factura_emitida,
+          enviar_correo,
+          correo_electronico
+          /*****************************************/
         ) values(
           v_id_venta,
           v_id_cliente,
@@ -1770,7 +1808,11 @@ end if;
           v_tiene_formula,
           v_forma_pedido,
           v_informe,
-          v_anulado
+          v_anulado,
+
+          v_formato_factura,
+          v_enviar_correo,
+          v_correo_electronico
 
 
         ) returning id_venta into v_id_venta;
@@ -2139,7 +2181,10 @@ end if;
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
           nit = v_parametros.nit,
               nombre_factura = v_nombre_factura ,
-              id_cliente_destino = v_id_cliente_destino
+              id_cliente_destino = v_id_cliente_destino,
+          formato_factura_emitida = v_parametros.formato_factura,
+          enviar_correo = v_parametros.enviar_correo,
+          correo_electronico = v_parametros.correo_electronico
         where id_venta=v_parametros.id_venta;
 
 
@@ -4294,6 +4339,90 @@ end if;
         return v_resp;
 
       end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_CUENBANDEP_IME'
+ 	#DESCRIPCION:	Obtener Cuenta bancaria
+ 	#AUTOR:		ivaldivia
+ 	#FECHA:		25-06-2019 15:40:57
+	***********************************/
+
+	elsif(p_transaccion='VF_CUENBANDEP_IME')then
+
+		begin
+
+			select  cuen.nro_cuenta,
+                    cuen.denominacion,
+                    cuen.id_cuenta_bancaria
+            into
+            		v_nro_cuenta,
+                    v_denominacion,
+                    v_id_cuenta_bancaria
+            from vef.tsucursal su
+            INNER join tes.tdepto_cuenta_bancaria de on de.id_depto = su.id_depto
+            inner join tes.tcuenta_bancaria cuen on cuen.id_cuenta_bancaria = de.id_cuenta_bancaria and cuen.id_moneda = v_parametros.id_moneda
+            inner join param.tlugar l on l.id_lugar = su.id_lugar
+            where su.id_sucursal = v_parametros.id_sucursal;
+
+			--Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Cuenta bancaria');
+            v_resp = pxp.f_agrega_clave(v_resp,'nro_cuenta',v_nro_cuenta::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'denominacion',v_denominacion::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_cuenta_bancaria',v_id_cuenta_bancaria::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+         /*********************************
+        #TRANSACCION:  'VF_DEPVERI_IME'
+        #DESCRIPCION:	Verificar Deposito
+        #AUTOR:		ivaldivia
+        #FECHA:		16-07-2020 15:40:57
+        ***********************************/
+
+        elsif(p_transaccion='VF_DEPVERI_IME')then
+
+            begin
+
+                select count(dep.id_deposito) into v_cantidad_deposito
+                from obingresos.tdeposito dep
+                where dep.nro_deposito = v_parametros.nro_deposito /*and dep.id_moneda_deposito = v_parametros.id_moneda*/;
+
+                IF (v_cantidad_deposito > 0) then
+                	select dep.id_deposito,
+                           dep.nro_deposito,
+                           dep.fecha,
+                           dep.monto_deposito
+                    into   v_id_deposito,
+                    	   v_nro_deposito,
+                           v_fecha_deposito,
+                           v_monto_deposito
+                    from obingresos.tdeposito dep
+                    where dep.nro_deposito = v_parametros.nro_deposito /*and dep.id_moneda_deposito = v_parametros.id_moneda*/
+                    limit 1;
+                end if;
+
+               /* IF (v_cantidad_deposito >= 2) then
+                	raise exception 'El número de depósito ingresado tiene mas de un registro favor contactarse con del Departamento  de Ingresos';
+                end if;*/
+
+
+                --Definicion de la respuesta
+                v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Datos del deposito');
+                v_resp = pxp.f_agrega_clave(v_resp,'cantidad_deposito',v_cantidad_deposito::varchar);
+                v_resp = pxp.f_agrega_clave(v_resp,'id_deposito',v_id_deposito::varchar);
+                v_resp = pxp.f_agrega_clave(v_resp,'nro_deposito',v_nro_deposito::varchar);
+                v_resp = pxp.f_agrega_clave(v_resp,'fecha_deposito',v_fecha_deposito::varchar);
+                v_resp = pxp.f_agrega_clave(v_resp,'monto_deposito',v_monto_deposito::varchar);
+
+                --Devuelve la respuesta
+                return v_resp;
+
+            end;
+
+
 
 	else
 

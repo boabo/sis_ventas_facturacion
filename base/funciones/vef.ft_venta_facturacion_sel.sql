@@ -214,7 +214,9 @@ BEGIN
                         fact.informe,
                         --sucu.nombre
 
-                        det.id_formula
+                        det.id_formula,
+                        fact.formato_factura_emitida,
+                        fact.correo_electronico
 
 						from vef.tventa fact
                         left join vef.tventa_detalle det on det.id_venta = fact.id_venta
@@ -294,6 +296,7 @@ BEGIN
                         um.codigo as unidad_concepto,
                         sum(vedet.precio*vedet.cantidad) OVER (PARTITION BY vedet.descripcion) as precio_grupo
 						from vef.tventa_detalle vedet
+                        inner join vef.tventa ven on ven.id_venta = vedet.id_venta
 						--left join vef.tsucursal_producto sprod on sprod.id_sucursal_producto = vedet.id_sucursal_producto
 						left join vef.tformula form on form.id_formula = vedet.id_formula
 						left join alm.titem item on item.id_item = vedet.id_item
@@ -301,7 +304,7 @@ BEGIN
                         --left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
 				        --left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
-                       where  id_venta = '||v_parametros.id_venta::varchar || '
+                       where  ven.id_proceso_wf =  '||v_parametros.id_proceso_wf::varchar || '
                        order by vedet.descripcion,vedet.id_venta_detalle asc';
 
 			/*v_consulta:='
@@ -341,7 +344,7 @@ BEGIN
 
 		end;
 
-    /*********************************
+     /*********************************
  	#TRANSACCION:  'VF_LISFACT_SEL'
  	#DESCRIPCION:   Reporte de Recibo o Factura
  	#AUTOR:		Ismael Valdivia
@@ -352,25 +355,18 @@ BEGIN
 
     	begin
 
-             if v_parametros.tipo_factura = 'pedido' then
+             /*if v_parametros.tipo_factura = 'pedido' then
                v_join_destino = '	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino';
                v_columnas_destino = ' clides.nombre_factura as cliente_destino, clides.lugar as lugar_destino ';
-            else
+            else*/
                v_join_destino = '';
                 v_columnas_destino = ' ''''::varchar as cliente_destino,''''::varchar as lugar_destino  ';
-            end if;
+            --end if;
 
 
 
     		--Sentencia de la consulta
-			v_consulta:=' with medico_usuario as(
-                                  select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
-                                  from vef.vmedico med
-                                union all
-                                select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
-                                from segu.vusuario usu
-
-                              )
+			v_consulta:='
                        select
 						en.nombre,
                         en.nit,
@@ -424,7 +420,6 @@ BEGIN
             (cli.telefono_celular || '' '' || cli.telefono_fijo)::varchar,
             (to_char(ven.fecha_estimada_entrega,''DD/MM/YYYY'') || '' '' || to_char(ven.hora_estimada_entrega,''HH24:MI''))::varchar,
             ven.a_cuenta,
-            mu.nombre::varchar as vendedor_medico,
             ven.nro_tramite,
             tc.codigo as codigo_cliente,
             cli.lugar as lugar_cliente,
@@ -439,7 +434,11 @@ BEGIN
 
             suc.codigo as sucursal,
             suc.nombre::varchar as desc_sucursal,
-            lug.nombre::varchar as desc_lugar
+            lug.nombre::varchar as desc_lugar,
+
+            emp.logo,
+            usu.cuenta as cuenta_cajero,
+            usu.id_usuario
             /************************************/
 
             from vef.tventa ven
@@ -448,14 +447,19 @@ BEGIN
               inner join vef.tcliente tc on tc.id_cliente = cli.id_cliente
               inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
               inner join param.tentidad en on en.id_entidad = suc.id_entidad
+
+              /*Aumentando la empresa*/
+              inner join param.tempresa emp on emp.nit = en.nit
+              /**********************************************/
+
               inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
-              inner join vef.tsucursal_moneda sucmon on sucmon.id_sucursal = suc.id_sucursal
+              left join vef.tsucursal_moneda sucmon on sucmon.id_sucursal = suc.id_sucursal
                   and sucmon.tipo_moneda = ''moneda_base''
-              inner join param.tmoneda mon on mon.id_moneda = sucmon.id_moneda
+              left join param.tmoneda mon on mon.id_moneda = sucmon.id_moneda
               inner join param.tmoneda mven on mven.id_moneda = ven.id_moneda
               left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-                        left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
-             where  id_venta = '||v_parametros.id_venta::varchar;
+              inner join segu.tusuario usu on usu.id_usuario = ven.id_usuario_reg
+             where  ven.id_proceso_wf = '||v_parametros.id_proceso_wf::varchar;
 
 
 			--Devuelve la respuesta
