@@ -524,7 +524,7 @@ $body$
         end if;
 
 
-   if (v_tipo_factura = 'recibo') then
+   /*if (v_tipo_factura = 'recibo') then
      -- obtener correlativo
             v_nro_factura =   param.f_obtener_correlativo(
                 'RECI', --codigo documento
@@ -537,7 +537,7 @@ $body$
                         1); --id_empresa
 
             --fin obtener correlativo
-end if;
+	end if;*/
         --Sentencia de la insercion
         insert into vef.tventa(
           id_venta,
@@ -2155,84 +2155,42 @@ end if;
             end if;
           ELSE
             v_fecha_venta = v_venta.fecha;
-          --no validamos la fecha en las facturas de exportacion
-          --por que  valida al insertar la factura, donde se genera el nro de la factura
           END IF;
 
+          /*Aqui ponemos la nueva dosificacion para los recibos*/
+              IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
 
-         /* select array_agg(distinct cig.id_actividad_economica) into v_id_actividad_economica
-          from vef.tventa_detalle vd
-            inner join vef.tsucursal_producto sp on vd.id_sucursal_producto = sp.id_sucursal_producto
-            inner join param.tconcepto_ingas cig on  cig.id_concepto_ingas = sp.id_concepto_ingas
-          where vd.id_venta = v_venta.id_venta and vd.estado_reg = 'activo';
+                select d.* into v_dosificacion
+                from vef.tdosificacion_ro d
+                where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
+                      d.fecha_limite >= v_venta.fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'computarizada' and
+                      d.id_sucursal = v_venta.id_sucursal;
 
-          --genera el numero de factura
-          IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
-			raise exception 'LLEGA QUI %',v_venta.id_sucursal;
+                v_nro_factura = v_dosificacion.nro_siguiente;
 
-            select d.* into v_dosificacion
-            from vef.tdosificacion d
-            where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
-                  d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
-                  d.id_sucursal = v_venta.id_sucursal and
-                  d.id_activida_economica @> v_id_actividad_economica FOR UPDATE;
-
-            v_nro_factura = v_dosificacion.nro_siguiente;
+                if (v_dosificacion is null) then
+                  raise exception 'No existe una dosificacion activa para emitir el Recibo';
+                end if;
 
 
+                --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                if (exists(	select 1
+                             from vef.tventa ven
+                             where ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                  raise exception 'El numero de recibo ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema';
+                end if;
 
-            if (v_dosificacion is null) then
-              raise exception 'No existe una dosificacion activa para emitir la factura';
-            end if;*/
-            --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
-            /*if (exists(	select 1
-                         from vef.tventa ven
-                         where ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion = v_dosificacion.id_dosificacion)) then
-              raise exception 'El numero de factura ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema';
-            end if;*/
+                --la factura de exportacion no altera la fecha
+                update vef.tventa  set
+                  id_dosificacion_ro = v_dosificacion.id_dosificacion_ro,
+                  nro_factura = v_nro_factura,
+                  fecha = v_fecha_venta
+                where id_venta = v_venta.id_venta;
 
-            --la factura de exportacion no altera la fecha
-           /* update vef.tventa  set
-              id_dosificacion = v_dosificacion.id_dosificacion,
-              nro_factura = v_nro_factura,
-              fecha = v_fecha_venta,
-              cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
-                                                  v_dosificacion.nroaut,
-                                                  v_nro_factura::varchar,
-                                                  v_venta.nit,
-                                                  to_char(v_fecha_venta,'YYYYMMDD')::varchar,
-                                                  round(v_venta.total_venta,0))
-            where id_venta = v_venta.id_venta;
-
-
-            update vef.tdosificacion
-            set nro_siguiente = nro_siguiente + 1
-            where id_dosificacion = v_dosificacion.id_dosificacion;*/
-
-
-         /* ELSE
-            -- en las facturas de exportacion y minera  el numero se genera al inserta
-            v_nro_factura =  v_venta.nro_factura;
-
-            select
-              *
-            into  v_dosificacion
-            from  vef.tdosificacion d where d.id_dosificacion = v_venta.id_dosificacion;
-
-
-            --la factura de exportacion no altera la fecha
-            update vef.tventa  set
-              cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
-                                                  v_dosificacion.nroaut,
-                                                  v_nro_factura::varchar,
-                                                  v_venta.nit,
-                                                  to_char(v_fecha_venta,'YYYYMMDD')::varchar,
-                                                  round(v_venta.total_venta_msuc,0))
-            where id_venta = v_venta.id_venta;
-
-
-          END IF;*/
-
+                update vef.tdosificacion_ro
+                set nro_siguiente = nro_siguiente + 1
+                where id_dosificacion_ro = v_dosificacion.id_dosificacion_ro;
+              END IF;
 
 
         end if;

@@ -1257,3 +1257,36 @@ ALTER TABLE vef.tventa
 COMMENT ON COLUMN vef.tventa.id_auxiliar_anticipo
 IS 'Auxiliar relacionado al deposito para los conceptos del tipo anticipo';
 /***********************************F-SCP-IRVA-VEF-0-24/08/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-25/08/2020****************************************/
+ALTER TABLE vef.tventa
+  ADD COLUMN id_dosificacion_ro INTEGER;
+
+  CREATE TABLE vef.tdosificacion_ro (
+    id_dosificacion_ro SERIAL,
+    tipo VARCHAR(50) NOT NULL,
+    id_sucursal INTEGER NOT NULL,
+    tipo_generacion VARCHAR(50) NOT NULL,
+    inicial INTEGER,
+    final INTEGER,
+    fecha_dosificacion DATE NOT NULL,
+    fecha_inicio_emi DATE,
+    fecha_limite DATE,
+    nro_siguiente INTEGER,
+    CONSTRAINT pk_tdosificacion__id_dosificacion_ro PRIMARY KEY(id_dosificacion_ro),
+    CONSTRAINT fk_tdosificacion__id_sucursal FOREIGN KEY (id_sucursal)
+      REFERENCES vef.tsucursal(id_sucursal)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+      NOT DEFERRABLE
+  ) INHERITS (pxp.tbase)
+  WITH (oids = false);
+
+  COMMENT ON COLUMN vef.tdosificacion_ro.tipo
+  IS 'recibo';
+
+  COMMENT ON COLUMN vef.tdosificacion_ro.tipo_generacion
+  IS 'manual|computarizada';
+  
+  ALTER TABLE vef.tdosificacion_ro
+    OWNER TO postgres;
+/***********************************F-SCP-IRVA-VEF-0-25/08/2020****************************************/
