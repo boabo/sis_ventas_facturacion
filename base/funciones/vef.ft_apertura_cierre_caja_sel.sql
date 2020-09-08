@@ -1413,16 +1413,19 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                           else
                               0
                           end)as cuenta_corriente_recibo_me,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as mco_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as mco_recibo_me,
+
+                      sum(case  when ip.codigo_forma_pago = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is not null then
+                                    vfp.monto_mb_efectivo
+                                else
+                                    0
+                                end) as deposito_recibo_ml,
+
+                     sum(case  when ip.codigo_forma_pago = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is not null then
+                            vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                        else
+                            0
+                        end)as deposito_recibo_me,
+
                       sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
                               vfp_rec.monto_mb_efectivo
                           else
@@ -1599,16 +1602,19 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                           else
                               0
                           end)as cuenta_corriente_recibo_me,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo
-                          else
-                              0
-                          end)as mco_recibo_ml,
-                      sum(case  when fp_reci.codigo = ''MCO'' and fp_reci.id_moneda = ' || v_id_moneda_tri  || ' and v_rec.tipo_factura = ''recibo'' then
-                              vfp_rec.monto_mb_efectivo/' || v_tipo_cambio || '
-                          else
-                              0
-                          end)as mco_recibo_me,
+
+                      sum(case  when ip.codigo_forma_pago = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is not null then
+                                    vfp.monto_mb_efectivo
+                                else
+                                    0
+                                end) as deposito_recibo_ml,
+
+                     sum(case  when ip.codigo_forma_pago = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''recibo'' and v.id_deposito is not null then
+                            vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                        else
+                            0
+                        end)as deposito_recibo_me,
+
                       sum(case  when fp_reci.codigo = ''OTRO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' then
                               vfp_rec.monto_mb_efectivo
                           else

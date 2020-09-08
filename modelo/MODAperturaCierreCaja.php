@@ -428,8 +428,8 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('tarjeta_recibo_me','numeric');
         $this->captura('cuenta_corriente_recibo_ml','numeric');
         $this->captura('cuenta_corriente_recibo_me','numeric');
-        $this->captura('mco_recibo_ml','numeric');
-        $this->captura('mco_recibo_me','numeric');
+        $this->captura('deposito_recibo_ml','numeric');
+        $this->captura('deposito_recibo_me','numeric');
         $this->captura('otros_recibo_ml','numeric');
         $this->captura('otros_recibo_me','numeric');
         /************************************************/
