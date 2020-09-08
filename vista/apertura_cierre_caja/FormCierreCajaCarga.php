@@ -1077,7 +1077,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_recibo_cta_cte_ml',
-                    fieldLabel: 'Importe Recibos Cuenta Corriente  M/L',
+                    fieldLabel: 'Importe Cta. Cte Recibos  M/L',
                     allowBlank: true,
                     disabled:false,
                     //anchor: '100%',
@@ -1170,7 +1170,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config:{
                     name: 'monto_cc_recibo_cta_cte_me',
-                    fieldLabel: 'Importe Cuenta Corriente Recibos M/E',
+                    fieldLabel: 'Importe Cta. Cte Recibos M/E',
                     allowBlank: true,
                     disabled:false,
                     //anchor: '100%',
