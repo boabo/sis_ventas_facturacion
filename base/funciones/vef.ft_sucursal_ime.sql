@@ -74,7 +74,11 @@ BEGIN
             tipo_interfaz,
             id_depto,
             nombre_comprobante,
-            zona
+            zona,
+            /*Enviar Correo Ismael Valdivia (22/10/2020)*/
+            enviar_correo
+            /********************************************/
+
           	) values(
 			v_parametros.correo,
 			v_parametros.nombre,
@@ -101,7 +105,10 @@ BEGIN
             string_to_array(v_parametros.tipo_interfaz, ','),
             v_parametros.id_depto,
             v_parametros.nombre_comprobante,
-            v_parametros.zona
+            v_parametros.zona,
+            /*Enviar Correo Ismael Valdivia (22/10/2020)*/
+            v_parametros.enviar_correo
+            /********************************************/
 			)RETURNING id_sucursal into v_id_sucursal;
 
 			--Definicion de la respuesta
@@ -146,7 +153,10 @@ BEGIN
             tipo_interfaz = string_to_array(v_parametros.tipo_interfaz, ','),
             id_depto = v_parametros.id_depto,
             nombre_comprobante = v_parametros.nombre_comprobante,
-            zona = v_parametros.zona
+            zona = v_parametros.zona,
+            /*Enviar Correo Ismael Valdivia (22/10/2020)*/
+            enviar_correo=v_parametros.enviar_correo
+            /********************************************/
 			where id_sucursal=v_parametros.id_sucursal;
 
 			--Definicion de la respuesta
@@ -203,3 +213,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_sucursal_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

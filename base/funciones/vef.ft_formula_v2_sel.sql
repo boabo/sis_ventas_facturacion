@@ -56,9 +56,8 @@ BEGIN
 						form.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-                        array_to_string(form.punto_venta_asociado,'','')::varchar as punto_venta_asociado,
-                        array_to_string(form.tipo_punto_venta,'','')::varchar as tipo_punto_venta,
-						(select pxp.list(pv.nombre) from vef.tpunto_venta pv where pv.id_punto_venta =ANY(form.punto_venta_asociado))::varchar as nombres_punto_venta
+                        array_to_string( form.sw_autorizacion, '','',''null'')::varchar,
+                        array_to_string( form.regionales, '','',''null'')::varchar
                         from vef.tformula form
 						inner join segu.tusuario usu1 on usu1.id_usuario = form.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = form.id_usuario_mod

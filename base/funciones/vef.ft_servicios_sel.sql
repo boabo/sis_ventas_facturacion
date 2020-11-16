@@ -42,6 +42,7 @@ BEGIN
 	if(p_transaccion='VEF_INGAS_SEL')then
 
     	begin
+        	--raise exception 'Aqui llega datos';
     		--Sentencia de la consulta
 			v_consulta:='select
 						ingas.id_concepto_ingas,
@@ -52,7 +53,7 @@ BEGIN
 						ingas.sw_tes,
 						ingas.activo_fijo,
 						ingas.almacenable,
-						ingas.sw_autorizacion,
+						array_to_string( ingas.sw_autorizacion, '','',''null'')::varchar,
 						ingas.codigo,
 						ingas.id_unidad_medida,
 						ingas.nandina,
@@ -70,13 +71,17 @@ BEGIN
                        	array_to_string(ingas.punto_venta_asociado,'','')::varchar as punto_venta_asociado,
                         array_to_string(ingas.tipo_punto_venta,'','')::varchar as tipo_punto_venta,
                         ingas.id_moneda,
-                        ingas.precio,
+                        COALESCE(ingas.precio::varchar,'''')::varchar,
                         mon.codigo_internacional as desc_moneda,
                         ingas.requiere_descripcion,
                         ingas.excento,
                         act.nombre as nombre_actividad,
                         ingas.id_actividad_economica,
-                        (select pxp.list(pv.nombre) from vef.tpunto_venta pv where pv.id_punto_venta =ANY(ingas.punto_venta_asociado))::varchar as nombres_punto_venta
+                        (select pxp.list(pv.nombre) from vef.tpunto_venta pv where pv.id_punto_venta =ANY(ingas.punto_venta_asociado))::varchar as nombres_punto_venta,
+
+
+                        array_to_string( ingas.regionales, '','',''null'')::varchar,
+                        array_to_string( ingas.nivel_permiso, '','',''null'')::varchar
                         /************************/
 
 						from param.tconcepto_ingas ingas
@@ -89,7 +94,7 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+			raise notice '%',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 

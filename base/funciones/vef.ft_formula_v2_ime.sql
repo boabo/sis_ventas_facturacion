@@ -56,9 +56,7 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod,
-            tipo_punto_venta,
-            punto_venta_asociado
+			fecha_mod
           	) values(
 			'activo',
 			v_parametros.nombre,
@@ -68,10 +66,7 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null,
-			string_to_array (v_parametros.tipo_punto_venta,',')::VARCHAR[],
-            string_to_array (v_parametros.punto_venta_asociado,',')::integer[]
-
+			null
 			)RETURNING id_formula into v_id_formula;
 
 			--Definicion de la respuesta
@@ -100,9 +95,7 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai,
-            tipo_punto_venta = string_to_array (v_parametros.tipo_punto_venta,',')::VARCHAR[],
-            punto_venta_asociado = string_to_array (v_parametros.punto_venta_asociado,',')::integer[]
+			usuario_ai = v_parametros._nombre_usuario_ai
 			where id_formula=v_parametros.id_formula;
 
 			--Definicion de la respuesta
@@ -136,6 +129,36 @@ BEGIN
             return v_resp;
 
 		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_COAUTO_IME'
+ 	#DESCRIPCION:	Permite configurar las autorizaciones para los conceptos de gastos (adquisiciones, caja, fondos en avances, pago directo)
+ 	#AUTOR:		Ismael valdivia
+ 	#FECHA:		12-11-2020 09:05:23
+	***********************************/
+
+	elsif(p_transaccion='VF_COAUTO_IME')then
+
+		begin
+
+
+             update vef.tformula set
+			  sw_autorizacion = string_to_array(v_parametros.sw_autorizacion,',')::varchar[],
+              regionales = string_to_array(v_parametros.regionales,',')::varchar[]
+             where id_formula = v_parametros.id_formula;
+
+
+
+             --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se modificaron las OT del concepto de gasto(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_formula',v_parametros.id_formula::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+
 
 	else
 
