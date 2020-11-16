@@ -85,7 +85,7 @@ $body$
           1,
           v_parametros.fecha_inicio_emi,
           v_parametros.fecha_limite,
-          v_parametros.tipo_generacion,
+          'computarizada',
           v_parametros.inicial,
           'activo',
           v_parametros._id_usuario_ai,
@@ -97,7 +97,7 @@ $body$
 
         )RETURNING id_dosificacion_ro into v_id_dosificacion ;
 
-		if (v_parametros.tipo_generacion = 'computarizada') then
+		--if (v_parametros.tipo_generacion = 'computarizada') then
         select e.nit,s.nombre,s.codigo into v_nit,v_nombre_sucursal,v_codigo_sucursal
         from vef.tsucursal s
           inner join param.tentidad e on e.id_entidad = s.id_entidad
@@ -111,7 +111,7 @@ $body$
                     Total : 1 <br>
                 <b>Esto garantizara que la informacion de la dosificacion se ha registrado correctamente.</b>
             ';
-		end if ;
+		--end if ;
         --Definicion de la respuesta
 
       v_resp = pxp.f_agrega_clave(v_resp,'id_dosificacion',v_id_dosificacion::varchar);
@@ -132,23 +132,23 @@ $body$
       begin
 
         --Sentencia de la modificacion
-        update vef.tdosificacion set
+        update vef.tdosificacion_ro set
           id_sucursal = v_parametros.id_sucursal,
           final = v_parametros.final,
           tipo = v_parametros.tipo,
           fecha_dosificacion = v_parametros.fecha_dosificacion,
           fecha_inicio_emi = v_parametros.fecha_inicio_emi,
           fecha_limite = v_parametros.fecha_limite,
-          tipo_generacion = v_parametros.tipo_generacion,
+          --tipo_generacion = computarizada,
+          nro_siguiente = v_parametros.nro_siguiente,
           inicial = v_parametros.inicial,
           fecha_mod = now(),
           id_usuario_mod = p_id_usuario,
           id_usuario_ai = v_parametros._id_usuario_ai,
-          usuario_ai = v_parametros._nombre_usuario_ai,
-          nro_tramite = v_parametros.nro_tramite
+          usuario_ai = v_parametros._nombre_usuario_ai
         where id_dosificacion_ro=v_parametros.id_dosificacion_ro;
 
-    	if (v_parametros.tipo_generacion = 'computarizada') then
+    	--if (v_parametros.tipo_generacion = 'computarizada') then
 
         select e.nit,s.nombre,s.codigo into v_nit,v_nombre_sucursal,v_codigo_sucursal
         from vef.tsucursal s
@@ -165,8 +165,8 @@ $body$
             ';
 
         --Definicion de la respuesta
-			end if;
-        v_resp = pxp.f_agrega_clave(v_resp,'id_dosificacion',v_parametros.id_dosificacion::varchar);
+		--	end if;
+        v_resp = pxp.f_agrega_clave(v_resp,'id_dosificacion',v_parametros.id_dosificacion_ro::varchar);
         v_resp = pxp.f_agrega_clave(v_resp,'prueba',v_mensaje);
         --Devuelve la respuesta
         return v_resp;

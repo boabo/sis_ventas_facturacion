@@ -114,6 +114,18 @@ class ACTVentaFacturacion extends ACTbase{
 		 $this->res=$this->objFunc->insertarFacturacionManual($this->objParam);
 		 $this->res->imprimirRespuesta($this->res->generarJson());
  }
+
+	/*Aumentando para Registrar los recibos manuales*/
+	function insertarReciboManual(){
+			$this->objFunc=$this->create('MODVentaFacturacion');
+			$this->res=$this->objFunc->insertarReciboManual($this->objParam);
+			$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	/************************************************/
+
+
+
+
 /*Aumentando para Corregir las formas de pago*/
  function corregirFactura(){
 		$this->objFunc=$this->create('MODVentaFacturacion');

@@ -72,6 +72,13 @@ class ACTFacturacionExterna extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+	/*Aumentando para listar las facturas emitidas*/
+	function listarFacturasEmitidas(){
+		$this->objFunc=$this->create('MODFacturacionExterna');
+		$this->res=$this->objFunc->listarFacturasEmitidas($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
 }
 
 ?>

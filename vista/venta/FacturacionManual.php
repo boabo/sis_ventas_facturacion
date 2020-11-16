@@ -370,7 +370,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 	iniciarEventos:function(){
 		this.timer_id=Ext.TaskMgr.start({
 			 run: Ftimer,
-			 interval:5000,
+			 interval:10000,
 			 scope:this
 	 });
 	 function Ftimer(){
@@ -380,7 +380,8 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 				url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
 				params:{
 					id_punto_venta:this.variables_globales.id_punto_venta,
-					id_sucursal:this.variables_globales.id_sucursal
+					id_sucursal:this.variables_globales.id_sucursal,
+					fecha_apertura: this.campo_fecha.getValue().dateFormat('d/m/Y')
 				},
 				success: function(resp){
 						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
@@ -434,7 +435,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 		openForm : function (tipo, record) {
     	var me = this;
            me.objSolForm = Phx.CP.loadWindows(this.formUrl,
-                                    '<div style="height:30px;"><img src="../../../lib/imagenes/logos/boa_mini_logo.png" style="position:absolute;"><h1 style=" text-align:center; font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><i style="color:red; font-size:30px;" class="fa fa-pencil" aria-hidden="true"></i> Facturación Manual</h1></div>',
+                                    '<center><img src="../../../lib/imagenes/facturacion/factura.png" style="width:55px; vertical-align: middle;"><span style="vertical-align: middle; color:red; font-size:30px; text-shadow: 3px 0px 0px #000000;"> FACTURACIÓN MANUAL</span></center>',
                                     {
                                         modal:true,
                                         width:'100%',
@@ -524,7 +525,42 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 
 			onButtonNew : function () {
 	        //abrir formulario de solicitud
-	        this.openForm('new');
+					Ext.Ajax.request({
+							url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
+							params:{
+								id_punto_venta:this.variables_globales.id_punto_venta,
+								id_sucursal:this.variables_globales.id_sucursal,
+								fecha_apertura: this.campo_fecha.getValue().dateFormat('d/m/Y')
+							},
+							success: function(resp){
+									var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+									// this.aperturaText = reg.ROOT.datos.v_apertura;
+									if (reg.ROOT.datos.v_apertura == 'SIN APERTURA DE CAJA') {
+										Ext.Msg.show({
+												title: 'Alerta',
+												msg: '<p>Estimado Usuario debe aperturar una caja para proceder con las ventas.</p>',
+												buttons: Ext.Msg.OK,
+												width: 512,
+												icon: Ext.Msg.INFO
+										});
+									} else if (reg.ROOT.datos.v_apertura == 'cerrado') {
+										Ext.Msg.show({
+												title: 'Alerta',
+												msg: '<p>Estimado Usuario la apertura de caja esta actualmente cerrada.</p>',
+												buttons: Ext.Msg.OK,
+												width: 512,
+												icon: Ext.Msg.INFO
+										});
+									} else if (reg.ROOT.datos.v_apertura == 'abierto') {
+										  this.openForm('new');
+									}
+
+							},
+							failure: this.conexionFailure,
+							timeout:this.timeout,
+							scope:this
+					});
+	        // this.openForm('new');
 	    },
 
 			anular : function () {

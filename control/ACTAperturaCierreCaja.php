@@ -7,6 +7,7 @@
  *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
  */
 
+require_once(dirname(__FILE__).'/../reportes/RAperturaCierreUSPDF.php');
 require_once(dirname(__FILE__).'/../reportes/RAperturaCierrePDF.php');
 class ACTAperturaCierreCaja extends ACTbase{
 
@@ -72,7 +73,7 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->objFunc=$this->create('MODAperturaCierreCaja');
         $this->res=$this->objFunc->reporteApertura($this->objParam);
 
-
+        $datosApertura=$this->res->getDatos();
         //obtener titulo del reporte
         $titulo = 'AperturaCierreCaja';
         //Genera el nombre del archivo (aleatorio + titulo)
@@ -84,7 +85,11 @@ class ACTAperturaCierreCaja extends ACTbase{
         $this->objParam->addParametro('tamano','LETTER	');
         $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
         //Instancia la clase de pdf
-        $this->objReporteFormato=new RAperturaCierrePDF($this->objParam);
+        if ($datosApertura[0]['pais'] == 'US'){
+          $this->objReporteFormato=new RAperturaCierreUSPDF($this->objParam);
+        } else {
+          $this->objReporteFormato=new RAperturaCierrePDF($this->objParam);
+        }
         $this->objReporteFormato->setDatos($this->res->datos);
         $this->objReporteFormato->generarReporte();
         $this->objReporteFormato->output($this->objReporteFormato->url_archivo,'F');

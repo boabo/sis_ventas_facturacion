@@ -32,9 +32,9 @@ class MODFormula_v2 extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		$this->captura('punto_venta_asociado','varchar');
-		$this->captura('tipo_punto_venta','varchar');
-		$this->captura('nombres_punto_venta','varchar');
+		$this->captura('sw_autorizacion','varchar');
+		$this->captura('regionales','varchar');
+
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -54,8 +54,6 @@ class MODFormula_v2 extends MODbase{
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('nombre','nombre','varchar');
 		$this->setParametro('descripcion','descripcion','text');
-		$this->setParametro('tipo_punto_venta','tipo_punto_venta','varchar');
-		$this->setParametro('punto_venta_asociado','punto_venta_asociado','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -76,8 +74,6 @@ class MODFormula_v2 extends MODbase{
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('nombre','nombre','varchar');
 		$this->setParametro('descripcion','descripcion','text');
-		$this->setParametro('tipo_punto_venta','tipo_punto_venta','varchar');
-		$this->setParametro('punto_venta_asociado','punto_venta_asociado','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -95,6 +91,26 @@ class MODFormula_v2 extends MODbase{
 
 		//Define los parametros para la funcion
 		$this->setParametro('id_formula','id_formula','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+
+	function editAuto(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='vef.ft_formula_v2_ime';
+		$this->transaccion='VF_COAUTO_IME';
+		$this->tipo_procedimiento='IME';
+
+		//Define los parametros para la funcion
+		$this->setParametro('id_formula','id_formula','int4');
+		$this->setParametro('sw_autorizacion','sw_autorizacion','varchar');
+		$this->setParametro('regionales','regionales','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

@@ -363,6 +363,7 @@ class MODCajero extends MODbase{
 		$this->setParametro('id_proceso_wf','id_proceso_wf','integer');
 
 		//Definicion de la lista del resultado del query
+		$this->captura('id_venta','int4');
 		$this->captura('nombre_entidad','varchar');
 		$this->captura('nit','varchar');
 		$this->captura('direccion_sucursal','varchar');
@@ -441,7 +442,11 @@ class MODCajero extends MODbase{
 			$this->captura('logo','varchar');
 		$this->captura('cuenta_cajero','varchar');
 		$this->captura('id_cuenta','integer');
-
+		$this->captura('tipo_factura','varchar');
+		$this->captura('moneda_base','varchar');
+		$this->captura('codigo_iata','varchar');
+		$this->captura('fecha_ingles','varchar');
+		$this->captura('forma_pago','varchar');
 		//$this->captura('moneda_base','varchar');//nuevo mvm
 		//$this->captura('codigo_moneda','varchar');//nuevo mvm
 		//$this->captura('fecha_ingles','varchar');//nuevo mvm
@@ -557,6 +562,27 @@ class MODCajero extends MODbase{
 		return $this->respuesta;
 	}
 
+	function listarCasaMatriz(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_venta_facturacion_sel';
+		$this->transaccion='VF_LISCASAMAT_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		//Definicion de la lista del resultado del query
+		$this->captura('nombre_casa_matriz','varchar');
+		$this->captura('codigo_casa_matriz','varchar');
+		$this->captura('direccion_casa_matriz','varchar');
+		$this->captura('telefono_casa_matriz','varchar');
+		$this->captura('lugar_casa_matriz','varchar');
+
+		$this->armarConsulta();
+
+
+		$this->ejecutarConsulta();
+		//var_dump($this->respuesta);
+		return $this->respuesta;
+	}
 
 }
 ?>

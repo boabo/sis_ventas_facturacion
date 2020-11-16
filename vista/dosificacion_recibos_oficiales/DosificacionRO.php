@@ -69,12 +69,13 @@ Phx.vista.DosificacionRO=Ext.extend(Phx.gridInterfaz,{
             config:{
                 name: 'nro_siguiente',
                 fieldLabel: 'Nro Siguiente',
-                gwidth: 100
+                gwidth: 100,
+								allowBlank: true,
             },
             type:'NumberField',
             filters:{pfiltro:'dos.nro_siguiente',type:'numeric'},
             grid:true,
-            form:false
+            form:true
         },
         {
             config: {
@@ -203,27 +204,27 @@ Phx.vista.DosificacionRO=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
-        {
-            config:{
-                name:'tipo_generacion',
-                fieldLabel:'Tipo de Generacion',
-                allowBlank:false,
-                emptyText:'Tip...',
-                triggerAction: 'all',
-                lazyRender:true,
-                mode: 'local',
-                store:['manual','computarizada']
-
-            },
-            type:'ComboBox',
-            id_grupo:0,
-            filters:{
-                type: 'list',
-                options: ['manual','computarizada'],
-            },
-            grid:true,
-            form:true
-        },
+        // {
+        //     config:{
+        //         name:'tipo_generacion',
+        //         fieldLabel:'Tipo de Generacion',
+        //         allowBlank:false,
+        //         emptyText:'Tip...',
+        //         triggerAction: 'all',
+        //         lazyRender:true,
+        //         mode: 'local',
+        //         store:['manual','computarizada']
+				//
+        //     },
+        //     type:'ComboBox',
+        //     id_grupo:0,
+        //     filters:{
+        //         type: 'list',
+        //         options: ['manual','computarizada'],
+        //     },
+        //     grid:true,
+        //     form:true
+        // },
         //INI ES MANUAL
         {
             config:{
@@ -450,23 +451,24 @@ Phx.vista.DosificacionRO=Ext.extend(Phx.gridInterfaz,{
     fwidth:'88%',
     onButtonNew:function() {
         Phx.vista.DosificacionRO.superclass.onButtonNew.call(this);
+				this.ocultarComponente(this.Cmp.nro_siguiente);
     },
     iniciarEventos :  function () {
-        this.Cmp.tipo_generacion.on('select',function (c,r,v) {
-            if (this.Cmp.tipo_generacion.getValue() == 'manual') {
-                this.mostrarComponente(this.Cmp.inicial);
-                this.Cmp.inicial.allowBlank = false;
+        // this.Cmp.tipo_generacion.on('select',function (c,r,v) {
+        //     if (this.Cmp.tipo_generacion.getValue() == 'manual') {
+        //         this.mostrarComponente(this.Cmp.inicial);
+        //         this.Cmp.inicial.allowBlank = false;
+				//
+        //         this.mostrarComponente(this.Cmp.final);
+        //         this.Cmp.final.allowBlank = false;
+				//
+				//
+        //         this.ocultarComponente(this.Cmp.fecha_inicio_emi);
+        //         this.Cmp.fecha_inicio_emi.allowBlank = true;
+        //         this.Cmp.fecha_inicio_emi.reset();
 
-                this.mostrarComponente(this.Cmp.final);
-                this.Cmp.final.allowBlank = false;
 
-
-                this.ocultarComponente(this.Cmp.fecha_inicio_emi);
-                this.Cmp.fecha_inicio_emi.allowBlank = true;
-                this.Cmp.fecha_inicio_emi.reset();
-
-
-            } else {
+          //  } else {
                 this.ocultarComponente(this.Cmp.inicial);
                 this.Cmp.inicial.allowBlank = true;
                 this.Cmp.inicial.reset();
@@ -478,13 +480,14 @@ Phx.vista.DosificacionRO=Ext.extend(Phx.gridInterfaz,{
                 this.mostrarComponente(this.Cmp.fecha_inicio_emi);
                 this.Cmp.fecha_inicio_emi.allowBlank = false;
 
-            }
-        },this);
+        //     }
+        // },this);
 
     },
     onButtonEdit:function() {
         Phx.vista.DosificacionRO.superclass.onButtonEdit.call(this);
-        this.Cmp.tipo_generacion.fireEvent('select');
+				this.mostrarComponente(this.Cmp.nro_siguiente);
+        //this.Cmp.tipo_generacion.fireEvent('select');
     },
     onSubmit : function(o) {
         Phx.vista.DosificacionRO.superclass.onSubmit.call(this,o);

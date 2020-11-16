@@ -72,7 +72,7 @@ class ACTPuntoVenta extends ACTbase{
                                                                                             inner join param.tdepto_usuario d on d.id_depto = s.id_depto
                                                                                             where puve.id_punto_venta = p.id_punto_venta
                                                                                             )))");
-        }	
+        }
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

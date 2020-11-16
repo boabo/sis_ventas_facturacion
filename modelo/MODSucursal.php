@@ -56,7 +56,8 @@ class MODSucursal extends MODbase{
 		$this->captura('nombre_comprobante','varchar');
 		$this->captura('zona','varchar');
 		$this->captura('estado_sucursal','varchar');
-		
+		$this->captura('enviar_correo','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -94,7 +95,12 @@ class MODSucursal extends MODbase{
 
 		$this->setParametro('id_depto','id_depto','integer');
 		$this->setParametro('nombre_comprobante','nombre_comprobante','codigo_html');
-        $this->setParametro('zona','zona','varchar');
+		$this->setParametro('zona','zona','varchar');
+
+		/*Aumentando para el formato de la factura y si se enviara el correo electronico*/
+    $this->setParametro('enviar_correo','enviar_correo','varchar');
+		/*******************************************************************************/
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -133,6 +139,10 @@ class MODSucursal extends MODbase{
 		$this->setParametro('id_depto','id_depto','integer');
 		$this->setParametro('nombre_comprobante','nombre_comprobante','codigo_html');
         $this->setParametro('zona','zona','varchar');
+
+				/*Aumentando para el formato de la factura y si se enviara el correo electronico*/
+		    $this->setParametro('enviar_correo','enviar_correo','varchar');
+				/*******************************************************************************/
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

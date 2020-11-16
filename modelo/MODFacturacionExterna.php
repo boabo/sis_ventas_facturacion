@@ -28,6 +28,7 @@ class MODFacturacionExterna extends MODbase
         $this->setParametro('observaciones','observaciones','varchar');
         $this->setParametro('enviar_correo','enviar_correo','varchar');
         $this->setParametro('correo_electronico','correo_electronico','varchar');
+        //$this->setParametro('ordeCode','ordeCode','varchar');
 
 
         //Ejecuta la instruccion
@@ -75,6 +76,32 @@ class MODFacturacionExterna extends MODbase
 
   			//Define los parametros para la funcion
   			$this->setParametro('id_venta','id_venta','int4');
+
+  			//Ejecuta la instruccion
+  			$this->armarConsulta();
+  			$this->ejecutarConsulta();
+
+  			//Devuelve la respuesta
+  			return $this->respuesta;
+  	}
+
+	/*Aumentando para listar las facturas emitidas*/
+    function listarFacturasEmitidas(){
+  			//Definicion de variables para ejecucion del procedimiento
+  			$this->procedimiento='vef.ft_facturacion_externa_sel';
+  			$this->transaccion='VEF_LIST_FACT_EX_SEL';
+  			$this->tipo_procedimiento='SEL';
+        $this->setCount(false);
+  			//Define los parametros para la funcion
+  			$this->setParametro('ci','ci','varchar');
+
+        $this->captura('id_proceso_wf','int4');
+        $this->captura('fecha','date');
+    		$this->captura('nro_factura','integer');
+    		$this->captura('nit','varchar');
+    		$this->captura('nombre_factura','varchar');
+        $this->captura('nombre','varchar');
+    		$this->captura('id_venta','int4');
 
   			//Ejecuta la instruccion
   			$this->armarConsulta();

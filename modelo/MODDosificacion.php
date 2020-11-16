@@ -345,13 +345,14 @@ class MODDosificacion extends MODbase{
     }
     function modificarDosificacionRO(){
         //Definicion de variables para ejecucion del procedimiento
-        $this->procedimiento='vef.ft_dosificacion_ime';
+        $this->procedimiento='vef.ft_dosificacion_ro_ime';
         $this->transaccion='VF_DOS_RO_MOD';
         $this->tipo_procedimiento='IME';
 
 
         //Define los parametros para la funcion
-        $this->setParametro('id_dosificacion_ro','id_dosificacion_ro','int4');
+				$this->setParametro('id_dosificacion_ro','id_dosificacion_ro','int4');
+        $this->setParametro('id_sucursal','id_sucursal','int4');
 				$this->setParametro('final','final','integer');
 				$this->setParametro('tipo','tipo','varchar');
 				$this->setParametro('fecha_dosificacion','fecha_dosificacion','date');

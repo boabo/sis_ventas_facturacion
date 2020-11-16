@@ -14,15 +14,25 @@ class ACTFormula_v2 extends ACTbase{
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 
-		/**************************************Filtramos por PV y Tipo PV(ATO CTO)**************************************/
-		if($this->objParam->getParametro('tipo_punto_venta') != '') {
-			$this->objParam->addFiltro("''".$this->objParam->getParametro('tipo_punto_venta')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(form.tipo_punto_venta,'','')::varchar, '','')))");
+		// /**************************************Filtramos por PV y Tipo PV(ATO CTO)**************************************/
+		// if($this->objParam->getParametro('tipo_punto_venta') != '') {
+		// 	$this->objParam->addFiltro("''".$this->objParam->getParametro('tipo_punto_venta')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(form.tipo_punto_venta,'','')::varchar, '','')))");
+		// }
+		//
+		// if($this->objParam->getParametro('id_punto_venta') != '') {
+		// 	$this->objParam->addFiltro("''".$this->objParam->getParametro('id_punto_venta')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(form.punto_venta_asociado,'','')::varchar, '','')))");
+		// }
+		// /***************************************************************************************************************/
+
+
+		/*Aumentando para filtrar solo los conceptos que seran para Recibos Oficiales (Ismael Valdivia 14/07/2020)*/
+		if($this->objParam->getParametro('emision')!=''){
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('emision')."''=ANY (form.sw_autorizacion) AND ''".$this->objParam->getParametro('regional')."''=ANY (form.regionales)");
 		}
 
-		if($this->objParam->getParametro('id_punto_venta') != '') {
-			$this->objParam->addFiltro("''".$this->objParam->getParametro('id_punto_venta')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(form.punto_venta_asociado,'','')::varchar, '','')))");
-		}
-		/***************************************************************************************************************/
+		// if($this->objParam->getParametro('regional')!=''){
+		// 		$this->objParam->addFiltro("''".$this->objParam->getParametro('regional')."''=ANY (form.regionales)");
+		// }
 
 
 
@@ -51,6 +61,12 @@ class ACTFormula_v2 extends ACTbase{
 	function eliminarFormula(){
 			$this->objFunc=$this->create('MODFormula_v2');
 		$this->res=$this->objFunc->eliminarFormula($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function editAuto(){
+		$this->objFunc=$this->create('MODFormula_v2');
+		$this->res=$this->objFunc->editAuto($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 

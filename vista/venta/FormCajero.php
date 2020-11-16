@@ -110,91 +110,92 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               form:true
           },
       /*Aumentnado para formato de impresion*/
-      {
-         config : {
-           name : 'formato_factura',
-           fieldLabel : 'Formato Factura',
-           width:200,
-           allowBlank : true,
-           emptyText : 'Formato Factura...',
-           store : new Ext.data.JsonStore({
-             url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
-             id : 'id_catalogo',
-             root : 'datos',
-             sortInfo : {
-               field : 'codigo',
-               direction : 'ASC'
-             },
-             totalProperty : 'total',
-             fields: ['codigo','descripcion'],
-             remoteSort : true,
-             baseParams:{
-               par_filtro: 'cat.descripcion',
-              cod_subsistema:'VEF',
-              catalogo_tipo:'tventa_formato_factura'
-            },
-           }),
-           valueField : 'descripcion',
-           displayField : 'descripcion',
-           gdisplayField : 'formato_factura',
-           hiddenName : 'formato_factura',
-           forceSelection : true,
-           typeAhead : false,
-           tpl: new Ext.XTemplate([
-               '<tpl for=".">',
-               '<div class="x-combo-list-item">',
-               '<div>',
-               '<p><b>Codigo: <span style="color: red;">{codigo}</span></b></p>',
-               '</div><p><b>Descripción: <span style="color: blue;">{descripcion}</span></b></p>',
-               '</div></tpl>'
-           ]),
-           triggerAction : 'all',
-           lazyRender : true,
-           mode : 'remote',
-           pageSize : 25,
-           listWidth:'450',
-           maxHeight : 450,
-           queryDelay : 1000,
-           gwidth : 170,
-           minChars : 2,
-           resizable:true,
-           enableMultiSelect: false
-         },
-         type : 'ComboBox',
-         id_grupo : 22,
-         grid: true,
-         form: true
-       },
+      // {
+      //    config : {
+      //      name : 'formato_factura',
+      //      fieldLabel : 'Formato Factura',
+      //      width:200,
+      //      allowBlank : true,
+      //      emptyText : 'Formato Factura...',
+      //      store : new Ext.data.JsonStore({
+      //        url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+      //        id : 'id_catalogo',
+      //        root : 'datos',
+      //        sortInfo : {
+      //          field : 'codigo',
+      //          direction : 'ASC'
+      //        },
+      //        totalProperty : 'total',
+      //        fields: ['codigo','descripcion'],
+      //        remoteSort : true,
+      //        baseParams:{
+      //          par_filtro: 'cat.descripcion',
+      //         cod_subsistema:'VEF',
+      //         catalogo_tipo:'tventa_formato_factura'
+      //       },
+      //      }),
+      //      valueField : 'descripcion',
+      //      displayField : 'descripcion',
+      //      gdisplayField : 'formato_factura',
+      //      hiddenName : 'formato_factura',
+      //      forceSelection : true,
+      //      typeAhead : false,
+      //      tpl: new Ext.XTemplate([
+      //          '<tpl for=".">',
+      //          '<div class="x-combo-list-item">',
+      //          '<div>',
+      //          '<p><b>Codigo: <span style="color: red;">{codigo}</span></b></p>',
+      //          '</div><p><b>Descripción: <span style="color: blue;">{descripcion}</span></b></p>',
+      //          '</div></tpl>'
+      //      ]),
+      //      triggerAction : 'all',
+      //      lazyRender : true,
+      //      mode : 'remote',
+      //      pageSize : 25,
+      //      listWidth:'450',
+      //      maxHeight : 450,
+      //      queryDelay : 1000,
+      //      gwidth : 170,
+      //      minChars : 2,
+      //      resizable:true,
+      //      enableMultiSelect: false
+      //    },
+      //    type : 'ComboBox',
+      //    id_grupo : 22,
+      //    grid: true,
+      //    form: true
+      //  },
        /*Aumentando para enviar por correo o no*/
-       {
-               config:{
-                   name: 'enviar_correo',
-                   fieldLabel: 'Enviar Correo',
-                   allowBlank: true,
-                   width:200,
-                   emptyText:'Enviar correo...',
-                   triggerAction: 'all',
-                   lazyRender:true,
-                   mode: 'local',
-                   displayField: 'text',
-                   valueField: 'value',
-                   store:new Ext.data.SimpleStore({
-             data : [['SI', 'SI'], ['NO', 'NO']],
-             id : 'value',
-             fields : ['value', 'text']
-           })
-               },
-               type:'ComboBox',
-               id_grupo:22,
-               form:true
-           },
+       // {
+       //         config:{
+       //             name: 'enviar_correo',
+       //             fieldLabel: 'Enviar Correo',
+       //             allowBlank: true,
+       //             width:200,
+       //             emptyText:'Enviar correo...',
+       //             triggerAction: 'all',
+       //             lazyRender:true,
+       //             mode: 'local',
+       //             displayField: 'text',
+       //             valueField: 'value',
+       //             store:new Ext.data.SimpleStore({
+       //       data : [['SI', 'SI'], ['NO', 'NO']],
+       //       id : 'value',
+       //       fields : ['value', 'text']
+       //     })
+       //         },
+       //         type:'ComboBox',
+       //         id_grupo:22,
+       //         form:true
+       //     },
            {
              config:{
                name: 'correo_electronico',
                fieldLabel: 'Correo Electronico',
                allowBlank: true,
-               hidden:true,
-               width:200
+               //hidden:true,
+               width:200,
+               vtype:'email',
                //maxLength:30,
              },
                type:'TextField',
@@ -257,7 +258,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         this.buildGrupos();
 
-        this.labelReset = '<div style = "font-size:25px; font-weight:bold; color:#0435FF; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><i style="color:#00AC0D;" class="fa fa-check-circle"></i> Generar</div>';
+        this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
         Phx.vista.FormCajero.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
@@ -431,31 +432,84 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
     },
 
+    /*Funcion para poner las condiciones en las regionales*/
+    condicionesRegionales: function (){
+
+      /*Aumentanod para filtrar las instancias de pago (Ismael Valdivia 16/10/2020)*/
+      this.Cmp.id_formula.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago_2.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /****************************************************************************/
+
+
+      // if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
+      //   this.mostrarComponente(this.Cmp.correo_electronico);
+      //   this.mostrarComponente(this.Cmp.id_formula);
+      //   this.ocultarComponente(this.Cmp.cambio_moneda_extranjera);
+      //   this.Cmp.cambio_moneda_extranjera.allowBlank = true;
+      //
+      //   Ext.getCmp('cambioM/E').hide();
+      //   /*Aqui mostramos el boton para el pago electronico*/
+      //   Ext.getCmp('botonPagoElectronico').hide();
+      //   /**************************************************/
+      //
+      // } else {
+      //   this.ocultarComponente(this.Cmp.correo_electronico);
+      //   this.mostrarComponente(this.Cmp.cambio_moneda_extranjera);
+      //   this.Cmp.cambio_moneda_extranjera.allowBlank = true;
+      //   Ext.getCmp('cambioM/E').show();
+      //   /*Aqui ocultamos el boton para el pago electronico*/
+      //   Ext.getCmp('botonPagoElectronico').hide();
+      //   /**************************************************/
+      // }
+
+    },
+    /******************************************************/
+
+
+
+
     iniciarEventos : function () {
 
         /*Aqui aumentamos las condiciones para enviar por correo y el formato de la factura*/
-        this.Cmp.enviar_correo.setValue('NO');
-        this.Cmp.enviar_correo.fireEvent('select',this.Cmp.enviar_correo, this.Cmp.enviar_correo.getValue());
-
-        this.Cmp.enviar_correo.on('select',function(c,r,i) {
-          if (r.data.value == 'NO') {
-            this.ocultarComponente(this.Cmp.correo_electronico);
-            this.Cmp.correo_electronico.allowBlank = true;
-            this.Cmp.correo_electronico.reset();
-          } else {
-            this.mostrarComponente(this.Cmp.correo_electronico);
-            this.Cmp.correo_electronico.allowBlank = false;
-          }
-        },this);
+        // this.Cmp.enviar_correo.setValue('NO');
+        // this.Cmp.enviar_correo.fireEvent('select',this.Cmp.enviar_correo, this.Cmp.enviar_correo.getValue());
+        //
+        // this.Cmp.enviar_correo.on('select',function(c,r,i) {
+        //   if (r.data.value == 'NO') {
+        //     this.ocultarComponente(this.Cmp.correo_electronico);
+        //     this.Cmp.correo_electronico.allowBlank = true;
+        //     this.Cmp.correo_electronico.reset();
+        //   } else {
+        //     this.mostrarComponente(this.Cmp.correo_electronico);
+        //     this.Cmp.correo_electronico.allowBlank = false;
+        //   }
+        // },this);
         /**********************************************************************************/
+        /*Aumentando para poner Condiciones en Regionales (Ismael Valdivia 14/10/2020)*/
+        this.condicionesRegionales();
+        /*****************************************************************************/
+
+        /*Aqui aumentamos para que muestre el campo de correo electronico*/
+        if (this.data.objPadre.variables_globales.enviar_correo == 'no' || this.data.objPadre.variables_globales.enviar_correo == '' || this.data.objPadre.variables_globales.enviar_correo == null) {
+          this.ocultarComponente(this.Cmp.correo_electronico);
+          this.Cmp.correo_electronico.allowBlank = true;
+          this.Cmp.correo_electronico.reset();
+        } else if (this.data.objPadre.variables_globales.enviar_correo == 'si') {
+          this.mostrarComponente(this.Cmp.correo_electronico);
+          this.Cmp.correo_electronico.allowBlank = false;
+        }
+        /****************************************************************/
+
+
 
         /*Aumentamos el formato de la factura rollo o carta*/
-        this.Cmp.formato_factura.store.load({params:{start:0,limit:50},
-               callback : function (r) {
-                    this.Cmp.formato_factura.setValue('Rollo');
-                    this.Cmp.formato_factura.fireEvent('select', this.Cmp.formato_factura,'Rollo',0);
-                }, scope : this
-            });
+        // this.Cmp.formato_factura.store.load({params:{start:0,limit:50},
+        //        callback : function (r) {
+        //             this.Cmp.formato_factura.setValue('Rollo');
+        //             this.Cmp.formato_factura.fireEvent('select', this.Cmp.formato_factura,'Rollo',0);
+        //         }, scope : this
+        //     });
         /***************************************************/
 
         this.Cmp.cambio.setValue(0);
@@ -481,30 +535,95 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
           /*******************cambiaremos el estilo del boton guardar *********************/
           if (this.data.tipo_form == 'new'){
-          this.megrid.topToolbar.items.items[0].container.dom.style.width="75px";
+          this.megrid.topToolbar.items.items[0].container.dom.style.width="80px";
           this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
           this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
 
+          /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+          Ext.getCmp('botonGuardar').el.dom.onmouseover = function () {
+            Ext.getCmp('botonGuardar').btnEl.dom.style.background = '#00B2FA';
+          };
+
+          Ext.getCmp('botonGuardar').el.dom.onmouseout = function () {
+            Ext.getCmp('botonGuardar').btnEl.dom.style.background = '';
+          };
+
+          /*******************************************************/
+
+          /******************Cambiaremos el estilo del boton agregar detalle************************/
+          this.megrid.topToolbar.items.items[1].container.dom.style.width="80px";
+          this.megrid.topToolbar.items.items[1].container.dom.style.height="35px";
+          this.megrid.topToolbar.items.items[1].btnEl.dom.style.height="35px";
+
+          /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+          Ext.getCmp('botonAgregar').el.dom.onmouseover = function () {
+            Ext.getCmp('botonAgregar').btnEl.dom.style.background = '#5CE100';
+          };
+
+          Ext.getCmp('botonAgregar').el.dom.onmouseout = function () {
+            Ext.getCmp('botonAgregar').btnEl.dom.style.background = '';
+          };
+
+          /*******************************************************/
+
+
+
+          this.megrid.topToolbar.items.items[2].container.dom.style.width="75px";
+          this.megrid.topToolbar.items.items[2].container.dom.style.height="35px";
+          this.megrid.topToolbar.items.items[2].btnEl.dom.style.height="35px";
+
+          /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+          Ext.getCmp('botonEliminar').el.dom.onmouseover = function () {
+            Ext.getCmp('botonEliminar').btnEl.dom.style.background = 'rgba(255, 0, 0, 0.5)';
+          };
+
+          Ext.getCmp('botonEliminar').el.dom.onmouseout = function () {
+            Ext.getCmp('botonEliminar').btnEl.dom.style.background = '';
+          };
+
+          /*******************************************************/
+
+
+
           // this.megrid.topToolbar.items.items[1].setDisabled(false);
 
-          this.megrid.topToolbar.el.dom.style.background="#FFD9BA";
+          this.megrid.topToolbar.el.dom.style.background="#3AC2B6";
+          this.megrid.topToolbar.el.dom.style.height="45px";
           this.megrid.topToolbar.el.dom.style.borderRadius="2px";
           this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#FFF4EB';
+
         } else {
-          this.megrid.topToolbar.items.items[0].container.dom.style.width="75px";
+          this.megrid.topToolbar.items.items[0].container.dom.style.width="80px";
           this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
           this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
+
+          /******************Cambiaremos el estilo del boton agregar detalle************************/
+          this.megrid.topToolbar.items.items[1].container.dom.style.width="80px";
+          this.megrid.topToolbar.items.items[1].container.dom.style.height="35px";
+          this.megrid.topToolbar.items.items[1].btnEl.dom.style.height="35px";
+
+          this.megrid.topToolbar.items.items[2].container.dom.style.width="80px";
+          this.megrid.topToolbar.items.items[2].container.dom.style.height="35px";
+          this.megrid.topToolbar.items.items[2].btnEl.dom.style.height="35px";
+
+
+
           // this.megrid.topToolbar.items.items[1].setDisabled(false);
-          this.megrid.topToolbar.el.dom.style.background="#FFD9BA";
+
+          this.megrid.topToolbar.el.dom.style.background="#3AC2B6";
+          this.megrid.topToolbar.el.dom.style.height="45px";
           this.megrid.topToolbar.el.dom.style.borderRadius="2px";
           this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#FFF4EB';
 
         }
           //this.arrayBotones[0].scope.form.buttons[0].container.dom.style.border="2px solid red";
-          this.arrayBotones[0].scope.form.buttons[0].container.dom.style.width="12px";
+          this.arrayBotones[0].scope.form.buttons[0].container.dom.style.width="20px";
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
-          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="150px";
-          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="30px";
+          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="190px";
+          this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="50px";
 
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
@@ -533,7 +652,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
 
                   /*Aumentando para que nos filtre siempre efectivo (CASH)*/
-                  this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
+                  this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
                 	this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
                   /*********************************************************/
                }
@@ -626,14 +745,22 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         },this);*/
 
         /****************************Aumnetando la instancia de pago********************************/
-        this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+        this.Cmp.id_medio_pago.on('select',function(c,r,i) {
 
-          this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+          if(r){
+            if (r.data) {
+              var codigo_forma_pago = r.data.fop_code;
+              this.Cmp.tipo_tarjeta.setValue(r.data.name);
+            }
+          }
 
-          if (codigo_forma_pago == 'CC') {
+          //var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+
+          //this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+          if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
+          if (codigo_forma_pago.startsWith("CC")) {
             this.mostrarComponente(this.Cmp.codigo_tarjeta);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta);
+            //this.mostrarComponente(this.Cmp.tipo_tarjeta);
           	this.mostrarComponente(this.Cmp.numero_tarjeta);
 			      this.ocultarComponente(this.Cmp.id_auxiliar);
             this.ocultarComponente(this.Cmp.mco);
@@ -641,7 +768,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			      this.Cmp.codigo_tarjeta.allowBlank = false;
             this.Cmp.tipo_tarjeta.allowBlank = false;
           	this.Cmp.mco.allowBlank = true;
-          } else if (codigo_forma_pago == 'MC') {
+          } else if (codigo_forma_pago.startsWith("MCO")) {
             this.mostrarComponente(this.Cmp.mco);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -654,7 +781,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta.reset();
             this.Cmp.id_auxiliar.reset();
             this.Cmp.numero_tarjeta.reset();
-          } else if (codigo_forma_pago == 'CU') {
+          } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -669,7 +796,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar.reset();
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
-          }else if (codigo_forma_pago == 'CA') {
+          }else if (codigo_forma_pago.startsWith("CA")) {
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -693,16 +820,17 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
           }
+        }
 
         },this);
 
 
-        this.Cmp.id_instancia_pago_2.on('select',function(c,r,i) {
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+        this.Cmp.id_medio_pago_2.on('select',function(c,r,i) {
+          var codigo_forma_pago = r.data.fop_code;
           this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
-          if (codigo_forma_pago == 'CC') {
+          if (codigo_forma_pago.startsWith("CC")) {
             this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
+            //this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
           	this.mostrarComponente(this.Cmp.numero_tarjeta_2);
 			      this.ocultarComponente(this.Cmp.id_auxiliar_2);
             this.ocultarComponente(this.Cmp.mco_2);
@@ -710,7 +838,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			      this.Cmp.codigo_tarjeta_2.allowBlank = false;
             this.Cmp.tipo_tarjeta_2.allowBlank = false;
           	this.Cmp.mco_2.allowBlank = true;
-          } else if (codigo_forma_pago == 'MC') {
+          } else if (codigo_forma_pago.startsWith("MCO")) {
             this.mostrarComponente(this.Cmp.mco_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -723,7 +851,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta_2.reset();
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
-          } else if (codigo_forma_pago == 'CU') {
+          } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -738,7 +866,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
-          }else if (codigo_forma_pago == 'CA') {
+          }else if (codigo_forma_pago.startsWith("CA")) {
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -887,7 +1015,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
             /**********************************Cambiamos el Style *****************************************/
 
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
@@ -908,7 +1036,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
             /**********************************Cambiamos el Style *****************************************/
 
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
@@ -921,11 +1049,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           } else{
             //this.Cmp.id_forma_pago_2.disable();
             this.Cmp.id_moneda_2.disable();
-            this.Cmp.id_instancia_pago_2.disable();
+            this.Cmp.id_medio_pago_2.disable();
             this.Cmp.monto_forma_pago_2.disable();
             this.Cmp.monto_forma_pago_2.reset();
             //this.Cmp.id_forma_pago_2.reset();
-            this.Cmp.id_instancia_pago_2.reset();
+            this.Cmp.id_medio_pago_2.reset();
             this.Cmp.id_moneda_2.reset();
             //this.Cmp.moneda_tarjeta_2.reset();
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
@@ -981,7 +1109,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             /**********************************Cambiamos el Style *****************************************/
             //this.Cmp.id_forma_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
           }else if (this.Cmp.id_moneda.getValue() != 2 && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
@@ -996,18 +1124,18 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
             //this.Cmp.id_forma_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
           } else{
             //this.Cmp.id_forma_pago_2.disable();
             this.Cmp.id_moneda_2.disable();
-            this.Cmp.id_instancia_pago_2.disable();
+            this.Cmp.id_medio_pago_2.disable();
             this.Cmp.monto_forma_pago_2.disable();
             this.Cmp.monto_forma_pago_2.reset();
             //this.Cmp.id_forma_pago_2.reset();
             this.Cmp.id_moneda_2.reset();
-            this.Cmp.id_instancia_pago_2.reset();
+            this.Cmp.id_medio_pago_2.reset();
             //this.Cmp.moneda_tarjeta_2.reset();
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
@@ -1087,8 +1215,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         	if (this.accionFormulario != 'EDIT') {
               /*Comentando para agregar InstanciaPago*/
               //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-              this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
-            	this.Cmp.id_instancia_pago.store.baseParams.filtrar_base = 'si';
+              this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
+            	this.Cmp.id_medio_pago.store.baseParams.filtrar_base = 'si';
 
             }
 
@@ -1208,17 +1336,22 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 }, scope : this
             });
 
-            this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
-    		           callback : function (r) {
+            this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
+                   callback : function (r) {
                               if (r.length == 1 ) {
-                                  this.Cmp.id_instancia_pago.setValue(r[0].data.id_instancia_pago);
-                                  this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,r[0],0);
+                                  this.Cmp.id_medio_pago.setValue(r[0].data.id_medio_pago_pw);
+                                  this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[0],0);
+                              } else {
+                                for (var i = 0; i < r.length; i++) {
+                                  if (r[i].data.fop_code.startsWith("CA")) {
+                                    this.Cmp.id_medio_pago.setValue(r[i].data.id_medio_pago_pw);
+                                    this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
+                                  }
+                                }
                               }
-                                  this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,this.Cmp.id_instancia_pago.store.getById(this.Cmp.id_instancia_pago.getValue()),0);
-                                  this.Cmp.id_instancia_pago.store.baseParams.defecto = 'no';
-
-    		            }, scope : this
-    		        });
+              this.Cmp.id_medio_pago.store.baseParams.defecto = 'no';
+                    }, scope : this
+                });
             /***************/
 
         /*Comentando para incluir InstanciaPago*/
@@ -1407,26 +1540,30 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     loadMask : true,
                     clicksToEdit: 1,
                     plain: true,
+                    id:'barraMenu',
                     plugins: [this.summary],
                     stripeRows: true,
                     tbar: [
                       {
-                  	    text: '<div style="font-weight:bold; font-size:15px"><i class="fa fa-save fa-lg"></i> Guardar</div>',
+                  	    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
                         scope: this,
+                        id:'botonGuardar',
               			    handler: function(btn) {
                           this.guardarDetalles();
               			    }
                       },
                       {
-                      text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Detalle',
+                      text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
                       scope: this,
+                      id:'botonAgregar',
                         handler : function(){
                           this.formularioAgregar();
                           }
                       },
                       {
-                        text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
+                        text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
                         scope: this,
+                        id:'botonEliminar',
                           handler : function(){
                             var index = this.megrid.getSelectionModel().getSelectedCell();
                             if (!index) {
@@ -1434,7 +1571,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             }
                             var rec = this.mestore.getAt(index[0]);
                             this.mestore.remove(rec);
-                            console.log("llega aqui eliminar",rec);
                             this.obtenersuma();
                             /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
                             if (rec.data.requiere_excento == 'si') {
@@ -1446,21 +1582,22 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
                         },
-                    {
-                            text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
-                            scope:this,
-                            handler: function(){
-                                var index = this.megrid.getSelectionModel().getSelectedCell();
-                                if (!index) {
-                                    return false;
-                                }
-                                var rec = this.mestore.getAt(index[0]);
-                                this.onDuplicateDetail(rec);
-                                this.evaluaGrilla();
-                                this.obtenersuma();
-
-                            }
-                    }],
+                    // {
+                    //         text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
+                    //         scope:this,
+                    //         handler: function(){
+                    //             var index = this.megrid.getSelectionModel().getSelectedCell();
+                    //             if (!index) {
+                    //                 return false;
+                    //             }
+                    //             var rec = this.mestore.getAt(index[0]);
+                    //             this.onDuplicateDetail(rec);
+                    //             this.evaluaGrilla();
+                    //             this.obtenersuma();
+                    //
+                    //         }
+                    // }
+                  ],
 
                     columns: [
                     new Ext.grid.RowNumberer(),
@@ -1589,25 +1726,25 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     stripeRows: true,
                     tbar: [
                       {
-                        text: '<div style="font-weight:bold; font-size:15px"><i class="fa fa-save fa-lg"></i> Guardar</div>',
+                  	    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
                         scope: this,
-                        disabled:true,
-                        handler: function(btn) {
+                        id:'botonGuardar',
+              			    handler: function(btn) {
                           this.guardarDetalles();
-                        }
+              			    }
                       },
                       {
-                      text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Detalle',
+                      text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
                       scope: this,
-                      disabled:true,
+                      id:'botonAgregar',
                         handler : function(){
                           this.formularioAgregar();
                           }
                       },
                       {
-                        text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
+                        text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
                         scope: this,
-                        disabled:true,
+                        id:'botonEliminar',
                           handler : function(){
                             var index = this.megrid.getSelectionModel().getSelectedCell();
                             if (!index) {
@@ -1615,7 +1752,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             }
                             var rec = this.mestore.getAt(index[0]);
                             this.mestore.remove(rec);
-                            console.log("llega aqui eliminar",rec);
                             this.obtenersuma();
                             /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
                             if (rec.data.requiere_excento == 'si') {
@@ -1627,22 +1763,22 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
                         },
-                    {
-                            text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
-                            scope:this,
-                            disabled:true,
-                            handler: function(){
-                                var index = this.megrid.getSelectionModel().getSelectedCell();
-                                if (!index) {
-                                    return false;
-                                }
-                                var rec = this.mestore.getAt(index[0]);
-                                this.onDuplicateDetail(rec);
-                                this.evaluaGrilla();
-                                this.obtenersuma();
-
-                            }
-                    }],
+                    // {
+                    //         text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
+                    //         scope:this,
+                    //         handler: function(){
+                    //             var index = this.megrid.getSelectionModel().getSelectedCell();
+                    //             if (!index) {
+                    //                 return false;
+                    //             }
+                    //             var rec = this.mestore.getAt(index[0]);
+                    //             this.onDuplicateDetail(rec);
+                    //             this.evaluaGrilla();
+                    //             this.obtenersuma();
+                    //
+                    //         }
+                    // }
+                  ],
                     columns: [
                     new Ext.grid.RowNumberer(),
                     {
@@ -1717,12 +1853,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     formularioAgregar : function(){
-      console.log("llega aqui formulario agregar",this);
       var simple = new Ext.FormPanel({
        labelWidth: 75, // label settings here cascade unless overridden
        frame:true,
-       bodyStyle:'padding:5px 5px 0',
-       width: 500,
+       bodyStyle:'margin-left:-7px; margin-top:-7px; padding:10px 10px 0; background:#6EC8E3;',
+       width: 650,
        height:300,
        defaultType: 'textfield',
        items: [new Ext.form.ComboBox({
@@ -1731,6 +1866,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                            allowBlank:false,
                            emptyText:'Tipo...',
                            typeAhead: true,
+                           hidden:true,
                            triggerAction: 'all',
                            lazyRender:true,
                            mode: 'local',
@@ -1756,7 +1892,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                           totalProperty: 'total',
                                                           fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
                                                           remoteSort: true,
-                                                          baseParams: {par_filtro: 'ingas.desc_ingas',irva:'irva'}
+                                                          baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP'}
                                                       }),
                                                       valueField: 'id_concepto_ingas',
                                                       displayField: 'desc_ingas',
@@ -1781,7 +1917,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                       pageSize: 15,
                                                       queryDelay: 1000,
                                                       //anchor: '100%',
-                                                    //  width : 250,
+                                                      width : 450,
                                                       listWidth:'450',
                                                       minChars: 2 ,
                                                       disabled:true,
@@ -1790,7 +1926,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                        },
 
                                                     }),
-                                                     new Ext.form.TextField({
+                                                     new Ext.form.TextArea({
                                                             name: 'descripcion',
                                                             fieldLabel: 'Descripcion',
                                                             allowBlank:true,
@@ -1798,6 +1934,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                               width: '190px'
                                                             },
                                                             disabled : true,
+                                                            width : 450,
                                                             hidden : true
                                                     }),
 
@@ -1806,6 +1943,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                                         msgTarget: 'title',
                                                                         fieldLabel: 'Cantidad',
                                                                         allowBlank: false,
+                                                                        width : 450,
                                                                         style:{
                                                                           width: '190px'
                                                                         },
@@ -1821,6 +1959,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                                         fieldLabel: 'P/U',
                                                                         allowBlank: false,
                                                                         allowDecimals: true,
+                                                                        width : 450,
                                                                         decimalPrecision : 2,
                                                                         style:{
                                                                           width: '190px'
@@ -1835,6 +1974,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                                           width: '190px'
                                                                         },
                                                                         allowBlank: false,
+                                                                        width : 450,
                                                                         allowDecimals: false,
                                                                         maxLength:10,
                                                                         readOnly :true
@@ -1848,34 +1988,49 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
    this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
    // /************************************************************************************************/
       var win = new Ext.Window({
-        title: 'Agregar Detalle', //the title of the window
-        width:320,
+        title: '<center><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;"> AGREGAR DETALLE</span></center>', //the title of the window
+        width:600,
         height:250,
         closeAction:'hide',
         modal:true,
         plain: true,
         items:simple,
         buttons: [{
-                    text:'<i class="fa fa-floppy-o fa-lg"></i> Guardar',
+                    text:'<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/aceptar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:15px;">Guardar</span></div>',
+                    id:'botonGuardarFormulario',
                     scope:this,
                     handler: function(){
                         this.insertarNuevo(win);
                     }
                 },{
-                    text: '<i class="fa fa-times-circle fa-lg"></i> Cancelar',
+                    text: '<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/cancelar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:13px;">Cancelar</span></div>',
+                    id:'botonCancelarFormulario',
                     handler: function(){
                         win.hide();
                     }
                 }]
 
       });
+      this.ventana_detalle = win;
       win.show();
-      this.variables.items.items[0].on('select',function(c,r,i) {
-          this.ComboIdProducto(r.data.field1);
-      },this);
+      /****************************Aqui recuperaremos por defecto*******************************/
+      this.variables.items.items[0].setValue('servicio');//esta parte hay que ver mas adelante si se cambiara
+      this.variables.items.items[0].fireEvent('select',this.variables.items.items[0],'servicio');
+      this.ComboIdProducto(this.variables.items.items[0].getValue());
+      /*****************************************************************************************/
+
+      // this.variables.items.items[0].on('select',function(c,r,i) {
+      //     this.ComboIdProducto(r.data.field1);
+      // },this);
     },
 
     ComboIdProducto : function (tipo) {
+
+      /*Aqui aumentamos para poner el filtro de los conceptos*/
+      this.variables.items.items[1].store.baseParams.regionales = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /*******************************************************/
+
+
     	this.variables.items.items[1].setDisabled(false);
     	this.variables.items.items[1].store.baseParams.tipo = tipo;
       //this.variables.items.items[2].setVisible(false)
@@ -1883,21 +2038,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     		this.variables.items.items[1].store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
 
         this.variables.items.items[1].on('select',function(c,r,i) {
-          console.log("vemos para obtener el precio",r);
-          console.log("vemos para obtener el this",this);
           if (r.data.requiere_descripcion == 'si') {
             this.variables.items.items[2].setDisabled(false);
             this.variables.items.items[2].setVisible(true);
+            this.ventana_detalle.body.dom.style.height = "230px";
           } else if (r.data.requiere_descripcion != 'si')  {
               this.variables.items.items[2].setDisabled(true);
     	    		this.variables.items.items[2].allowBlank = true;
               this.variables.items.items[2].setVisible(false)
-              console.log("llega descripcion22",this);
       	    	this.variables.items.items[2].reset();
+              this.ventana_detalle.body.dom.style.height = "150px";
               }
 
       /***************Habilitamos el campo Excento****************/
-      console.log("verificamos el valor excento",this.mestore);
       if (this.data.datos_originales == undefined) {
         if (r.data.excento == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
           this.mostrarComponente(this.Cmp.excento);
@@ -1921,7 +2074,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
      /*************************Recuperamos el precio unitario (irva recuperacion dato)************************************/
           this.variables.items.items[3].setValue(1);
-          console.log("llega el dato r",r);
           if (r.data.id_moneda == 2) {
             var precio = (r.data.precio * this.tipo_cambio);
           } else {
@@ -1995,7 +2147,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       requiere_excento:this.requiere_excento,        //
       id_venta:this.Cmp.id_venta.getValue()        //
       });
-      console.log("llega aqui nuevos",this);
       this.mestore.add(myNewRecord);
       this.obtenersuma();
       this.guardarDetalles();
@@ -2005,7 +2156,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     },
 
     eliminarAnteriores : function () {
-      console.log("Eliminar todos y verificar excento",this.mestore);
       for (var i = this.mestore.data.length; i >= 0; i--) {
               var suma_eli = 0;
               suma_eli = suma_eli + i;
@@ -2055,6 +2205,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   this.id_formula = this.id_formula_recu.split(",");
                   this.req_excento = this.tiene_excento.split(",");
                   this.precio_form = this.precio_inde.split(",");
+                  this.desc_moneda_recu = reg.ROOT.datos.v_desc_moneda;
+                  this.nombre_moneda = this.desc_moneda_recu.split(",");
 
                   var grillaRecord =  Ext.data.Record.create([
                     {name:'id_venta_detalle', type: 'numeric'},
@@ -2078,8 +2230,14 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                       {name:'usr_reg', type: 'string'},
                       {name:'usr_mod', type: 'string'}
                 ]);
-                  console.log("llega aqui el ex",this);
+
                 for (var i = 0; i < this.producto_nombre.length; i++) {
+                  if (this.nombre_moneda[i] != this.data.objPadre.variables_globales.codigo_moneda_base) {
+                    var precio_base = this.precio_form[i]*this.tipo_cambio;
+                  } else {
+                    var precio_base = this.precio_form[i];
+                  }
+
                 var myNewRecord = new grillaRecord({
                     nombre_producto : this.producto_nombre[i],
                 //     descripcion : request.arguments.nombre_formula,
@@ -2088,9 +2246,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     tipo : 'formula',
                     cantidad : '1',
                     requiere_excento:this.req_excento[i],
-                    precio_unitario : this.precio_form[i],
-                    precio_total: this.precio_form[i]*1              //
+                    precio_unitario : precio_base,
+                    precio_total: precio_base*1              //
                   });
+
                    this.mestore.add(myNewRecord);
               }
 
@@ -2195,7 +2354,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             autoScroll:true,
                             style: {
                                    height:'160px',
-                                   background: '#8BB9B2',
+                                   background: '#5FB0A8',
                                    //border:'2px solid green'
                                 },
                             padding: '0 0 0 10',
@@ -2278,7 +2437,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                               collapsible: true,
                               style: {
                                        height:'250px',
-                                       background:'#8BB9B2',
+                                       background:'#5FB0A8',
                                       // border:'2px solid blue'
                                      },
                               padding: '0 0 0 10',
@@ -2419,7 +2578,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
      successWizard:function(resp){
          // var rec=this.sm.getSelected();
          var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-         console.log("llega aqui pasar estado",objRes.ROOT.datos);
          if (objRes.ROOT.datos.estado == 'finalizado' && this.tipo_factura != 'manual') {
              this.id_venta = objRes.ROOT.datos.id_venta;
              this.id_proceso_wf = objRes.ROOT.datos.id_proceso_wf;
@@ -2434,8 +2592,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       imprimirNota: function(){
    		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
    				Phx.CP.loadingShow();
+          console.log("aqui llega el formato",this);
          if (this.data.objPadre.tipo_punto_venta == 'ato') {
-           if (this.Cmp.formato_factura.getValue() == 'Carta') {
+           if (this.data.objPadre.variables_globales.formato_comprobante == 'carta') {
            		Ext.Ajax.request({
            						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
            						params : {
@@ -2449,7 +2608,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
            						timeout : this.timeout,
            						scope : this
            					});
-               } else if (this.Cmp.formato_factura.getValue() == 'Rollo'){
+               } else if (this.data.objPadre.variables_globales.formato_comprobante == 'rollo'){
                   Ext.Ajax.request({
                						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
                						params : {
@@ -2464,8 +2623,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                						scope : this
                					});
                 }
-        } else {          
-            if (this.Cmp.formato_factura.getValue() == 'Carta') {
+        } else {
+            if (this.data.objPadre.variables_globales.formato_comprobante == 'carta') {
               Ext.Ajax.request({
        						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
        						params : {
@@ -2479,7 +2638,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
        						timeout : this.timeout,
        						scope : this
        					});
-            } else if (this.Cmp.formato_factura.getValue() == 'Rollo'){
+            } else if (this.data.objPadre.variables_globales.formato_comprobante == 'rollo'){
               Ext.Ajax.request({
        						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
        						params : {
@@ -2583,7 +2742,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				hiddenName : 'id_cliente',
 				forceSelection : false,
 				typeAhead : false,
-				tpl:'<tpl for="."><div class="x-combo-list-item"><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
 				triggerAction : 'all',
 				lazyRender : true,
 				mode : 'remote',
@@ -2903,29 +3062,30 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     /************************Aumentando instancia de pago*****************************************/
     {
         config: {
-            name: 'id_instancia_pago',
-            fieldLabel: 'Instancia de pago',
+            name: 'id_medio_pago',
+            fieldLabel: 'Medio de pago',
             allowBlank: false,
             width:150,
-            emptyText: 'Instancia de pago...',
+            id: 'testeoColor',
+            emptyText: 'Medio de pago...',
             store: new Ext.data.JsonStore({
-                url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                id: 'id_instancia_pago',
+                url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                id: 'id_medio_pago',
                 root: 'datos',
                 sortInfo: {
-                    field: 'nombre',
+                    field: 'name',
                     direction: 'ASC'
                 },
                 totalProperty: 'total',
-                fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                 remoteSort: true,
-                baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
             }),
-            valueField: 'id_instancia_pago',
-            displayField: 'nombre',
-            gdisplayField: 'codigo_forma_pago',
-            hiddenName: 'id_instancia_pago',
-            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+            valueField: 'id_medio_pago_pw',
+            displayField: 'name',
+            gdisplayField: 'name',
+            hiddenName: 'id_medio_pago_pw',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
             forceSelection: true,
             typeAhead: false,
             triggerAction: 'all',
@@ -2939,7 +3099,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             minChars: 2,
             disabled:false,
             renderer : function(value, p, record) {
-                return String.format('{0}', record.data['codigo_forma_pago']);
+                return String.format('{0}', record.data['codigo_fp']);
             }
         },
         type: 'ComboBox',
@@ -3060,6 +3220,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             fieldLabel: 'Tipo Tarjeta',
             allowBlank: false,
             width:150,
+            hidden:true,
             //maxLength:20,
             //allowNegative:false,
             //value:0
@@ -3163,29 +3324,29 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         {
             config: {
-                name: 'id_instancia_pago_2',
-                fieldLabel: 'Instancia de pago',
+                name: 'id_medio_pago_2',
+                fieldLabel: 'Medio de pago',
                 allowBlank: false,
                 width:150,
-                emptyText: 'Instancia de pago...',
+                emptyText: 'Medio de pago...',
                 store: new Ext.data.JsonStore({
-                    url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                    id: 'id_instancia_pago',
+                    url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                    id: 'id_medio_pago',
                     root: 'datos',
                     sortInfo: {
-                        field: 'nombre',
+                        field: 'name',
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                    fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
                 }),
-                valueField: 'id_instancia_pago',
-                displayField: 'nombre',
-                gdisplayField: 'codigo_forma_pago',
-                hiddenName: 'id_instancia_pago',
-                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+                valueField: 'id_medio_pago_pw',
+                displayField: 'name',
+                gdisplayField: 'name',
+                hiddenName: 'id_medio_pago_pw',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
                 forceSelection: true,
                 typeAhead: false,
                 triggerAction: 'all',
@@ -3199,7 +3360,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 minChars: 2,
                 disabled:false,
                 renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['codigo_forma_pago']);
+                    return String.format('{0}', record.data['codigo_fp']);
                 }
             },
             type: 'ComboBox',
@@ -3378,6 +3539,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 fieldLabel: 'Tipo Tarjeta',
                 allowBlank: false,
                 width:150,
+                hidden:true,
                 //maxLength:20,
                 //allowNegative:false,
                 //value:0
@@ -3483,7 +3645,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
         /*Comentando para incluir InstanciaPago*/
         //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-        this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
+        this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
         this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
         this.mestore.load();
       //  this.Cmp.id_forma_pago.reset();

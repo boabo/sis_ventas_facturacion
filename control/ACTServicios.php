@@ -16,8 +16,12 @@ class ACTServicios extends ACTbase{
 
 		/*Aumentando para filtrar solo los conceptos que seran para Recibos Oficiales (Ismael Valdivia 14/07/2020)*/
 		if($this->objParam->getParametro('facturacion')!=''){
-				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales)");
 		}
+
+		// if($this->objParam->getParametro('regionales')!=''){
+		// 		$this->objParam->addFiltro("''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales)");
+		// }
 		/**************************************************************************************************************/
 
 
@@ -38,13 +42,13 @@ class ACTServicios extends ACTbase{
 		}
 		/**************************************************************************/
 		/**************************************Filtramos por PV y Tipo PV(ATO CTO)**************************************/
-		if($this->objParam->getParametro('tipo_pv') != '') {
-			$this->objParam->addFiltro("''".$this->objParam->getParametro('tipo_pv')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.tipo_punto_venta,'','')::varchar, '','')))");
-		}
-
-		if($this->objParam->getParametro('id_punto_venta_producto') != '') {
-			$this->objParam->addFiltro("''".$this->objParam->getParametro('id_punto_venta_producto')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.punto_venta_asociado,'','')::varchar, '','')))");
-		}
+		// if($this->objParam->getParametro('tipo_pv') != '') {
+		// 	$this->objParam->addFiltro("''".$this->objParam->getParametro('tipo_pv')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.tipo_punto_venta,'','')::varchar, '','')))");
+		// }
+		//
+		// if($this->objParam->getParametro('id_punto_venta_producto') != '') {
+		// 	$this->objParam->addFiltro("''".$this->objParam->getParametro('id_punto_venta_producto')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.punto_venta_asociado,'','')::varchar, '','')))");
+		// }
 		/***************************************************************************************************************/
 
 

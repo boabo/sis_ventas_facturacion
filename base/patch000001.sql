@@ -1286,7 +1286,44 @@ ALTER TABLE vef.tventa
 
   COMMENT ON COLUMN vef.tdosificacion_ro.tipo_generacion
   IS 'manual|computarizada';
-  
+
   ALTER TABLE vef.tdosificacion_ro
     OWNER TO postgres;
 /***********************************F-SCP-IRVA-VEF-0-25/08/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-15/09/2020****************************************/
+ALTER TABLE vef.tventa
+  ALTER COLUMN anulado TYPE VARCHAR(20) COLLATE pg_catalog."default";
+/***********************************F-SCP-IRVA-VEF-0-15/09/2020****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-16/11/2020****************************************/
+ALTER TABLE vef.tsucursal
+  ADD COLUMN enviar_correo VARCHAR(5);
+
+ALTER TABLE vef.tsucursal
+  ALTER COLUMN enviar_correo SET DEFAULT 'no'::CHARACTER VARYING;
+  
+
+ALTER TABLE vef.tventa_forma_pago
+  RENAME COLUMN id_instancia_pago TO id_medio_pago;
+
+
+ALTER TABLE vef.tformula
+  DROP COLUMN punto_venta_asociado;
+
+ALTER TABLE vef.tformula
+  DROP COLUMN tipo_punto_venta
+
+
+ALTER TABLE vef.tformula
+  ADD COLUMN sw_autorizacion VARCHAR(200) [];
+
+COMMENT ON COLUMN vef.tformula.sw_autorizacion
+IS 'Permisos para RO, Facturas, etc';
+
+ALTER TABLE vef.tformula
+  ADD COLUMN regionales VARCHAR(200) [];
+
+COMMENT ON COLUMN vef.tformula.regionales
+IS 'Permisos Nivel Regional MIA,BOL';
+
+/***********************************F-SCP-IRVA-VEF-0-16/11/2020****************************************/

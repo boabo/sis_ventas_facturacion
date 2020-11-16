@@ -18,20 +18,190 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.Formula_v2.superclass.constructor.call(this,config);
 		this.init();
-		this.iniciarEventos(that);
+
 		/*Fondo color tbar (IRVA)*/
 		this.bbar.el.dom.style.background='linear-gradient(135deg, #8ec6ff 10%,#5da4ea 31%,#5da4ea 70%,#8ec6ff 88%)';
 		this.tbar.el.dom.style.background='linear-gradient(135deg, #8ec6ff 10%,#5da4ea 31%,#5da4ea 70%,#8ec6ff 88%)';
 		this.grid.body.dom.firstChild.firstChild.lastChild.style.background='#E7FAFF';
 		this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#A7DBFF';
 		/************************/
-		this.load({params:{start:0, limit:this.tam_pag}})
+		this.load({params:{start:0, limit:this.tam_pag}});
+
+		this.crearFormAuto();
+		this.addButton('inserAuto',{ text: 'Configurar Autorizaciones', iconCls: 'blist', disabled: false, handler: this.mostarFormAuto, tooltip: '<b>Configurar autorizaciones</b><br/>Permite seleccionar desde que modulos  puede selecionarse el concepto'});
+
+
 	},
 
+	mostarFormAuto:function(){
+		var data = this.getSelectedData();
+		if(data){
+			this.cmpAuto.setValue(data.sw_autorizacion);
+			this.cmpRegionales.setValue(data.regionales);
+			this.wAuto.show();
+		}
+
+	},
+	saveAuto: function(){
+		    var d = this.getSelectedData();
+		    Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url: '../../sis_ventas_facturacion/control/Formula_v2/editAuto',
+                params: {
+												sw_autorizacion: this.cmpAuto.getValue(),
+												regionales: this.cmpRegionales.getValue(),
+                	      id_formula: d.id_formula
+                	    },
+                success: this.successSinc,
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+
+	},
+	successSinc:function(resp){
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if(!reg.ROOT.error){
+            	if(this.wOt){
+            		this.wOt.hide();
+            	}
+            	if(this.wAuto){
+            		this.wAuto.hide();
+            	}
+
+                this.reload();
+             }else{
+                alert('ocurrio un error durante el proceso')
+            }
+    },
+
+
+		crearFormAuto:function(){
+
+				this.formAuto = new Ext.form.FormPanel({
+							baseCls: 'x-plain',
+							autoDestroy: true,
+
+							border: false,
+							layout: 'form',
+							 autoHeight: true,
+
+
+							items: [
+								{
+									 name:'sw_autorizacion',
+									 xtype:"awesomecombo",
+									 fieldLabel:'Autorizaciones',
+									 allowBlank: true,
+									 emptyText:'Autorizaciones...',
+									 store : new Ext.data.JsonStore({
+										 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+										 id : 'id_catalogo',
+										 root : 'datos',
+										 sortInfo : {
+											 field : 'codigo',
+											 direction : 'ASC'
+										 },
+										 totalProperty : 'total',
+										 fields: ['codigo','descripcion'],
+										 remoteSort : true,
+										 baseParams:{
+											cod_subsistema:'PARAM',
+											catalogo_tipo:'autorizaciones_concepto'
+										},
+									 }),
+									 valueField: 'codigo',
+									 displayField: 'descripcion',
+									 mode: 'remote',
+									 forceSelection:true,
+									 typeAhead: true,
+									 triggerAction: 'all',
+									 lazyRender: true,
+									 queryDelay: 1000,
+									 width: 250,
+									 minChars: 2 ,
+									 enableMultiSelect: true,
+									 pageSize: 200,
+									 queryDelay: 100
+								},
+
+								{
+									 name:'regionales',
+									 xtype:"awesomecombo",
+									 fieldLabel:'Regionales',
+									 allowBlank: true,
+									 emptyText:'Regionales...',
+									 store : new Ext.data.JsonStore({
+										 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+										 id : 'id_catalogo',
+										 root : 'datos',
+										 sortInfo : {
+											 field : 'codigo',
+											 direction : 'ASC'
+										 },
+										 totalProperty : 'total',
+										 fields: ['codigo','descripcion'],
+										 remoteSort : true,
+										 baseParams:{
+											cod_subsistema:'PARAM',
+											catalogo_tipo:'regionales_conceptos'
+										},
+									 }),
+									 valueField: 'codigo',
+									 displayField: 'descripcion',
+									 mode: 'remote',
+									 forceSelection:true,
+									 typeAhead: true,
+									 triggerAction: 'all',
+									 lazyRender: true,
+									 queryDelay: 1000,
+									 width: 250,
+									 minChars: 2 ,
+									 enableMultiSelect: true,
+									 pageSize: 200,
+									 queryDelay: 100
+								}
+						]
+					});
+
+
+
+			this.wAuto = new Ext.Window({
+							title: 'Configuracion',
+							collapsible: true,
+							maximizable: true,
+							autoDestroy: true,
+							width: 380,
+							height: 170,
+							layout: 'fit',
+							plain: true,
+							bodyStyle: 'padding:5px;',
+							buttonAlign: 'center',
+							items: this.formAuto,
+							modal:true,
+							 closeAction: 'hide',
+							buttons: [{
+									text: 'Guardar',
+									handler: this.saveAuto,
+									scope: this
+
+							},
+							 {
+									text: 'Cancelar',
+									handler: function(){ this.wAuto.hide() },
+									scope: this
+							}]
+					});
+
+						this.cmpAuto = this.formAuto.getForm().findField('sw_autorizacion');
+						this.cmpRegionales = this.formAuto.getForm().findField('regionales');
+
+
+		},
 
 	onButtonNew:function () {
 		Phx.vista.Formula_v2.superclass.onButtonNew.call(this);
-		this.ocultarComponente(this.Cmp.punto_venta_asociado);
 		this.form.el.dom.firstChild.childNodes[0].style.background = 'linear-gradient(135deg, #8ec6ff 10%,#5da4ea 31%,#5da4ea 70%,#8ec6ff 88%)';
 	},
 
@@ -39,30 +209,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.Formula_v2.superclass.onButtonEdit.call(this);
 		this.form.el.dom.firstChild.childNodes[0].style.background = '#84BFE7';
 		var rec = this.sm.getSelected();
-		if (rec.data.punto_venta_asociado == '') {
-			this.Cmp.punto_venta_asociado.reset();
-		}
-
-		if (rec.data.tipo_punto_venta == '') {
-			 this.Cmp.tipo_punto_venta.reset();
-		} else{
-			 this.Cmp.punto_venta_asociado.store.baseParams.tipo_pv = rec.data.tipo_punto_venta;
-		}
-
 	},
-
-	iniciarEventos: function(that){
-		this.Cmp.tipo_punto_venta.on('select',function(c,r,i){
-			that.capturaFiltros();
-		});
-		this.Cmp.tipo_punto_venta.reset();
-	},
-
-	capturaFiltros: function (combo, record, index) {
-		this.Cmp.punto_venta_asociado.store.baseParams.tipo_pv = this.Cmp.tipo_punto_venta.getValue();
-		this.mostrarComponente(this.Cmp.punto_venta_asociado);
-	},
-
 
 	Atributos:[
 		{
@@ -106,79 +253,38 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 				form:true
 		},
 		{
- 		 config:{
- 				 name: 'tipo_punto_venta',
- 				 fieldLabel: 'Tipo Punto de Venta',
- 				 allowBlank: true,
- 				 //anchor: '100%',
- 				 width:350,
-				 gwidth: 150,
- 				 emptyText:'Tipo punto de venta...',
- 				 triggerAction: 'all',
- 				 lazyRender:true,
- 				 mode: 'local',
- 				 displayField: 'text',
- 				 valueField: 'value',
- 				 enableMultiSelect:true,
- 				 store:new Ext.data.SimpleStore({
- 				 data : [['ato', 'ATO'], ['cto', 'CTO']],
- 				 id : 'value',
- 				 fields : ['value', 'text']
- 	 })
- 			 },
- 			 type:'AwesomeCombo',
- 			 id_grupo:0,
- 			 form:true,
- 			 grid:true
- 	 },
- 	 {
- 		 config: {
- 			 name: 'punto_venta_asociado',
- 			 fieldLabel: 'Punto de Venta',
- 			 allowBlank: true,
- 			 emptyText: 'Elija su punto de venta...',
- 			 store: new Ext.data.JsonStore({
- 				 url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
- 				 id: 'id_punto_venta',
- 				 root: 'datos',
- 				 sortInfo: {
- 					 field: 'nombre',
- 					 direction: 'ASC'
- 				 },
- 				 totalProperty: 'total',
- 				 fields: ['id_punto_venta', 'nombre', 'codigo'],
- 				 remoteSort: true,
- 				 baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
- 			 }),
- 			 valueField: 'id_punto_venta',
- 			 displayField: 'nombre',
- 			 gdisplayField: 'nombres_punto_venta',
- 			 //hiddenName: 'id_punto_venta',
- 			 forceSelection: true,
- 			 typeAhead: true,
- 			 triggerAction: 'all',
- 			 lazyRender: true,
- 			 mode: 'remote',
- 			 pageSize: 15,
- 			 queryDelay: 1000,
- 			 //anchor: '100%',
- 			 width:350,
- 			 gwidth: 150,
- 			 minChars: 2,
- 			 enableMultiSelect:true,
-			 listeners: {
-					  beforequery: function(qe){
-						delete qe.combo.lastQuery;
-					}
-				},
- 			 itemSelector: 'div.awesomecombo-5item',
- 			 tpl:'<tpl for="."><div class="awesomecombo-5item {checked}"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
- 		 },
- 		 type: 'AwesomeCombo',
- 		 id_grupo: 0,
- 		 grid: true,
- 		 form: true
- 	 },
+		config:{
+			name: 'sw_autorizacion',
+			fieldLabel: 'Autorizaciones',
+			allowBlank: true,
+			anchor: '80%',
+			gwidth: 200,
+			maxLength:500
+		},
+		type:'TextArea',
+		filters: {pfiltro:'conig.sw_autorizacion', type:'string'},
+
+		id_grupo:1,
+		grid:true,
+		form:false
+	 },
+	 {
+	 config:{
+		 name: 'regionales',
+		 fieldLabel: 'Regionales',
+		 allowBlank: true,
+		 anchor: '80%',
+		 gwidth: 200,
+		 maxLength:500
+	 },
+	 type:'TextArea',
+	 filters: {pfiltro:'conig.regionales', type:'string'},
+
+	 id_grupo:1,
+	 grid:true,
+	 form:false
+	},
+
 		{
 			config:{
 				name: 'estado_reg',
@@ -324,9 +430,8 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		{name:'punto_venta_asociado', type: 'string'},
-		{name:'tipo_punto_venta', type: 'string'},
 		{name:'nombres_punto_venta', type: 'string'},
+		'sw_autorizacion','regionales'
 
 	],
 	sortInfo:{

@@ -28,7 +28,7 @@ class MODServicios extends MODbase{
 		$this->captura('sw_tes','varchar');
 		$this->captura('activo_fijo','varchar');
 		$this->captura('almacenable','varchar');
-		$this->captura('sw_autorizacion','_varchar');
+		$this->captura('sw_autorizacion','varchar');
 		$this->captura('codigo','varchar');
 		$this->captura('id_unidad_medida','int4');
 		$this->captura('nandina','varchar');
@@ -46,7 +46,7 @@ class MODServicios extends MODbase{
 		$this->captura('punto_venta_asociado','varchar');
 		$this->captura('tipo_punto_venta','varchar');
 		$this->captura('id_moneda','int4');
-		$this->captura('precio','numeric');
+		$this->captura('precio','varchar');
 		$this->captura('desc_moneda','varchar');
 		$this->captura('requiere_descripcion','varchar');
 		$this->captura('excento','varchar');
@@ -54,6 +54,8 @@ class MODServicios extends MODbase{
 		$this->captura('id_actividad_economica','int4');
 		$this->captura('nombres_punto_venta','varchar');
 
+		$this->captura('regionales','varchar');
+		$this->captura('nivel_permiso','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

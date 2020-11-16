@@ -8,6 +8,7 @@
 */
 include(dirname(__FILE__).'/../reportes/RFactura.php');
 include(dirname(__FILE__).'/../reportes/RReporteFacturaA4.php');
+include(dirname(__FILE__).'/../reportes/RReporteReciboMiamiA4.php');
 
 class ACTCajero extends ACTbase{
 
@@ -146,14 +147,22 @@ class ACTCajero extends ACTbase{
 			$this->objFunc = $this->create('MODCajero');
 			$this->res = $this->objFunc->listarFactura($this->objParam);
 
+			$datosVenta = $this->res->getDatos();
 
 			$this->objFunc = $this->create('MODCajero');
 			$this->detalle = $this->objFunc->listarFacturaDetalle($this->objParam);
 
+			/*Aqui recueperar la casa matriz*/
+			$this->objFunc = $this->create('MODCajero');
+			$this->casaMatriz = $this->objFunc->listarCasaMatriz($this->objParam);
 
-			//var_dump($this->res);exit;
+		  if ($datosVenta[0]['tipo_factura'] == 'recibo') {
+		  	$titulo = 'Recibo';
+		  } else {
+				$titulo = 'Factura';
+			}
 			//obtener titulo del reporte
-			$titulo = 'Factura';
+
 			//Genera el nombre del archivo (aleatorio + titulo)
 			$nombreArchivo = uniqid(md5(session_id()) . $titulo);
 			$nombreArchivo .= '.pdf';
@@ -162,9 +171,12 @@ class ACTCajero extends ACTbase{
 			$this->objParam->addParametro('tamano', 'LETTER');
 			$this->objParam->addParametro('nombre_archivo', $nombreArchivo);
 
-
-			$this->objReporteFormato = new RReporteFacturaA4($this->objParam);
-			$this->objReporteFormato->setDatos($this->res->datos,$this->detalle->datos);
+			if ($datosVenta[0]['tipo_factura'] == 'recibo' && $datosVenta[0]['moneda_base'] == 'USD') {
+				$this->objReporteFormato = new RReporteReciboMiamiA4($this->objParam);
+			} else {
+				$this->objReporteFormato = new RReporteFacturaA4($this->objParam);
+			}
+			$this->objReporteFormato->setDatos($this->res->datos,$this->detalle->datos,$this->casaMatriz->datos);
 			$this->objReporteFormato->generarReporte();
 			$this->objReporteFormato->output($this->objReporteFormato->url_archivo, 'F');
 

@@ -26,17 +26,18 @@ class RReporteFacturaA4 extends  ReportePDF{
     		$this->SetXY($x+115,$y_cab);
     		$this->Cell(31,5,' NIT: ','TL',0,'L');
     		$this->SetXY($x+146,$y_cab);
-    		$this->Cell(30,5,'154422029','TR',0,'L');
-
+        $this->Cell(30,5,$this->datos[0]['nit'],'TR',0,'L');
         $this->SetXY($x+115,$y_cab+3.7);
-      	$this->Cell(31,5,' N° FACTURA: ','L',0,'L');
-      	$this->SetXY($x+146,$y_cab+3.7);
-      	$this->Cell(30,5,$this->datos[0]['numero_factura'],'R',0,'L');
 
-        $this->SetXY($x+115,$y_cab+7.4);
-    		$this->Cell(31,5,' N° AUTORIZACIÓN: ','BL',0,'L');
-    		$this->SetXY($x+146,$y_cab+7.4);
-    		$this->Cell(30,5,$this->datos[0]['autorizacion'],'BR',0,'L');
+        /*Aqui poner la condicion para el recibo Oficial*/
+          $this->Cell(31,5,' N° FACTURA: ','L',0,'L');
+          $this->SetXY($x+146,$y_cab+3.7);
+          $this->Cell(30,5,$this->datos[0]['numero_factura'],'R',0,'L');
+
+          $this->SetXY($x+115,$y_cab+7.4);
+      		$this->Cell(31,5,' N° AUTORIZACIÓN: ','BL',0,'L');
+      		$this->SetXY($x+146,$y_cab+7.4);
+      		$this->Cell(30,5,$this->datos[0]['autorizacion'],'BR',0,'L');
 
         $this->SetFont('','B',14);
     		$this->SetXY($x+115, $y_cab+13);
@@ -60,9 +61,9 @@ class RReporteFacturaA4 extends  ReportePDF{
   			$this->Cell($_address_box,2,'CASA MATRIZ',0,0,'C');
   			$this->SetFont('','',6);
   			$this->SetXY($x, $y_cab+14);
-  			$this->Cell($_address_box,2,'AV. SIMON LOPEZ NRO 1582 ZONA CONDEBAMBA',0,1,'C');
-  			$this->Cell($_address_box,2,'TELF: 4150000-72201369',0,1,'C');
-  			$this->Cell($_address_box,2,'COCHABAMBA - BOLIVIA',0,1,'C');
+        $this->Cell($_address_box,2,$this->casaMatriz[0]['direccion_casa_matriz'],0,1,'C');
+  			$this->Cell($_address_box,2,$this->casaMatriz[0]['telefono_casa_matriz'],0,1,'C');
+  			$this->Cell($_address_box,2,$this->casaMatriz[0]['lugar_casa_matriz'],0,1,'C');
 
   			$this->SetFont('','B',6);
   			$this->SetX($x);
@@ -135,16 +136,17 @@ class RReporteFacturaA4 extends  ReportePDF{
 
     }
 
-    function setDatos($datos,$detalle) {
+    function setDatos($datos,$detalle,$casaMatriz) {
 
         $this->datos = $datos;
         $this->detalle = $detalle;
+        $this->casaMatriz = $casaMatriz;
         //var_dump( $this->datos);
     }
 
     function  generarReporte()
     {
-      
+
 
       $this->AddPage();
       //$this->AliasNbPages();
@@ -373,7 +375,7 @@ class RReporteFacturaA4 extends  ReportePDF{
   			// $name_file = 'factA4'.md5($data.'|'.$nivelCorrecionError.'|'.$tamanio).'.jpg';
   			// $filename = $PNG_TEMP_DIR.$name_file;
   			//QRCode::png($data, $filename, $nivelCorrecionError,$tamanio);
-  			$this->Image($this->generarImagen('154422029',$this->datos[0]['numero_factura'],$this->datos[0]['autorizacion'],$this->datos[0]['fecha_venta'],$this->datos[0]['total_venta'],$this->datos[0]['sujeto_credito'],$this->datos[0]['codigo_control'],$this->datos[0]['nit_cliente'],$this->datos[0]['excento']),164,$this->getY()+7,20,20);
+  			$this->Image($this->generarImagen($this->datos[0]['nit'],$this->datos[0]['numero_factura'],$this->datos[0]['autorizacion'],$this->datos[0]['fecha_venta'],$this->datos[0]['total_venta'],$this->datos[0]['sujeto_credito'],$this->datos[0]['codigo_control'],$this->datos[0]['nit_cliente'],$this->datos[0]['excento']),164,$this->getY()+7,20,20);
         //$nitEmpresa,$nroFactura,$nroAutorizacion,$fechaFactura,$montoTotal,$montoFiscal,$codigoControl,$nitCliente,$valorExcento
   		}
 

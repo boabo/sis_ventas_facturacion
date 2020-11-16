@@ -368,6 +368,7 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='
                        select
+                        ven.id_venta,
 						en.nombre,
                         en.nit,
                         suc.direccion,
@@ -382,7 +383,7 @@ BEGIN
                         pxp.f_convertir_num_a_letra(ven.total_venta) as total_venta_literal,
                         ven.observaciones,
                         ven.nombre_factura,
-                        suc.nombre_comprobante,
+                        suc.nombre,
                         ven.nro_factura,
                         dos.nroaut,
                         ven.nit,
@@ -438,7 +439,16 @@ BEGIN
 
             emp.logo,
             usu.cuenta as cuenta_cajero,
-            usu.id_usuario
+            usu.id_usuario,
+            ven.tipo_factura,
+
+            (select mon.codigo_internacional
+            from param.tmoneda mon
+            where mon.tipo_moneda = ''base'')::varchar as moneda_base,
+
+            pv.codigo::varchar as codigo_iata,
+            COALESCE(to_char((EXTRACT(DAY FROM ven.fecha::date)),''00'')||substring(Upper(to_char(ven.fecha::date,''month''))from 1 for 3)||RIGHT((EXTRACT(YEAR FROM ven.fecha::date))::varchar,2))::varchar as fecha_ingles,
+            REPLACE(list(ip.mop_code),'','',''/'')::varchar as forma_pago
             /************************************/
 
             from vef.tventa ven
@@ -446,6 +456,9 @@ BEGIN
               '||v_join_destino||'
               inner join vef.tcliente tc on tc.id_cliente = cli.id_cliente
               inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
+
+              inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
+
               inner join param.tentidad en on en.id_entidad = suc.id_entidad
 
               /*Aumentando la empresa*/
@@ -459,11 +472,104 @@ BEGIN
               inner join param.tmoneda mven on mven.id_moneda = ven.id_moneda
               left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
               inner join segu.tusuario usu on usu.id_usuario = ven.id_usuario_reg
-             where  ven.id_proceso_wf = '||v_parametros.id_proceso_wf::varchar;
+
+              inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+			  inner join obingresos.tmedio_pago_pw ip on ip.id_medio_pago_pw = fp.id_medio_pago
+
+             where  ven.id_proceso_wf = '||v_parametros.id_proceso_wf::varchar||' group by
+             						ven.id_venta,
+                                    en.nombre,
+                                    en.nit,
+                                    suc.direccion,
+                                    suc.telefono,
+                                    suc.lugar,
+                                    lug.nombre,
+                                    ven.fecha,
+                                    ven.correlativo_venta,
+                                    mon.codigo,
+                                    ven.total_venta,
+                                    ven.excento,
+                                    ven.observaciones,
+                                    ven.nombre_factura,
+                                    suc.nombre_comprobante,
+                                    ven.nro_factura,
+                                    dos.nroaut,
+                                    ven.nit,
+                                    ven.cod_control,
+                                    dos.fecha_limite,
+                                    dos.glosa_impuestos,
+                                    dos.glosa_empresa,
+                                    en.pagina_entidad,
+                                    ven.id_venta,
+                                    en.nit,
+                                    tc.direccion,
+                                    ven.tipo_cambio_venta,
+                                    ven.total_venta_msuc,
+                                    mven.codigo,
+                                    mon.moneda,
+                                    mven.moneda,
+                                    ven.transporte_fob,
+                                    ven.seguros_fob,
+                                    ven.otros_fob,
+                                    ven.transporte_cif,
+                                    ven.seguros_cif,
+                                    ven.otros_cif,
+                                    ven.estado,
+                                    ven.valor_bruto,
+                                    ven.descripcion_bulto,
+                                    cli.telefono_celular,
+                                    cli.telefono_fijo,
+                                    ven.fecha_estimada_entrega,
+                                    ven.a_cuenta,
+                                    ven.nro_tramite,
+                                    tc.codigo,
+                                    cli.lugar,
+
+                                    suc.codigo,
+                                    dos.leyenda,
+                                    suc.zona,
+                                    ven.excento,
+                                    suc.codigo,
+                                    suc.nombre,
+                                    lug.nombre,
+                                    emp.logo,
+                                    usu.cuenta,
+                                    usu.id_usuario,
+                                    ven.tipo_factura,
+                                    pv.codigo,
+                                    dos.id_activida_economica,
+                                    suc.id_sucursal';
 
 
 			--Devuelve la respuesta
             raise notice 'consulta....%',v_consulta;
+			return v_consulta;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_LISCASAMAT_SEL'
+ 	#DESCRIPCION:   Funcion para recueperar la casa matriz de la entidad
+ 	#AUTOR:		Ismael Valdivia
+ 	#FECHA:		25-05-2020 21:00:00
+	***********************************/
+
+	elsif(p_transaccion='VF_LISCASAMAT_SEL')then
+
+    	begin
+    		--Sentencia de la consulta
+			v_consulta:='
+                        select
+                              suc.nombre::varchar as nombre_casa_matriz,
+                              suc.codigo::varchar as codigo_casa_matriz,
+                              suc.direccion::varchar as direccion_casa_matriz,
+                              suc.telefono::varchar as telefono_casa_matriz,
+                              suc.lugar::varchar as lugar_casa_matriz
+                        from vef.tsucursal suc
+                        where suc.codigo = ''0''';
+
+
+			--Devuelve la respuesta
 			return v_consulta;
 
 		end;

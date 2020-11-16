@@ -123,6 +123,12 @@ $body$
     v_monto_venta					numeric;
     v_suma_det_total		numeric;
 
+    /*Variables Recibos Manuales*/
+    v_anulado				varchar;
+    v_moneda_base			integer;
+    v_id_moneda_paquetes	varchar;
+    v_desc_moneda			varchar;
+
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
@@ -150,12 +156,18 @@ $body$
                                 else
                                       NULL
                               end);*/
-        if (v_parametros.id_instancia_pago is not null and v_parametros.id_instancia_pago != 0) then
+        if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
-        select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+        select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tmedio_pago_pw mp
+        inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+        where mp.id_medio_pago_pw = v_parametros.id_medio_pago;
+
+
+        /*select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
         from obingresos.tinstancia_pago ip
-        where ip.id_instancia_pago = v_parametros.id_instancia_pago;
+        where ip.id_instancia_pago = v_parametros.id_medio_pago;*/
 
         v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
                                         v_codigo_tarjeta
@@ -177,7 +189,7 @@ $body$
 
         if (char_length(v_parametros.mco::varchar) <> 15 and v_parametros.mco <> '' ) then
             raise exception 'El numero del MCO debe tener 15 digitos obligatorios, 930000000012345';
-            end if;
+        end if;
 
 
         v_tiene_formula = 'no';
@@ -216,15 +228,27 @@ $body$
           end if;
         end if;
 
+      /*Aqui verificamos el tipo de recibo Recibo o Recibo Manual*/
+
        if (pxp.f_existe_parametro(p_tabla,'tipo_factura')) then
           v_tipo_factura = v_parametros.tipo_factura;
         else
           v_tipo_factura = 'recibo';
         end if;
 
-      if(v_tipo_factura = '') then
-      	v_tipo_factura = 'recibo';
-      end if;
+        if(v_tipo_factura = '') then
+          v_tipo_factura = 'recibo';
+        end if;
+
+        /*Aumentando condicion para verificar el estado en Recibo manual*/
+        if(v_tipo_factura = 'recibo_manual') then
+          if (pxp.f_existe_parametro(p_tabla,'anulado')) then
+               v_anulado = v_parametros.anulado;
+          end if;
+        else
+          v_anulado = 'NO';
+        end if;
+      /**********************************************************************************/
 
         SELECT tv.tipo_base into v_tipo_base
         from vef.ttipo_venta tv
@@ -238,31 +262,43 @@ $body$
         v_excento = 0;
         if (v_tipo_base = 'recibo') THEN
           v_fecha = now()::date;
-        ELSIF(v_tipo_base = 'manual') then
+        ELSIF(v_tipo_base = 'recibo_manual') then
           v_fecha = v_parametros.fecha;
           v_nro_factura = v_parametros.nro_factura;
-          v_excento = v_parametros.excento;
-          v_id_dosificacion = v_parametros.id_dosificacion;
+          v_excento = 0;
+
+
+          select d.* into v_dosificacion
+          from vef.tdosificacion_ro d
+          where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_fecha and
+                d.fecha_limite >= v_fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'computarizada' and
+                d.id_sucursal = v_parametros.id_sucursal;
+
+          if (v_dosificacion is null) then
+                  raise exception 'No existe una dosificacion activa para emitir el Recibo';
+          end if;
+
+          v_id_dosificacion = v_dosificacion.id_dosificacion_ro;
 
           --validaciones de factura manual
           --validar que no exista el mismo nro para la dosificacion
           if (exists(	select 1
                        from vef.tventa ven
-                       where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
-            raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
+                       where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+            raise exception 'Ya existe el mismo número de Recibo en otra venta. Por favor revise los datos';
           end if;
 
           --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
           if (exists(	select 1
-                       from vef.tdosificacion dos
-                       where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+                       from vef.tdosificacion_ro dos
+                       where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
             raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
           end if;
 
           --validar que la fecha de factura no sea superior a la fecha limite de emision
           if (exists(	select 1
-                       from vef.tdosificacion dos
-                       where dos.fecha_limite < v_parametros.fecha and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+                       from vef.tdosificacion_ro dos
+                       where dos.fecha_limite < v_parametros.fecha and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
             raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
           end if;
 
@@ -273,7 +309,7 @@ $body$
 
           ELSE
             v_fecha = now()::date;
-            v_excento = v_parametros.excento;
+            v_excento = 0;
           END IF;
 
         end if;
@@ -415,7 +451,8 @@ $body$
           v_id_cliente = v_parametros.id_cliente::integer;
 
           update vef.tcliente
-          set nit = v_parametros.nit
+          set nit = v_parametros.nit,
+          correo = v_parametros.correo_electronico
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -429,14 +466,16 @@ $body$
               fecha_reg,
               estado_reg,
               nombre_factura,
-              nit
+              nit,
+              correo
             )
           VALUES (
             p_id_usuario,
             now(),
             'activo',
             upper(v_parametros.id_cliente),
-            v_parametros.nit
+            v_parametros.nit,
+            v_parametros.correo_electronico
           ) returning id_cliente into v_id_cliente;
 
           v_nombre_factura = v_parametros.id_cliente;
@@ -565,7 +604,7 @@ $body$
           tipo_factura,
           fecha,
           nro_factura,
-          id_dosificacion,
+          id_dosificacion_ro,
           excento,
 
           id_moneda,
@@ -585,7 +624,11 @@ $body$
           tiene_formula,
           forma_pedido,
           id_moneda_venta_recibo,
-          id_auxiliar_anticipo
+          id_auxiliar_anticipo,
+          anulado,
+          correo_electronico
+
+
 
 
         ) values(
@@ -635,7 +678,9 @@ $body$
           v_tiene_formula,
           v_forma_pedido,
           v_parametros.id_moneda_venta_recibo,
-	      v_parametros.id_auxiliar_anticipo
+	      v_parametros.id_auxiliar_anticipo,
+          v_anulado,
+          v_parametros.correo_electronico
 
         ) returning id_venta into v_id_venta;
 
@@ -690,7 +735,7 @@ $body$
 
 		/*Aumentamos la instancia de pago por el id_forma_pago*/
         --if (v_parametros.id_forma_pago != 0 ) then
-		if (v_parametros.id_instancia_pago != 0) then
+		if (v_parametros.id_medio_pago != 0) then
 
           insert into vef.tventa_forma_pago(
             usuario_ai,
@@ -699,7 +744,7 @@ $body$
             id_usuario_ai,
             estado_reg,
             --id_forma_pago,
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda,
             id_venta,
             monto_transaccion,
@@ -718,7 +763,7 @@ $body$
             v_parametros._id_usuario_ai,
             'activo',
             --v_parametros.id_forma_pago,
-            v_parametros.id_instancia_pago,
+            v_parametros.id_medio_pago,
             v_parametros.id_moneda,
             v_id_venta,
             v_parametros.monto_forma_pago,
@@ -733,8 +778,30 @@ $body$
         end if;
 
 --        if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
-		if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0 ) then
+		if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0 ) then
          /*******************************Control para la tarjeta 2******************************/
+
+         select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tmedio_pago_pw mp
+        inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+        where mp.id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+        /*select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tinstancia_pago ip
+        where ip.id_instancia_pago = v_parametros.id_medio_pago;*/
+
+        v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                        v_codigo_tarjeta
+                                else
+                                      NULL
+                              end);
+
+          if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+              if (substring(v_parametros.numero_tarjeta_2::varchar from 1 for 1) != 'X') then
+                  v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
+              end if;
+          end if;
 
         /*select fp.codigo into v_codigo_tarjeta
                 from obingresos.tforma_pago fp
@@ -763,7 +830,7 @@ $body$
             id_usuario_ai,
             estado_reg,
             --id_forma_pago,
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda,
             id_venta,
             monto_transaccion,
@@ -783,7 +850,7 @@ $body$
             v_parametros._id_usuario_ai,
             'activo',
             --v_parametros.id_forma_pago_2,
-            v_parametros.id_instancia_pago_2,
+            v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2,
             v_id_venta,
             v_parametros.monto_forma_pago_2,
@@ -1073,7 +1140,7 @@ $body$
 
 		/*Comentamos y aumentamos instancia de pago*/
        -- if (v_parametros.id_forma_pago != 0 ) then
-	      if (v_parametros.id_instancia_pago != 0 ) then
+	      if (v_parametros.id_medio_pago != 0 ) then
 
           delete from vef.tventa_forma_pago
           where id_venta = v_parametros.id_venta;
@@ -1095,7 +1162,7 @@ $body$
             id_auxiliar,
             tipo_tarjeta,
             /*Aumentando instancia y moneda*/
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda
             /*******************************/
           )
@@ -1116,7 +1183,7 @@ $body$
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentando instancia de pago y id_moneda*/
-            v_parametros.id_instancia_pago,
+            v_parametros.id_medio_pago,
             v_parametros.id_moneda
             /*****************************************/
           );
@@ -1124,7 +1191,29 @@ $body$
            --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
           	/*Comentando y aumentado la instancia de pago*/
             -- if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
-           	if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0 ) then
+           	if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0 ) then
+
+            select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+                  from obingresos.tmedio_pago_pw mp
+                  inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                  where mp.id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+                  /*select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+                  from obingresos.tinstancia_pago ip
+                  where ip.id_instancia_pago = v_parametros.id_medio_pago;*/
+
+                  v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                                  v_codigo_tarjeta
+                                          else
+                                                NULL
+                                        end);
+
+                    if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+                        if (substring(v_parametros.numero_tarjeta_2::varchar from 1 for 1) != 'X') then
+                            v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
+                        end if;
+                    end if;
 
            /*******************************Control para la tarjeta 2******************************/
 
@@ -1165,7 +1254,7 @@ $body$
             id_auxiliar,
             tipo_tarjeta,
             /*Aumentando la instancia de pago y el id_moneda*/
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda
           )
           values(
@@ -1185,7 +1274,7 @@ $body$
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta_2,
             /*Aumentando la instancia de pago y el id_moneda*/
-            v_parametros.id_instancia_pago_2,
+            v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2
           );
           end if;
@@ -1307,6 +1396,8 @@ $body$
         vef_estados_validar_fp = pxp.f_get_variable_global('vef_estados_validar_fp');
         --obtener datos de la venta y la moneda base
 
+        v_moneda_base = param.f_get_moneda_base();
+
         select
           v.* ,
           sm.id_moneda as id_moneda_base,
@@ -1328,12 +1419,13 @@ $body$
         END IF;
 
         /*Aqui recuperamos el monto de la venta convertido a la moneda local*/
+        /*Aumentamos la condicion para la moneda base*/
 
-        if (v_venta.id_moneda_venta_recibo = 2) then
-        	v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
-        else
-        	v_monto_venta = v_venta.total_venta;
-        end if;
+          if (v_venta.id_moneda_venta_recibo = 2 and v_moneda_base != 2) then
+              v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+          else
+              v_monto_venta = v_venta.total_venta;
+          end if;
 
         /********************************************************************/
 
@@ -1344,9 +1436,21 @@ $body$
         from vef.tventa_detalle vd
         where vd.id_venta = v_parametros.id_venta;
 
-        IF(v_cantidad=0)THEN
-        	raise exception 'Debe tener al menos un concepto registrado para la venta';
-        END IF;
+        /*Aqui poniendo condicion del detalle para recibos manuales*/
+        if (v_parametros.tipo_factura = 'recibo_manual') THEN
+        	IF(v_cantidad=0 and v_parametros.anulado = 'VALIDA')THEN
+        		raise exception 'Debe tener al menos un concepto registrado para la venta';
+        	END IF;
+
+        else
+
+        	IF(v_cantidad=0)THEN
+        		raise exception 'Debe tener al menos un concepto registrado para la venta';
+        	END IF;
+
+        end if;
+
+        /***********************************************************/
 
         --Validar que solo haya conceptos contabilizables o no contabilizables
         select count(distinct sp.contabilizable) into v_cantidad
@@ -1431,13 +1535,14 @@ $body$
             --si la moneda de la forma de pago es distinta a al moneda base de la sucursal convertimos a moneda base
 
             /*Aqui aumentamos para hacer el tipo de cambio de las formas de pago*/
-            if (v_registros.id_moneda = 2) then
-			 /*Convertimos a Bs*/
-             v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, NULL,'si');
-            else
-             /*si es Bs mantenemos a Bs*/
-             v_monto_fp = v_registros.monto_transaccion;
-            end if;
+              if (v_registros.id_moneda = 2 and v_moneda_base != 2) then
+               /*Convertimos a Bs*/
+               v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, NULL,'si');
+              else
+               /*si es Bs mantenemos a Bs*/
+               v_monto_fp = v_registros.monto_transaccion;
+              end if;
+
             /**********************************************/
 
             /*Comentamos esta parte para probar*/
@@ -1482,7 +1587,7 @@ $body$
           from vef.tventa_detalle
           where id_venta =   v_parametros.id_venta;
 
-          if (v_venta.id_moneda_venta_recibo = 2) then
+          if (v_venta.id_moneda_venta_recibo = 2 and v_moneda_base != 2) then
               v_suma_det_total = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_suma_det,v_venta.fecha::date,'CUS',2, NULL,'si');
           else
               v_suma_det_total = v_suma_det;
@@ -1814,15 +1919,18 @@ $body$
         '_id_usuario_ai',
         'id_venta',
         'tipo_factura',
-        'codigo_estado'],
+        'codigo_estado',
+        'anulado'],
                                         ARRAY[	coalesce(v_parametros._nombre_usuario_ai,''),
                                         coalesce(v_parametros._id_usuario_ai::varchar,''),
                                         v_venta.id_venta::varchar,
                                         v_venta.tipo_factura,
-                                        v_codigo_estado],
+                                        v_codigo_estado,
+	                                    v_venta.anulado ],
                                         ARRAY[	'varchar',
                                         'integer',
                                         'integer',
+                                        'varchar',
                                         'varchar',
                                         'varchar']
         );
@@ -2052,8 +2160,16 @@ $body$
         where v.id_proceso_wf = v_parametros.id_proceso_wf_act;
         /***********************************************************/
 
+        if (v_venta.anulado = 'ANULADA' ) then
+        	v_estado_finalizado = 851;
+        else
+          /*Obtenemos el id del estado finalizado*/
+          v_estado_finalizado = (v_id_tipo_estado+1);
+          /****************************************/
+        end if;
+
         /*Obtenemos el id del estado finalizado*/
-        v_estado_finalizado = (v_id_tipo_estado+1);
+       -- v_estado_finalizado = (v_id_tipo_estado+1);
         /****************************************/
 
         /*Obtenemnos el codigo finalizado*/
@@ -2067,15 +2183,18 @@ $body$
         '_id_usuario_ai',
         'id_venta',
         'tipo_factura',
-        'codigo_estado'],
+        'codigo_estado',
+        'anulado'],
                                         ARRAY[	coalesce(v_parametros._nombre_usuario_ai,''),
                                         coalesce(v_parametros._id_usuario_ai::varchar,''),
                                         v_venta.id_venta::varchar,
                                         v_venta.tipo_factura,
-                                        v_codigo_estado],
+                                        v_codigo_estado,
+                                        v_venta.anulado],
                                         ARRAY[	'varchar',
                                         'integer',
                                         'integer',
+                                        'varchar',
                                         'varchar',
                                         'varchar']
         );
@@ -2158,14 +2277,13 @@ $body$
           END IF;
 
           /*Aqui ponemos la nueva dosificacion para los recibos*/
-              IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
+             IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
 
                 select d.* into v_dosificacion
                 from vef.tdosificacion_ro d
                 where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                       d.fecha_limite >= v_venta.fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'computarizada' and
                       d.id_sucursal = v_venta.id_sucursal;
-
                 v_nro_factura = v_dosificacion.nro_siguiente;
 
                 if (v_dosificacion is null) then
@@ -2387,10 +2505,13 @@ $body$
           string_agg  (form.id_formula::VARCHAR,','),
           string_agg  (ing.id_concepto_ingas::varchar,','),
           string_agg (ing.precio::varchar, ','),
-          string_agg (ing.excento::varchar, ',')
-          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req
+          string_agg (ing.excento::varchar, ','),
+          string_agg (ing.id_moneda::varchar, ','),
+          string_agg (mon.codigo_internacional::varchar, ',')
+          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req, v_id_moneda_paquetes, v_desc_moneda
           from vef.tformula_detalle form
           inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
+          left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
           --inner join vef.tsucursal_producto pro on pro.id_concepto_ingas = form.id_concepto_ingas
           where form.id_formula = v_parametros.id_formula; --and pro.id_sucursal = 16
 
@@ -2414,6 +2535,8 @@ $body$
             v_resp = pxp.f_agrega_clave(v_resp,'v_precio',v_precio::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_excento_req',v_excento_req::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_requiere_excento',v_requiere_excento::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_id_moneda_paquetes',v_id_moneda_paquetes::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_desc_moneda',v_desc_moneda::varchar);
 
 
           --Returns the answer

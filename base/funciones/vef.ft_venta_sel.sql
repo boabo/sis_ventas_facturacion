@@ -83,11 +83,12 @@ BEGIN
                 	v_select = 'distinct(ven.id_venta)';
                 	v_join = 'inner join wf.testado_wf ewf on ewf.id_proceso_wf = ven.id_proceso_wf';
                 end if;
-                --raise exception 'tipo: %',v_parametros.tipo_usuario;
+
                 if (v_parametros.tipo_usuario = 'vendedor') then
                   v_filtro = ' (ven.id_usuario_reg='||p_id_usuario::varchar||') and ';
                 elsif (v_parametros.tipo_usuario = 'cajero') THEN
-                  v_filtro = ' (ewf.id_funcionario='||v_id_funcionario_usuario::varchar||') and ';
+                  --v_filtro = ' (ewf.id_funcionario='||v_id_funcionario_usuario::varchar||') and ';
+                  v_filtro = ' (ven.id_usuario_cajero='||p_id_usuario::varchar||') and ';
                 ELSE
                   v_filtro = ' 0 = 0 and ';
                 end if;
@@ -106,29 +107,7 @@ BEGIN
 
 
     		--Sentencia de la consulta
-			v_consulta:='with forma_pago_temporal as(
-					    	select count(*)as cantidad_forma_pago,
-                            vfp.id_venta,
-					        	pxp.list(fp.id_forma_pago::text) as id_forma_pago,
-                                pxp.list(fp.nombre) as forma_pago,
-                                sum(monto_transaccion) as monto_transaccion,
-                                pxp.list(vfp.numero_tarjeta) as numero_tarjeta,
-                                pxp.list(vfp.codigo_tarjeta) as codigo_tarjeta,
-                                pxp.list(vfp.tipo_tarjeta) as tipo_tarjeta,
-                                pxp.list(vfp.monto::varchar) as monto_forma_pago
-					        from vef.tventa_forma_pago vfp
-					        inner join vef.tforma_pago fp on fp.id_forma_pago = vfp.id_forma_pago
-					        group by vfp.id_venta
-					    ),
-					    medico_usuario as(
-					    	select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
-					        from vef.vmedico med
-					      union all
-					      select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
-					      from segu.vusuario usu
-
-					    )
-
+			v_consulta:='
 						select
 						' || v_select || ',
 						ven.id_cliente,
@@ -154,45 +133,17 @@ BEGIN
                         cli.nit,
                         puve.id_punto_venta,
                         puve.nombre as nombre_punto_venta,
-                        forpa.id_forma_pago::varchar,
-                        forpa.forma_pago::varchar,
-                        forpa.monto_forma_pago::varchar,
-                        forpa.numero_tarjeta::varchar,
-                        forpa.codigo_tarjeta::varchar,
-                        forpa.tipo_tarjeta::varchar,
-                        /*(case when (forpa.cantidad_forma_pago > 1) then
-                        	0::integer
-                        else
-                        	forpa.id_forma_pago::integer
-                        end) as id_forma_pago,
-                        (case when (forpa.cantidad_forma_pago > 1) then
-                        	''DIVIDIDO''::varchar
-                        else
-                        	forpa.forma_pago::varchar
-                        end) as forma_pago,
-                        (case when (forpa.cantidad_forma_pago > 1) then
-                        	0::numeric
-                        else
-                        	forpa.monto_transaccion::numeric
-                        end) as monto_forma_pago,
 
-                        (case when (forpa.cantidad_forma_pago > 1) then
-                        	''::varchar
-                        else
-                        	forpa.numero_tarjeta::varchar
-                        end) as numero_tarjeta,
+                        mp.id_medio_pago_pw::varchar,
+                        (select string_agg(pago.mop_code,''/'')
+                        FROM obingresos.tmedio_pago_pw pago
+                        inner join vef.tventa_forma_pago venta on venta.id_medio_pago = pago.id_medio_pago_pw
+                        where venta.id_venta =  ven.id_venta)::varchar as forma_pago,
+                        fp.monto::varchar,
+                        fp.numero_tarjeta::varchar,
+                        fp.codigo_tarjeta::varchar,
+                        fp.tipo_tarjeta::varchar,
 
-                        (case when (forpa.cantidad_forma_pago > 1) then
-                        	''::varchar
-                        else
-                        	forpa.codigo_tarjeta::varchar
-                        end) as codigo_tarjeta,
-
-                        (case when (forpa.cantidad_forma_pago > 1) then
-                        	''::varchar
-                        else
-                        	forpa.tipo_tarjeta::varchar
-                        end) as tipo_tarjeta,*/
                         ven.porcentaje_descuento,
                         ven.id_vendedor_medico,
                         ven.comision,
@@ -217,20 +168,26 @@ BEGIN
                         ven.descripcion_bulto,
                         ven.contabilizable,
                         to_char(ven.hora_estimada_entrega,''HH24:MI'')::varchar,
-                        mu.nombre as vendedor_medico,
+
                         ven.forma_pedido,
                         ven.id_cliente_destino,
                         '||v_columnas_destino||'
+
 						from vef.tventa ven
 						inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
-						left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
+
 				        inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
                         '||v_join_destino||'
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
-                        left join forma_pago_temporal forpa on forpa.id_venta = ven.id_venta
-                        left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
-                        left join param.tmoneda mon on mon.id_moneda = ven.id_moneda
+
+
+                        inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
+                        inner join param.tmoneda mon on mon.id_moneda = ven.id_moneda
+
+                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+
                         ' || v_join || '
                         where ven.estado_reg = ''activo'' and ' || v_filtro;
 
@@ -238,8 +195,6 @@ BEGIN
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
             --raise exception '';
-            raise notice 'CONSULTA.... % ord % dir % cant % punt %',v_parametros.filtro, v_parametros.ordenacion, v_parametros.dir_ordenacion, v_parametros.cantidad, v_parametros.puntero;
-            raise notice 'CONSULTA.... %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -304,24 +259,19 @@ BEGIN
 
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='
-                      with medico_usuario as(
-                                      select (med.id_medico || ''_medico'')::varchar as id_medico_usuario,med.nombre_completo::varchar as nombre
-                                      from vef.vmedico med
-                                    union all
-                                    select (usu.id_usuario || ''_usuario'')::varchar as id_medico_usuario,usu.desc_persona::varchar as nombre
-                                    from segu.vusuario usu
-
-                                  )
             		select count(' || v_select || ')
 					    from vef.tventa ven
 					    inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ven.id_usuario_mod
-						left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
 					    inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
                         '||v_join_destino||'
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
-                        left join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
-                        left join param.tmoneda mon on mon.id_moneda = ven.id_moneda
+                        inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
+                        inner join param.tmoneda mon on mon.id_moneda = ven.id_moneda
+
+                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+
                         ' || v_join || '
                         where ven.estado_reg = ''activo'' and ' || v_filtro;
 
@@ -358,6 +308,22 @@ BEGIN
 						 	and id_sucursal is null and id_punto_venta is not null
                          union all
 						 	select ''fecha'',to_char(now(),''DD/MM/YYYY'')::varchar
+                         /*Aumentando para recueperar la moneda base*/
+                         union all
+                           select ''id_moneda_base''::varchar,
+                                 mon.id_moneda::varchar
+                           from param.tmoneda mon
+                           where mon.tipo_moneda = ''base''
+                         union all
+                           select ''codigo_moneda_base''::varchar,
+                                 mon.codigo_internacional
+                           from param.tmoneda mon
+                         where mon.tipo_moneda = ''base''
+                         union all
+                           select variable, valor
+                            from pxp.variable_global
+                          where variable = ''ESTACION_inicio''
+                        /*******************************************/
 						 ';
 
 			--Definicion de la respuesta
@@ -705,10 +671,10 @@ BEGIN
 
             COALESCE(to_char((EXTRACT(DAY FROM ven.fecha::date)),''00'')||substring(Upper(to_char(ven.fecha::date,''month''))from 1 for 3)||RIGHT((EXTRACT(YEAR FROM ven.fecha::date))::varchar,2))::varchar as fecha_ingles,
 
-            (select string_agg(pago.codigo,''/'')
+            (select string_agg(pago.mop_code,''/'')
             FROM vef.tventa ven
             inner join vef.tventa_forma_pago form on form.id_venta = ven.id_venta
-            inner join vef.tforma_pago pago on pago.id_forma_pago = form.id_forma_pago
+            inner join obingresos.tmedio_pago_pw pago on pago.id_medio_pago_pw = form.id_medio_pago
             where ven.id_venta = '||v_parametros.id_venta::varchar||')::varchar as forma_pago,
 
 

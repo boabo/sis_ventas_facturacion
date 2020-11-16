@@ -36,13 +36,24 @@ Phx.vista.VentaRecibo = {
         this.addButton('diagrama_gantt',{grupo:[0,1,2],text:'Gant',iconCls: 'bgantt',disabled:true,handler:this.diagramGantt,tooltip: '<b>Diagrama Gantt de la venta</b>'});
         this.addButton('btnImprimir',
             {   grupo:[0,1,2],
-                text: 'Imprimir',
+                text: 'Imprimir Rollo',
                 iconCls: 'bpdf32',
                 disabled: true,
                 handler: this.imprimirNota,
                 tooltip: '<b>Imprimir Recibo</b><br/>Imprime el Recibo de la venta'
             }
         );
+
+        /*Aumentando el boton para imprimir la factura*/
+    		this.addButton('btnChequeoDocumentosWf',{
+    				text: 'Impresion Carta',
+    				grupo: [1],
+    				iconCls: 'bprint',
+    				disabled: true,
+    				handler: this.loadCheckDocumentosRecWf,
+    				tooltip: '<b>Documentos </b><br/>Subir los documetos requeridos.'
+    		});
+        /**********************************************/
 
         this.addButton('asociar_boletos',
     				{   grupo:[1],
@@ -138,6 +149,7 @@ Phx.vista.VentaRecibo = {
         this.getBoton('btnImprimir').enable();
         this.getBoton('diagrama_gantt').enable();
         this.getBoton('asociar_boletos').enable();
+        this.getBoton('btnChequeoDocumentosWf').enable();
         Phx.vista.VentaRecibo.superclass.preparaMenu.call(this);
     },
     liberaMenu:function()
@@ -146,8 +158,24 @@ Phx.vista.VentaRecibo = {
         this.getBoton('anular').disable();
         this.getBoton('sig_estado').disable();
         this.getBoton('asociar_boletos').disable();
+        this.getBoton('btnChequeoDocumentosWf').disable();
         Phx.vista.VentaRecibo.superclass.liberaMenu.call(this);
     },
+
+    loadCheckDocumentosRecWf:function() {
+					var rec=this.sm.getSelected();
+					rec.data.nombreVista = this.nombreVista;
+					Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
+							'Chequear documento del WF',
+							{
+									width:'90%',
+									height:500
+							},
+							rec.data,
+							this.idContenedor,
+							'DocumentoWf'
+					)
+			},
 
     AsociarBoletos: function(){
 

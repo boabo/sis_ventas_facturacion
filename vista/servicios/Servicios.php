@@ -28,7 +28,255 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		/************************/
 
 		this.load({params:{start:0, limit:this.tam_pag}})
+
+		/*Aumentando para ir agregando permisos*/
+		this.crearFormAuto();
+		this.addButton('inserAuto',{ text: 'Configurar Autorizaciones', iconCls: 'blist', disabled: false, handler: this.mostarFormAuto, tooltip: '<b>Configurar autorizaciones</b><br/>Permite seleccionar desde que modulos  puede selecionarse el concepto'});
+
+
+
 	},
+
+	crearFormAuto:function(){
+		  this.formAuto = new Ext.form.FormPanel({
+            baseCls: 'x-plain',
+            autoDestroy: true,
+
+            border: false,
+            layout: 'form',
+             autoHeight: true,
+
+
+            items: [
+							{
+								 name:'sw_autorizacion',
+								 xtype:"awesomecombo",
+								 fieldLabel:'Autorizaciones',
+								 allowBlank: true,
+								 emptyText:'Autorizaciones...',
+								 store : new Ext.data.JsonStore({
+									 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+									 id : 'id_catalogo',
+									 root : 'datos',
+									 sortInfo : {
+										 field : 'codigo',
+										 direction : 'ASC'
+									 },
+									 totalProperty : 'total',
+									 fields: ['codigo','descripcion'],
+									 remoteSort : true,
+									 baseParams:{
+										cod_subsistema:'PARAM',
+										catalogo_tipo:'autorizaciones_concepto'
+									},
+								 }),
+								 valueField: 'codigo',
+								 displayField: 'descripcion',
+								 mode: 'remote',
+								 forceSelection:true,
+								 typeAhead: true,
+								 triggerAction: 'all',
+								 lazyRender: true,
+								 queryDelay: 1000,
+								 width: 250,
+								 minChars: 2 ,
+							   enableMultiSelect: true,
+								 pageSize: 200,
+	 							 queryDelay: 100
+							},
+
+							{
+								 name:'regionales',
+								 xtype:"awesomecombo",
+								 fieldLabel:'Regionales',
+								 allowBlank: true,
+								 emptyText:'Regionales...',
+								 store : new Ext.data.JsonStore({
+									 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+									 id : 'id_catalogo',
+									 root : 'datos',
+									 sortInfo : {
+										 field : 'codigo',
+										 direction : 'ASC'
+									 },
+									 totalProperty : 'total',
+									 fields: ['codigo','descripcion'],
+									 remoteSort : true,
+									 baseParams:{
+										cod_subsistema:'PARAM',
+										catalogo_tipo:'regionales_conceptos'
+									},
+								 }),
+								 valueField: 'codigo',
+								 displayField: 'descripcion',
+								 mode: 'remote',
+								 forceSelection:true,
+								 typeAhead: true,
+								 triggerAction: 'all',
+								 lazyRender: true,
+								 queryDelay: 1000,
+								 width: 250,
+								 minChars: 2 ,
+							   enableMultiSelect: true,
+								 pageSize: 200,
+	 							 queryDelay: 100
+							},
+
+							/*Aumentando el nivel del Permiso*/
+							{
+								 name:'nivel_permiso',
+								 xtype:"awesomecombo",
+								 fieldLabel:'Nivel Permiso',
+								 allowBlank: true,
+								 emptyText:'Nivel Permiso...',
+								 store : new Ext.data.JsonStore({
+									 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+									 id : 'id_catalogo',
+									 root : 'datos',
+									 sortInfo : {
+										 field : 'codigo',
+										 direction : 'ASC'
+									 },
+									 totalProperty : 'total',
+									 fields: ['codigo','descripcion'],
+									 remoteSort : true,
+									 baseParams:{
+										cod_subsistema:'PARAM',
+										catalogo_tipo:'nivel_permiso'
+									},
+								 }),
+								 valueField: 'codigo',
+								 displayField: 'descripcion',
+								 mode: 'remote',
+								 forceSelection:true,
+								 typeAhead: true,
+								 triggerAction: 'all',
+								 lazyRender: true,
+								 queryDelay: 1000,
+								 width: 250,
+								 minChars: 2 ,
+							   enableMultiSelect: true,
+								 pageSize: 200,
+	 							 queryDelay: 100
+							},
+							/*********************************/
+
+						// 	{
+       			// 	name:'sw_autorizacion',
+       			// 	xtype:"awesomecombo",
+       			// 	fieldLabel:'Autorizaciones',
+       			// 	allowBlank: true,
+       			// 	emptyText:'Autorizaciones...',
+       			// 	store: new Ext.data.ArrayStore({
+            //             fields: ['variable', 'valor'],
+            //             data : [ ['adquisiciones', 'Adquisiciones'],
+            //                      ['pago_directo', 'Pago Recurrente'],
+            //                      ['caja_chica', 'Caja Chica'],
+            //                      ['fondo_avance', 'Fondo en Avance'],
+            //                      ['contrato', 'Contratos'],
+            //                      ['pago_unico', 'Pago Único'],
+            //                      ['especial', 'Especial'],
+            //                      ['viatico', 'Viáticos'],
+            //                      ['boarep', 'Boa Rep'],
+            //                      ['RO', 'Recibos Oficiales'],
+						// 										 ['gestion_materiales', 'Gestión de Materiales']
+            //                    ]
+            //             }),
+       			// 	valueField: 'variable',
+				    // displayField: 'valor',
+				    // mode: 'local',
+	       		//     forceSelection:true,
+       			// 	typeAhead: true,
+           	// 		triggerAction: 'all',
+           	// 		lazyRender: true,
+       			// 	queryDelay: 1000,
+       			// 	width: 250,
+       			// 	minChars: 2 ,
+	       		// 	enableMultiSelect: true
+       			// }
+					]
+        });
+
+
+
+		this.wAuto = new Ext.Window({
+            title: 'Configuracion',
+            collapsible: true,
+            maximizable: true,
+            autoDestroy: true,
+            width: 380,
+            height: 170,
+            layout: 'fit',
+            plain: true,
+            bodyStyle: 'padding:5px;',
+            buttonAlign: 'center',
+            items: this.formAuto,
+            modal:true,
+             closeAction: 'hide',
+            buttons: [{
+                text: 'Guardar',
+                handler: this.saveAuto,
+                scope: this
+
+            },
+             {
+                text: 'Cancelar',
+                handler: function(){ this.wAuto.hide() },
+                scope: this
+            }]
+        });
+
+					this.cmpAuto = this.formAuto.getForm().findField('sw_autorizacion');
+					this.cmpRegionales = this.formAuto.getForm().findField('regionales');
+				 	this.cmpNivelPermiso = this.formAuto.getForm().findField('nivel_permiso');
+
+
+	},
+
+	mostarFormAuto:function(){
+		var data = this.getSelectedData();
+		if(data){
+			this.cmpAuto.setValue(data.sw_autorizacion);
+			this.cmpRegionales.setValue(data.regionales);
+			this.cmpNivelPermiso.setValue(data.nivel_permiso);
+			this.wAuto.show();
+		}
+
+	},
+	saveAuto: function(){
+		    var d = this.getSelectedData();
+		    Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url: '../../sis_parametros/control/ConceptoIngas/editAuto',
+                params: {
+												sw_autorizacion: this.cmpAuto.getValue(),
+												regionales: this.cmpRegionales.getValue(),
+                	      nivel_permiso: this.cmpNivelPermiso.getValue(),
+                	      id_concepto_ingas: d.id_concepto_ingas
+                	    },
+                success: this.successSinc,
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+
+	},
+	successSinc:function(resp){
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if(!reg.ROOT.error){
+            	if(this.wOt){
+            		this.wOt.hide();
+            	}
+            	if(this.wAuto){
+            		this.wAuto.hide();
+            	}
+
+                this.reload();
+             }else{
+                alert('ocurrio un error durante el proceso')
+            }
+    },
 
 	onButtonNew:function () {
 		Phx.vista.Servicios.superclass.onButtonNew.call(this);
@@ -114,7 +362,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
       filters:{pfiltro:'ingas.desc_ingas',type:'string'},
       id_grupo:1,
       grid:true,
-      form:true
+      form:true,
+			bottom_filter:true
     },
 		{
       config:{
@@ -261,7 +510,16 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
           }),
         valueField:'ID',
         displayField:'valor',
-        renderer:function (value, p, record){if (value == 1) {return 'si'} else {return 'no'}}
+        renderer:function (value, p, record){
+						if (value == 1) {
+							return 'si'
+						} else if (value == 2) {
+							return 'no'
+						}
+						else {
+							return ''
+						}
+				}
           },
           type:'ComboBox',
           id_grupo:0,
@@ -438,6 +696,54 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		 grid: true,
 		 form: true
 	 },
+	 {
+			 config:{
+				 name: 'sw_autorizacion',
+				 fieldLabel: 'Autorizaciones',
+				 allowBlank: true,
+				 anchor: '80%',
+				 gwidth: 200,
+				 maxLength:500
+			 },
+			 type:'TextArea',
+			 filters: {pfiltro:'conig.sw_autorizacion', type:'string'},
+
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+			},
+			{
+			config:{
+				name: 'regionales',
+				fieldLabel: 'Regionales',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200,
+				maxLength:500
+			},
+			type:'TextArea',
+			filters: {pfiltro:'conig.regionales', type:'string'},
+
+			id_grupo:1,
+			grid:true,
+			form:false
+		 },
+		 {
+		 config:{
+			 name: 'nivel_permiso',
+			 fieldLabel: 'Nivel Permiso',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 200,
+			 maxLength:500
+		 },
+		 type:'TextArea',
+		 filters: {pfiltro:'conig.nivel_permiso', type:'string'},
+
+		 id_grupo:1,
+		 grid:true,
+		 form:false
+		},
 		{
 			config:{
 				name: 'usr_reg',
@@ -584,6 +890,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name: 'id_actividad_economica', type: 'numeric'},
 		{name: 'nombre_actividad', type: 'string'},
 		{name: 'nombres_punto_venta', type: 'string'},
+		'sw_autorizacion','regionales','nivel_permiso'
 	],
 	sortInfo:{
 		field: 'id_concepto_ingas',

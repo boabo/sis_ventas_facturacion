@@ -213,7 +213,8 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
                 filters:{pfiltro:'suc.nombre',type:'string'},
                 id_grupo:1,
                 grid:true,
-                form:true
+                form:true,
+								bottom_filter:true,
         },
 
         {
@@ -430,20 +431,134 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
                 form:true
         },
 
-        {
-            config:{
-                name: 'formato_comprobante',
-                fieldLabel: 'Formato Comprobante',
-                allowBlank: true,
-                anchor: '80%',
-                gwidth: 230,
-                maxLength:50
-            },
-                type:'TextField',
-                id_grupo:1,
-                grid:true,
-                form:true
-        },
+        // {
+        //     config:{
+        //         name: 'formato_comprobante',
+        //         fieldLabel: 'Formato Comprobante',
+        //         allowBlank: true,
+        //         anchor: '80%',
+        //         gwidth: 230,
+        //         maxLength:50
+        //     },
+        //         type:'TextField',
+        //         id_grupo:1,
+        //         grid:true,
+        //         form:true
+        // },
+
+				{
+				 config : {
+					 name : 'formato_comprobante',
+					 fieldLabel : 'Formato Comprobante',
+					 anchor: '80%',
+					 allowBlank : false,
+					 emptyText : 'Formato Comprobante...',
+					 store : new Ext.data.JsonStore({
+						 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+						 id : 'id_catalogo',
+						 root : 'datos',
+						 sortInfo : {
+							 field : 'codigo',
+							 direction : 'ASC'
+						 },
+						 totalProperty : 'total',
+						 fields: ['codigo','descripcion'],
+						 remoteSort : true,
+						 baseParams:{
+							par_filtro: 'cat.descripcion',
+							cod_subsistema:'VEF',
+							catalogo_tipo:'tventa_formato_factura'
+						},
+					 }),
+					 valueField : 'codigo',
+					 displayField : 'descripcion',
+					 gdisplayField : 'formato_comprobante',
+					 hiddenName : 'tipo',
+					 forceSelection : true,
+					 typeAhead : false,
+					 tpl: new Ext.XTemplate([
+							 '<tpl for=".">',
+							 '<div class="x-combo-list-item">',
+							 '<p><b><span style="color: black; height:15px;">{descripcion}</span></b></p>',
+							 '</div></tpl>'
+					 ]),
+					 triggerAction : 'all',
+					 lazyRender : true,
+					 mode : 'remote',
+					 pageSize : 25,
+					 listWidth:'450',
+					 maxHeight : 450,
+					 queryDelay : 1000,
+					 tasignacion : true,
+					 tdata:{},
+					 tcls:'Proveedor',
+					 gwidth : 170,
+					 minChars : 2,
+					 resizable:true,
+				 },
+				 type : 'AwesomeCombo',
+				 id_grupo : 0,
+				 grid: true,
+				 form: true
+			 },
+
+			 /*Aumentando para mandar correo*/
+			 {
+				config : {
+					name : 'enviar_correo',
+					fieldLabel : 'Permitir Correo',
+					anchor: '80%',
+					allowBlank : false,
+					emptyText : 'Permitir Correo...',
+					store : new Ext.data.JsonStore({
+						url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+						id : 'id_catalogo',
+						root : 'datos',
+						sortInfo : {
+							field : 'codigo',
+							direction : 'ASC'
+						},
+						totalProperty : 'total',
+						fields: ['codigo','descripcion'],
+						remoteSort : true,
+						baseParams:{
+						 par_filtro: 'cat.descripcion',
+						 cod_subsistema:'VEF',
+						 catalogo_tipo:'tventa_enviar_correo'
+					 },
+					}),
+					valueField : 'codigo',
+					displayField : 'descripcion',
+					gdisplayField : 'enviar_correo',
+					hiddenName : 'tipo',
+					forceSelection : true,
+					typeAhead : false,
+					tpl: new Ext.XTemplate([
+							'<tpl for=".">',
+							'<div class="x-combo-list-item">',
+							'<p><b><span style="color: black; height:15px;">{descripcion}</span></b></p>',
+							'</div></tpl>'
+					]),
+					triggerAction : 'all',
+					lazyRender : true,
+					mode : 'remote',
+					pageSize : 25,
+					listWidth:'450',
+					maxHeight : 450,
+					queryDelay : 1000,
+					tasignacion : true,
+					tdata:{},
+					tcls:'Proveedor',
+					gwidth : 170,
+					minChars : 2,
+					resizable:true,
+				},
+				type : 'AwesomeCombo',
+				id_grupo : 0,
+				grid: true,
+				form: true
+			},
+			 /*******************************/
 
 
         {
@@ -783,6 +898,7 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
+		{name:'enviar_correo', type: 'string'},
 		{name:'usr_mod', type: 'string'},'tipo_interfaz',	{name:'zona', type: 'string'},
 
 	],

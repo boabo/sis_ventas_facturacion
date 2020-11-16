@@ -431,12 +431,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.ocultarComponente(this.Cmp.id_sucursal);
                 this.mostrarComponente(this.Cmp.id_punto_venta);
                 this.mostrarComponente(this.Cmp.monto_inicial);
-                this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
+
                 this.mostrarComponente(this.Cmp.obs_apertura);
                 this.Cmp.id_punto_venta.setDisabled(false);
                 this.Cmp.id_sucursal.setDisabled(false);
                 Phx.vista.AperturaCierreCaja.superclass.onButtonNew.call(this);
                 this.Cmp.fecha_apertura_cierre.setValue(new Date());
+
+                /*Aqui pondremos para ocultar el componente moneda Extranjera*/
+                if (this.store.baseParams.moneda_base == 'USD') {
+                  this.ocultarComponente(this.Cmp.monto_inicial_moneda_extranjera);
+                  this.Cmp.monto_inicial_moneda_extranjera.setValue(0);
+                  this.Cmp.monto_inicial.setValue(1);
+                } else {
+                  this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
+                  this.Cmp.monto_inicial.setValue(0);
+                }              
+                /*************************************************************/
+
             },
 
             onButtonEdit: function() {

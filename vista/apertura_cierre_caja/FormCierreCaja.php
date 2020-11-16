@@ -79,6 +79,7 @@ header("content-type: text/javascript; charset=UTF-8");
                          marginLeft:'2px'
                        },
                        border: false,
+                       id:'grupo_boletos_me',
                        items:[
                          {
                              xtype: 'fieldset',
@@ -139,6 +140,7 @@ header("content-type: text/javascript; charset=UTF-8");
                      marginLeft:'2px'
                    },
                    border: false,
+                   id:'grupo_recibos_me',
                    items:[
                      {
                          xtype: 'fieldset',
@@ -198,6 +200,7 @@ header("content-type: text/javascript; charset=UTF-8");
                  marginLeft:'2px'
                },
                border: false,
+               id:'grupo_facturacion_me',
                items:[
                  {
                      xtype: 'fieldset',
@@ -286,6 +289,7 @@ header("content-type: text/javascript; charset=UTF-8");
            marginTop:'2px',
            marginLeft:'2px'
          },
+         id:'grupo_corte_billete',
          border: false,
          items:[
            {
@@ -317,12 +321,14 @@ header("content-type: text/javascript; charset=UTF-8");
            marginLeft:'2px'
          },
          border: false,
+         id:'grupo_apertura',
          items:[
            {
                xtype: 'fieldset',
                layout: 'form',
                border: false,
                frame: true,
+               id:'grupo_apertura_contenido',
                style:{
                  background:'#95E0FF',
                  height:'196px'
@@ -346,12 +352,14 @@ header("content-type: text/javascript; charset=UTF-8");
          marginLeft:'-203px'
        },
        border: false,
+       id:'grupo_comisiones',
        items:[
          {
              xtype: 'fieldset',
              layout: 'form',
              border: false,
              frame: true,
+             id:'grupo_comisiones_contenido',
              style:{
                background:'#95E0FF',
                height:'100px'
@@ -383,8 +391,8 @@ header("content-type: text/javascript; charset=UTF-8");
             frame: true,
             style:{
               background:'#91DAFF',
-              height:'300px',
               width : '404px',
+              height:'300px',
             },
             title: 'Cierre',
             bodyStyle: 'padding:0 10px 0;',
@@ -1169,6 +1177,32 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
+            /*Aqui la nueva forma de pago pago electronivo (Ismael Valdivia 12/11/2020)*/
+            {
+                config:{
+                    name: 'monto_pago_externo_recibo_ml',
+                    fieldLabel: 'Pago Externo M/L',
+                    allowBlank: true,
+                    disabled:false,
+                    hidden:true,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:15,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:4,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /***************************************************************************/
             //nuevo MMV
             {
                 config:{
@@ -1262,6 +1296,33 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
+
+            /*Aqui la nueva forma de pago pago electronivo (Ismael Valdivia 12/11/2020)*/
+            {
+                config:{
+                    name: 'monto_pago_externo_recibo_me',
+                    fieldLabel: 'Pago Externo M/E',
+                    allowBlank: true,
+                    disabled:false,
+                    hidden:true,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:15,
+                    allowDecimals: true,
+                    decimalPrecision : 2,
+                    //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:11,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            /***************************************************************************/
 
             //
             {
@@ -2127,18 +2188,20 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.comisiones_me.setValue(reg.datos[0]['comisiones_me']);
 
                 /**********************Recuperamos el Recibo************************************/
-                var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']);
-                var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']);
+                var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']) + parseFloat(reg.datos[0]['pago_externo_ml']);
+                var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']) + parseFloat(reg.datos[0]['pago_externo_me']);
 
                 this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
                 this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
                 this.Cmp.monto_deposito_recibo_ml.setValue(reg.datos[0]['deposito_recibo_ml']);
+                this.Cmp.monto_pago_externo_recibo_ml.setValue(reg.datos[0]['pago_externo_ml']);
                 this.Cmp.monto_cc_recibo_cta_cte_ml.setValue(reg.datos[0]['cuenta_corriente_recibo_ml']);
                 this.Cmp.monto_recibo_moneda_base.setValue(total_recibos_ml);
 
                 this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
                 this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_me']);
                 this.Cmp.monto_deposito_recibo_me.setValue(reg.datos[0]['deposito_recibo_me']);
+                this.Cmp.monto_pago_externo_recibo_me.setValue(reg.datos[0]['pago_externo_me']);
                 this.Cmp.monto_cc_recibo_cta_cte_me.setValue(reg.datos[0]['cuenta_corriente_recibo_me']);
                 this.Cmp.monto_recibo_moneda_extranjera.setValue(total_recibos_me);
                 /****************************************************************************/
@@ -2220,7 +2283,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (oldValue != newValue) {
                     this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
-                    var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                    var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue()+this.Cmp.monto_pago_externo_recibo_ml.getValue();
                     this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
 
                 }
@@ -2228,21 +2291,28 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.monto_cc_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue()+this.Cmp.monto_pago_externo_recibo_ml.getValue();
                   this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_cta_cte_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue()+this.Cmp.monto_pago_externo_recibo_ml.getValue();
                   this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_deposito_recibo_ml.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue()+this.Cmp.monto_pago_externo_recibo_ml.getValue();
+                  this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
+                }
+            }, this);
+
+            this.Cmp.monto_pago_externo_recibo_ml.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                  var cal_total=this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_ml.getValue()+this.Cmp.monto_deposito_recibo_ml.getValue()+this.Cmp.monto_cc_recibo_cta_cte_ml.getValue()+this.Cmp.monto_pago_externo_recibo_ml.getValue();
                   this.Cmp.monto_recibo_moneda_base.setValue(cal_total);
                 }
             }, this);
@@ -2251,21 +2321,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (oldValue != newValue) {
                     this.Cmp.total_efectivo_me.setValue(this.Cmp.monto_ca_boleto_usd.getValue()+this.Cmp.monto_ca_facturacion_usd.getValue() +newValue);
                     this.Cmp.diferencia.setValue(this.calcularDiferencia());
-                    var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                    var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue()+this.Cmp.monto_pago_externo_recibo_me.getValue();
                     this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_me.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue()+this.Cmp.monto_pago_externo_recibo_me.getValue();
                   this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
             }, this);
 
             this.Cmp.monto_cc_recibo_cta_cte_me.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue()+this.Cmp.monto_pago_externo_recibo_me.getValue();
                   this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
               }, this);
@@ -2273,7 +2343,14 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.monto_deposito_recibo_me.on('change', function (field, newValue, oldValue) {
                 if (oldValue != newValue) {
-                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue();
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue()+this.Cmp.monto_pago_externo_recibo_me.getValue();
+                  this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
+                }
+            }, this);
+
+            this.Cmp.monto_pago_externo_recibo_me.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                  var cal_total=this.Cmp.monto_ca_recibo_me.getValue()+this.Cmp.monto_cc_recibo_me.getValue()+this.Cmp.monto_deposito_recibo_me.getValue()+this.Cmp.monto_cc_recibo_cta_cte_me.getValue()+this.Cmp.monto_pago_externo_recibo_me.getValue();
                   this.Cmp.monto_recibo_moneda_extranjera.setValue(cal_total);
                 }
             }, this);
@@ -2496,9 +2573,6 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         calcularDiferencia : function () {
-
-          console.log('La moneda base es: ',this.moneda_base);
-          console.log('La Tolerancia es: ',this.tolerancia);
           // var mon_ext = this.Grupos[0].items[7].items[0];
           // console.log('La moneda base es: ',this);
           if(this.moneda_base == 'BOB'){
@@ -2510,12 +2584,37 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.monto_moneda_01_ctvs.setVisible(false);
             this.Cmp.monto_moneda_25_ctvs.setVisible(false);
             this.Cmp.monto_moneda_05_ctvs.setVisible(false);
+
+            this.Cmp.monto_ca_boleto_bs.setDisabled(true);
+            this.Cmp.monto_boleto_moneda_base.setDisabled(true);
+            this.Cmp.monto_cc_boleto_bs.setDisabled(true);
+            this.Cmp.monto_cte_boleto_bs.setDisabled(true);
+            this.Cmp.monto_mco_boleto_bs.setDisabled(true);
+            this.Cmp.monto_boleto_moneda_base.setDisabled(true);
+
+            /*Aqui ocultamos el pago electronico para bolivia no mostrar en el cierre (Ismael Valdivia 16/11/2020)*/
+            this.ocultarComponente(this.Cmp.monto_pago_externo_recibo_ml);
+            this.ocultarComponente(this.Cmp.monto_pago_externo_recibo_me);            
+            /******************************************************************************************************/
+
           }
           else if(this.moneda_base == 'ARS'){
             this.Cmp.monto_moneda_20_ctvs.setVisible(false);
             this.Cmp.monto_moneda_01_ctvs.setVisible(false);
             this.Cmp.monto_billete_2_ml.setVisible(false);
             this.Cmp.monto_billete_1_ml.setVisible(false);
+
+            this.Cmp.monto_ca_boleto_bs.setDisabled(true);
+            this.Cmp.monto_boleto_moneda_base.setDisabled(true);
+            this.Cmp.monto_cc_boleto_bs.setDisabled(true);
+            this.Cmp.monto_cte_boleto_bs.setDisabled(true);
+            this.Cmp.monto_mco_boleto_bs.setDisabled(true);
+            this.Cmp.monto_boleto_moneda_base.setDisabled(true);
+
+            /*Aqui ocultamos el pago electronico para bolivia no mostrar en el cierre (Ismael Valdivia 16/11/2020)*/
+            this.ocultarComponente(this.Cmp.monto_pago_externo_recibo_ml);
+            this.ocultarComponente(this.Cmp.monto_pago_externo_recibo_me);
+            /******************************************************************************************************/
           }
           else if(this.moneda_base == 'USD'){
             this.Cmp.monto_billete_200_ml.setVisible(false);
@@ -2531,11 +2630,59 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.monto_billete_5_usd.setVisible(false);
             this.Cmp.monto_billete_2_usd.setVisible(false);
             this.Cmp.monto_billete_1_usd.setVisible(false);
+            Ext.getCmp('grupo_corte_billete').hide();
+            Ext.getCmp('grupo_boletos_me').hide();
+            Ext.getCmp('grupo_facturacion_me').hide();
+            Ext.getCmp('grupo_recibos_me').hide();
+
+            Ext.getCmp('grupo_apertura').el.dom.style.width='200px';
+            Ext.getCmp('grupo_apertura').el.dom.style.height='300px';
+
+            Ext.getCmp('grupo_apertura_contenido').el.dom.style.width='200px';
+            Ext.getCmp('grupo_apertura_contenido').el.dom.style.height='300px';
+
+            Ext.getCmp('grupo_comisiones').el.dom.style.width='200px';
+            Ext.getCmp('grupo_comisiones').el.dom.style.height='300px';
+
+            Ext.getCmp('grupo_comisiones_contenido').el.dom.style.width='200px';
+            Ext.getCmp('grupo_comisiones_contenido').el.dom.style.height='300px';
+
+            Ext.getCmp('grupo_comisiones').el.dom.style.marginLeft='2px';
+            Ext.getCmp('grupo_comisiones').el.dom.style.marginTop='2px';
+
+
+            this.Cmp.monto_ca_boleto_bs.setDisabled(false);
+            //this.Cmp.monto_boleto_moneda_base.setDisabled(false);
+            this.Cmp.monto_cc_boleto_bs.setDisabled(false);
+            this.Cmp.monto_cte_boleto_bs.setDisabled(false);
+            this.Cmp.monto_mco_boleto_bs.setDisabled(false);
+
+            this.ocultarComponente(this.Cmp.monto_inicial_moneda_extranjera);
+            this.ocultarComponente(this.Cmp.comisiones_me);
+            this.ocultarComponente(this.Cmp.total_efectivo_me);
+            this.ocultarComponente(this.Cmp.arqueo_moneda_extranjera);
+
+
+            /*Aqui ocultamos el pago electronico para bolivia no mostrar en el cierre (Ismael Valdivia 16/11/2020)*/
+            this.mostrarComponente(this.Cmp.monto_pago_externo_recibo_ml);
+            this.mostrarComponente(this.Cmp.monto_pago_externo_recibo_me);
+            /******************************************************************************************************/
+
+            //this.Cmp.monto_boleto_moneda_base.setDisabled(false);
+
+            this.Cmp.monto_ca_boleto_bs.on('change', function (field, newValue, oldValue) {
+                if (oldValue != newValue) {
+                    this.Cmp.total_efectivo_ml.setValue(this.Cmp.monto_ca_recibo_ml.getValue()+this.Cmp.monto_ca_facturacion_bs.getValue() +newValue);
+                    this.Cmp.diferencia.setValue(this.calcularDiferencia());
+                    var cal_total=this.Cmp.monto_ca_boleto_bs.getValue()+this.Cmp.monto_cc_boleto_bs.getValue()+this.Cmp.monto_cte_boleto_bs.getValue()+this.Cmp.monto_mco_boleto_bs.getValue();
+                    this.Cmp.monto_boleto_moneda_base.setValue(cal_total);
+
+                }
+            }, this);
+
             // this.ocultarComponente(mon_ext);
           }
 
-          console.log('Tipo de Cambio para la fecha: ',this.getValues().fecha_apertura_cierre,'CAMBIO: ',this.tipo_cambio);
-          console.log('Total efectivo ml: ',this.Cmp.total_efectivo_ml.getValue(),'efectivo me: ',(this.Cmp.total_efectivo_me.getValue()*this.tipo_cambio));
           var total_efectivo = this.Cmp.total_efectivo_ml.getValue() + (this.Cmp.total_efectivo_me.getValue()*this.tipo_cambio);
           var total_arqueo = this.Cmp.arqueo_moneda_local.getValue() + (this.Cmp.arqueo_moneda_extranjera.getValue()*this.tipo_cambio);
           return total_arqueo - total_efectivo;

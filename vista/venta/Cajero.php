@@ -201,8 +201,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 
 			this.finCons = true;
-			this.bbar.el.dom.style.background='#8BB9B2';
-		this.tbar.el.dom.style.background='#8BB9B2';
+			this.bbar.el.dom.style.background='#5FB0A8';
+		this.tbar.el.dom.style.background='#5FB0A8';
 		this.grid.body.dom.firstChild.firstChild.lastChild.style.background='#FEFFF4';
 		this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#FFF4EB';
 
@@ -325,7 +325,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 													direction: 'ASC'
 											},
 											totalProperty: 'total',
-											fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
+											fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante','enviar_correo'],
 											remoteSort: true,
 											baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura, tipo : this.tipo}
 			});
@@ -411,6 +411,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 																validado = true;
 																this.variables_globales.habilitar_comisiones = combo2.getStore().getById(combo2.getValue()).data.habilitar_comisiones;
 																this.variables_globales.formato_comprobante = combo2.getStore().getById(combo2.getValue()).data.formato_comprobante;
+																this.variables_globales.enviar_correo = combo2.getStore().getById(combo2.getValue()).data.enviar_correo;
 																VentanaInicio.close();
 
 																if (this.variables_globales.vef_tiene_punto_venta === 'true') {
@@ -552,7 +553,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		openForm : function (tipo, record) {
     	var me = this;
            me.objSolForm = Phx.CP.loadWindows(this.formUrl,
-                                    '<div style="height:30px;"><img src="../../../lib/imagenes/logos/boa_mini_logo.png" style="position:absolute;"><h1 style=" text-align:center; font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><i style="color:green;" class="fa fa-qrcode" aria-hidden="true"></i> Emisión de Factura</h1></div>',
+                                    '<center><img src="../../../lib/imagenes/facturacion/factura.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> FACTURACIÓN COMPUTARIZADA</span></center>',
                                     {
                                         modal:true,
                                         width:'100%',
@@ -660,7 +661,41 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 			onButtonNew : function () {
 	        //abrir formulario de solicitud
-	        this.openForm('new');
+					Ext.Ajax.request({
+							url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
+							params:{
+								id_punto_venta:this.variables_globales.id_punto_venta,
+								id_sucursal:this.variables_globales.id_sucursal
+							},
+							success: function(resp){
+									var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+									// this.aperturaText = reg.ROOT.datos.v_apertura;
+									if (reg.ROOT.datos.v_apertura == 'SIN APERTURA DE CAJA') {
+										Ext.Msg.show({
+												title: 'Alerta',
+												msg: '<p>Estimado Usuario debe aperturar una caja para proceder con las ventas.</p>',
+												buttons: Ext.Msg.OK,
+												width: 512,
+												icon: Ext.Msg.INFO
+										});
+									} else if (reg.ROOT.datos.v_apertura == 'cerrado') {
+										Ext.Msg.show({
+												title: 'Alerta',
+												msg: '<p>Estimado Usuario la apertura de caja esta actualmente cerrada.</p>',
+												buttons: Ext.Msg.OK,
+												width: 512,
+												icon: Ext.Msg.INFO
+										});
+									} else if (reg.ROOT.datos.v_apertura == 'abierto') {
+										  this.openForm('new');
+									}
+
+							},
+							failure: this.conexionFailure,
+							timeout:this.timeout,
+							scope:this
+					});
+	        //this.openForm('new');
 	    },
 
 			anular : function () {
@@ -698,8 +733,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		/*Comentando esta parte para que se imprima directamente desde WF*/
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
-				console.log("llega aqui dato",rec);
-				console.log("llega aqui dato",this.store);
+				// console.log("llega aqui dato",rec);
+				// console.log("llega aqui dato",this.store);
    				//Phx.CP.loadingShow();
 					// if (this.variables_globales.formato_comprobante == 'Carta' || this.variables_globales.formato_comprobante == 'A4') {
    				// Ext.Ajax.request({
@@ -722,7 +757,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	                'id_proceso_wf' : rec.data.id_proceso_wf ,
 	   							'id_punto_venta' : rec.data.id_punto_venta,
 	   							'formato_comprobante' : this.variables_globales.formato_comprobante,
-	   							'tipo_factura': this.store.baseParams.tipo_factura
+									'tipo_factura': this.store.baseParams.tipo_factura,
+	   							'enviar_correo': this.store.baseParams.enviar_correo
 	   						},
 	   						success : this.successExportHtml,
 	   						failure : this.conexionFailure,
@@ -1855,7 +1891,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 							direction: 'ASC'
 					},
 					totalProperty: 'total',
-					fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
+					fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante','enviar_correo'],
 					remoteSort: true,
 					baseParams: {par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
 			}),

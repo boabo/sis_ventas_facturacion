@@ -20,7 +20,7 @@ class ACTDosificacion extends ACTbase{
             $this->objParam->addFiltro(" dos.tipo = ''F'' ");
 			$this->objParam->addFiltro(" dos.tipo_generacion = ''manual'' ");
         }
-
+	
 		if ($this->objParam->getParametro('fecha') != '') {
             $this->objParam->addFiltro(" dos.fecha_limite >= ''" .  $this->objParam->getParametro('fecha')."''");
         }

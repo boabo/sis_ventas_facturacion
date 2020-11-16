@@ -96,8 +96,8 @@ class ACTVenta extends ACTbase{
 			$this->objParam->addFiltro(" ven.id_sucursal = ". $this->objParam->getParametro('id_sucursal'));
 		}
 
-		if ($this->objParam->getParametro('tipo_factura') == '') {
-			$this->objParam->addFiltro(" ven.tipo_factura = ''recibo''");
+		if ($this->objParam->getParametro('tipo_factura') != '') {			
+			$this->objParam->addFiltro(" ven.tipo_factura = ''". $this->objParam->getParametro('tipo_factura')."''");
 		}
 		// var_dump("LLEGA AQUI",$this->objParam->getParametro('tipo_factura'));
 		if ($this->objParam->getParametro('id_punto_venta') != '') {
@@ -309,7 +309,7 @@ class ACTVenta extends ACTbase{
 		$this->res = $this->objFunc->listarRecibo($this->objParam);
 
 		$datos = $this->res->getDatos();
-		$datos = $datos[0];	
+		$datos = $datos[0];
 		if ($datos['cantidad_descripciones'] > 0){
 			$this->objFunc = $this->create('MODVenta');
 			$this->res = $this->objFunc->listarReciboDescripcion($this->objParam);

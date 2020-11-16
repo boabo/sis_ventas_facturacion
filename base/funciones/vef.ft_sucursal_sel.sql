@@ -83,8 +83,9 @@ BEGIN
                         suc.nombre_comprobante,
                         suc.zona,
                         /*Aumentando*/
-                        suc.estado_sucursal
+                        suc.estado_sucursal,
                         /*****************/
+                        suc.enviar_correo
                         from vef.tsucursal suc
 						inner join segu.tusuario usu1 on usu1.id_usuario = suc.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = suc.id_usuario_mod
@@ -149,6 +150,7 @@ $body$
 LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
+SECURITY INVOKER
 COST 100;
 
 ALTER FUNCTION vef.ft_sucursal_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)

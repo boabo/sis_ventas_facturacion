@@ -812,9 +812,15 @@ BEGIN
 
 		begin
 			--Sentencia de la modificacion
-			--raise exception 'llega aqui punto_venta:%. sucursal:%.',v_parametros.id_punto_venta,v_parametros.id_sucursal;
-            v_fecha = now ()::date;
+			--raise exception 'llega aqui fecha %.',v_parametros.fecha_apertura;
 
+            --Aumentando para verificar la apertura del usuario en una fecha especifica
+
+            IF  pxp.f_existe_parametro(p_tabla,'fecha_apertura') THEN
+            		v_fecha = v_parametros.fecha_apertura::date;
+            else
+            		v_fecha = now ()::date;
+			end if;
 
     		if (v_parametros.id_punto_venta = '0' and v_parametros.id_sucursal = '0') then
             	select acc.id_punto_venta, pv.nombre
@@ -1272,12 +1278,13 @@ BEGIN
                                 else
                                       NULL
                               end);*/
-        if (v_parametros.id_instancia_pago is not null and v_parametros.id_instancia_pago != 0) then
+        if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
-        select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
-        from obingresos.tinstancia_pago ip
-        where ip.id_instancia_pago = v_parametros.id_instancia_pago;
+        select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tmedio_pago_pw mp
+        inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+        where mp.id_medio_pago_pw = v_parametros.id_medio_pago;
 
         v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
                                         v_codigo_tarjeta
@@ -1426,6 +1433,7 @@ BEGIN
           END IF;
 
         end if;
+
         if (pxp.f_existe_parametro(p_tabla,'id_punto_venta')) then
           v_id_punto_venta = v_parametros.id_punto_venta;
 
@@ -1433,7 +1441,7 @@ BEGIN
                        from vef.tapertura_cierre_caja acc
                        where acc.fecha_apertura_cierre = v_fecha and
                              acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
-                             acc.id_punto_venta = v_parametros.id_punto_venta)) then
+                             acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
           end if;
 
@@ -1442,7 +1450,7 @@ BEGIN
                            from vef.tapertura_cierre_caja acc
                            where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
-                                 acc.id_punto_venta = v_parametros.id_punto_venta)) then
+                                 acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
           end if;
 
@@ -1453,7 +1461,7 @@ BEGIN
                        from vef.tapertura_cierre_caja acc
                        where acc.fecha_apertura_cierre = v_fecha and
                              acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
-                             acc.id_sucursal = v_parametros.id_sucursal)) then
+                             acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
           end if;
 
@@ -1462,7 +1470,7 @@ BEGIN
                            from vef.tapertura_cierre_caja acc
                            where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
-                                 acc.id_sucursal = v_parametros.id_sucursal)) then
+                                 acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
             raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
           end if;
 
@@ -1819,7 +1827,7 @@ BEGIN
 		/*raise exception 'lelga hasta aqui';*/
         --if (v_parametros.id_forma_pago != 0 ) then
 
-		if (v_parametros.id_instancia_pago != 0 ) then
+		if (v_parametros.id_medio_pago != 0) then
           insert into vef.tventa_forma_pago(
             usuario_ai,
             fecha_reg,
@@ -1837,7 +1845,7 @@ BEGIN
             id_auxiliar,
             tipo_tarjeta,
             /*Aumentamos el id_instancia*/
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda
             /****************************/
           )
@@ -1858,7 +1866,7 @@ BEGIN
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentamos el id_instancia y el id_moneda*/
-            v_parametros.id_instancia_pago,
+            v_parametros.id_medio_pago,
             v_parametros.id_moneda
             /****************************/
           );
@@ -1867,7 +1875,29 @@ BEGIN
         /*Comentando para aumentar instancia de pago*/
 
         --if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
-        if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0 ) then
+        if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0 ) then
+
+        select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tmedio_pago_pw mp
+        inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+        where mp.id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+        /*select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+        from obingresos.tinstancia_pago ip
+        where ip.id_instancia_pago = v_parametros.id_medio_pago;*/
+
+        v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                        v_codigo_tarjeta
+                                else
+                                      NULL
+                              end);
+
+          if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+              if (substring(v_parametros.numero_tarjeta_2::varchar from 1 for 1) != 'X') then
+                  v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
+              end if;
+          end if;
          /*******************************Control para la tarjeta 2******************************/
 
         	   /* select fp.codigo into v_codigo_tarjeta
@@ -1897,7 +1927,7 @@ BEGIN
             id_usuario_ai,
             estado_reg,
             --id_forma_pago,
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda,
             id_venta,
             monto_transaccion,
@@ -1917,7 +1947,7 @@ BEGIN
             v_parametros._id_usuario_ai,
             'activo',
             --v_parametros.id_forma_pago_2,
-            v_parametros.id_instancia_pago_2,
+            v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2,
             v_id_venta,
             v_parametros.monto_forma_pago_2,
@@ -2181,17 +2211,14 @@ BEGIN
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
           nit = v_parametros.nit,
               nombre_factura = v_nombre_factura ,
-              id_cliente_destino = v_id_cliente_destino,
-          formato_factura_emitida = v_parametros.formato_factura,
-          enviar_correo = v_parametros.enviar_correo,
-          correo_electronico = v_parametros.correo_electronico
+              id_cliente_destino = v_id_cliente_destino
         where id_venta=v_parametros.id_venta;
 
 
 
         --if (v_parametros.id_forma_pago != 0 ) then
 
-        if (v_parametros.id_instancia_pago != 0 ) then
+        if (v_parametros.id_medio_pago != 0 ) then
 
 
         /*Comentamos para la validacion de tarjetas dscomentar a futuro*/
@@ -2206,25 +2233,32 @@ BEGIN
                                 else
                                       NULL
                               end);*/
-        if (v_parametros.id_instancia_pago is not null and v_parametros.id_instancia_pago != 0) then
+          if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
-        select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
-        from obingresos.tinstancia_pago ip
-        where ip.id_instancia_pago = v_parametros.id_instancia_pago;
+          select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+          from obingresos.tmedio_pago_pw mp
+          inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+          where mp.id_medio_pago_pw = v_parametros.id_medio_pago;
 
-        v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
-                                        v_codigo_tarjeta
-                                else
-                                      NULL
-                              end);
 
-          if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
-              if (substring(v_parametros.numero_tarjeta::varchar from 1 for 1) != 'X') then
-                  v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta::varchar,v_codigo_tarjeta);
-              end if;
+          /*select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+          from obingresos.tinstancia_pago ip
+          where ip.id_instancia_pago = v_parametros.id_medio_pago;*/
+
+          v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                          v_codigo_tarjeta
+                                  else
+                                        NULL
+                                end);
+
+            if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+                if (substring(v_parametros.numero_tarjeta::varchar from 1 for 1) != 'X') then
+                    v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta::varchar,v_codigo_tarjeta);
+                end if;
+            end if;
+
           end if;
-	    end if;
 
 
         --raise exception 'llekga el mco %',v_parametros.mco;
@@ -2257,7 +2291,7 @@ BEGIN
             id_auxiliar,
             tipo_tarjeta,
             /*Aumentando la instancia de pago*/
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda
             /*********************************/
           )
@@ -2278,14 +2312,14 @@ BEGIN
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentando la instancia de pago*/
-            v_parametros.id_instancia_pago,
+            v_parametros.id_medio_pago,
             v_parametros.id_moneda
             /*********************************/
           );
             --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
              --if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
 
-             if (v_parametros.id_instancia_pago_2 is not null) then
+             if (v_parametros.id_medio_pago_2 is not null) then
            /*******************************Control para la tarjeta 2******************************/
 
          /*Comentamos para la validacion de tarjetas dscomentar a futuro*/
@@ -2300,24 +2334,30 @@ BEGIN
                                 else
                                       NULL
                               end);*/
-                  if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0) then
+                  if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0) then
 
 
-                  select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
+                  select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+                  from obingresos.tmedio_pago_pw mp
+                  inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                  where mp.id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+                  /*select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
                   from obingresos.tinstancia_pago ip
-                  where ip.id_instancia_pago = v_parametros.id_instancia_pago_2;
+                  where ip.id_instancia_pago = v_parametros.id_medio_pago;*/
 
-                v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
-                                                v_codigo_tarjeta
-                                        else
-                                              NULL
-                                      end);
+                  v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                                  v_codigo_tarjeta
+                                          else
+                                                NULL
+                                        end);
 
-                  if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
-                      if (substring(v_parametros.numero_tarjeta::varchar from 1 for 1) != 'X') then
-                          v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
-                      end if;
-                  end if;
+                    if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+                        if (substring(v_parametros.numero_tarjeta_2::varchar from 1 for 1) != 'X') then
+                            v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
+                        end if;
+                    end if;
                 end if;
 
         --raise exception 'llekga el mco %',v_parametros.mco;
@@ -2349,7 +2389,7 @@ BEGIN
             codigo_tarjeta,
             id_auxiliar,
             tipo_tarjeta,
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda
           )
           values(
@@ -2368,7 +2408,7 @@ BEGIN
             replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta_2,
-            v_parametros.id_instancia_pago_2,
+            v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2
           );
           end if;
@@ -3096,7 +3136,7 @@ BEGIN
         where v.id_proceso_wf = v_parametros.id_proceso_wf_act;
         /***********************************************************/
 
-        if (v_venta.anulado = 'SI' ) then
+        if (v_venta.anulado = 'ANULADA' ) then
         	v_estado_finalizado = 851;
         else
           /*Obtenemos el id del estado finalizado*/
@@ -3333,7 +3373,7 @@ BEGIN
         where vd.id_venta = v_parametros.id_venta;
 
         if (v_parametros.tipo_factura = 'manual') THEN
-        	IF(v_cantidad=0 and v_parametros.anulado = 'NO')THEN
+        	IF(v_cantidad=0 and v_parametros.anulado = 'VALIDA')THEN
         		raise exception 'Debe tener al menos un concepto registrado para la venta';
         	END IF;
 

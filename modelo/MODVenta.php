@@ -90,14 +90,16 @@ class MODVenta extends MODbase{
 		$this->captura('nit','varchar');
 		$this->captura('id_punto_venta','int4');
 		$this->captura('nombre_punto_venta','varchar');
-        $this->captura('id_forma_pago','varchar');
+
+    $this->captura('id_forma_pago','varchar');
 		$this->captura('forma_pago','varchar');
 		$this->captura('monto_forma_pago','varchar');
 		$this->captura('numero_tarjeta','varchar');
 		$this->captura('codigo_tarjeta','varchar');
 		$this->captura('tipo_tarjeta','varchar');
-        $this->captura('porcentaje_descuento','numeric');
-        $this->captura('id_vendedor_medico','varchar');
+		
+    $this->captura('porcentaje_descuento','numeric');
+    $this->captura('id_vendedor_medico','varchar');
 		$this->captura('comision','numeric');
 		$this->captura('observaciones','text');
 		$this->captura('fecha','date');
@@ -118,7 +120,6 @@ class MODVenta extends MODbase{
 		$this->captura('descripcion_bulto','varchar');
 		$this->captura('contabilizable','varchar');
 		$this->captura('hora_estimada_entrega','varchar');
-    $this->captura('vendedor_medico','varchar');
 		$this->captura('forma_pedido','varchar');
 		$this->captura('id_cliente_destino','integer');
 		$this->captura('cliente_destino','varchar');
@@ -245,8 +246,8 @@ class MODVenta extends MODbase{
 						$this->setParametro('id_forma_pago','id_forma_pago','int4');
 						$this->setParametro('id_forma_pago_2','id_forma_pago_2','int4');
 						/*Aumentando la instancia de pago*/
-						$this->setParametro('id_instancia_pago','id_instancia_pago','int4');
-						$this->setParametro('id_instancia_pago_2','id_instancia_pago_2','int4');
+						$this->setParametro('id_medio_pago','id_medio_pago','int4');
+						$this->setParametro('id_medio_pago_2','id_medio_pago_2','int4');
 						$this->setParametro('id_moneda_2','id_moneda_2','int4');
 						/********************************/
 						$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
@@ -296,6 +297,10 @@ class MODVenta extends MODbase{
 						/*********Mandamos la moneda del recibo (18/08/2020 Ismael Valdivia)********/
 						$this->setParametro('id_moneda_venta_recibo', 'id_moneda_venta_recibo', 'integer');
 						$this->setParametro('id_auxiliar_anticipo', 'id_auxiliar_anticipo', 'integer');
+						/***********************************************************************************/
+
+						/*Aumentando para registrar correo electronico en MIAMI (Ismael Valdivia 14/10/2020)*/
+						$this->setParametro('correo_electronico', 'correo_electronico', 'varchar');
 						/***********************************************************************************/
 
             //Ejecuta la instruccion
@@ -1115,7 +1120,7 @@ class MODVenta extends MODbase{
 		$this->ejecutarConsulta();
 
 
-		//var_dump($this->respuesta); exit;
+		//var_dump($this->respuesta);
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
