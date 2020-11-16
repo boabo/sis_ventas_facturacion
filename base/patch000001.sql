@@ -1295,24 +1295,23 @@ ALTER TABLE vef.tventa
   ALTER COLUMN anulado TYPE VARCHAR(20) COLLATE pg_catalog."default";
 /***********************************F-SCP-IRVA-VEF-0-15/09/2020****************************************/
 
-/***********************************I-SCP-IRVA-VEF-0-16/11/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-15/11/2020****************************************/
 ALTER TABLE vef.tsucursal
   ADD COLUMN enviar_correo VARCHAR(5);
 
 ALTER TABLE vef.tsucursal
   ALTER COLUMN enviar_correo SET DEFAULT 'no'::CHARACTER VARYING;
+/***********************************F-SCP-IRVA-VEF-0-15/11/2020****************************************/
 
-
+/***********************************I-SCP-IRVA-VEF-0-16/11/2020****************************************/
 ALTER TABLE vef.tventa_forma_pago
   RENAME COLUMN id_instancia_pago TO id_medio_pago;
-
 
 ALTER TABLE vef.tformula
   DROP COLUMN punto_venta_asociado;
 
 ALTER TABLE vef.tformula
   DROP COLUMN tipo_punto_venta;
-
 
 ALTER TABLE vef.tformula
   ADD COLUMN sw_autorizacion VARCHAR(200) [];
