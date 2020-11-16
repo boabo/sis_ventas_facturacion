@@ -1301,7 +1301,7 @@ ALTER TABLE vef.tsucursal
 
 ALTER TABLE vef.tsucursal
   ALTER COLUMN enviar_correo SET DEFAULT 'no'::CHARACTER VARYING;
-  
+
 
 ALTER TABLE vef.tventa_forma_pago
   RENAME COLUMN id_instancia_pago TO id_medio_pago;
@@ -1311,7 +1311,7 @@ ALTER TABLE vef.tformula
   DROP COLUMN punto_venta_asociado;
 
 ALTER TABLE vef.tformula
-  DROP COLUMN tipo_punto_venta
+  DROP COLUMN tipo_punto_venta;
 
 
 ALTER TABLE vef.tformula
