@@ -61,7 +61,8 @@ $body$
                         puve.codigo,
                         puve.habilitar_comisiones,
                         suc.formato_comprobante,
-                        puve.tipo
+                        puve.tipo,
+                        suc.enviar_correo
 						from vef.tpunto_venta puve
 						inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
