@@ -15,10 +15,16 @@ class ACTServicios extends ACTbase{
 		$this->objParam->defecto('dir_ordenacion','asc');
 
 		/*Aumentando para filtrar solo los conceptos que seran para Recibos Oficiales (Ismael Valdivia 14/07/2020)*/
-		if($this->objParam->getParametro('facturacion')!=''){
+		if($this->objParam->getParametro('emision')!=''){
+			if ($this->objParam->getParametro('emision') == 'facturacion') {
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales) AND ''".$this->objParam->getParametro('tipo_pv')."''=ANY (ingas.nivel_permiso)");
+			} elseif ($this->objParam->getParametro('emision') == 'recibo') {
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales)");
+			}
+			elseif ($this->objParam->getParametro('emision') == 'DEVOLUCIONES') {
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
+			}
 		}
-
 		// if($this->objParam->getParametro('regionales')!=''){
 		// 		$this->objParam->addFiltro("''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales)");
 		// }
