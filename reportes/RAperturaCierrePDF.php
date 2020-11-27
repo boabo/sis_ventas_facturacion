@@ -43,8 +43,13 @@ class RAperturaCierrePDF extends  ReportePDF {
         $this->Cell(70,5,$this->datos[0]['estacion'] ,1,1,'L');
 
         $this->Ln(2);
+        // $this->Cell(35,5,'PUNTO DE VENTA / AGT:' ,0,0,'R');
+        // $this->Cell(145,5,$this->datos[0]['desc_punto_venta'].' '.$this->datos[0]['punto_venta'] ,1,1,'L');
+
         $this->Cell(35,5,'PUNTO DE VENTA / AGT:' ,0,0,'R');
-        $this->Cell(145,5,$this->datos[0]['punto_venta'] ,1,1,'L');
+        $this->Cell(70,5,$this->datos[0]['desc_punto_venta'] ,1,0,'L');
+        $this->Cell(30,5,'COD AGT:' ,0,0,'R');
+        $this->Cell(45,5,$this->datos[0]['punto_venta'] ,1,1,'L');
 
         $this->Ln(3);
         $this->SetFont('','B',8);
@@ -109,6 +114,26 @@ class RAperturaCierrePDF extends  ReportePDF {
         $this->Cell(50,5,number_format($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'],2) ,1,0,'R');
         $this->Cell(50,5,number_format($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'],2) ,1,1,'R');
 
+        /*Auemntando para total efectivo en BOlivivanos*/
+
+
+        $total_ventas = number_format((number_format($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'],2)*number_format($this->datos[0]['tipo_cambio'],2)) + number_format($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'],2),2);
+        $total_arqueo = number_format(($this->datos[0]['arqueo_moneda_extranjera'] * $this->datos[0]['tipo_cambio']) + $this->datos[0]['arqueo_moneda_local'] ,2);
+
+        $diferenca = (str_replace(',', '', $total_ventas) - str_replace(',', '', $total_arqueo));
+
+        if (number_format($diferenca,2) == 0) {
+          $this->SetTextColor(0, 119, 103);
+        } else {
+          $this->SetTextColor(255, 0, 0);
+        }
+
+        $this->SetFont('','B',11);
+        $this->Cell(80,5,'TOTAL EFECTIVO EN '.$this->datos[0]['cod_moneda_local'],1,0,'C');
+        $this->Cell(100,5,number_format((number_format($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'],2)*number_format($this->datos[0]['tipo_cambio'],2)) + number_format($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'],2),2).' '.$this->datos[0]['cod_moneda_local'] ,1,1,'C');
+        /***********************************************/
+
+        $this->SetTextColor();
         $this->Ln(3);
         $this->SetFont('','B',8);
         $this->Cell(0,5,'ARQUEO EFECTIVO' ,1,1,'C',1);
@@ -130,10 +155,18 @@ class RAperturaCierrePDF extends  ReportePDF {
         $this->Cell(50,5, number_format($this->datos[0]['tipo_cambio'],2) ,1,0,'R');
         $this->Cell(50,5,number_format($this->datos[0]['arqueo_moneda_extranjera'] * $this->datos[0]['tipo_cambio'] ,2) ,1,1,'R');
 
+        if (number_format($diferenca,2) == 0) {
+          $this->SetTextColor(0, 119, 103);
+        } else {
+          $this->SetTextColor(255, 0, 0);
+        }
+        $this->SetFont('','B',11);
         $this->Cell(130,5,'TOTAL EFECTIVO' ,1,0,'C');
-        $this->Cell(50,5,number_format(($this->datos[0]['arqueo_moneda_extranjera'] * $this->datos[0]['tipo_cambio']) + $this->datos[0]['arqueo_moneda_local'] ,2) ,1,1,'R');
+        $this->Cell(50,5,number_format(($this->datos[0]['arqueo_moneda_extranjera'] * $this->datos[0]['tipo_cambio']) + $this->datos[0]['arqueo_moneda_local'] ,2).' '.$this->datos[0]['cod_moneda_local'] ,1,1,'R');
         $this->Ln();
 
+        $this->SetTextColor();
+        $this->SetFont('','',7);
         $this->Cell(25,5,'OBSERVACIÓN:' ,0,0,'R');
         $this->Cell(155,5,$this->datos[0]['obs_cierre'] ,1,1,'R');
 

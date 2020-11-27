@@ -473,6 +473,7 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('pais','varchar');
         $this->captura('estacion','varchar');
         $this->captura('punto_venta','varchar');
+        $this->captura('desc_punto_venta','varchar');
         $this->captura('obs_cierre','varchar');
         $this->captura('arqueo_moneda_local','numeric');
         $this->captura('arqueo_moneda_extranjera','numeric');

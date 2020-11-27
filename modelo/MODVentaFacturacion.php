@@ -883,8 +883,8 @@ class MODVentaFacturacion extends MODbase{
 							$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
 							$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
 							/*Aumentando la instancia de pago*/
-							$this->setParametro('id_instancia_pago','id_instancia_pago','int4');
-							$this->setParametro('id_instancia_pago_2','id_instancia_pago_2','int4');
+							$this->setParametro('id_medio_pago','id_medio_pago','int4');
+							$this->setParametro('id_medio_pago_2','id_medio_pago_2','int4');
 							$this->setParametro('id_moneda_2','id_moneda_2','int4');
 							/********************************/
 							$this->setParametro('mco','mco','varchar');
@@ -934,6 +934,10 @@ class MODVentaFacturacion extends MODbase{
 							/*********Mandamos la moneda del recibo (18/08/2020 Ismael Valdivia)********/
 							$this->setParametro('id_moneda_venta_recibo', 'id_moneda_venta_recibo', 'integer');
 							$this->setParametro('id_auxiliar_anticipo', 'id_auxiliar_anticipo', 'integer');
+							/***********************************************************************************/
+
+							/*Aumentando para registrar correo electronico en MIAMI (Ismael Valdivia 14/10/2020)*/
+							$this->setParametro('correo_electronico', 'correo_electronico', 'varchar');
 							/***********************************************************************************/
 
 
@@ -1122,8 +1126,8 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('id_moneda_2','id_moneda_2','int4');
 			$this->setParametro('id_venta_forma_pago_1','id_venta_forma_pago_1','int4');
 			$this->setParametro('id_venta_forma_pago_2','id_venta_forma_pago_2','int4');
-			$this->setParametro('id_instancia_pago','id_instancia_pago','int4');
-			$this->setParametro('id_instancia_pago_2','id_instancia_pago_2','int4');
+			$this->setParametro('id_medio_pago','id_medio_pago','int4');
+			$this->setParametro('id_medio_pago_2','id_medio_pago_2','int4');
 			$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar');
 			$this->setParametro('codigo_tarjeta_2','codigo_tarjeta_2','varchar');
 			$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
@@ -1196,6 +1200,42 @@ class MODVentaFacturacion extends MODbase{
 				$this->setParametro('nro_deposito','nro_deposito','varchar');
 				$this->setParametro('id_moneda','id_moneda','integer');
 				$this->setParametro('fecha','fecha','varchar');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+		}
+
+		function verificarDosificacionRoManual(){
+				//Definicion de variables para ejecucion del procedimientp
+				$this->procedimiento='vef.ft_venta_facturacion_ime';
+				$this->transaccion='VF_VERIDOSMAN_IME';
+				$this->tipo_procedimiento='IME';//tipo de transaccion
+
+				$this->setParametro('fecha_apertura','fecha_apertura','varchar');
+				$this->setParametro('id_punto_venta','id_punto_venta','integer');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+		}
+
+		function insertarDosificacionRoManual(){
+				//Definicion de variables para ejecucion del procedimientp
+				$this->procedimiento='vef.ft_venta_facturacion_ime';
+				$this->transaccion='VF_INSDOSMAN_IME';
+				$this->tipo_procedimiento='IME';//tipo de transaccion
+
+				$this->setParametro('numero_inicial','numero_inicial','varchar');
+				$this->setParametro('numero_final','numero_final','varchar');
+				$this->setParametro('id_punto_venta','id_punto_venta','integer');
+				$this->setParametro('fecha_apertura','fecha_apertura','varchar');
 
 				//Ejecuta la instruccion
 				$this->armarConsulta();

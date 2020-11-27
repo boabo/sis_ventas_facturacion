@@ -75,7 +75,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
           {
         config:{
           name: 'observaciones',
-          fieldLabel: 'Observaciones',
+          fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
           allowBlank: true,
           width:200,
           //maxLength:30,
@@ -107,7 +107,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 			this.Atributos.push({
 		            config:{
 		                name: 'excento',
-		                fieldLabel: 'Excento',
+		                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
 		                allowBlank: false,
 		                //anchor: '80%',
                     width:200,
@@ -145,7 +145,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 			this.Atributos.push({
 	            config: {
 	                name: 'id_dosificacion',
-	                fieldLabel: 'Dosificacion',
+	                fieldLabel: '<img src="../../../lib/imagenes/facturacion/dosifica.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Dosificación</span>',
 	                allowBlank: false,
                   width:200,
 	                emptyText: 'Elija un Dosi...',
@@ -196,7 +196,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 	        this.Atributos.push({
 		            config:{
 		                name: 'nro_factura',
-		                fieldLabel: 'No Factura ',
+		                fieldLabel: '<img src="../../../lib/imagenes/facturacion/listaNumeros.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Nro. Factura</span>',
 		                allowBlank: false,
 		                width:200,
 		                maxLength:20
@@ -208,7 +208,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
           {
         config:{
           name: 'informe',
-          fieldLabel: 'Informe',
+          fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Informe</span>',
           allowBlank: false,
           width:200,
           minLength:20,
@@ -414,7 +414,21 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
     },
 
+
+    /*Funcion para poner las condiciones en las regionales*/
+    condicionesRegionales: function (){
+
+      /*Aumentanod para filtrar las instancias de pago (Ismael Valdivia 16/10/2020)*/
+      this.Cmp.id_formula.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago_2.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /****************************************************************************/
+    },
+    /******************************************************/
+
     iniciarEventos : function () {
+        this.condicionesRegionales();
+
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
 
@@ -561,10 +575,35 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
             this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
             this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
 
+            /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+            Ext.getCmp('botonGuardar').el.dom.onmouseover = function () {
+              Ext.getCmp('botonGuardar').btnEl.dom.style.background = '#00B2FA';
+            };
+
+            Ext.getCmp('botonGuardar').el.dom.onmouseout = function () {
+              Ext.getCmp('botonGuardar').btnEl.dom.style.background = '';
+            };
+
+            /*******************************************************/
+
             /******************Cambiaremos el estilo del boton agregar detalle************************/
             this.megrid.topToolbar.items.items[1].container.dom.style.width="75px";
             this.megrid.topToolbar.items.items[1].container.dom.style.height="35px";
             this.megrid.topToolbar.items.items[1].btnEl.dom.style.height="35px";
+
+
+            /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+            Ext.getCmp('botonAgregar').el.dom.onmouseover = function () {
+              Ext.getCmp('botonAgregar').btnEl.dom.style.background = '#5CE100';
+            };
+
+            Ext.getCmp('botonAgregar').el.dom.onmouseout = function () {
+              Ext.getCmp('botonAgregar').btnEl.dom.style.background = '';
+            };
+
+            /*******************************************************/
 
             // this.megrid.topToolbar.items.items[3].container.dom.style.width="75px";
             // this.megrid.topToolbar.items.items[3].container.dom.style.height="35px";
@@ -575,7 +614,19 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
             this.megrid.topToolbar.items.items[2].container.dom.style.height="35px";
             this.megrid.topToolbar.items.items[2].btnEl.dom.style.height="35px";
 
-            this.megrid.topToolbar.el.dom.style.background="#DBE3E5";
+            /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+            Ext.getCmp('botonEliminar').el.dom.onmouseover = function () {
+              Ext.getCmp('botonEliminar').btnEl.dom.style.background = 'rgba(255, 0, 0, 0.5)';
+            };
+
+            Ext.getCmp('botonEliminar').el.dom.onmouseout = function () {
+              Ext.getCmp('botonEliminar').btnEl.dom.style.background = '';
+            };
+
+            /*******************************************************/
+
+            this.megrid.topToolbar.el.dom.style.background="#5199BF";
             this.megrid.topToolbar.el.dom.style.borderRadius="2px";
             this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#DBE3E5';
 
@@ -614,7 +665,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
               //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
 
               /*Aumentando para que nos filtre siempre efectivo (CASH)*/
-              this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
+              this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
               this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
               /*********************************************************/
                }
@@ -788,14 +839,19 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
        },this);*/
 
        /****************************Aumnetando la instancia de pago********************************/
-       this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
-         var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+       this.Cmp.id_medio_pago.on('select',function(c,r,i) {
 
-         this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+         if(r){
+           if (r.data) {
+             var codigo_forma_pago = r.data.fop_code;
+             this.Cmp.tipo_tarjeta.setValue(r.data.name);
+           }
+         }
 
-         if (codigo_forma_pago == 'CC') {
+      if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
+         if (codigo_forma_pago.startsWith("CC")) {
            this.mostrarComponente(this.Cmp.codigo_tarjeta);
-           this.mostrarComponente(this.Cmp.tipo_tarjeta);
+           //this.mostrarComponente(this.Cmp.tipo_tarjeta);
            this.mostrarComponente(this.Cmp.numero_tarjeta);
            this.ocultarComponente(this.Cmp.id_auxiliar);
            this.ocultarComponente(this.Cmp.mco);
@@ -803,7 +859,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.codigo_tarjeta.allowBlank = false;
            this.Cmp.tipo_tarjeta.allowBlank = false;
            this.Cmp.mco.allowBlank = true;
-         } else if (codigo_forma_pago == 'MC') {
+         } else if (codigo_forma_pago.startsWith("MCO")) {
            this.mostrarComponente(this.Cmp.mco);
            this.Cmp.numero_tarjeta.allowBlank = true;
            this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -816,7 +872,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.tipo_tarjeta.reset();
            this.Cmp.id_auxiliar.reset();
            this.Cmp.numero_tarjeta.reset();
-         } else if (codigo_forma_pago == 'CU') {
+         } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
            this.mostrarComponente(this.Cmp.id_auxiliar);
            this.Cmp.numero_tarjeta.allowBlank = true;
            this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -831,7 +887,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.id_auxiliar.reset();
            this.Cmp.mco.reset();
            this.Cmp.numero_tarjeta.reset();
-         }else if (codigo_forma_pago == 'CA') {
+         }else if (codigo_forma_pago.startsWith("CA")) {
            this.mostrarComponente(this.Cmp.id_auxiliar);
            this.Cmp.numero_tarjeta.allowBlank = true;
            this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -855,16 +911,17 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.mco.reset();
            this.Cmp.numero_tarjeta.reset();
          }
+       }
 
        },this);
 
 
-       this.Cmp.id_instancia_pago_2.on('select',function(c,r,i) {
-         var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+       this.Cmp.id_medio_pago_2.on('select',function(c,r,i) {
+         var codigo_forma_pago = r.data.fop_code;
          this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
-         if (codigo_forma_pago == 'CC') {
+         if (codigo_forma_pago.startsWith("CC")) {
            this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-           this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
+           //this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
            this.mostrarComponente(this.Cmp.numero_tarjeta_2);
            this.ocultarComponente(this.Cmp.id_auxiliar_2);
            this.ocultarComponente(this.Cmp.mco_2);
@@ -872,7 +929,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.codigo_tarjeta_2.allowBlank = false;
            this.Cmp.tipo_tarjeta_2.allowBlank = false;
            this.Cmp.mco_2.allowBlank = true;
-         } else if (codigo_forma_pago == 'MC') {
+         } else if (codigo_forma_pago.startsWith("MCO")) {
            this.mostrarComponente(this.Cmp.mco_2);
            this.Cmp.numero_tarjeta_2.allowBlank = true;
            this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -885,7 +942,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.tipo_tarjeta_2.reset();
            this.Cmp.id_auxiliar_2.reset();
            this.Cmp.numero_tarjeta_2.reset();
-         } else if (codigo_forma_pago == 'CU') {
+         } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
            this.mostrarComponente(this.Cmp.id_auxiliar_2);
            this.Cmp.numero_tarjeta_2.allowBlank = true;
            this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -900,7 +957,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.id_auxiliar_2.reset();
            this.Cmp.mco_2.reset();
            this.Cmp.numero_tarjeta_2.reset();
-         }else if (codigo_forma_pago == 'CA') {
+         }else if (codigo_forma_pago.startsWith("CA")) {
            this.mostrarComponente(this.Cmp.id_auxiliar_2);
            this.Cmp.numero_tarjeta_2.allowBlank = true;
            this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -964,7 +1021,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
            /**********************************Cambiamos el Style *****************************************/
 
-           this.Cmp.id_instancia_pago_2.enable();
+           this.Cmp.id_medio_pago_2.enable();
            this.Cmp.id_moneda_2.enable();
            this.Cmp.monto_forma_pago_2.enable();
            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
@@ -985,7 +1042,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
            /**********************************Cambiamos el Style *****************************************/
 
-           this.Cmp.id_instancia_pago_2.enable();
+           this.Cmp.id_medio_pago_2.enable();
            this.Cmp.id_moneda_2.enable();
            this.Cmp.monto_forma_pago_2.enable();
            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
@@ -998,11 +1055,11 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
          } else{
            //this.Cmp.id_forma_pago_2.disable();
            this.Cmp.id_moneda_2.disable();
-           this.Cmp.id_instancia_pago_2.disable();
+           this.Cmp.id_medio_pago_2.disable();
            this.Cmp.monto_forma_pago_2.disable();
            this.Cmp.monto_forma_pago_2.reset();
            //this.Cmp.id_forma_pago_2.reset();
-           this.Cmp.id_instancia_pago_2.reset();
+           this.Cmp.id_medio_pago_2.reset();
            this.Cmp.id_moneda_2.reset();
            //this.Cmp.moneda_tarjeta_2.reset();
            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
@@ -1058,7 +1115,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
            /**********************************Cambiamos el Style *****************************************/
            //this.Cmp.id_forma_pago_2.enable();
            this.Cmp.id_moneda_2.enable();
-           this.Cmp.id_instancia_pago_2.enable();
+           this.Cmp.id_medio_pago_2.enable();
            this.Cmp.monto_forma_pago_2.enable();
            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
          }else if (this.Cmp.id_moneda.getValue() != 2 && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
@@ -1073,18 +1130,18 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
            //this.Cmp.id_forma_pago_2.enable();
            this.Cmp.id_moneda_2.enable();
-           this.Cmp.id_instancia_pago_2.enable();
+           this.Cmp.id_medio_pago_2.enable();
            this.Cmp.monto_forma_pago_2.enable();
            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
          } else{
            //this.Cmp.id_forma_pago_2.disable();
            this.Cmp.id_moneda_2.disable();
-           this.Cmp.id_instancia_pago_2.disable();
+           this.Cmp.id_medio_pago_2.disable();
            this.Cmp.monto_forma_pago_2.disable();
            this.Cmp.monto_forma_pago_2.reset();
            //this.Cmp.id_forma_pago_2.reset();
            this.Cmp.id_moneda_2.reset();
-           this.Cmp.id_instancia_pago_2.reset();
+           this.Cmp.id_medio_pago_2.reset();
            //this.Cmp.moneda_tarjeta_2.reset();
            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
@@ -1166,8 +1223,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         	if (this.accionFormulario != 'EDIT') {
             /*Comentando para agregar InstanciaPago*/
             //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-            this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
-            this.Cmp.id_instancia_pago.store.baseParams.filtrar_base = 'si';
+            this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
+            this.Cmp.id_medio_pago.store.baseParams.filtrar_base = 'si';
             }
             if (this.data.objPadre.tipo_factura == 'manual') {
             	this.Cmp.id_dosificacion.reset();
@@ -1303,17 +1360,22 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                 }, scope : this
             });
 
-            this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
-    		           callback : function (r) {
+            this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
+                   callback : function (r) {
                               if (r.length == 1 ) {
-                                  this.Cmp.id_instancia_pago.setValue(r[0].data.id_instancia_pago);
-                                  this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,r[0],0);
+                                  this.Cmp.id_medio_pago.setValue(r[0].data.id_medio_pago_pw);
+                                  this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[0],0);
+                              } else {
+                                for (var i = 0; i < r.length; i++) {
+                                  if (r[i].data.fop_code.startsWith("CA")) {
+                                    this.Cmp.id_medio_pago.setValue(r[i].data.id_medio_pago_pw);
+                                    this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
+                                  }
+                                }
                               }
-                                  this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,this.Cmp.id_instancia_pago.store.getById(this.Cmp.id_instancia_pago.getValue()),0);
-                                  this.Cmp.id_instancia_pago.store.baseParams.defecto = 'no';
-
-    		            }, scope : this
-    		        });
+              this.Cmp.id_medio_pago.store.baseParams.defecto = 'no';
+                    }, scope : this
+                });
             /***************/
 
             /*Comentando para incluir InstanciaPago*/
@@ -1429,6 +1491,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                       {
                   	    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
                         scope: this,
+                        id:'botonGuardar',
               			    handler: function(btn) {
                           this.guardarDetalles();
               			    }
@@ -1436,6 +1499,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                       {
                       text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
                       scope: this,
+                      id:'botonAgregar',
                         handler : function(){
                           this.formularioAgregar();
                           }
@@ -1443,6 +1507,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                       {
                         text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
                         scope: this,
+                        id:'botonEliminar',
                           handler : function(){
                             var index = this.megrid.getSelectionModel().getSelectedCell();
                             if (!index) {
@@ -1706,7 +1771,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                    }),
                    new Ext.form.ComboBox({
                                                        name: 'id_producto',
-                                                       fieldLabel: 'Producto/<br>Servicio',
+                                                       fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/<br>Servicio</span>',
                                                        allowBlank: false,
                                                        emptyText: 'Productos...',
                                                        store: new Ext.data.JsonStore({
@@ -1720,7 +1785,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                            totalProperty: 'total',
                                                            fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
                                                            remoteSort: true,
-                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO'}
+                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP', emision:'facturacion'}
                                                        }),
                                                        valueField: 'id_concepto_ingas',
                                                        displayField: 'desc_ingas',
@@ -1753,7 +1818,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                      }),
                                                      new Ext.form.TextField({
                                                             name: 'descripcion',
-                                                            fieldLabel: 'Descripcion',
+                                                            fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
                                                             allowBlank:true,
                                                             width : 450,
                                                             disabled : true,
@@ -1763,7 +1828,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                     new Ext.form.NumberField({
                                                                         name: 'cantidad',
                                                                         msgTarget: 'title',
-                                                                        fieldLabel: 'Cantidad',
+                                                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
                                                                         allowBlank: false,
                                                                         width : 450,
                                                                         //allowDecimals: me.cantidadAllowDecimals,
@@ -1775,7 +1840,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                     new Ext.form.NumberField({
                                                                         name: 'precio_unitario',
                                                                         msgTarget: 'title',
-                                                                        fieldLabel: 'P/U',
+                                                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> P/U</span>',
                                                                         allowBlank: false,
                                                                         allowDecimals: true,
                                                                         decimalPrecision : 2,
@@ -1785,7 +1850,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                      new Ext.form.NumberField({
                                                                         name: 'precio_total',
                                                                         msgTarget: 'title',
-                                                                        fieldLabel: 'Total',
+                                                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
                                                                         width : 450,
                                                                         allowBlank: false,
                                                                         allowDecimals: false,
@@ -1797,8 +1862,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
    });
    this.variables = simple;
    /*Aumentando para Filtrar los servicios por id_punto_venta y el tipo del PV (ATO CTO)*/
-   // this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
-   // this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
+   this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
+   this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
    // /************************************************************************************************/
 
       var win = new Ext.Window({
@@ -1836,6 +1901,12 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     },
 
     ComboIdProducto : function (tipo) {
+
+      /*Aqui aumentamos para poner el filtro de los conceptos*/
+      this.variables.items.items[1].store.baseParams.regionales = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /*******************************************************/
+
+
     	this.variables.items.items[1].setDisabled(false);
     	this.variables.items.items[1].store.baseParams.tipo = tipo;
     	if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
@@ -2448,7 +2519,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
       config : {
         name: 'anulado',
-        fieldLabel: 'Estado',
+        fieldLabel: '<img src="../../../lib/imagenes/facturacion/aceptarVerde.svg" style="width:15px; vertical-align: middle;">   <img src="../../../lib/imagenes/facturacion/cancelarRojo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Estado</span>',
         // style: {
         //   background: '#E2F9DF',
         //   color: '#0C7300',
@@ -2474,7 +2545,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 		{
 			config:{
 				name: 'nit',
-				fieldLabel: 'NIT',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CarnetIdentidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> NIT</span>',
 				allowBlank: false,
         listeners: {
           afterrender: function(field) {
@@ -2491,7 +2562,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 		{
 			config : {
 				name : 'id_cliente',
-				fieldLabel : 'Razón Social Cliente',
+				fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
         style:{
         //  width:'5000px',
           textTransform:'uppercase',
@@ -2525,7 +2596,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 				hiddenName : 'id_cliente',
 				forceSelection : false,
 				typeAhead : false,
-				tpl:'<tpl for="."><div class="x-combo-list-item"><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
 				triggerAction : 'all',
 				lazyRender : true,
 				mode : 'remote',
@@ -2551,7 +2622,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
 			config : {
 				name : 'id_formula',
-				fieldLabel : 'Paquetes / Fórmulas',
+				fieldLabel : '<img src="../../../lib/imagenes/facturacion/paquete.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Paquetes / Fórmulas</span>',
 				allowBlank : true,
         width:200,
         listWidth:'450',
@@ -2570,8 +2641,9 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 					totalProperty : 'total',
 					fields : ['id_formula', 'nombre', 'descripcion'],
 					remoteSort : true,
-					baseParams : {
-						par_filtro : 'form.nombre'
+          baseParams : {
+						par_filtro : 'form.nombre',
+            emision:'FACTCOMP'
 					}
 				}),
 				valueField : 'id_formula',
@@ -2753,7 +2825,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
         config: {
             name: 'id_moneda',
-            fieldLabel: 'Moneda',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
             allowBlank: false,
             width:150,
             listWidth:250,
@@ -2845,29 +2917,30 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     /************************Aumentando instancia de pago*****************************************/
     {
         config: {
-            name: 'id_instancia_pago',
-            fieldLabel: 'Instancia de pago',
+            name: 'id_medio_pago',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
             allowBlank: false,
             width:150,
-            emptyText: 'Instancia de pago...',
+            id: 'testeoColor',
+            emptyText: 'Medio de pago...',
             store: new Ext.data.JsonStore({
-                url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                id: 'id_instancia_pago',
+                url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                id: 'id_medio_pago',
                 root: 'datos',
                 sortInfo: {
-                    field: 'nombre',
+                    field: 'name',
                     direction: 'ASC'
                 },
                 totalProperty: 'total',
-                fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                 remoteSort: true,
-                baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
             }),
-            valueField: 'id_instancia_pago',
-            displayField: 'nombre',
-            gdisplayField: 'codigo_forma_pago',
-            hiddenName: 'id_instancia_pago',
-            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+            valueField: 'id_medio_pago_pw',
+            displayField: 'name',
+            gdisplayField: 'name',
+            hiddenName: 'id_medio_pago_pw',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
             forceSelection: true,
             typeAhead: false,
             triggerAction: 'all',
@@ -2881,7 +2954,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
             minChars: 2,
             disabled:false,
             renderer : function(value, p, record) {
-                return String.format('{0}', record.data['codigo_forma_pago']);
+                return String.format('{0}', record.data['codigo_fp']);
             }
         },
         type: 'ComboBox',
@@ -2893,7 +2966,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'numero_tarjeta',
-            fieldLabel: 'N° Tarjeta',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
             allowBlank: true,
             width:150,
             maxLength:20,
@@ -2922,7 +2995,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'codigo_tarjeta',
-            fieldLabel: 'Codigo de Autorización',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
             allowBlank: false,
             width:150,
             minLength:6,
@@ -2939,7 +3012,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
 			config: {
 				name: 'id_auxiliar',
-				fieldLabel: 'Cuenta Corriente',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
 				allowBlank: true,
         width:150,
 				emptyText: 'Cuenta Corriente...',
@@ -2984,7 +3057,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'monto_forma_pago',
-            fieldLabel: 'Importe Recibido',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
             allowBlank: false,
             width:150,
             maxLength:20,
@@ -3058,7 +3131,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         {
             config: {
                 name: 'id_moneda_2',
-                fieldLabel: 'Moneda',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
                 allowBlank: false,
                 width:150,
                 listWidth:250,
@@ -3104,29 +3177,29 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         },
         {
             config: {
-                name: 'id_instancia_pago_2',
-                fieldLabel: 'Instancia de pago',
+                name: 'id_medio_pago_2',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
                 allowBlank: false,
                 width:150,
-                emptyText: 'Instancia de pago...',
+                emptyText: 'Medio de pago...',
                 store: new Ext.data.JsonStore({
-                    url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                    id: 'id_instancia_pago',
+                    url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                    id: 'id_medio_pago',
                     root: 'datos',
                     sortInfo: {
-                        field: 'nombre',
+                        field: 'name',
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                    fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
                 }),
-                valueField: 'id_instancia_pago',
-                displayField: 'nombre',
-                gdisplayField: 'codigo_forma_pago',
-                hiddenName: 'id_instancia_pago',
-                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+                valueField: 'id_medio_pago_pw',
+                displayField: 'name',
+                gdisplayField: 'name',
+                hiddenName: 'id_medio_pago_pw',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
                 forceSelection: true,
                 typeAhead: false,
                 triggerAction: 'all',
@@ -3140,7 +3213,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                 minChars: 2,
                 disabled:false,
                 renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['codigo_forma_pago']);
+                    return String.format('{0}', record.data['codigo_fp']);
                 }
             },
             type: 'ComboBox',
@@ -3199,7 +3272,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         {
     			config: {
     				name: 'id_auxiliar_2',
-    				fieldLabel: 'Cuenta Corriente',
+    				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
     				allowBlank: true,
             width:150,
     				emptyText: 'Cuenta Corriente...',
@@ -3244,7 +3317,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'numero_tarjeta_2',
-                fieldLabel: 'N° Tarjeta',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
                 allowBlank: true,
                 //disabled:true,
                 width:150,
@@ -3277,7 +3350,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'codigo_tarjeta_2',
-                fieldLabel: 'Codigo de Autorización',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
                 allowBlank: true,
                 width:150,
                 //disabled:true,
@@ -3296,7 +3369,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'monto_forma_pago_2',
-                fieldLabel: 'Importe Recibido',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
                 allowBlank:true,
                 width:150,
                 allowDecimals:true,

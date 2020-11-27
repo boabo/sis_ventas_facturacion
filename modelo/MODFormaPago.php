@@ -20,6 +20,8 @@ class MODFormaPago extends MODbase{
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		$this->setParametro('id_venta','id_venta','int4');
+		$this->setParametro('emision','emision','varchar');
+		$this->setParametro('regionales','regionales','varchar');
 
 		//Definicion de la lista del resultado del query
 		$this->captura('id_forma_pago','int4');
@@ -47,11 +49,9 @@ class MODFormaPago extends MODbase{
 		$this->captura('codigo_tarjeta','varchar');
 		$this->captura('tipo_tarjeta','varchar');
 
-
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

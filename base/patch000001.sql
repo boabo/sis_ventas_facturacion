@@ -1326,3 +1326,37 @@ COMMENT ON COLUMN vef.tformula.regionales
 IS 'Permisos Nivel Regional MIA,BOL';
 
 /***********************************F-SCP-IRVA-VEF-0-16/11/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-26/11/2020****************************************/
+COMMENT ON COLUMN vef.tventa_forma_pago.numero_tarjeta
+IS 'Numero de la tarjeta de Credito';
+
+COMMENT ON COLUMN vef.tventa_forma_pago.codigo_tarjeta
+IS 'Codigo de Autorizacion de la Tarjeta de Credito';
+
+COMMENT ON COLUMN vef.tventa_forma_pago.id_auxiliar
+IS 'Id de la cuenta corriente';
+
+COMMENT ON COLUMN vef.tventa_forma_pago.id_medio_pago
+IS 'Remplazo del campo id_forma_pago ahora se usan los medios de pago';
+
+COMMENT ON COLUMN vef.tventa_forma_pago.id_moneda
+IS 'Tipo de moneda con la que se realizo el pago ejemplo (BOB(1),USD(2),etc)';
+
+COMMENT ON COLUMN vef.tventa_detalle.id_formula
+IS 'Almacena el Id de los paquetes en caso que se seleccione un paquete (Este campo va relacionado a la tabla vef.tformula)';
+
+COMMENT ON COLUMN vef.tventa_detalle.tipo
+IS 'Este campo define que tipo de registro se usa para los conceptos ejemplo (formula, servicio, o producto)';
+
+COMMENT ON COLUMN vef.tventa_detalle.descripcion
+IS 'Almacena la descripcion del concepto si este lo requiere';
+
+COMMENT ON COLUMN vef.tventa_detalle.id_producto
+IS 'Aqui almacenamos el id_concepto_ingas';
+
+COMMENT ON COLUMN vef.tventa_detalle.monto_descuento
+IS 'Si el concepto tiene un descuento';
+
+COMMENT ON COLUMN vef.tventa_detalle.llave_unica
+IS 'Llave unica para no repetir conceptos mediante servicio';
+/***********************************F-SCP-IRVA-VEF-0-26/11/2020****************************************/

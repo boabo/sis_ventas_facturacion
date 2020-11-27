@@ -359,7 +359,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	onDestroy: function() {
-			console.log();
 			this.variables_globales.id_punto_venta = '';
 			this.fireEvent('closepanel',this);
 
@@ -402,7 +401,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 		/*Filtramos la lista de paquetes por la sucursal seleccionada*/
 		this.Cmp.id_formula.store.baseParams.tipo_punto_venta = this.variables_globales.tipo_pv;
-		this.Cmp.id_formula.store.baseParams.id_punto_venta = this.variables_globales.id_punto_venta;
+		this.Cmp.id_formula.store.baseParams.regional = this.variables_globales.ESTACION_inicio;
+		//this.Cmp.id_formula.store.baseParams.id_punto_venta = this.variables_globales.id_punto_venta;
 		/*************************************************************/
 
 
@@ -430,6 +430,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
  				success: function(resp){
  						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
  						this.aperturaText = reg.ROOT.datos.v_apertura;
+						this.cantidad_cajas = reg.ROOT.datos.v_cantidad_apertura;
  						this.variables_globales.aperturaEstado = this.aperturaText;
 
  						//console.log("llega aqui avriable",this.aperturaText);
@@ -451,7 +452,11 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
  							// this.bbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
  							//
  							// this.tbar.el.dom.style.background='linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
- 							this.apertura.setText('CAJA ABIERTA')
+							if (this.cantidad_cajas == 1) {
+								this.apertura.setText('CAJA ABIERTA');
+							} else {
+								this.apertura.setText('('+this.cantidad_cajas+') CAJAS ABIERTAS');
+							}
  						}else if (this.aperturaText == 'cerrado') {
  							this.bbar.items.items[14].el.dom.style.color='blue';
  							this.bbar.items.items[14].el.dom.style.letterSpacing='.1em';
@@ -713,8 +718,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			},
 
 			guardarDetalles : function(){
-				var rec=this.sm.getSelected();
-				console.log("llega aqui para guardar datos",rec);
+				var rec=this.sm.getSelected();	
 				/*Recuperamos de la venta detalle si existe algun concepto con excento*/
 				Ext.Ajax.request({
 						url : '../../sis_ventas_facturacion/control/VentaDetalleFacturacion/actualizarExcento',
@@ -746,10 +750,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha',
-				fieldLabel: 'Fecha Factura.',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha Factura</span>',
 				allowBlank: false,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 120,
 							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
@@ -762,10 +766,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
  		 config:{
  			 name: 'nro_factura',
- 			 fieldLabel: 'Nro Factura',
+ 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/listaNumeros.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Nro Factura</span>',
  			 allowBlank: true,
  			 anchor: '80%',
- 			 gwidth: 100,
+ 			 gwidth: 120,
  			 maxLength:4
  		 },
  			 type:'NumberField',
@@ -777,10 +781,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config:{
 			 name: 'cod_control',
-			 fieldLabel: 'Codigo Control',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo Control</span>',
 			 allowBlank: true,
 			 anchor: '80%',
-			 gwidth: 100,
+			 gwidth: 150,
 			 maxLength:15
 		 },
 			 type:'TextField',
@@ -792,7 +796,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'nit',
-				fieldLabel: 'NIT',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CarnetIdentidad.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> NIT</span>',
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
@@ -808,7 +812,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
  		 config:{
  			 name: 'nombre_factura',
- 			 fieldLabel: 'Razón Social',
+ 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
  			 allowBlank: true,
  			 anchor: '80%',
  			 gwidth: 150,
@@ -824,7 +828,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config:{
 			 name: 'total_venta',
-			 fieldLabel: 'Total Venta',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Total Venta</span>',
 			 allowBlank: false,
 			 anchor: '80%',
 			 gwidth: 100,
@@ -846,7 +850,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config:{
 			 name: 'excento',
-			 fieldLabel: 'Excento',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
 			 allowBlank: true,
 			 anchor: '80%',
 			 gwidth: 100,
@@ -865,10 +869,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config:{
 			 name: 'credito_fiscal',
-			 fieldLabel: 'Credito Fiscal',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Crédito Fiscal</span>',
 			 allowBlank: true,
 			 anchor: '80%',
-			 gwidth: 100,
+			 gwidth: 150,
 			 maxLength:1179650,
 			 galign:'right',
 			 renderer:function (value,p,record){
@@ -889,7 +893,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
  		 config : {
  			 name : 'id_cliente',
- 			 fieldLabel : 'Razón Social Cliente',
+ 			 fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
  			 style:'text-transform:uppercase;',
  			 anchor: '80%',
  			 allowBlank : false,
@@ -941,7 +945,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config:{
 			 name: 'observaciones',
-			 fieldLabel: 'Observaciones',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
 			 allowBlank: true,
 			 anchor: '80%',
 			 gwidth: 200,
@@ -1013,10 +1017,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config:{
 			 name: 'estado',
-			 fieldLabel: 'Estado',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/aceptarVerde.svg" style="width:20px; vertical-align: middle;">   <img src="../../../lib/imagenes/facturacion/cancelarRojo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Estado</span>',
 			 allowBlank: false,
 			 anchor: '80%',
-			 gwidth: 100,
+			 gwidth: 150,
 			 maxLength:100
 		 },
 			 type:'TextField',
@@ -1072,7 +1076,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 {
 		 config : {
 			 name : 'id_formula',
-			 fieldLabel : 'Paquetes / Fórmulas',
+			 fieldLabel : '<img src="../../../lib/imagenes/facturacion/paquete.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Paquetes / Fórmulas</span>',
 			 allowBlank : true,
 			 anchor: '80%',
 			 listWidth:'450',
@@ -1091,7 +1095,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				 fields : ['id_formula', 'nombre', 'descripcion'],
 				 remoteSort : true,
 				 baseParams : {
-					 par_filtro : 'form.nombre'
+					 par_filtro : 'form.nombre',
+					 emision:'FACTCOMP'
 				 }
 			 }),
 			 valueField : 'id_formula',
@@ -1333,10 +1338,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'estado_reg',
-				fieldLabel: 'Estado Reg.',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/aceptarVerde.svg" style="width:20px; vertical-align: middle;">   <img src="../../../lib/imagenes/facturacion/cancelarRojo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Estado Reg.</span>',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 200,
 				maxLength:10
 			},
 				type:'TextField',
@@ -1483,10 +1488,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'tipo_factura',
-				fieldLabel: 'Tipo Factura',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/PcEscritorio.svg" style="width:20px; vertical-align: middle;">   <img src="../../../lib/imagenes/facturacion/LapizPapel.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Tipo Factura</span>',
 				allowBlank: false,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 200,
 				maxLength:20
 			},
 				type:'TextField',
@@ -1673,10 +1678,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha_reg',
-				fieldLabel: 'Fecha creación',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha creación</span>',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 130,
 							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
@@ -1689,7 +1694,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'usr_reg',
-				fieldLabel: 'Creado por',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/AvatarUsuario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Creado por</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -1704,7 +1709,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'usr_mod',
-				fieldLabel: 'Cajero',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/AvatarUsuario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Cajero</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -1719,7 +1724,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha_mod',
-				fieldLabel: 'Fecha Modif.',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha Modif.</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -1736,7 +1741,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	tam_pag:50,
 	fheight:'40%',
 	fwidth:'30%',
-	title:'<center style="font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><i style="color:green;" class="fa fa-qrcode" aria-hidden="true"></i> Cabecera Factura</center>',
+	title:'<center><img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"> <span style="vertical-align: middle; color:#008CB2; font-size:20px; text-shadow: 2px 0px 0px #000000;"> CABECERA FACTURA</span></center>',
 	ActSave:'../../sis_ventas_facturacion/control/VentaFacturacion/insertarVentaFacturacion',
 	ActDel:'../../sis_ventas_facturacion/control/VentaFacturacion/eliminarVentaFacturacion',
 	ActList:'../../sis_ventas_facturacion/control/VentaFacturacion/listarVentaFacturacion',

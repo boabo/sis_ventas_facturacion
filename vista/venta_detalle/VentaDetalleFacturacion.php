@@ -72,7 +72,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 			this.Cmp.precio.setValue(parseFloat(precio));
 			this.Cmp.cantidad.setValue(1);
 			this.Cmp.total.setValue(parseFloat(precio*1));
-			console.log("llega aqui ocualtar componente",this);
+
 			if (r.data.requiere_descripcion == 'si') {
 					this.Cmp.descripcion.setVisible(true);
 					this.Cmp.descripcion.allowBlank = false;
@@ -143,7 +143,6 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 
 	cambiarCombo : function (tipo) {
-		console.log("llega aqui el tipo sssssssssssss",tipo);
 		this.Cmp.id_producto.store.baseParams.tipo_serv=tipo;
 		this.comboCambio(tipo);
 	},
@@ -240,6 +239,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				triggerAction: 'all',
 				lazyRender:true,
 				mode: 'local',
+				hidden:true,
 				gwidth: 150,
 				store:['Producto','Servicio']
 			},
@@ -252,9 +252,9 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config: {
 				name: 'id_producto',
-				fieldLabel: 'Producto/Servicio',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Servicios</span>',
 				allowBlank: false,
-				emptyText: 'Productos...',
+				emptyText: 'Servicios...',
 				anchor: '80%',
 				store: new Ext.data.JsonStore({
 						url: '../../sis_ventas_facturacion/control/Servicios/listarServicios',
@@ -267,7 +267,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 						totalProperty: 'total',
 						fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
 						remoteSort: true,
-						baseParams: {par_filtro: 'ingas.desc_ingas',irva:'irva'}
+						baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
 				}),
 				valueField: 'id_concepto_ingas',
 				displayField: 'desc_ingas',
@@ -285,7 +285,6 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				minChars: 2,
 				renderer:function (value,p,record){
 					if(record.data.tipo_reg != 'summary'){
-						console.log("llega aqui el tipo",record);
 						return  String.format('<div><b>{0}</b></div>', Ext.util.Format.number(record.data.nombre_producto));
 					}
 					else{
@@ -318,7 +317,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'codigo_internacional',
-				fieldLabel: 'Moneda',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -337,11 +336,11 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'cantidad',
-				fieldLabel: 'Cantidad',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
 				allowBlank: false,
 				disabled: false,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 120,
 				galign: 'right',
 				selectOnFocus: true,
 				decimalPrecision:0,
@@ -362,10 +361,10 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'precio',
-				fieldLabel: 'Precio Unitario',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> P/U</span>',
 				allowBlank: false,
 				anchor: '80%',
-				gwidth: 120,
+				gwidth: 130,
 				galign:'right',
 				selectOnFocus: true,
 				maxLength:1179654,
@@ -388,7 +387,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'total',
-				fieldLabel: 'Total',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 150,
@@ -461,7 +460,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'descripcion',
-				fieldLabel: 'Descripcion',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
 				allowBlank: true,
 				gwidth: 200,
 				anchor: '80%',
@@ -508,10 +507,10 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha_reg',
-				fieldLabel: 'Fecha creación',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha creación</span>',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 130,
 							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
@@ -539,7 +538,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'usr_reg',
-				fieldLabel: 'Creado por',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/AvatarUsuario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Creado por</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -554,7 +553,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'usr_mod',
-				fieldLabel: 'Modificado por',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/AvatarUsuario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Modificado por</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -569,7 +568,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha_mod',
-				fieldLabel: 'Fecha Modif.',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha Modif.</span>',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -584,7 +583,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		}
 	],
 	tam_pag:50,
-	title:'<center style="font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"><i style="color:#FF7400;" class="fa fa-list-ol" aria-hidden="true"></i> Detalle Venta</center>',
+	title:'<center><img src="../../../lib/imagenes/facturacion/Perfil.svg" style="width:40px; vertical-align: middle;"> <span style="vertical-align: middle; color:#008CB2; font-size:35px; text-shadow: 2px 0px 0px #000000;"> DETALLE VENTA</span></center>',
 	fheight:'45%',
 	fwidth:'30%',
 	ActSave:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/insertarVentaDetalleFacturacion',
@@ -647,7 +646,9 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.Cmp.id_producto.store.baseParams.id_sucursal=this.maestro.id_sucursal;
 		this.Cmp.id_producto.store.baseParams.id_punto_venta_producto=this.maestro.id_punto_venta;
 		this.Cmp.id_producto.store.baseParams.tipo_pv=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.tipo_pv;
+		this.Cmp.id_producto.store.baseParams.regionales=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.ESTACION_inicio;
 		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
+
 		/*Recuperamos de la venta detalle si existe algun concepto con excento*/
 		Ext.Ajax.request({
 				url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
@@ -725,11 +726,9 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 			// formu_excento.buttons[0].btnEl.dom.style.height = '200px;'
 			formu_excento.show();
-			console.log("llega aquyie la ventana",formu_excento);
 			formu_excento.buttons[0].el.dom.style.width = '100px';
 			formu_excento.buttons[0].el.dom.style.height = '30px';
 
-			console.log("llega fondo boton",formu_excento.buttons[0].el.dom.children[0].childNodes[1]);
 			formu_excento.buttons[1].el.dom.style.width = '100px';
 			formu_excento.buttons[1].el.dom.style.height = '30px';
 			this.excento_formulario.items.items[0].setValue(this.valor_excento);
@@ -737,7 +736,6 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		}
 	},
 	insertarNuevo : function (formu_excento) {
-		//console.log("llega auqi datos de la ventana",this);
 		if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
 				Ext.Msg.show({
 				 title:'<h1 style="font-size:15px;">Aviso!</h1>',

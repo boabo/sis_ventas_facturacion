@@ -28,6 +28,10 @@ DECLARE
 	v_resp				varchar;
     v_columnas_destino	varchar;
 	v_join_destino		varchar;
+
+    v_tipo_usuario		varchar;
+    v_condicion			varchar;
+    v_tipo_punto_venta	varchar;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_venta_facturacion_sel';
@@ -157,6 +161,44 @@ BEGIN
 
     	begin
 
+        	/*Aumentando para listar las facturas emititas de un cajero especifico si es admin o no*/
+            if (p_administrador != 1) then
+            	select us.tipo_usuario
+                		into
+                        v_tipo_usuario
+                from vef.tsucursal_usuario us
+                where us.id_usuario = p_id_usuario and us.id_punto_venta = v_parametros.id_punto_venta;
+
+                select pv.tipo
+                       into
+                       v_tipo_punto_venta
+                from vef.tpunto_venta pv
+                where pv.id_punto_venta = v_parametros.id_punto_venta;
+
+            	if (v_tipo_punto_venta = 'cto') THEN
+
+                	if (v_parametros.pes_estado = 'caja' or v_tipo_usuario = 'administrador') then
+                    	v_condicion = '0=0';
+                    else
+                    	v_condicion = 'fact.id_usuario_cajero = '||p_id_usuario;
+                    end if;
+                else
+                  IF (v_tipo_usuario = 'administrador') then
+                		v_condicion = '0=0';
+                    else
+                        v_condicion = 'fact.id_usuario_cajero = '||p_id_usuario;
+                    end if;
+                end if;
+
+
+
+            else
+            	v_condicion = '0=0';
+            end if;
+            /***************************************************************************************/
+
+
+
     		--Sentencia de la consulta
 			v_consulta:='select
 						fact.id_venta,
@@ -223,7 +265,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
-				        where ';
+				        where '||v_condicion||' and ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -232,7 +274,7 @@ BEGIN
             v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula';
 
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+			raise notice 'Respuesta es %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -615,15 +657,15 @@ BEGIN
         	--raise exception 'llega aqui el id_venta %',v_parametros.id_venta;
     		--Sentencia de la consulta
 			v_consulta:='
-                        select ip.id_instancia_pago,
-                               ip.nombre,
-                               fp.codigo_tarjeta,
-                               fp.numero_tarjeta,
-                               fp.monto_transaccion,
-                               fp.id_moneda,
-                               fp.id_venta_forma_pago
-                        from obingresos.tinstancia_pago ip
-                        inner join vef.tventa_forma_pago fp on fp.id_instancia_pago = ip.id_instancia_pago
+                        select 	ip.id_medio_pago_pw,
+                                ip.name,
+                                fp.codigo_tarjeta,
+                                fp.numero_tarjeta,
+                                fp.monto_transaccion,
+                                fp.id_moneda,
+                                fp.id_venta_forma_pago
+                        from obingresos.tmedio_pago_pw ip
+                        inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
                         where fp.id_venta = '||v_parametros.id_venta::integer||'
                         order by fp.id_venta_forma_pago
 						';

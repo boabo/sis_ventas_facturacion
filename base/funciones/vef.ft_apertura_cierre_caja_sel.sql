@@ -61,6 +61,12 @@ DECLARE
     v_otro_recibo_extranjera	varchar;
     v_pago_externo_recibo_extranjera	varchar;
 
+    v_boletos_cash_extranjera				varchar;
+    v_boletos_tarjetas_extranjera			varchar;
+    v_boletos_cuenta_corriente_extranjera	varchar;
+    v_boletos_mco_extranjera				varchar;
+    v_boletos_otros_extranjera				varchar;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_apertura_cierre_caja_sel';
@@ -282,6 +288,7 @@ BEGIN
 
             v_tiene_dos_monedas = 'no';
             v_tipo_cambio = 1;
+
             if (v_id_moneda_tri != v_id_moneda_base) then
             	v_tiene_dos_monedas = 'si';
                 v_tipo_cambio = param.f_get_tipo_cambio_v2(v_id_moneda_base, v_id_moneda_tri,v_fecha,'O');
@@ -342,7 +349,7 @@ BEGIN
                                       0
                                   end)as otro_ventas_me';
 
-                  v_recibo_cash_extranjera = ' sum(case  when fp.fop_code = ''CASH'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                  v_recibo_cash_extranjera = ' sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') AND v.id_deposito is null then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -360,7 +367,7 @@ BEGIN
                                       0
                                   end)as cuenta_corriente_recibo_me';
 
-                 v_deposito_recibo_extranjera = 'sum(case  when fp.fop_code = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and ((v.tipo_factura = ''recibo'' and v.id_deposito is not null) or (v.tipo_factura = ''recibo_manual'' and v.id_deposito is not null)) then
+                 v_deposito_recibo_extranjera = 'sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and ((v.tipo_factura = ''recibo'' and v.id_deposito is not null) or (v.tipo_factura = ''recibo_manual'' and v.id_deposito is not null)) then
                                     vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                 else
                                     0
@@ -377,6 +384,40 @@ BEGIN
                                   else
                                       0
                                   end)as pago_externo_recibo_me';
+
+                 v_boletos_cash_extranjera = 'sum(case  when fpb.fop_code = ''CA'' and bfp.id_moneda = ' || v_id_moneda_tri  || ' then
+                                                bfp.importe
+                                            else
+                                                0
+                                            end)as efectivo_boletos_me';
+
+                 v_boletos_tarjetas_extranjera = 'sum(case  when fpb.fop_code is null and b.forma_pago = ''CC'' and b.moneda = ''USD'' then
+                                                      b.total
+                                                  when fpb.fop_code = ''CC'' and bfp.id_moneda = ' || v_id_moneda_tri  || ' THEN
+                                                      bfp.importe
+                                            else
+                                                0
+                                            end)as tarjeta_boletos_me';
+
+                 v_boletos_cuenta_corriente_extranjera = 'sum(case  when (fpb.fop_code = ''CUEC'' or fpb.fop_code = ''CU'') and bfp.id_moneda = ' || v_id_moneda_tri  || ' then
+                                                              bfp.importe
+                                                          else
+                                                              0
+                                                          end)as cuenta_corriente_boletos_me';
+
+                 v_boletos_mco_extranjera = 'sum(case  when fpb.fop_code = ''MCO'' and bfp.id_moneda = ' || v_id_moneda_tri || ' then
+                                                bfp.importe
+                                            else
+                                                0
+                                            end)as mco_boletos_me';
+
+                 v_boletos_otros_extranjera = 'sum(case  when fpb.fop_code = ''OTRO'' and bfp.id_moneda = ' || v_id_moneda_tri || ' then
+                                                  bfp.importe
+                                              else
+                                                  0
+                                              end)as otro_boletos_ml';
+
+
             else
             	v_cash_extranjera = '0::numeric as efectivo_ventas_me';
                 v_tarjetas_extranjera = '0::numeric  as tarjeta_vetas_me';
@@ -389,6 +430,12 @@ BEGIN
                 v_deposito_recibo_extranjera = '0::numeric  as deposito_recibo_me';
                 v_otro_recibo_extranjera = '0::numeric  as otro_recibo_me';
                 v_pago_externo_recibo_extranjera = '0::numeric  as pago_externo_recibo_me';
+
+                v_boletos_cash_extranjera = '0::numeric  as efectivo_boletos_me';
+                v_boletos_tarjetas_extranjera = '0::numeric  as tarjeta_boletos_me';
+                v_boletos_cuenta_corriente_extranjera = '0::numeric  as cuenta_corriente_boletos_me';
+                v_boletos_mco_extranjera = '0::numeric  as mco_boletos_me';
+                v_boletos_otros_extranjera = '0::numeric  as otro_boletos_ml';
 
             end if;
 
@@ -895,16 +942,55 @@ BEGIN
                                ''' || v_cod_moneda_extranjera || '''::varchar as cod_moneda_extranjera,
 
                               /*Aqui debemos recuperar los boletos queda pendiente*/
-                              0::numeric as efectivo_boletos_ml,
-                              0::numeric as efectivo_boletos_me,
-                              0::numeric as tarjeta_boletos_ml,
-                              0::numeric as tarjeta_boletos_me,
-                              0::numeric as cuenta_corriente_boletos_ml,
-                              0::numeric as cuenta_corriente_boletos_me,
-                              0::numeric as mco_boletos_ml,
-                              0::numeric as mco_boletos_me,
-                              0::numeric as otro_boletos_ml,
-                              0::numeric as otro_boletos_me,
+
+
+
+                              sum(case  when fpb.fop_code = ''CA'' and bfp.id_moneda = ' || v_id_moneda_base  || ' then
+                                      bfp.importe
+                                  else
+                                      0
+                                  end)as efectivo_boletos_ml,
+
+                              '||v_boletos_cash_extranjera||',
+
+                              sum(case  when fpb.fop_code is null and b.forma_pago = ''CC'' and b.moneda = (select mon.codigo_internacional from param.tmoneda mon where mon.tipo_moneda = ''base'') then
+                                      		b.total
+                                      	when fpb.fop_code = ''CC'' and bfp.id_moneda = ' || v_id_moneda_base  || ' THEN
+                                      		bfp.importe
+                                  else
+                                      0
+                                  end)as tarjeta_boletos_ml,
+
+                              '||v_boletos_tarjetas_extranjera||',
+
+
+                              sum(case  when (fpb.fop_code = ''CUEC'' or fpb.fop_code = ''CU'') and bfp.id_moneda = ' || v_id_moneda_base  || ' then
+                                      bfp.importe
+                                  else
+                                      0
+                                  end)as cuenta_corriente_boletos_ml,
+
+
+                              '||v_boletos_cuenta_corriente_extranjera||',
+
+
+                              sum(case  when fpb.fop_code = ''MCO'' and bfp.id_moneda = ' || v_id_moneda_base || ' then
+                                      bfp.importe
+                                  else
+                                      0
+                                  end)as mco_boletos_ml,
+
+                              '||v_boletos_mco_extranjera||',
+
+
+                              sum(case  when fpb.fop_code = ''OTRO'' and bfp.id_moneda = ' || v_id_moneda_base || ' then
+                                      bfp.importe
+                                  else
+                                      0
+                                  end)as otro_boletos_ml,
+
+                              '||v_boletos_otros_extranjera||',
+
                               /****************************************************/
 
                               /******************************************************Recuperamos datos para facturas******************************************************/
@@ -955,7 +1041,7 @@ BEGIN
                               /*Recuperamos datos para Recibos*/
                               /*Inicio recuperacion recibos*/
 
-                              sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                              sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') AND v.id_deposito is null  then
                                       vfp.monto_mb_efectivo
                                   else
                                       0
@@ -980,7 +1066,7 @@ BEGIN
                               '||v_cuenta_corriente_recibo_extranjera||',
 
                               /***********************************************Aqui Recuperamos los depositos asociados al Recibo****************************************************/
-                               sum(case  when fp.fop_code = ''DEPO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and ((v.tipo_factura = ''recibo'' and v.id_deposito is not null) or (v.tipo_factura = ''recibo_manual'' and v.id_deposito is not null)) then
+                               sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and ((v.tipo_factura = ''recibo'' and v.id_deposito is not null) or (v.tipo_factura = ''recibo_manual'' and v.id_deposito is not null)) then
                                     vfp.monto_mb_efectivo
                                 else
                                     0
@@ -1044,10 +1130,6 @@ BEGIN
                       left join param.tlugar ls on ls.id_lugar = s.id_lugar
                       left join param.tlugar ppv on ppv.id_lugar = param.f_get_id_lugar_pais(lpv.id_lugar)
                       left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
-                      left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
-                                                      and b.fecha_emision::date = acc.fecha_apertura_cierre and
-                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
-													  and b.voided=''no''
                       left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                       and v.fecha = acc.fecha_apertura_cierre and
                                                       v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
@@ -1055,11 +1137,21 @@ BEGIN
                       left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
                       /*********************************Aumentando para recuperar Instancias de pago**********************************/
-                      inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vfp.id_medio_pago
-                      inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                      left join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vfp.id_medio_pago
+                      left join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
                       /***************************************************************************************************************/
 
+                      /*Recuperamos los Boletos de Amadeus con los nuevos medios de pago (Ismael Valdivia 26/11/2020)*/
+                      left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
+                                                      and b.fecha_emision::date = acc.fecha_apertura_cierre and
+                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
+													  and b.voided=''no''
 
+                      left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
+
+                      left join obingresos.tmedio_pago_pw mpb on mpb.id_medio_pago_pw = bfp.id_medio_pago
+                      left join obingresos.tforma_pago_pw fpb on fpb.id_forma_pago_pw = mpb.forma_pago_id
+                      /***********************************************************************************************/
 
                       where acc.id_apertura_cierre_caja = ' || v_parametros.id_apertura_cierre_caja  || '
                       group by u.desc_persona, acc.fecha_apertura_cierre,
@@ -1123,6 +1215,7 @@ BEGIN
             coalesce(ppv.codigo,ps.codigo)::varchar as pais,
             COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
             coalesce(pv.codigo, s.codigo)::varchar as punto_venta,
+            coalesce(pv.nombre,s.nombre)::varchar as desc_punto_venta,
             a.obs_cierre::varchar,
             a.arqueo_moneda_local,
             a.arqueo_moneda_extranjera,
@@ -1406,6 +1499,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
     if( (select d.modificado
             from vef.tapertura_cierre_caja d
             where d.id_apertura_cierre_caja  = v_parametros.id_apertura_cierre_caja) = 'si')then
+
 		v_consulta:='with forma_pago as (
                                       select fp.id_forma_pago,
                                              fp.id_moneda,
@@ -1531,7 +1625,7 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                               0
                           end)as cuenta_corriente_recibo_me,
 
-                      sum(case  when fp_reci.codigo = ''DEPO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' and v_rec.id_deposito is not null then
+                        sum(case  when fp_reci.codigo = ''DEPO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' and v_rec.id_deposito is not null then
                                     vfp_rec.monto_mb_efectivo
                                 else
                                     0
@@ -1720,7 +1814,7 @@ where id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja||'
                               0
                           end)as cuenta_corriente_recibo_me,
 
-                     sum(case  when fp_reci.codigo = ''DEPO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' and v_rec.id_deposito is not null then
+                       sum(case  when fp_reci.codigo = ''DEPO'' and fp_reci.id_moneda = ' || v_id_moneda_base  || ' and v_rec.tipo_factura = ''recibo'' and v_rec.id_deposito is not null then
                                     vfp_rec.monto_mb_efectivo
                                 else
                                     0

@@ -315,8 +315,22 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
         },this);
         //this.obtenersuma();
     },
+    /*Funcion para poner las condiciones en las regionales*/
+    condicionesRegionales: function (){
 
+      /*Aumentanod para filtrar las instancias de pago (Ismael Valdivia 16/10/2020)*/
+      this.Cmp.id_formula.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago_2.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /****************************************************************************/
+    },
+    /******************************************************/
     iniciarEventos : function () {
+
+      /*Aumentando para poner Condiciones en Regionales (Ismael Valdivia 14/10/2020)*/
+      this.condicionesRegionales();
+      /*****************************************************************************/
+
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
 
@@ -377,14 +391,20 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
         this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 
         /****************************Aumnetando la instancia de pago********************************/
-        this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
+        this.Cmp.id_medio_pago.on('select',function(c,r,i) {
 
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
-          this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+          if(r){
+            if (r.data) {
+              var codigo_forma_pago = r.data.fop_code;
+              this.Cmp.tipo_tarjeta.setValue(r.data.name);
+            }
+          }
 
-          if (codigo_forma_pago == 'CC') {
+          //this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+          if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
+          if (codigo_forma_pago.startsWith("CC")) {
             this.mostrarComponente(this.Cmp.codigo_tarjeta);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta);
+            this.ocultarComponente(this.Cmp.tipo_tarjeta);
           	this.mostrarComponente(this.Cmp.numero_tarjeta);
 			      this.ocultarComponente(this.Cmp.id_auxiliar);
             this.ocultarComponente(this.Cmp.mco);
@@ -392,7 +412,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 			      this.Cmp.codigo_tarjeta.allowBlank = false;
             this.Cmp.tipo_tarjeta.allowBlank = false;
           	this.Cmp.mco.allowBlank = true;
-          } else if (codigo_forma_pago == 'MC') {
+          } else if (codigo_forma_pago.startsWith("MCO")) {
             this.mostrarComponente(this.Cmp.mco);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -405,7 +425,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta.reset();
             this.Cmp.id_auxiliar.reset();
             this.Cmp.numero_tarjeta.reset();
-          } else if (codigo_forma_pago == 'CU') {
+          } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -420,7 +440,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar.reset();
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
-          }else if (codigo_forma_pago == 'CA') {
+          }else if (codigo_forma_pago.startsWith("CA")) {
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -444,16 +464,17 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
           }
+        }
 
         },this);
 
 
-        this.Cmp.id_instancia_pago_2.on('select',function(c,r,i) {
-          var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
+        this.Cmp.id_medio_pago_2.on('select',function(c,r,i) {
+          var codigo_forma_pago = r.data.fop_code;
           this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
-          if (codigo_forma_pago == 'CC') {
+          if (codigo_forma_pago.startsWith("CC")) {
             this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-            this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
+            this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
           	this.mostrarComponente(this.Cmp.numero_tarjeta_2);
 			      this.ocultarComponente(this.Cmp.id_auxiliar_2);
             this.ocultarComponente(this.Cmp.mco_2);
@@ -461,7 +482,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 			      this.Cmp.codigo_tarjeta_2.allowBlank = false;
             this.Cmp.tipo_tarjeta_2.allowBlank = false;
           	this.Cmp.mco_2.allowBlank = true;
-          } else if (codigo_forma_pago == 'MC') {
+          } else if (codigo_forma_pago.startsWith("MCO")) {
             this.mostrarComponente(this.Cmp.mco_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -474,7 +495,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta_2.reset();
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
-          } else if (codigo_forma_pago == 'CU') {
+          } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -489,7 +510,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
-          }else if (codigo_forma_pago == 'CA') {
+          }else if (codigo_forma_pago.startsWith("CA")) {
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -551,7 +572,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
             /**********************************Cambiamos el Style *****************************************/
 
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
               if (this.recuperar_monto_automatico == 'SI') {
@@ -566,7 +587,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
             /**********************************Cambiamos el Style *****************************************/
 
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.id_moneda_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
             //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
@@ -574,10 +595,10 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
           } else{
 
             this.Cmp.id_moneda_2.disable();
-            this.Cmp.id_instancia_pago_2.disable();
+            this.Cmp.id_medio_pago_2.disable();
             this.Cmp.monto_forma_pago_2.disable();
             this.Cmp.monto_forma_pago_2.reset();
-            this.Cmp.id_instancia_pago_2.reset();
+            this.Cmp.id_medio_pago_2.reset();
             this.Cmp.id_moneda_2.reset();
 
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
@@ -689,7 +710,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             /**********************************Cambiamos el Style *****************************************/
 
             this.Cmp.id_moneda_2.enable();
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
 
             //  this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
@@ -706,7 +727,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 
 
             this.Cmp.id_moneda_2.enable();
-            this.Cmp.id_instancia_pago_2.enable();
+            this.Cmp.id_medio_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
 
             //this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
@@ -714,12 +735,12 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
           } else{
 
             this.Cmp.id_moneda_2.disable();
-            this.Cmp.id_instancia_pago_2.disable();
+            this.Cmp.id_medio_pago_2.disable();
             this.Cmp.monto_forma_pago_2.disable();
             this.Cmp.monto_forma_pago_2.reset();
 
             this.Cmp.id_moneda_2.reset();
-            this.Cmp.id_instancia_pago_2.reset();
+            this.Cmp.id_medio_pago_2.reset();
 
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
@@ -1219,16 +1240,16 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 
     	this.storeFormaPago = new Ext.data.JsonStore({
     	url: '../../sis_ventas_facturacion/control/Cajero/listarInstanciaPago',
-			id: 'id_instancia_pago',
+			id: 'id_medio_pago',
 			root: 'datos',
 			sortInfo: {
-				field: 'id_instancia_pago',
+				field: 'id_medio_pago',
 				direction: 'ASC'
 			},
 			totalProperty: 'total',
 			fields: [
              {name: 'id_moneda',     type: 'numeric'},
-	           {name: 'id_instancia_pago',type: 'numeric'},
+	           {name: 'id_medio_pago',type: 'numeric'},
 	           {name: 'nombre',      type: 'string'},
              {name: 'codigo_tarjeta',     type: 'string'},
 	           {name: 'numero_tarjeta',     type: 'string'},
@@ -1253,6 +1274,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
     },
 
     recuperarUnaInstancia:function(store){
+      /*Aqui continuar Facturacion Ismael Valdivia*/
       this.Cmp.id_venta_forma_pago_1.setValue(store[0].data.id_venta_forma_pago);
 
       this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
@@ -1262,11 +1284,21 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
            //this.obtenersuma();
           }, scope : this
       });
-      //
-      this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
+
+      this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
          callback : function (r) {
-           this.Cmp.id_instancia_pago.setValue(store[0].data.id_instancia_pago);
-           this.Cmp.id_instancia_pago.fireEvent('select',this.Cmp.id_instancia_pago, this.Cmp.id_instancia_pago.store.getById(store[0].data.id_instancia_pago));
+           for (var i = 0; i < r.length; i++) {
+             if (r[i].data.id_medio_pago_pw == store[0].data.id_medio_pago) {
+               this.Cmp.id_medio_pago.setValue(r[i].data.id_medio_pago_pw);
+               this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
+             }
+           }
+
+
+
+
+           // this.Cmp.id_medio_pago.setValue(store[0].data.id_medio_pago);
+           // this.Cmp.id_medio_pago.fireEvent('select',this.Cmp.id_medio_pago, this.Cmp.id_medio_pago.store.getById(store[0].data.id_medio_pago));
            //this.obtenersuma();
           }, scope : this
       });
@@ -1287,18 +1319,29 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
       this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
          callback : function (r) {
            this.Cmp.id_moneda.setValue(store[0].data.id_moneda);
-           this.Cmp.id_moneda.fireEvent('select',this.Cmp.id_moneda, this.Cmp.id_moneda.store.getById(store[0].data.id_moneda));
-           //this.obtenersuma();
+            this.Cmp.id_moneda.fireEvent('select',this.Cmp.id_moneda_2, this.Cmp.id_moneda_2.store.getById(store[0].data.id_moneda));
           }, scope : this
       });
-      //
-      this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
+
+      this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
          callback : function (r) {
-           this.Cmp.id_instancia_pago.setValue(store[0].data.id_instancia_pago);
-           this.Cmp.id_instancia_pago.fireEvent('select',this.Cmp.id_instancia_pago, this.Cmp.id_instancia_pago.store.getById(store[0].data.id_instancia_pago));
-           //this.obtenersuma();
+           for (var i = 0; i < r.length; i++) {
+             if (r[i].data.id_medio_pago_pw == store[0].data.id_medio_pago) {
+               this.Cmp.id_medio_pago.setValue(r[i].data.id_medio_pago_pw);
+               this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
+             }
+           }
           }, scope : this
       });
+
+
+      // this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
+      //    callback : function (r) {
+      //      this.Cmp.id_medio_pago.setValue(store[0].data.id_medio_pago);
+      //      this.Cmp.id_medio_pago.fireEvent('select',this.Cmp.id_medio_pago, this.Cmp.id_medio_pago.store.getById(store[0].data.id_medio_pago));
+      //      //this.obtenersuma();
+      //     }, scope : this
+      // });
 
       this.Cmp.id_venta_forma_pago_2.setValue(store[1].data.id_venta_forma_pago);
 
@@ -1309,12 +1352,23 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
           }, scope : this
       });
 
-      this.Cmp.id_instancia_pago_2.store.load({params:{start:0,limit:50},
+      this.Cmp.id_medio_pago_2.store.load({params:{start:0,limit:50},
          callback : function (r) {
-           this.Cmp.id_instancia_pago_2.setValue(store[1].data.id_instancia_pago);
-            this.Cmp.id_instancia_pago_2.fireEvent('select',this.Cmp.id_instancia_pago_2, this.Cmp.id_instancia_pago_2.store.getById(store[1].data.id_instancia_pago));
+           for (var i = 0; i < r.length; i++) {
+             if (r[i].data.id_medio_pago_pw == store[1].data.id_medio_pago) {
+               this.Cmp.id_medio_pago_2.setValue(r[i].data.id_medio_pago_pw);
+               this.Cmp.id_medio_pago_2.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
+             }
+           }
           }, scope : this
       });
+
+      // this.Cmp.id_medio_pago_2.store.load({params:{start:0,limit:50},
+      //    callback : function (r) {
+      //      this.Cmp.id_medio_pago_2.setValue(store[1].data.id_medio_pago);
+      //       this.Cmp.id_medio_pago_2.fireEvent('select',this.Cmp.id_medio_pago_2, this.Cmp.id_medio_pago_2.store.getById(store[1].data.id_medio_pago));
+      //     }, scope : this
+      // });
 
         this.Cmp.monto_forma_pago.setValue(parseFloat(store[0].data.monto_transaccion));
         this.Cmp.monto_forma_pago_2.setValue(parseFloat(store[1].data.monto_transaccion));
@@ -1732,29 +1786,30 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
     /************************Aumentando instancia de pago*****************************************/
     {
         config: {
-            name: 'id_instancia_pago',
-            fieldLabel: 'Instancia de pago',
+            name: 'id_medio_pago',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
             allowBlank: false,
             width:150,
-            emptyText: 'Instancia de pago...',
+            id: 'testeoColor',
+            emptyText: 'Medio de pago...',
             store: new Ext.data.JsonStore({
-                url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                id: 'id_instancia_pago',
+                url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                id: 'id_medio_pago',
                 root: 'datos',
                 sortInfo: {
-                    field: 'nombre',
+                    field: 'name',
                     direction: 'ASC'
                 },
                 totalProperty: 'total',
-                fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                 remoteSort: true,
-                baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
             }),
-            valueField: 'id_instancia_pago',
-            displayField: 'nombre',
-            gdisplayField: 'codigo_forma_pago',
-            hiddenName: 'id_instancia_pago',
-            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+            valueField: 'id_medio_pago_pw',
+            displayField: 'name',
+            gdisplayField: 'name',
+            hiddenName: 'id_medio_pago_pw',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
             forceSelection: true,
             typeAhead: false,
             triggerAction: 'all',
@@ -1768,7 +1823,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             minChars: 2,
             disabled:false,
             renderer : function(value, p, record) {
-                return String.format('{0}', record.data['codigo_forma_pago']);
+                return String.format('{0}', record.data['codigo_fp']);
             }
         },
         type: 'ComboBox',
@@ -1964,29 +2019,29 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 
         {
             config: {
-                name: 'id_instancia_pago_2',
-                fieldLabel: 'Instancia de pago',
+                name: 'id_medio_pago_2',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
                 allowBlank: false,
                 width:150,
-                emptyText: 'Instancia de pago...',
+                emptyText: 'Medio de pago...',
                 store: new Ext.data.JsonStore({
-                    url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                    id: 'id_instancia_pago',
+                    url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                    id: 'id_medio_pago',
                     root: 'datos',
                     sortInfo: {
-                        field: 'nombre',
+                        field: 'name',
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                    fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
                 }),
-                valueField: 'id_instancia_pago',
-                displayField: 'nombre',
-                gdisplayField: 'codigo_forma_pago',
-                hiddenName: 'id_instancia_pago',
-                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+                valueField: 'id_medio_pago_pw',
+                displayField: 'name',
+                gdisplayField: 'name',
+                hiddenName: 'id_medio_pago_pw',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
                 forceSelection: true,
                 typeAhead: false,
                 triggerAction: 'all',
@@ -2000,7 +2055,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
                 minChars: 2,
                 disabled:false,
                 renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['codigo_forma_pago']);
+                    return String.format('{0}', record.data['codigo_fp']);
                 }
             },
             type: 'ComboBox',
@@ -2203,7 +2258,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
         /*Comentando para incluir InstanciaPago*/
         //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-        this.Cmp.id_instancia_pago.store.baseParams.defecto = 'no';
+        this.Cmp.id_medio_pago.store.baseParams.defecto = 'no';
         this.Cmp.id_moneda.store.baseParams.filtrar_base = 'no';
         this.mestore.load();
         //this.crearStoreFormaPago();

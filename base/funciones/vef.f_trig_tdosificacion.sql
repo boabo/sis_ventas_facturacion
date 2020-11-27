@@ -7,13 +7,13 @@ $body$
 ***************************************************************************
  SCRIPT: 		trig_tdosificacion
  DESCRIPCIÓN: 	Valida informacion registrada en la dosificacion
-                
+
  AUTOR: 		KPLIAN(jrr)
  FECHA:			18-09-2016
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIA DE MODIFICACIONES:
- 
+
 ***************************************************************************/
 --------------------------
 -- CUERPO DE LA FUNCIÓN --
@@ -30,31 +30,39 @@ BEGIN
     	BEGIN
 
             if (exists (select 1 from vef.tdosificacion d
-                where (d.fecha_inicio_emi, d.fecha_limite) overlaps (NEW.fecha_inicio_emi,NEW.fecha_limite)
-                and d.id_sucursal = NEW.id_sucursal and 
-                d.id_activida_economica && NEW.id_activida_economica)) then
-                raise exception 'Ya existe otra dosificacion que coincide con la sucursal, actividad economica y las fechas seleccionadas';
-            end if; 
-                   
+                		where (d.fecha_inicio_emi, d.fecha_limite) overlaps (NEW.fecha_inicio_emi,NEW.fecha_limite)
+                		and d.id_sucursal = NEW.id_sucursal
+                        and d.tipo = NEW.tipo
+                        and d.tipo_generacion = NEW.tipo_generacion
+                        and d.nombre_sistema = NEW.nombre_sistema
+                        and d.id_activida_economica && NEW.id_activida_economica )) then
+
+                raise exception 'Ya existe otra dosificacion que coincide con la sucursal, tipo de documento, tipo de emision, nombre de sistema, actividad economica y las fechas seleccionadas';
+            end if;
+
 		END;
-     
+
    ELSIF TG_OP = 'UPDATE' THEN
 
         BEGIN
-        
+
             if (exists (select 1 from vef.tdosificacion d
-                where (d.fecha_inicio_emi, d.fecha_limite) overlaps (NEW.fecha_inicio_emi,NEW.fecha_limite)
-                and d.id_sucursal = NEW.id_sucursal and 
-                d.id_activida_economica && NEW.id_activida_economica and 
-                d.id_dosificacion != NEW.id_dosificacion)) then
-                raise exception 'Ya existe otra dosificacion que coincide con la sucursal, actividad economica y las fechas seleccionadas';
-            end if; 
+            			where (d.fecha_inicio_emi, d.fecha_limite) overlaps (NEW.fecha_inicio_emi,NEW.fecha_limite)
+                		and d.id_sucursal = NEW.id_sucursal
+                        and d.tipo = NEW.tipo
+                        and d.tipo_generacion = NEW.tipo_generacion
+                        and d.nombre_sistema = NEW.nombre_sistema
+                		and d.id_activida_economica && NEW.id_activida_economica and
+                		d.id_dosificacion != NEW.id_dosificacion)) then
+
+                raise exception 'Ya existe otra dosificacion que coincide con la sucursal, tipo de documento, tipo de emision, nombre de sistema, actividad economica y las fechas seleccionadas';
+            end if;
 
 
         END;
    end if;
 
-  
+
    RETURN NEW;
 
 END;

@@ -175,7 +175,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
        this.Atributos.push({
              config:{
                  name: 'nro_factura',
-                 fieldLabel: 'Nro Recibo ',
+                 fieldLabel: '<img src="../../../lib/imagenes/facturacion/listaNumeros.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Nro. Recibo</span>',
                  allowBlank: false,
                  width:200,
                  maxLength:20
@@ -410,10 +410,142 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
     },
 
+    /*Funcion para poner las condiciones en las regionales*/
+    condicionesRegionales: function (){
+
+      /*Aumentanod para filtrar las instancias de pago (Ismael Valdivia 16/10/2020)*/
+      //this.Cmp.id_formula.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      this.Cmp.id_medio_pago_2.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /****************************************************************************/
+    },
+    /******************************************************/
+
+
+    crearDosificacion : function () {
+      var simple = new Ext.FormPanel({
+       labelWidth: 75, // label settings here cascade unless overridden
+       frame:true,
+       bodyStyle:'padding:5px 5px 0; background:linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%);',
+       width: 300,
+       height:90,
+       defaultType: 'textfield',
+       items: [
+                new Ext.form.NumberField({
+                                    name: 'numero_inicial',
+                                    msgTarget: 'title',
+                                    fieldLabel: 'Nro. Inicial',
+                                    allowBlank: false,
+                                    style:{
+                                      width: '190px'
+                                    },
+                                    enableKeyEvents : true,
+
+                            }),
+              new Ext.form.NumberField({
+                                  name: 'numero_final',
+                                  msgTarget: 'title',
+                                  fieldLabel: 'Nro. Final',
+                                  allowBlank: false,
+                                  style:{
+                                    width: '190px'
+                                  },
+                                  enableKeyEvents : true,
+
+                          }),
+                ]
+
+            });
+        this.dosificacion_formulario = simple;
+
+      var win = new Ext.Window({
+        title: '<h1 style="height:20px; font-size:15px;"><p style="margin-left:30px;">Rango Recibos Manuales<p></h1>', //the title of the window
+        width:320,
+        height:170,
+        //closeAction:'hide',
+        modal:true,
+        plain: true,
+        items:simple,
+        buttons: [{
+                    text:'<i class="fa fa-floppy-o fa-lg"></i> Guardar',
+                    scope:this,
+                    handler: function(){
+                        this.insertarDosificacion(win);
+                    }
+                }
+              ]
+
+      });
+      win.show();
+    },
+
+
+    insertarDosificacion : function (win) {
+  		if (this.dosificacion_formulario.items.items[0].getValue() == '' || this.dosificacion_formulario.items.items[1].getValue() == '') {
+  				Ext.Msg.show({
+  				 title:'<h1 style="font-size:15px;">Aviso!</h1>',
+  				 msg: '<p style="font-weight:bold; font-size:12px;">Favor Completar los datos para continuar con el registro</p>',
+  				 buttons: Ext.Msg.OK,
+  				 width:320,
+   				 height:150,
+  				 icon: Ext.MessageBox.WARNING,
+  				 scope:this
+  			});
+  		} else {
+  		this.guardarDosificacion();
+  		win.hide();
+  		}
+
+  	},
+
+    guardarDosificacion : function(){
+  		/*Recuperamos de la venta detalle si existe algun concepto con excento*/
+  		Ext.Ajax.request({
+  				url : '../../sis_ventas_facturacion/control/VentaFacturacion/insertarDosificacionRoManual',
+  				params : {
+            'numero_inicial': this.dosificacion_formulario.items.items[0].getValue(),
+  					'numero_final': this.dosificacion_formulario.items.items[1].getValue(),
+            'id_punto_venta':this.data.objPadre.store.baseParams.id_punto_venta,
+            'fecha_apertura':this.data.objPadre.store.baseParams.fecha,
+  				},
+  				success : this.successWizard,
+  				failure : this.conexionFailure,
+  				timeout : this.timeout,
+  				scope : this
+  			});
+  			//Phx.CP.getPagina(this.idContenedorPadre).reload();
+  		/**********************************************************************/
+  	},
+
     iniciarEventos : function () {
+
+        /*Aqui Verificamos si hay una dosificacion para los RO Manuales*/
+        Ext.Ajax.request({
+            url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDosificacionRoManual',
+            params:{
+              fecha_apertura:this.data.objPadre.store.baseParams.fecha,
+              id_punto_venta:this.data.objPadre.store.baseParams.id_punto_venta,
+            },
+            success: function(resp){
+              var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+              if (reg.ROOT.datos.v_existe_dosificacion == 'no') {
+                this.crearDosificacion();
+              }
+            },
+            failure: this.conexionFailure,
+            timeout:this.timeout,
+            scope:this
+        });
+        /***************************************************************/
+
+
+
+
+
+        this.condicionesRegionales();
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
-        
+
         /*Aqui aumentando para recueprar la fecha desde el maestro*/
         this.Cmp.fecha.setValue(this.data.objPadre.store.baseParams.fecha);
 
@@ -594,7 +726,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     	    this.Cmp.id_punto_venta.on('select',function(c,r,i) {
     	    	if (this.accionFormulario != 'EDIT') {
                   /*Aumentando para que nos filtre siempre efectivo (CASH)*/
-                  this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
+                  this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
                 	this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
                   /*********************************************************/
                }
@@ -663,8 +795,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         	if (this.accionFormulario != 'EDIT') {
             /*Comentando para agregar InstanciaPago*/
             //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
-            this.Cmp.id_instancia_pago.store.baseParams.defecto = 'si';
-            this.Cmp.id_instancia_pago.store.baseParams.filtrar_base = 'si';
+            this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
+            this.Cmp.id_medio_pago.store.baseParams.filtrar_base = 'si';
             }
             // if (this.data.objPadre.tipo_factura == 'manual') {
             // 	this.Cmp.id_dosificacion.reset();
@@ -793,17 +925,22 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                   }, scope : this
               });
 
-              this.Cmp.id_instancia_pago.store.load({params:{start:0,limit:50},
-      		           callback : function (r) {
+              this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
+                     callback : function (r) {
                                 if (r.length == 1 ) {
-                                    this.Cmp.id_instancia_pago.setValue(r[0].data.id_instancia_pago);
-                                    this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,r[0],0);
+                                    this.Cmp.id_medio_pago.setValue(r[0].data.id_medio_pago_pw);
+                                    this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[0],0);
+                                } else {
+                                  for (var i = 0; i < r.length; i++) {
+                                    if (r[i].data.fop_code.startsWith("CA")) {
+                                      this.Cmp.id_medio_pago.setValue(r[i].data.id_medio_pago_pw);
+                                      this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
+                                    }
+                                  }
                                 }
-                                    this.Cmp.id_instancia_pago.fireEvent('select', this.Cmp.id_instancia_pago,this.Cmp.id_instancia_pago.store.getById(this.Cmp.id_instancia_pago.getValue()),0);
-                                    this.Cmp.id_instancia_pago.store.baseParams.defecto = 'no';
-
-      		            }, scope : this
-      		        });
+                this.Cmp.id_medio_pago.store.baseParams.defecto = 'no';
+                      }, scope : this
+                  });
         }
         if (this.accionFormulario == 'EDIT') {
           this.mostrarComponente(this.Cmp.habilitar_edicion);
@@ -1262,7 +1399,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                                                            totalProperty: 'total',
                                                            fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','codigo'],
                                                            remoteSort: true,
-                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO'}
+                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO', emision:'recibo'}
                                                        }),
                                                        valueField: 'id_concepto_ingas',
                                                        displayField: 'desc_ingas',
@@ -1417,6 +1554,21 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     },
 
     ComboIdProducto : function (tipo) {
+
+      /*Aqui ponemos la condicion para las regionales*/
+      this.variables.items.items[6].store.load({params:{start:0,limit:50},
+         callback : function (r) {
+
+            this.variables.items.items[6].setValue(this.data.objPadre.variables_globales.id_moneda_base);
+            this.Cmp.id_sucursal.fireEvent('select',this.variables.items.items[6], this.variables.items.items[6].store.getById(this.data.objPadre.variables_globales.id_moneda_base));
+
+          }, scope : this
+      });
+      /***********************************************/
+
+      /*Aqui aumentamos para poner el filtro de los conceptos*/
+      this.variables.items.items[1].store.baseParams.regionales = this.data.objPadre.variables_globales.ESTACION_inicio;
+      /*******************************************************/
 
       /*Aqui recuperamos el tipo del producto*/
     	this.variables.items.items[1].setDisabled(false);
@@ -2009,7 +2161,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
       config : {
         name: 'anulado',
-        fieldLabel: 'Estado',
+        fieldLabel: '<img src="../../../lib/imagenes/facturacion/aceptarVerde.svg" style="width:15px; vertical-align: middle;">   <img src="../../../lib/imagenes/facturacion/cancelarRojo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Estado</span>',
         emptyText:'Estado',
         typeAhead: true,
         triggerAction: 'all',
@@ -2028,7 +2180,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 		{
 			config:{
 				name: 'nit',
-				fieldLabel: 'NIT',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CarnetIdentidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> NIT</span>',
 				allowBlank: true,
         hidden:true,
 				width:200,
@@ -2041,7 +2193,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 		{
 			config : {
 				name : 'id_cliente',
-				fieldLabel : 'Razón Social Cliente',
+				fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
         style:{
         //  width:'5000px',
           textTransform:'uppercase',
@@ -2098,6 +2250,21 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 			id_grupo : 0,
 			form : true
 		},
+    {
+      config:{
+        name: 'correo_electronico',
+        fieldLabel: 'Correo Electronico',
+        allowBlank: true,
+        width: 200,
+        hidden:true,
+        vtype:'email',
+        gwidth: 100
+      },
+        type:'TextField',
+        id_grupo: 0,
+        //grid:true,
+        form:true
+    },
     // {
 		// 	config : {
 		// 		name : 'id_formula',
@@ -2304,7 +2471,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config: {
             name: 'id_moneda',
-            fieldLabel: 'Moneda',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
             allowBlank: false,
             width:150,
             listWidth:250,
@@ -2396,29 +2563,30 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     /************************Aumentando instancia de pago*****************************************/
     {
         config: {
-            name: 'id_instancia_pago',
-            fieldLabel: 'Instancia de pago',
+            name: 'id_medio_pago',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
             allowBlank: false,
             width:150,
-            emptyText: 'Instancia de pago...',
+            id: 'testeoColor',
+            emptyText: 'Medio de pago...',
             store: new Ext.data.JsonStore({
-                url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                id: 'id_instancia_pago',
+                url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                id: 'id_medio_pago',
                 root: 'datos',
                 sortInfo: {
-                    field: 'nombre',
+                    field: 'name',
                     direction: 'ASC'
                 },
                 totalProperty: 'total',
-                fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                 remoteSort: true,
-                baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'RO'}
             }),
-            valueField: 'id_instancia_pago',
-            displayField: 'nombre',
-            gdisplayField: 'codigo_forma_pago',
-            hiddenName: 'id_instancia_pago',
-            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+            valueField: 'id_medio_pago_pw',
+            displayField: 'name',
+            gdisplayField: 'name',
+            hiddenName: 'id_medio_pago_pw',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
             forceSelection: true,
             typeAhead: false,
             triggerAction: 'all',
@@ -2432,7 +2600,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
             minChars: 2,
             disabled:false,
             renderer : function(value, p, record) {
-                return String.format('{0}', record.data['codigo_forma_pago']);
+                return String.format('{0}', record.data['codigo_fp']);
             }
         },
         type: 'ComboBox',
@@ -2445,7 +2613,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'numero_tarjeta',
-            fieldLabel: 'N° Tarjeta',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
             allowBlank: true,
             width:150,
             maxLength:20,
@@ -2474,7 +2642,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'codigo_tarjeta',
-            fieldLabel: 'Codigo de Autorización',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
             allowBlank: false,
             width:150,
             minLength:6,
@@ -2491,7 +2659,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
 			config: {
 				name: 'id_auxiliar',
-				fieldLabel: 'Cuenta Corriente',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
 				allowBlank: true,
         width:150,
 				emptyText: 'Cuenta Corriente...',
@@ -2536,7 +2704,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
 			config: {
 				name: 'id_auxiliar_anticipo',
-				fieldLabel: 'Cuenta Corriente',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
 				allowBlank: true,
         width:150,
 				emptyText: 'Cuenta Corriente...',
@@ -2609,7 +2777,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'fecha_deposito',
-            fieldLabel: 'Fecha Deposito',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha depósito</span>',
             allowBlank: true,
             hidden:true,
             disabled:true,
@@ -2625,7 +2793,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'monto_deposito',
-            fieldLabel: 'Monto Depósito',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Monto Depósito</span>',
             allowBlank: true,
             hidden:true,
             enableKeyEvents: true,
@@ -2656,7 +2824,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'cuenta_bancaria',
-            fieldLabel: 'Nro Cuenta',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Cuenta</span>',
             allowBlank: true,
             hidden:true,
             width:150,
@@ -2670,7 +2838,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'monto_forma_pago',
-            fieldLabel: 'Importe Recibido',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
             allowBlank: false,
             width:150,
             maxLength:20,
@@ -2849,7 +3017,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         {
             config: {
                 name: 'id_moneda_2',
-                fieldLabel: 'Moneda',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
                 allowBlank: false,
                 width:150,
                 listWidth:250,
@@ -2895,29 +3063,29 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         },
         {
             config: {
-                name: 'id_instancia_pago_2',
-                fieldLabel: 'Instancia de pago',
+                name: 'id_medio_pago_2',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
                 allowBlank: false,
                 width:150,
-                emptyText: 'Instancia de pago...',
+                emptyText: 'Medio de pago...',
                 store: new Ext.data.JsonStore({
-                    url: '../../sis_obingresos/control/InstanciaPago/listarInstanciaPago',
-                    id: 'id_instancia_pago',
+                    url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                    id: 'id_medio_pago',
                     root: 'datos',
                     sortInfo: {
-                        field: 'nombre',
+                        field: 'name',
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_instancia_pago', 'nombre', 'codigo_forma_pago'],
+                    fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'insp.nombre#insp.codigo_forma_pago'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
                 }),
-                valueField: 'id_instancia_pago',
-                displayField: 'nombre',
-                gdisplayField: 'codigo_forma_pago',
-                hiddenName: 'id_instancia_pago',
-                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo_forma_pago}</font></b></p></div></tpl>',
+                valueField: 'id_medio_pago_pw',
+                displayField: 'name',
+                gdisplayField: 'name',
+                hiddenName: 'id_medio_pago_pw',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
                 forceSelection: true,
                 typeAhead: false,
                 triggerAction: 'all',
@@ -2931,7 +3099,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                 minChars: 2,
                 disabled:false,
                 renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['codigo_forma_pago']);
+                    return String.format('{0}', record.data['codigo_fp']);
                 }
             },
             type: 'ComboBox',
@@ -2990,7 +3158,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         {
     			config: {
     				name: 'id_auxiliar_2',
-    				fieldLabel: 'Cuenta Corriente',
+    				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
     				allowBlank: true,
             width:150,
     				emptyText: 'Cuenta Corriente...',
@@ -3036,7 +3204,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'numero_tarjeta_2',
-                fieldLabel: 'N° Tarjeta',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
                 allowBlank: true,
                 //disabled:true,
                 width:150,
@@ -3069,7 +3237,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'codigo_tarjeta_2',
-                fieldLabel: 'Codigo de Autorización',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
                 allowBlank: true,
                 width:150,
                 //disabled:true,
@@ -3088,7 +3256,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'monto_forma_pago_2',
-                fieldLabel: 'Importe Recibido',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
                 allowBlank:true,
                 width:150,
                 allowDecimals:true,
@@ -3254,7 +3422,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         //this.Cmp.id_forma_pago_2.enable();
         Ext.getCmp('segunda_forma_pago').show();
         this.Cmp.id_moneda_2.enable();
-        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.id_medio_pago_2.enable();
         this.Cmp.monto_forma_pago_2.enable();
         this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)));
 
@@ -3271,7 +3439,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         Ext.getCmp('segunda_forma_pago').show();
         //this.Cmp.id_forma_pago_2.enable();
         this.Cmp.id_moneda_2.enable();
-        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.id_medio_pago_2.enable();
         this.Cmp.monto_forma_pago_2.enable();
         this.Cmp.monto_forma_pago_2.setValue(((this.suma_total*this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue()));
 
@@ -3287,7 +3455,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         Ext.getCmp('segunda_forma_pago').show();
         //this.Cmp.id_forma_pago_2.enable();
         this.Cmp.id_moneda_2.enable();
-        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.id_medio_pago_2.enable();
         this.Cmp.monto_forma_pago_2.enable();
         this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
       } else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio != 2) && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
@@ -3301,7 +3469,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         Ext.getCmp('segunda_forma_pago').show();
         //this.Cmp.id_forma_pago_2.enable();
         this.Cmp.id_moneda_2.enable();
-        this.Cmp.id_instancia_pago_2.enable();
+        this.Cmp.id_medio_pago_2.enable();
         this.Cmp.monto_forma_pago_2.enable();
         this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
       }
@@ -3310,12 +3478,12 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         //this.Cmp.id_forma_pago_2.disable();
         Ext.getCmp('segunda_forma_pago').hide();
         this.Cmp.id_moneda_2.disable();
-        this.Cmp.id_instancia_pago_2.disable();
+        this.Cmp.id_medio_pago_2.disable();
         this.Cmp.monto_forma_pago_2.disable();
         this.Cmp.monto_forma_pago_2.reset();
         //this.Cmp.id_forma_pago_2.reset();
         this.Cmp.id_moneda_2.reset();
-        this.Cmp.id_instancia_pago_2.reset();
+        this.Cmp.id_medio_pago_2.reset();
         //this.Cmp.moneda_tarjeta_2.reset();
         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
         this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
@@ -3332,14 +3500,20 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
     cargarInstanciaPago: function() {
       /****************************Aumnetando la instancia de pago********************************/
-      this.Cmp.id_instancia_pago.on('select',function(c,r,i) {
-        var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
-        this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
-        this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
-        if (codigo_forma_pago == 'CC') {
+      this.Cmp.id_medio_pago.on('select',function(c,r,i) {
+
+        if(r){
+          if (r.data) {
+            var codigo_forma_pago = r.data.fop_code;
+            this.Cmp.tipo_tarjeta.setValue(r.data.name);
+          }
+        }
+
+     if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
+        if (codigo_forma_pago.startsWith("CC")) {
           Ext.getCmp('segunda_forma_pago').show();
           this.mostrarComponente(this.Cmp.codigo_tarjeta);
-          this.mostrarComponente(this.Cmp.tipo_tarjeta);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta);
           this.mostrarComponente(this.Cmp.numero_tarjeta);
           this.ocultarComponente(this.Cmp.id_auxiliar);
           this.Cmp.id_auxiliar_anticipo.allowBlank=true;
@@ -3352,6 +3526,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
           if (this.instanciasPagoAnticipo == 'si') {
             this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
             Ext.getCmp('datos_deposito').show();
           }else{
             Ext.getCmp('datos_deposito').hide();
@@ -3373,7 +3548,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.monto_deposito.reset();
           this.Cmp.cuenta_bancaria.reset();
 
-        } else if (codigo_forma_pago == 'MC') {
+        } else if (codigo_forma_pago.startsWith("MCO")) {
           Ext.getCmp('segunda_forma_pago').show();
           this.mostrarComponente(this.Cmp.mco);
           this.Cmp.numero_tarjeta.allowBlank = true;
@@ -3392,6 +3567,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
           if (this.instanciasPagoAnticipo == 'si') {
             this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
             Ext.getCmp('datos_deposito').show();
           }else{
             Ext.getCmp('datos_deposito').hide();
@@ -3414,7 +3590,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.cuenta_bancaria.reset();
 
 
-        } else if (codigo_forma_pago == 'CU') {
+        } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
           Ext.getCmp('segunda_forma_pago').show();
           this.mostrarComponente(this.Cmp.id_auxiliar);
           this.Cmp.numero_tarjeta.allowBlank = true;
@@ -3433,6 +3609,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
           if (this.instanciasPagoAnticipo == 'si') {
             this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
             Ext.getCmp('datos_deposito').show();
           }else{
             Ext.getCmp('datos_deposito').hide();
@@ -3455,7 +3632,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.cuenta_bancaria.reset();
 
 
-        }else if (codigo_forma_pago == 'CA') {
+        }else if (codigo_forma_pago.startsWith("CA")) {
           Ext.getCmp('segunda_forma_pago').show();
           this.Cmp.numero_tarjeta.allowBlank = true;
           this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -3477,6 +3654,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
           if (this.instanciasPagoAnticipo == 'si') {
             this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
             Ext.getCmp('datos_deposito').show();
           }else{
             Ext.getCmp('datos_deposito').hide();
@@ -3501,7 +3679,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
         }
         /*Aumentando esta parte para la forma de pago*/
-        else if (codigo_forma_pago == 'DE') {
+        else if (codigo_forma_pago.startsWith("DEPO")) {
           Ext.getCmp('datos_deposito').show();
           if (this.instanciasPagoAnticipo == 'si') {
             this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
@@ -3700,15 +3878,16 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.mco.reset();
           this.Cmp.numero_tarjeta.reset();
         }
+      }
 
       },this);
 
-      this.Cmp.id_instancia_pago_2.on('select',function(c,r,i) {
+      this.Cmp.id_medio_pago_2.on('select',function(c,r,i) {
         var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
         this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
-        if (codigo_forma_pago == 'CC') {
+        if (codigo_forma_pago.startsWith("CC")) {
           this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
-          this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
           this.mostrarComponente(this.Cmp.numero_tarjeta_2);
           this.ocultarComponente(this.Cmp.id_auxiliar_2);
           this.ocultarComponente(this.Cmp.mco_2);
@@ -3716,7 +3895,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.codigo_tarjeta_2.allowBlank = false;
           this.Cmp.tipo_tarjeta_2.allowBlank = false;
           this.Cmp.mco_2.allowBlank = true;
-        } else if (codigo_forma_pago == 'MC') {
+        } else if (codigo_forma_pago.startsWith("MCO")) {
           this.mostrarComponente(this.Cmp.mco_2);
           this.Cmp.numero_tarjeta_2.allowBlank = true;
           this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -3729,7 +3908,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.tipo_tarjeta_2.reset();
           this.Cmp.id_auxiliar_2.reset();
           this.Cmp.numero_tarjeta_2.reset();
-        } else if (codigo_forma_pago == 'CU') {
+        } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
           this.mostrarComponente(this.Cmp.id_auxiliar_2);
           this.Cmp.numero_tarjeta_2.allowBlank = true;
           this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -3744,7 +3923,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.id_auxiliar_2.reset();
           this.Cmp.mco_2.reset();
           this.Cmp.numero_tarjeta_2.reset();
-        }else if (codigo_forma_pago == 'CA') {
+        }else if (codigo_forma_pago.startsWith("CA")) {
           this.mostrarComponente(this.Cmp.id_auxiliar_2);
           this.Cmp.numero_tarjeta_2.allowBlank = true;
           this.Cmp.codigo_tarjeta_2.allowBlank = true;

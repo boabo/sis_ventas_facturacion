@@ -20,6 +20,7 @@ class MODCajero extends MODbase{
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		$this->setParametro('pes_estado','pes_estado','varchar');
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
 
 
 		//Definicion de la lista del resultado del query
@@ -545,7 +546,7 @@ class MODCajero extends MODbase{
 		$this->setParametro('id_venta','id_venta','integer');
 
 		//Definicion de la lista del resultado del query
-		$this->captura('id_instancia_pago','int4');
+		$this->captura('id_medio_pago','int4');
 		$this->captura('nombre','varchar');
 		$this->captura('codigo_tarjeta','varchar');
 		$this->captura('numero_tarjeta','varchar');
@@ -557,7 +558,7 @@ class MODCajero extends MODbase{
 		$this->armarConsulta();
 
 		$this->ejecutarConsulta();
-
+		//var_dump("aqui llega data",$this->respuesta);
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

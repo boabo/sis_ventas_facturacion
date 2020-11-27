@@ -1315,7 +1315,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                                            totalProperty: 'total',
                                                            fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','codigo'],
                                                            remoteSort: true,
-                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO'}
+                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO', emision:'recibo'}
                                                        }),
                                                        valueField: 'id_concepto_ingas',
                                                        displayField: 'desc_ingas',
@@ -3602,7 +3602,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta.setValue(r.data.name);
           }
         }
-
         if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
           if (codigo_forma_pago.startsWith("CC")) {
             Ext.getCmp('segunda_forma_pago').show();
@@ -3638,6 +3637,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
             if (this.instanciasPagoAnticipo == 'si') {
               this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank = false;
               Ext.getCmp('datos_deposito').show();
             }else{
               Ext.getCmp('datos_deposito').hide();
@@ -3681,6 +3681,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
             if (this.instanciasPagoAnticipo == 'si') {
               this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank = false;
               Ext.getCmp('datos_deposito').show();
             }else{
               Ext.getCmp('datos_deposito').hide();
@@ -3727,6 +3728,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
             if (this.instanciasPagoAnticipo == 'si') {
               this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank = false;
               Ext.getCmp('datos_deposito').show();
             }else{
               Ext.getCmp('datos_deposito').hide();
@@ -3773,6 +3775,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
             if (this.instanciasPagoAnticipo == 'si') {
               this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank = false;
               Ext.getCmp('datos_deposito').show();
             }else{
               Ext.getCmp('datos_deposito').hide();
@@ -3817,209 +3820,209 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             Ext.getCmp('botonPagoElectronico').show();
 
 
-          } else {
+          } /*Aumentando esta parte para la forma de pago*/
+          //mover esta parte para el deposito
+          else if (codigo_forma_pago.startsWith("DEPO")) {
+            Ext.getCmp('datos_deposito').show();
+            if (this.instanciasPagoAnticipo == 'si') {
+              this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank = false;
+            }else{
+              this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.allowBlank = false;
+              this.Cmp.id_auxiliar_anticipo.reset();
+            }
+            this.ocultarComponente(this.Cmp.mco);
+            this.ocultarComponente(this.Cmp.codigo_tarjeta);
+            this.ocultarComponente(this.Cmp.tipo_tarjeta);
+            this.ocultarComponente(this.Cmp.numero_tarjeta);
+            this.Cmp.numero_tarjeta.allowBlank = true;
+            this.Cmp.mco.reset();
+            this.Cmp.codigo_tarjeta.reset();
+            this.Cmp.tipo_tarjeta.reset();
+            this.Cmp.numero_tarjeta.reset();
+
+            /**Aqui ponemos las condiciones**/
+            Ext.getCmp('segunda_forma_pago').hide();
+            this.mostrarComponente(this.Cmp.nro_deposito);
+            this.mostrarComponente(this.Cmp.fecha_deposito);
+            this.mostrarComponente(this.Cmp.monto_deposito);
+            this.mostrarComponente(this.Cmp.cuenta_bancaria);
+            this.Cmp.nro_deposito.allowBlank = false;
+            this.Cmp.fecha_deposito.allowBlank = false;
+            this.Cmp.fecha_deposito.setValue(this.fecha_actual_RO);
+            this.Cmp.monto_deposito.allowBlank = false;
+            this.Cmp.cuenta_bancaria.allowBlank = false;
+            this.Cmp.cuenta_bancaria.setDisabled(true);
+            this.Cmp.monto_deposito.setValue(this.suma_total);
+            this.Cmp.monto_forma_pago.setValue(this.suma_total);
+
+            this.devolverCambio();
+
+            this.Cmp.monto_deposito.on('keyup', function (cmp, e) {
+               this.Cmp.monto_forma_pago.setValue(this.Cmp.monto_deposito.getValue());
+               /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+               this.obtenersuma();
+               this.devolverCambio();
+             }, this);
+            /*******************************/
+           /***Aqui validamos para ver si existe la boleta***/
+           Ext.Ajax.request({
+      				url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
+      				params:{
+      					id_punto_venta:this.Cmp.id_punto_venta.getValue(),
+      					id_sucursal:this.Cmp.id_sucursal.getValue(),
+                id_moneda:this.Cmp.id_moneda.getValue()
+      				},
+      				success: function(resp){
+      						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+      						   this.Cmp.cuenta_bancaria.setValue(reg.ROOT.datos.nro_cuenta);
+                     this.Cmp.id_cuenta_bancaria.setValue(reg.ROOT.datos.id_cuenta_bancaria);
+      				},
+      				failure: this.conexionFailure,
+      				timeout:this.timeout,
+      				scope:this
+      		});
+           /*************************************************/
+           /*Aqui volvemos a llamar a la funcion de acuerdo a la moneda seleccionada para la cuenta*/
+            this.Cmp.id_moneda.on('select',function(c,r,i) {
+              if (this.Cmp.id_moneda.getValue() == 2) {
+                this.Cmp.monto_deposito.setValue((this.suma_total/this.tipo_cambio));
+                this.Cmp.monto_forma_pago.setValue((this.suma_total/this.tipo_cambio));
+              } else {
+                this.Cmp.monto_deposito.setValue((this.suma_total));
+                this.Cmp.monto_forma_pago.setValue((this.suma_total));
+              }
+              Ext.Ajax.request({
+       					url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
+       					params:{
+       						id_punto_venta:this.Cmp.id_punto_venta.getValue(),
+       						id_sucursal:this.Cmp.id_sucursal.getValue(),
+                   id_moneda:this.Cmp.id_moneda.getValue()
+       					},
+       					success: function(resp){
+       							var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                        this.Cmp.cuenta_bancaria.setValue(reg.ROOT.datos.nro_cuenta);
+       							   this.Cmp.id_cuenta_bancaria.setValue(reg.ROOT.datos.id_cuenta_bancaria);
+
+       					},
+       					failure: this.conexionFailure,
+       					timeout:this.timeout,
+       					scope:this
+       			});
+
+            if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+                    Ext.Ajax.request({
+            						url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
+            						params:{
+                         nro_deposito:this.Cmp.nro_deposito.getValue(),
+                         id_moneda:this.Cmp.id_moneda.getValue(),
+            						 fecha:this.Cmp.fecha_deposito.getValue(),
+            						},
+            						success: function(resp){
+            								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                              if (reg.ROOT.datos.cantidad_deposito > 0) {
+                                /*Bloqueamos el boton para que no genere si el deposito*/
+                                 this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
+                                 Ext.Msg.show({
+                                     title: 'Alerta',
+                                     msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
+                                     buttons: Ext.Msg.OK,
+                                     width: 512,
+                                     icon: Ext.Msg.INFO
+                                 });
+                                 this.Cmp.nro_deposito.reset();
+                               /********************************************************/
+                                 // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
+                                 // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
+                                 // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                                 // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
+                                 // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
+                                 //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                              }else {
+                                this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+                                //this.Cmp.fecha_deposito.reset();
+                                //this.Cmp.nro_deposito.reset();
+                                //this.Cmp.monto_deposito.setValue(0);
+                                //this.Cmp.monto_forma_pago.setValue(0);
+                              }
+                              /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+                              this.obtenersuma();
+
+
+
+            						},
+            						failure: this.conexionFailure,
+            						timeout:this.timeout,
+            						scope:this
+            				});
+                  }
+                  this.devolverCambio();
+                 },this);
+                 /*Aqui verificaremos si el deposito existe o no existe ya registrado*/
+                this.Cmp.nro_deposito.on('change',function(field,newValue,oldValue){
+                  if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+                  Ext.Ajax.request({
+           					url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
+           					params:{
+                       nro_deposito:this.Cmp.nro_deposito.getValue(),
+                       id_moneda:this.Cmp.id_moneda.getValue(),
+           						fecha:this.Cmp.fecha_deposito.getValue(),
+           					},
+           					success: function(resp){
+           							var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                            if (reg.ROOT.datos.cantidad_deposito > 0) {
+                              /*Bloqueamos el boton para que no genere si el deposito*/
+                               this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
+                               Ext.Msg.show({
+             											title: 'Alerta',
+             											msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas e ingrese nuevamente el nro de depósito</p>',
+             											buttons: Ext.Msg.OK,
+             											width: 512,
+             											icon: Ext.Msg.INFO
+             									});
+                               this.Cmp.nro_deposito.reset();
+                             /********************************************************/
+                               // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
+                               // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
+                               // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                               // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
+                               // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
+                               //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+                            }else {
+                              this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+                              //this.Cmp.fecha_deposito.reset();
+                              //this.Cmp.nro_deposito.reset();
+                              //this.Cmp.monto_deposito.setValue(0);
+                              //this.Cmp.monto_forma_pago.setValue(0);
+                            }
+
+                            /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+                            this.obtenersuma();
+                            this.devolverCambio();
+
+
+           					},
+           					failure: this.conexionFailure,
+           					timeout:this.timeout,
+           					scope:this
+           			});
+                 }
+                },this);
+            // this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
+            // this.Cmp.codigo_tarjeta.allowBlank = false;
+            // this.Cmp.tipo_tarjeta.allowBlank = false;
+            // this.Cmp.mco.allowBlank = true;
+          /*********************************************/
+
+          }
+          else {
             this.Cmp.codigo_tarjeta.reset();
             this.Cmp.tipo_tarjeta.reset();
             this.Cmp.id_auxiliar.reset();
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
           }
-          /*Aumentando esta parte para la forma de pago*/
-          //mover esta parte para el deposito
-          // else if (codigo_forma_pago == 'DE') {
-          //   Ext.getCmp('datos_deposito').show();
-          //   if (this.instanciasPagoAnticipo == 'si') {
-          //     this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
-          //     this.Cmp.id_auxiliar_anticipo.allowBlank = false;
-          //   }else{
-          //     this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
-          //     this.Cmp.id_auxiliar_anticipo.allowBlank = false;
-          //     this.Cmp.id_auxiliar_anticipo.reset();
-          //   }
-          //   this.ocultarComponente(this.Cmp.mco);
-          //   this.ocultarComponente(this.Cmp.codigo_tarjeta);
-          //   this.ocultarComponente(this.Cmp.tipo_tarjeta);
-          //   this.ocultarComponente(this.Cmp.numero_tarjeta);
-          //   this.Cmp.numero_tarjeta.allowBlank = true;
-          //   this.Cmp.mco.reset();
-          //   this.Cmp.codigo_tarjeta.reset();
-          //   this.Cmp.tipo_tarjeta.reset();
-          //   this.Cmp.numero_tarjeta.reset();
-          //
-          //   /**Aqui ponemos las condiciones**/
-          //   Ext.getCmp('segunda_forma_pago').hide();
-          //   this.mostrarComponente(this.Cmp.nro_deposito);
-          //   this.mostrarComponente(this.Cmp.fecha_deposito);
-          //   this.mostrarComponente(this.Cmp.monto_deposito);
-          //   this.mostrarComponente(this.Cmp.cuenta_bancaria);
-          //   this.Cmp.nro_deposito.allowBlank = false;
-          //   this.Cmp.fecha_deposito.allowBlank = false;
-          //   this.Cmp.fecha_deposito.setValue(this.fecha_actual_RO);
-          //   this.Cmp.monto_deposito.allowBlank = false;
-          //   this.Cmp.cuenta_bancaria.allowBlank = false;
-          //   this.Cmp.cuenta_bancaria.setDisabled(true);
-          //   this.Cmp.monto_deposito.setValue(this.suma_total);
-          //   this.Cmp.monto_forma_pago.setValue(this.suma_total);
-          //
-          //   this.devolverCambio();
-          //
-          //   this.Cmp.monto_deposito.on('keyup', function (cmp, e) {
-          //      this.Cmp.monto_forma_pago.setValue(this.Cmp.monto_deposito.getValue());
-          //      /*Aqui ponemos estas condiciones para que se actualice el cambio*/
-          //      this.obtenersuma();
-          //      this.devolverCambio();
-          //    }, this);
-          //   /*******************************/
-          //  /***Aqui validamos para ver si existe la boleta***/
-          //  Ext.Ajax.request({
-      		// 		url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
-      		// 		params:{
-      		// 			id_punto_venta:this.Cmp.id_punto_venta.getValue(),
-      		// 			id_sucursal:this.Cmp.id_sucursal.getValue(),
-          //       id_moneda:this.Cmp.id_moneda.getValue()
-      		// 		},
-      		// 		success: function(resp){
-      		// 				var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-      		// 				   this.Cmp.cuenta_bancaria.setValue(reg.ROOT.datos.nro_cuenta);
-          //            this.Cmp.id_cuenta_bancaria.setValue(reg.ROOT.datos.id_cuenta_bancaria);
-      		// 		},
-      		// 		failure: this.conexionFailure,
-      		// 		timeout:this.timeout,
-      		// 		scope:this
-      		// });
-          //  /*************************************************/
-          //  /*Aqui volvemos a llamar a la funcion de acuerdo a la moneda seleccionada para la cuenta*/
-          //   this.Cmp.id_moneda.on('select',function(c,r,i) {
-          //     if (this.Cmp.id_moneda.getValue() == 2) {
-          //       this.Cmp.monto_deposito.setValue((this.suma_total/this.tipo_cambio));
-          //       this.Cmp.monto_forma_pago.setValue((this.suma_total/this.tipo_cambio));
-          //     } else {
-          //       this.Cmp.monto_deposito.setValue((this.suma_total));
-          //       this.Cmp.monto_forma_pago.setValue((this.suma_total));
-          //     }
-          //     Ext.Ajax.request({
-       		// 			url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
-       		// 			params:{
-       		// 				id_punto_venta:this.Cmp.id_punto_venta.getValue(),
-       		// 				id_sucursal:this.Cmp.id_sucursal.getValue(),
-          //          id_moneda:this.Cmp.id_moneda.getValue()
-       		// 			},
-       		// 			success: function(resp){
-       		// 					var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-          //               this.Cmp.cuenta_bancaria.setValue(reg.ROOT.datos.nro_cuenta);
-       		// 					   this.Cmp.id_cuenta_bancaria.setValue(reg.ROOT.datos.id_cuenta_bancaria);
-          //
-       		// 			},
-       		// 			failure: this.conexionFailure,
-       		// 			timeout:this.timeout,
-       		// 			scope:this
-       		// 	});
-          //
-          //   if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
-          //           Ext.Ajax.request({
-          //   						url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
-          //   						params:{
-          //                nro_deposito:this.Cmp.nro_deposito.getValue(),
-          //                id_moneda:this.Cmp.id_moneda.getValue(),
-          //   						 fecha:this.Cmp.fecha_deposito.getValue(),
-          //   						},
-          //   						success: function(resp){
-          //   								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-          //                     if (reg.ROOT.datos.cantidad_deposito > 0) {
-          //                       /*Bloqueamos el boton para que no genere si el deposito*/
-          //                        this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
-          //                        Ext.Msg.show({
-          //                            title: 'Alerta',
-          //                            msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
-          //                            buttons: Ext.Msg.OK,
-          //                            width: 512,
-          //                            icon: Ext.Msg.INFO
-          //                        });
-          //                        this.Cmp.nro_deposito.reset();
-          //                      /********************************************************/
-          //                        // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
-          //                        // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
-          //                        // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
-          //                        // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
-          //                        // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
-          //                        //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
-          //                     }else {
-          //                       this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
-          //                       //this.Cmp.fecha_deposito.reset();
-          //                       //this.Cmp.nro_deposito.reset();
-          //                       //this.Cmp.monto_deposito.setValue(0);
-          //                       //this.Cmp.monto_forma_pago.setValue(0);
-          //                     }
-          //                     /*Aqui ponemos estas condiciones para que se actualice el cambio*/
-          //                     this.obtenersuma();
-          //
-          //
-          //
-          //   						},
-          //   						failure: this.conexionFailure,
-          //   						timeout:this.timeout,
-          //   						scope:this
-          //   				});
-          //         }
-          //         this.devolverCambio();
-          //        },this);
-          //        /*Aqui verificaremos si el deposito existe o no existe ya registrado*/
-          //       this.Cmp.nro_deposito.on('change',function(field,newValue,oldValue){
-          //         if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
-          //         Ext.Ajax.request({
-          //  					url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
-          //  					params:{
-          //              nro_deposito:this.Cmp.nro_deposito.getValue(),
-          //              id_moneda:this.Cmp.id_moneda.getValue(),
-          //  						fecha:this.Cmp.fecha_deposito.getValue(),
-          //  					},
-          //  					success: function(resp){
-          //  							var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-          //                   if (reg.ROOT.datos.cantidad_deposito > 0) {
-          //                     /*Bloqueamos el boton para que no genere si el deposito*/
-          //                      this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
-          //                      Ext.Msg.show({
-          //    											title: 'Alerta',
-          //    											msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas e ingrese nuevamente el nro de depósito</p>',
-          //    											buttons: Ext.Msg.OK,
-          //    											width: 512,
-          //    											icon: Ext.Msg.INFO
-          //    									});
-          //                      this.Cmp.nro_deposito.reset();
-          //                    /********************************************************/
-          //                      // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
-          //                      // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
-          //                      // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
-          //                      // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
-          //                      // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
-          //                      //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
-          //                   }else {
-          //                     this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
-          //                     //this.Cmp.fecha_deposito.reset();
-          //                     //this.Cmp.nro_deposito.reset();
-          //                     //this.Cmp.monto_deposito.setValue(0);
-          //                     //this.Cmp.monto_forma_pago.setValue(0);
-          //                   }
-          //
-          //                   /*Aqui ponemos estas condiciones para que se actualice el cambio*/
-          //                   this.obtenersuma();
-          //                   this.devolverCambio();
-          //
-          //
-          //  					},
-          //  					failure: this.conexionFailure,
-          //  					timeout:this.timeout,
-          //  					scope:this
-          //  			});
-          //        }
-          //       },this);
-          //   // this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
-          //   // this.Cmp.codigo_tarjeta.allowBlank = false;
-          //   // this.Cmp.tipo_tarjeta.allowBlank = false;
-          //   // this.Cmp.mco.allowBlank = true;
-          // /*********************************************/
-          //
-          // }
         }
 
 

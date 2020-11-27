@@ -77,7 +77,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           {
                   config:{
                       name: 'habilitar_edicion',
-                      fieldLabel: 'Editar?',
+                      fieldLabel: '<img src="../../../lib/imagenes/facturacion/LapizPapel.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Editar?</span>',
                       allowBlank: true,
                       width:200,
                       emptyText:'Editar...',
@@ -99,7 +99,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           {
             config:{
               name: 'observaciones',
-              fieldLabel: 'Observaciones',
+              fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
               allowBlank: true,
               width:200,
               //maxLength:30,
@@ -191,7 +191,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
            {
              config:{
                name: 'correo_electronico',
-               fieldLabel: 'Correo Electronico',
+               fieldLabel: '<img src="../../../lib/imagenes/facturacion/nuevoMail.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Email</span>',
                allowBlank: true,
                //hidden:true,
                width:200,
@@ -225,7 +225,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			this.Atributos.push({
 		            config:{
 		                name: 'excento',
-		                fieldLabel: 'Excento',
+		                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
 		                allowBlank: false,
 		                //anchor: '80%',
                     width:200,
@@ -330,7 +330,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
                     'id_producto': new Ext.form.ComboBox({
                                             name: 'id_producto',
-                                            fieldLabel: 'Producto/Servicio',
+                                            fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/Servicio</span>',
                                             allowBlank: false,
                                             emptyText: 'Productos...',
                                             store: new Ext.data.JsonStore({
@@ -386,7 +386,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     'cantidad': new Ext.form.NumberField({
                                         name: 'cantidad',
                                         msgTarget: 'title',
-                                        fieldLabel: 'Cantidad',
+                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
                                         allowBlank: false,
                                         allowDecimals: me.cantidadAllowDecimals,
                                         decimalPrecision : 2,
@@ -628,7 +628,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="15px";
-
           /*irva*/
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="60px";
           //this.megrid.topToolbar.items.items[0].btnEl.dom.style.border="2px solid blue";
@@ -995,7 +994,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         /**************************************************************************************************************/
         /********************************Aumemtando condicios para el id moneda****************************************/
         this.Cmp.id_moneda.on('select',function(c,r,i) {
-          console.log("llega aqui seleccion moneda",r);
           if(r.data.id_moneda == 2){
               //console.log("llega el dolar");
             this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
@@ -1087,7 +1085,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
           this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-            console.log("llega aqui el id moneda para convertir irva",this.Cmp.id_moneda.getValue());
           this.obtenersuma();
           if(this.Cmp.id_moneda.getValue() == 2){
               //console.log("llega el dolar");
@@ -1609,7 +1606,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.tipo
                     },
                     {
-                        header: 'Producto/Servicio',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/Servicio</span>',
                         dataIndex: 'id_producto',
                         width: 350,
                         editable: true,
@@ -1620,7 +1617,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.id_producto
                     },
                     {
-                        header: 'Descripción',
+                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
                         dataIndex: 'descripcion',
                         width: 300,
                         //sortable: false,
@@ -1628,19 +1625,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
 
-                        header: 'Cantidad',
+                        header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
                         dataIndex: 'cantidad',
                         align: 'right',
-                        width: 75,
+                        width: 100,
                         summaryType: 'sum',
                         editor: this.detCmp.cantidad
                     },
                     {
-                        header: 'P / Unit',
+                        header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
                         selectOnFocus: true,
-                        width: 85,
+                        width: 100,
                         decimalPrecision : 2,
                         summaryType: 'sum',
                         renderer : function(value, p, record) {
@@ -1650,7 +1647,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
                         xtype: 'numbercolumn',
-                        header: 'Total',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
                         dataIndex: 'precio_total',
                         align: 'right',
                         width: 150,/*irva222*/
@@ -1729,6 +1726,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   	    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
                         scope: this,
                         id:'botonGuardar',
+                        disabled:true,
               			    handler: function(btn) {
                           this.guardarDetalles();
               			    }
@@ -1737,6 +1735,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                       text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
                       scope: this,
                       id:'botonAgregar',
+                      disabled:true,
                         handler : function(){
                           this.formularioAgregar();
                           }
@@ -1744,6 +1743,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                       {
                         text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
                         scope: this,
+                        disabled:true,
                         id:'botonEliminar',
                           handler : function(){
                             var index = this.megrid.getSelectionModel().getSelectedCell();
@@ -1789,7 +1789,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.tipo
                     },
                     {
-                        header: 'Producto/Servicio',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/Servicio</span>',
                         dataIndex: 'id_producto',
                         width: 350,
                         editable: true,
@@ -1800,7 +1800,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.id_producto
                     },
                     {
-                        header: 'Descripción',
+                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
                         dataIndex: 'descripcion',
                         width: 300,
                         //sortable: false,
@@ -1808,19 +1808,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
 
-                        header: 'Cantidad',
+                        header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
                         dataIndex: 'cantidad',
                         align: 'right',
-                        width: 75,
+                        width: 100,
                         summaryType: 'sum',
                         editor: ''
                     },
                     {
-                        header: 'P / Unit',
+                        header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
                         selectOnFocus: true,
-                        width: 85,
+                        width: 100,
                         decimalPrecision : 2,
                         summaryType: 'sum',
                         renderer : function(value, p, record) {
@@ -1830,7 +1830,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
                         xtype: 'numbercolumn',
-                        header: 'Total',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
                         dataIndex: 'precio_total',
                         align: 'right',
                         width: 150,/*irva222*/
@@ -1878,7 +1878,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                    }),
                   new Ext.form.ComboBox({
                                                       name: 'id_producto',
-                                                      fieldLabel: 'Producto/<br>Servicio',
+                                                      fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/<br>Servicio</span>',
                                                       allowBlank: false,
                                                       emptyText: 'Productos...',
                                                       store: new Ext.data.JsonStore({
@@ -1892,7 +1892,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                           totalProperty: 'total',
                                                           fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
                                                           remoteSort: true,
-                                                          baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP'}
+                                                          baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP', emision:'facturacion'}
                                                       }),
                                                       valueField: 'id_concepto_ingas',
                                                       displayField: 'desc_ingas',
@@ -1928,7 +1928,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                     }),
                                                      new Ext.form.TextArea({
                                                             name: 'descripcion',
-                                                            fieldLabel: 'Descripcion',
+                                                            fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
                                                             allowBlank:true,
                                                             style:{
                                                               width: '190px'
@@ -1941,7 +1941,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                     new Ext.form.NumberField({
                                                                         name: 'cantidad',
                                                                         msgTarget: 'title',
-                                                                        fieldLabel: 'Cantidad',
+                                                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
                                                                         allowBlank: false,
                                                                         width : 450,
                                                                         style:{
@@ -1956,7 +1956,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                     new Ext.form.NumberField({
                                                                         name: 'precio_unitario',
                                                                         msgTarget: 'title',
-                                                                        fieldLabel: 'P/U',
+                                                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> P/U</span>',
                                                                         allowBlank: false,
                                                                         allowDecimals: true,
                                                                         width : 450,
@@ -1969,7 +1969,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                      new Ext.form.NumberField({
                                                                         name: 'precio_total',
                                                                         msgTarget: 'title',
-                                                                        fieldLabel: 'Total',
+                                                                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
                                                                         style:{
                                                                           width: '190px'
                                                                         },
@@ -2592,7 +2592,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       imprimirNota: function(){
    		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
    				Phx.CP.loadingShow();
-          console.log("aqui llega el formato",this);
          if (this.data.objPadre.tipo_punto_venta == 'ato') {
            if (this.data.objPadre.variables_globales.formato_comprobante == 'carta') {
            		Ext.Ajax.request({
@@ -2628,7 +2627,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               Ext.Ajax.request({
        						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
        						params : {
-                    'id_venta' : this.data.datos_originales.data.id_venta ,
+                    'id_proceso_wf' : this.id_proceso_wf  ,
        							'id_punto_venta' : this.data.objPadre.variables_globales.id_punto_venta,
        							'formato_comprobante' : this.data.objPadre.variables_globales.formato_comprobante,
        							'tipo_factura': this.data.objPadre.tipo_factura
@@ -2691,7 +2690,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 		{
 			config:{
 				name: 'nit',
-				fieldLabel: 'NIT',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CarnetIdentidad.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> NIT</span>',
 				allowBlank: false,
         listeners: {
           afterrender: function(field) {
@@ -2708,7 +2707,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 		{
 			config : {
 				name : 'id_cliente',
-				fieldLabel : 'Razón Social Cliente',
+				fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
         style:{
         //  width:'5000px',
           textTransform:'uppercase',
@@ -2768,7 +2767,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
 			config : {
 				name : 'id_formula',
-				fieldLabel : 'Paquetes / Fórmulas',
+				fieldLabel : '<img src="../../../lib/imagenes/facturacion/paquete.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Paquetes / Fórmulas</span>',
 				allowBlank : true,
         width:200,
         listWidth:'450',
@@ -2788,7 +2787,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 					fields : ['id_formula', 'nombre', 'descripcion'],
 					remoteSort : true,
 					baseParams : {
-						par_filtro : 'form.nombre'
+						par_filtro : 'form.nombre',
+            emision:'FACTCOMP'
 					}
 				}),
 				valueField : 'id_formula',
@@ -2970,7 +2970,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
         config: {
             name: 'id_moneda',
-            fieldLabel: 'Moneda',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
             allowBlank: false,
             width:150,
             listWidth:250,
@@ -3063,7 +3063,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
         config: {
             name: 'id_medio_pago',
-            fieldLabel: 'Medio de pago',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
             allowBlank: false,
             width:150,
             id: 'testeoColor',
@@ -3111,7 +3111,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'numero_tarjeta',
-            fieldLabel: 'N° Tarjeta',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
             allowBlank: true,
             width:150,
             maxLength:20,
@@ -3140,7 +3140,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'codigo_tarjeta',
-            fieldLabel: 'Codigo de Autorización',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
             allowBlank: false,
             width:150,
             minLength:6,
@@ -3157,7 +3157,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
 			config: {
 				name: 'id_auxiliar',
-				fieldLabel: 'Cuenta Corriente',
+				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
 				allowBlank: true,
         width:150,
 				emptyText: 'Cuenta Corriente...',
@@ -3202,7 +3202,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
         config:{
             name: 'monto_forma_pago',
-            fieldLabel: 'Importe Recibido',
+            fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
             allowBlank: false,
             width:150,
             maxLength:20,
@@ -3277,7 +3277,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         {
             config: {
                 name: 'id_moneda_2',
-                fieldLabel: 'Moneda',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
                 allowBlank: false,
                 width:150,
                 listWidth:250,
@@ -3325,7 +3325,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         {
             config: {
                 name: 'id_medio_pago_2',
-                fieldLabel: 'Medio de pago',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
                 allowBlank: false,
                 width:150,
                 emptyText: 'Medio de pago...',
@@ -3421,7 +3421,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         {
     			config: {
     				name: 'id_auxiliar_2',
-    				fieldLabel: 'Cuenta Corriente',
+    				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
     				allowBlank: true,
             width:150,
     				emptyText: 'Cuenta Corriente...',
@@ -3466,7 +3466,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'numero_tarjeta_2',
-                fieldLabel: 'N° Tarjeta',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
                 allowBlank: true,
                 //disabled:true,
                 width:150,
@@ -3499,7 +3499,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'codigo_tarjeta_2',
-                fieldLabel: 'Codigo de Autorización',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
                 allowBlank: true,
                 width:150,
                 //disabled:true,
@@ -3518,7 +3518,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         {
             config:{
                 name: 'monto_forma_pago_2',
-                fieldLabel: 'Importe Recibido',
+                fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
                 allowBlank:true,
                 width:150,
                 allowDecimals:true,

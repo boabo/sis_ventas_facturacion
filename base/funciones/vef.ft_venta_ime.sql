@@ -128,6 +128,10 @@ $body$
     v_moneda_base			integer;
     v_id_moneda_paquetes	varchar;
     v_desc_moneda			varchar;
+    v_año_actual			varchar;
+    v_id_dosificacion_ro	integer;
+    v_fecha_limite_emision	varchar;
+    v_id_medio_pago			integer;
 
   BEGIN
 
@@ -267,11 +271,10 @@ $body$
           v_nro_factura = v_parametros.nro_factura;
           v_excento = 0;
 
-
           select d.* into v_dosificacion
           from vef.tdosificacion_ro d
           where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_fecha and
-                d.fecha_limite >= v_fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'computarizada' and
+                d.fecha_limite >= v_fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'manual' and
                 d.id_sucursal = v_parametros.id_sucursal;
 
           if (v_dosificacion is null) then
@@ -291,15 +294,22 @@ $body$
           --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
           if (exists(	select 1
                        from vef.tdosificacion_ro dos
+                       where v_parametros.nro_factura::integer < dos.inicial and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+            raise exception 'El número de Recibo es menor al número Inicial permitido para esta dosificacion';
+          end if;
+
+          --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+          if (exists(	select 1
+                       from vef.tdosificacion_ro dos
                        where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
-            raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
+            raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
           end if;
 
           --validar que la fecha de factura no sea superior a la fecha limite de emision
           if (exists(	select 1
                        from vef.tdosificacion_ro dos
                        where dos.fecha_limite < v_parametros.fecha and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
-            raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
+            raise exception 'La fecha de la Recibo supera la fecha limite de emision de la dosificacion';
           end if;
 
         ELSE
@@ -730,12 +740,25 @@ $body$
         end if;
         /************************************************************/
 
-
-
-
 		/*Aumentamos la instancia de pago por el id_forma_pago*/
         --if (v_parametros.id_forma_pago != 0 ) then
-		if (v_parametros.id_medio_pago != 0) then
+
+        if (v_parametros.id_medio_pago = 0 ) then
+
+        	select
+                  mppw.id_medio_pago_pw
+                  into
+                  v_id_medio_pago
+          from obingresos.tmedio_pago_pw mppw
+          inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mppw.forma_pago_id
+          where   mppw.mop_code = 'CASH';
+
+        else
+        		v_id_medio_pago = v_parametros.id_medio_pago;
+        end if;
+
+
+		if (v_parametros.id_medio_pago is not null) then
 
           insert into vef.tventa_forma_pago(
             usuario_ai,
@@ -763,7 +786,7 @@ $body$
             v_parametros._id_usuario_ai,
             'activo',
             --v_parametros.id_forma_pago,
-            v_parametros.id_medio_pago,
+            v_id_medio_pago,--v_parametros.id_medio_pago,
             v_parametros.id_moneda,
             v_id_venta,
             v_parametros.monto_forma_pago,
@@ -778,7 +801,7 @@ $body$
         end if;
 
 --        if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
-		if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0 ) then
+		if (v_parametros.id_medio_pago_2 is not null ) then
          /*******************************Control para la tarjeta 2******************************/
 
          select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
@@ -2286,28 +2309,75 @@ $body$
                       d.id_sucursal = v_venta.id_sucursal;
                 v_nro_factura = v_dosificacion.nro_siguiente;
 
+                SELECT EXTRACT(YEAR FROM CAST( now()as date))
+                into v_año_actual ;
+
+                v_fecha_limite_emision = '31/12/'||v_año_actual;
+				--raise exception 'Aqi data %',v_fecha_limite_emision;
                 if (v_dosificacion is null) then
-                  raise exception 'No existe una dosificacion activa para emitir el Recibo';
+                	/*Aqui aumentamos para crear la dosificacion para los RO Computarizados*/
+                    --Esta dosificacion se creara anualmente
+                    insert into vef.tdosificacion_ro(
+                                                      id_sucursal,
+                                                      final,
+                                                      tipo,
+                                                      fecha_dosificacion,
+                                                      nro_siguiente,
+                                                      fecha_inicio_emi,
+                                                      fecha_limite,
+                                                      tipo_generacion,
+                                                      inicial,
+                                                      estado_reg,
+                                                      id_usuario_ai,
+                                                      fecha_reg,
+                                                      usuario_ai,
+                                                      id_usuario_reg,
+                                                      fecha_mod,
+                                                      id_usuario_mod
+                                                    ) values(
+                                                      v_venta.id_sucursal,
+                                                      null,
+                                                      'Recibo',
+                                                      now()::date,
+                                                      1,
+                                                      now()::date,
+                                                      v_fecha_limite_emision::date,
+                                                      'computarizada',
+                                                      1,
+                                                      'activo',
+                                                      v_parametros._id_usuario_ai,
+                                                      now(),
+                                                      v_parametros._nombre_usuario_ai,
+                                                      p_id_usuario,
+                                                      null,
+                                                      null
+
+                                                    )RETURNING id_dosificacion_ro into v_id_dosificacion_ro ;
+                	v_nro_factura = 1;
+                else
+                	 v_id_dosificacion_ro = v_dosificacion.id_dosificacion_ro;
+                    /***********************************************************************/
+                  --raise exception 'No existe una dosificacion activa para emitir el Recibo';
                 end if;
 
 
                 --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
                 if (exists(	select 1
                              from vef.tventa ven
-                             where ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                             where ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion_ro = v_id_dosificacion_ro)) then
                   raise exception 'El numero de recibo ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema';
                 end if;
 
                 --la factura de exportacion no altera la fecha
                 update vef.tventa  set
-                  id_dosificacion_ro = v_dosificacion.id_dosificacion_ro,
+                  id_dosificacion_ro = v_id_dosificacion_ro,
                   nro_factura = v_nro_factura,
                   fecha = v_fecha_venta
                 where id_venta = v_venta.id_venta;
 
                 update vef.tdosificacion_ro
                 set nro_siguiente = nro_siguiente + 1
-                where id_dosificacion_ro = v_dosificacion.id_dosificacion_ro;
+                where id_dosificacion_ro = v_id_dosificacion_ro;
               END IF;
 
 

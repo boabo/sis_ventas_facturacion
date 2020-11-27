@@ -711,7 +711,7 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
             },
                 type:'TextField',
                 filters:{pfiltro:'ven.cod_control',type:'string'},
-                grid:true,
+                grid:false,
                 form:false
         },
 	],

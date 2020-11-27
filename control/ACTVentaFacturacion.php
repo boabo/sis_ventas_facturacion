@@ -146,9 +146,22 @@ class ACTVentaFacturacion extends ACTbase{
 		$this->res=$this->objFunc->ObtenerCuentaBancaria($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
 	function verificarDeposito(){
  		$this->objFunc=$this->create('MODVentaFacturacion');
  		$this->res=$this->objFunc->verificarDeposito($this->objParam);
+ 		$this->res->imprimirRespuesta($this->res->generarJson());
+ 	}
+
+	function verificarDosificacionRoManual(){
+ 		$this->objFunc=$this->create('MODVentaFacturacion');
+ 		$this->res=$this->objFunc->verificarDosificacionRoManual($this->objParam);
+ 		$this->res->imprimirRespuesta($this->res->generarJson());
+ 	}
+
+	function insertarDosificacionRoManual(){
+ 		$this->objFunc=$this->create('MODVentaFacturacion');
+ 		$this->res=$this->objFunc->insertarDosificacionRoManual($this->objParam);
  		$this->res->imprimirRespuesta($this->res->generarJson());
  	}
 	/***********************************************************/

@@ -135,10 +135,16 @@ BEGIN
                         puve.nombre as nombre_punto_venta,
 
                         mp.id_medio_pago_pw::varchar,
-                        (select string_agg(pago.mop_code,''/'')
-                        FROM obingresos.tmedio_pago_pw pago
-                        inner join vef.tventa_forma_pago venta on venta.id_medio_pago = pago.id_medio_pago_pw
-                        where venta.id_venta =  ven.id_venta)::varchar as forma_pago,
+                        ( CASE
+                        	WHEN ven.id_deposito is not null then
+                        	''DEPO''
+                          else
+                           ( select string_agg(pago.mop_code,''/'')
+                            FROM obingresos.tmedio_pago_pw pago
+                            left join vef.tventa_forma_pago venta on venta.id_medio_pago = pago.id_medio_pago_pw
+                            where venta.id_venta =  ven.id_venta)
+                          END
+                        )::varchar as forma_pago,
                         fp.monto::varchar,
                         fp.numero_tarjeta::varchar,
                         fp.codigo_tarjeta::varchar,
@@ -324,6 +330,11 @@ BEGIN
                             from pxp.variable_global
                           where variable = ''ESTACION_inicio''
                         /*******************************************/
+                        /*Aumentando para verificar si se usa las nuevas instancias de pago o no*/
+                         union all
+                         select variable, valor
+                            from pxp.variable_global
+                          where variable = ''instancias_de_pago_nuevas''
 						 ';
 
 			--Definicion de la respuesta
@@ -700,6 +711,8 @@ BEGIN
               left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
               left join medico_usuario mu on mu.id_medico_usuario = ven.id_vendedor_medico
               inner join param.tmoneda moneda on moneda.id_moneda = ven.id_moneda_venta_recibo
+
+
              where  id_venta = '||v_parametros.id_venta::varchar;
 
 

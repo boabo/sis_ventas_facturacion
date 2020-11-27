@@ -162,7 +162,11 @@ DECLARE
     v_formato_factura	varchar;
     v_enviar_correo		varchar;
     v_correo_electronico	varchar;
-
+    v_cantidad_apertura	numeric;
+    v_existe_dosificacion	varchar;
+    v_fecha_limite_emision	varchar;
+    v_año_actual			varchar;
+    v_id_dosificacion_ro	integer;
 
 BEGIN
 
@@ -763,30 +767,32 @@ BEGIN
 
             if (v_parametros.id_punto_venta is not null) then
 
-                select acc.estado into v_apertura
+                select acc.estado,
+                		count(acc.estado)
+                into v_apertura,
+                	 v_cantidad_apertura
                 from vef.tapertura_cierre_caja acc
                 where acc.fecha_apertura_cierre = v_fecha and
                 acc.estado_reg = 'activo' and
-                acc.id_punto_venta = v_parametros.id_punto_venta::integer;
+                acc.id_punto_venta = v_parametros.id_punto_venta::integer and acc.estado = 'abierto'
+                group by acc.estado;
 
                 	if (v_apertura is null or v_apertura = '') then
                     	v_apertura = 'SIN APERTURA DE CAJA';
-                    else
-                    	v_apertura = v_apertura;
-
                     end if;
             else
-            	select acc.estado into v_apertura
+            	select acc.estado, count(acc.estado)
+                into v_apertura,
+                v_cantidad_apertura
                 from vef.tapertura_cierre_caja acc
                 where acc.fecha_apertura_cierre = v_fecha and
                 acc.estado_reg = 'activo' and
-                acc.id_sucursal = v_parametros.id_sucursal::integer;
+                acc.id_sucursal = v_parametros.id_sucursal::integer
+                and acc.estado = 'abierto'
+                group by acc.estado;
 
                 	if (v_apertura is null or v_apertura = '') then
                     	v_apertura = 'SIN APERTURA DE CAJA';
-                    else
-                    	v_apertura = v_apertura;
-
                     end if;
 
 
@@ -795,6 +801,7 @@ BEGIN
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Factura Computarizada modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'v_apertura',v_apertura::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_cantidad_apertura',v_cantidad_apertura::varchar);
 
             --Devuelve la respuesta
             return v_resp;
@@ -4063,12 +4070,13 @@ BEGIN
             where id_venta_forma_pago = v_parametros.id_venta_forma_pago_2;
         elsif (v_parametros.id_venta_forma_pago_2 is null and v_parametros.monto_forma_pago_2 is not null) then
 
-        	if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0) then
+        	if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0) then
 
 
-                select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
-                from obingresos.tinstancia_pago ip
-                where ip.id_instancia_pago = v_parametros.id_instancia_pago_2;
+                select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+                from obingresos.tmedio_pago_pw mp
+                inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                where mp.id_medio_pago_pw = v_parametros.id_medio_pago_2;
 
                 v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
                                                 v_codigo_tarjeta
@@ -4083,9 +4091,17 @@ BEGIN
                   end if;
                 end if;
 
+                if (left (v_parametros.mco,3)  <> '930' and v_parametros.mco <> '')then
+                    raise exception 'El numero del MCO tiene que empezar con 930';
+                    end if;
+
+                if (char_length(v_parametros.mco::varchar) <> 15 and v_parametros.mco <> '' ) then
+                    raise exception 'El numero del MCO debe tener 15 digitos obligatorios, 930000000012345';
+                    end if;
+
 
         	insert into vef.tventa_forma_pago (
-            id_instancia_pago,
+            id_medio_pago,
             id_moneda,
             monto_transaccion,
             monto,
@@ -4093,9 +4109,10 @@ BEGIN
             monto_mb_efectivo,
             id_venta,
             numero_tarjeta,
-            codigo_tarjeta
+            codigo_tarjeta,
+            id_usuario_reg
             )VALUES(
-            v_parametros.id_instancia_pago_2,
+            v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2,
             v_parametros.monto_forma_pago_2,
             0,
@@ -4103,7 +4120,8 @@ BEGIN
             0,
             v_parametros.id_venta,
             v_parametros.numero_tarjeta_2,
-            replace(upper(v_parametros.codigo_tarjeta_2),' ','')
+            replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
+            p_id_usuario
             );
 
         end if;
@@ -4151,12 +4169,13 @@ BEGIN
             'Modificado'
 			);
          /***********************************************************************/
-          if (v_parametros.id_instancia_pago is not null and v_parametros.id_instancia_pago != 0) then
+          if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
-                select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
-                from obingresos.tinstancia_pago ip
-                where ip.id_instancia_pago = v_parametros.id_instancia_pago;
+                select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+                from obingresos.tmedio_pago_pw mp
+                inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                where mp.id_medio_pago_pw = v_parametros.id_medio_pago;
 
                 v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
                                                 v_codigo_tarjeta
@@ -4174,7 +4193,9 @@ BEGIN
 
           update vef.tventa_forma_pago set
           id_moneda = v_parametros.id_moneda,
-          id_instancia_pago = v_parametros.id_instancia_pago,
+          id_medio_pago = v_parametros.id_medio_pago,
+          fecha_mod = now(),
+          id_usuario_mod = p_id_usuario,
           monto_transaccion = (case when (v_parametros.monto_forma_pago is not null) then
                 				v_parametros.monto_forma_pago
                                 else
@@ -4231,12 +4252,12 @@ BEGIN
                 );
              /***********************************************************************/
 
-             if (v_parametros.id_instancia_pago_2 is not null and v_parametros.id_instancia_pago_2 != 0) then
+             if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0) then
 
 
                 select ip.codigo_medio_pago, ip.codigo_forma_pago into v_codigo_tarjeta, v_codigo_fp
                 from obingresos.tinstancia_pago ip
-                where ip.id_instancia_pago = v_parametros.id_instancia_pago_2;
+                where ip.id_instancia_pago = v_parametros.id_medio_pago_2;
 
                 v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
                                                 v_codigo_tarjeta
@@ -4255,7 +4276,9 @@ BEGIN
 
               update vef.tventa_forma_pago set
               id_moneda = v_parametros.id_moneda_2,
-              id_instancia_pago = v_parametros.id_instancia_pago_2,
+              id_instancia_pago = v_parametros.id_medio_pago_2,
+              id_usuario_mod = p_id_usuario,
+              fecha_mod = now(),
               monto_transaccion = (case when (v_parametros.monto_forma_pago_2 is not null) then
                                     v_parametros.monto_forma_pago_2
                                     else
@@ -4326,6 +4349,8 @@ BEGIN
 
             update vef.tventa_forma_pago set
               monto = v_monto_fp,
+              id_usuario_mod = p_id_usuario,
+              fecha_mod = now(),
               cambio = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
                 (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
                         else
@@ -4457,6 +4482,113 @@ BEGIN
                 v_resp = pxp.f_agrega_clave(v_resp,'fecha_deposito',v_fecha_deposito::varchar);
                 v_resp = pxp.f_agrega_clave(v_resp,'monto_deposito',v_monto_deposito::varchar);
 
+                --Devuelve la respuesta
+                return v_resp;
+
+            end;
+
+            /*********************************
+        #TRANSACCION:  'VF_VERIDOSMAN_IME'
+        #DESCRIPCION:	Verificar Dosificacion Manual
+        #AUTOR:		ivaldivia
+        #FECHA:		23-11-2020 15:40:57
+        ***********************************/
+
+        elsif(p_transaccion='VF_VERIDOSMAN_IME')then
+
+            begin
+
+              select pv.id_sucursal
+              		 into
+                     v_id_sucursal
+              from vef.tpunto_venta pv
+              where pv.id_punto_venta = v_parametros.id_punto_venta;
+
+
+              select d.* into v_dosificacion
+              from vef.tdosificacion_ro d
+              where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_parametros.fecha_apertura::date and
+                    d.fecha_limite >= v_parametros.fecha_apertura::date and d.tipo = 'Recibo' and d.tipo_generacion = 'manual' and
+                    d.id_sucursal = v_id_sucursal;
+
+              if (v_dosificacion is null) then
+              		v_existe_dosificacion = 'no';
+              else
+              		v_existe_dosificacion = 'si';
+              end if;
+
+                --Definicion de la respuesta
+                v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Datos del deposito');
+                v_resp = pxp.f_agrega_clave(v_resp,'v_existe_dosificacion',v_existe_dosificacion::varchar);
+                --Devuelve la respuesta
+                return v_resp;
+
+            end;
+
+
+        /*********************************
+        #TRANSACCION:  'VF_INSDOSMAN_IME'
+        #DESCRIPCION:	Verificar Dosificacion Manual
+        #AUTOR:		ivaldivia
+        #FECHA:		23-11-2020 15:40:57
+        ***********************************/
+
+        elsif(p_transaccion='VF_INSDOSMAN_IME')then
+
+            begin
+
+                 select pv.id_sucursal
+                     into
+                     v_id_sucursal
+                from vef.tpunto_venta pv
+                where pv.id_punto_venta = v_parametros.id_punto_venta;
+
+              	SELECT EXTRACT(YEAR FROM CAST( now()as date))
+                into v_año_actual ;
+
+                v_fecha_limite_emision = '31/12/'||v_año_actual;
+                	/*Aqui aumentamos para crear la dosificacion para los RO Manuales*/
+                    --Esta dosificacion se creara anualmente
+                    insert into vef.tdosificacion_ro(
+                                                      id_sucursal,
+                                                      final,
+                                                      tipo,
+                                                      fecha_dosificacion,
+                                                      nro_siguiente,
+                                                      fecha_inicio_emi,
+                                                      fecha_limite,
+                                                      tipo_generacion,
+                                                      inicial,
+                                                      estado_reg,
+                                                      id_usuario_ai,
+                                                      fecha_reg,
+                                                      usuario_ai,
+                                                      id_usuario_reg,
+                                                      fecha_mod,
+                                                      id_usuario_mod
+                                                    ) values(
+                                                      v_id_sucursal,
+                                                      v_parametros.numero_final::integer,
+                                                      'Recibo',
+                                                      v_parametros.fecha_apertura::date,
+                                                      1,
+                                                      v_parametros.fecha_apertura::date,
+                                                      v_fecha_limite_emision::date,
+                                                      'manual',
+                                                      v_parametros.numero_inicial::integer,
+                                                      'activo',
+                                                      v_parametros._id_usuario_ai,
+                                                      now(),
+                                                      v_parametros._nombre_usuario_ai,
+                                                      p_id_usuario,
+                                                      null,
+                                                      null
+
+                                                    )RETURNING id_dosificacion_ro into v_id_dosificacion_ro ;
+
+
+                --Definicion de la respuesta
+                v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Registro exitoso');
                 --Devuelve la respuesta
                 return v_resp;
 
