@@ -130,7 +130,7 @@ class RAperturaCierrePDF extends  ReportePDF {
 
         $this->SetFont('','B',11);
         $this->Cell(80,5,'TOTAL EFECTIVO EN '.$this->datos[0]['cod_moneda_local'],1,0,'C');
-        $this->Cell(100,5,number_format((number_format($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'],2)*number_format($this->datos[0]['tipo_cambio'],2)) + number_format($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'],2),2).' '.$this->datos[0]['cod_moneda_local'] ,1,1,'C');
+        $this->Cell(100,5,number_format(($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'])*$this->datos[0]['tipo_cambio'],2) + number_format($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'],2),2).' '.$this->datos[0]['cod_moneda_local'] ,1,1,'C');
         /***********************************************/
 
         $this->SetTextColor();
