@@ -117,7 +117,7 @@ class RAperturaCierrePDF extends  ReportePDF {
         /*Auemntando para total efectivo en BOlivivanos*/
 
 
-        $total_ventas = number_format((number_format($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'],2)*number_format($this->datos[0]['tipo_cambio'],2)) + number_format($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'],2),2);
+        $total_ventas = number_format((($this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['efectivo_ventas_me'] + $this->datos[0]['monto_ca_recibo_me'])*$this->datos[0]['tipo_cambio']) + ($this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml']),2);
         $total_arqueo = number_format(($this->datos[0]['arqueo_moneda_extranjera'] * $this->datos[0]['tipo_cambio']) + $this->datos[0]['arqueo_moneda_local'] ,2);
 
         $diferenca = (str_replace(',', '', $total_ventas) - str_replace(',', '', $total_arqueo));
