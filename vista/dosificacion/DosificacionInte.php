@@ -95,7 +95,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_sucursal', 'nombre', 'codigo'],
                     remoteSort: true,
-                    baseParams: {tipo_usuario: 'cajero',par_filtro: 'suc.nombre#suc.codigo'}
+                    baseParams: {par_filtro: 'suc.nombre#suc.codigo'}
                 }),
                 valueField: 'id_sucursal',
                 gdisplayField : 'nombre_sucursal',
@@ -618,7 +618,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             form:false
         }
     ],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Dosificación',
 	ActSave:'../../sis_ventas_facturacion/control/Dosificacion/insertarDosificacionExter',
 	ActDel:'../../sis_ventas_facturacion/control/Dosificacion/eliminarDosificacion',
@@ -659,7 +659,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         {name:'nombre_sistema', type: 'string'},
         {name:'leyenda', type: 'string'},
         {name:'rnd', type: 'string'}
-		
+
 	],
 	sortInfo:{
 		field: 'dias_restante',
@@ -782,5 +782,3 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
 	}
 )
 </script>
-		
-		
