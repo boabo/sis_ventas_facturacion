@@ -382,6 +382,8 @@ $body$
                                    ''''::varchar as tipo_factura,
                                    v.razon_cliente,
                                    ''''::varchar as boleto,
+                                   ''''::varchar as localizador,
+                                   ''''::varchar as codigo_auxiliar,
                                    v.observacion::varchar as ruta,
                                    ''''::varchar as conceptos,';
 
