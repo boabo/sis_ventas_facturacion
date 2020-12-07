@@ -47,6 +47,7 @@ $body$
     v_filtro_fecha_hasta	varchar;
     v_filtro_id_punto_venta	varchar;
     v_filtro_id_concepto	varchar;
+    v_moneda_base			varchar;
 
   BEGIN
 
@@ -71,6 +72,7 @@ $body$
             inner join vef.tsucursal_moneda sm on sm.id_sucursal = s.id_sucursal
             inner join param.tmoneda mon on mon.id_moneda = sm.id_moneda
           where pv.id_punto_venta = v_parametros.id_punto_venta;
+
 
           if ( v_cod_moneda = 'USD') then
             v_select = 'select ''CASH USD''::varchar,''4MONEDA1''::varchar as tipo UNION ALL
@@ -150,6 +152,7 @@ $body$
                 order by 2,1';
 
         --Devuelve la respuesta
+        raise notice '%',v_consulta;
         return v_consulta;
 
       end;
@@ -332,6 +335,7 @@ $body$
                       v.observaciones::varchar as boleto,
                       /*Aumentando el Localizador*/
                       ''''::varchar as localizador,
+                      ''''::varchar as codigo_auxiliar,
                       /***************************/
                       ''''::varchar as ruta,
                       ''''::varchar as conceptos,
@@ -558,6 +562,7 @@ $body$
              b.nro_boleto::varchar as boleto,
              /*Aumentando para el localizador*/
              b.localizador::varchar as localizador,
+             (aux.codigo_auxiliar || ''-'' || aux.nombre_auxiliar)::varchar as codigo_auxiliar,
              /********************************/
              b.ruta_completa as ruta ,
              ''''::varchar as conceptos,
@@ -622,13 +627,15 @@ $body$
              left join bol_impuesto imp
                 on imp.id_boleto = b.id_boleto_amadeus
 
+        	 left join obingresos.tboleto_amadeus_forma_pago formpa on formpa.id_boleto_amadeus = b.id_boleto_amadeus
+             left join conta.tauxiliar aux on aux.id_auxiliar = formpa.id_auxiliar
 
              where b.estado_reg = ''activo'' and b.estado=''revisado'' and ' || v_filtro || ' and
              (b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' ||v_parametros.fecha_hasta || ''')
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar '|| v_group_by || ')
              order by fecha,boleto,correlativo_venta';
         raise notice '%',v_consulta;
         --Devuelve la respuesta
@@ -1212,6 +1219,28 @@ $body$
         return v_consulta;
 
       end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_MONBA_SEL'
+ 	#DESCRIPCION:	Moneda Base
+ 	#AUTOR:		admin
+ 	#FECHA:		01-12-2020 14:47:00
+	***********************************/
+
+    elsif(p_transaccion='VF_MONBA_SEL')then
+
+      begin
+
+        v_consulta:='select mon.codigo_internacional
+                    from param.tmoneda mon
+                    where mon.tipo_moneda = ''base''';
+
+        return v_consulta;
+
+      end;
+
+
+
 
     else
 

@@ -23,6 +23,9 @@ class ACTReportesVentas extends ACTbase{
 		$this->objFunc=$this->create('MODReportesVentas');
 		$this->res2=$this->objFunc->listarReporteDetalle($this->objParam);
 
+		$this->objFunc=$this->create('MODReportesVentas');
+		$this->res3=$this->objFunc->listarMonedaBase($this->objParam);
+
 
 		//$this->objFunc=$this->create('MODReportesVentas');
 		//$this->res3=$this->objFunc->listarReporteResumen($this->objParam);
@@ -35,7 +38,7 @@ class ACTReportesVentas extends ACTbase{
 		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
 		$this->objParam->addParametro('conceptos',$this->res->datos);
 		$this->objParam->addParametro('datos',$this->res2->datos);
-		//$this->objParam->addParametro('resumen',$this->res3->datos);
+		$this->objParam->addParametro('base',$this->res3->datos);
 
 		//Instancia la clase de excel
 		$this->objReporteFormato=new RResumenVentasBoaXLS($this->objParam);

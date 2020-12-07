@@ -35,6 +35,7 @@ class MODReportesVentas extends MODbase{
 		$this->captura('pasajero','varchar');
 		$this->captura('boleto','varchar');
 		$this->captura('pnr','varchar');
+		$this->captura('codigo_auxiliar','varchar');
 		$this->captura('ruta','varchar');
 		$this->captura('conceptos','varchar');
 		$this->captura('forma_pago','text');
@@ -276,6 +277,26 @@ class MODReportesVentas extends MODbase{
 		$this->ejecutarConsulta();
     //var_dump($this->respuesta);
 
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarMonedaBase(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_repventa_sel';
+		$this->transaccion='VF_MONBA_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->count =false;
+
+		//Definicion de la lista del resultado del query
+		$this->captura('moneda','varchar');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+
+
+		$this->ejecutarConsulta();
+		//var_dump("AQUI LLEGA 22222",$this->respuesta);exit;
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

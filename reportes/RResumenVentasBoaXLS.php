@@ -100,7 +100,7 @@ class RResumenVentasBoaXLS
 	}
 
 
-	function imprimeCabecera ($sheet, $resumen = 'no',$objFecha = '') {
+	function imprimeCabecera ($sheet, $resumen = 'no',$objFecha = '',$mone_base) {
 		$styleTitulos = array(
 				'font'  => array(
 						'bold'  => true,
@@ -157,19 +157,19 @@ class RResumenVentasBoaXLS
 		// $objDrawing->setWorksheet($this->docexcel->getActiveSheet());
 
 		$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,1,'SUCURSAL' );
-		$this->docexcel->getActiveSheet()->getStyle('A1:V1')->applyFromArray($styleTitulos);
-		$this->docexcel->getActiveSheet()->mergeCells('A1:K1');
+		$this->docexcel->getActiveSheet()->getStyle('A1:W1')->applyFromArray($styleTitulos);
+		$this->docexcel->getActiveSheet()->mergeCells('A1:L1');
 
 		$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'DESDE: '.$this->objParam->getParametro('fecha_desde').'  '.'HASTA: '.$this->objParam->getParametro('fecha_hasta'));
-		$this->docexcel->getActiveSheet()->getStyle('A2:V2')->applyFromArray($styleTitulos);
-		$this->docexcel->getActiveSheet()->mergeCells('A2:K2');
+		$this->docexcel->getActiveSheet()->getStyle('A2:W2')->applyFromArray($styleTitulos);
+		$this->docexcel->getActiveSheet()->mergeCells('A2:L2');
 
 		$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'RESUMEN DE VENTAS');
-		$this->docexcel->getActiveSheet()->getStyle('A3:V3')->applyFromArray($styleTitulos);
-		$this->docexcel->getActiveSheet()->mergeCells('A3:K3');
+		$this->docexcel->getActiveSheet()->getStyle('A3:W3')->applyFromArray($styleTitulos);
+		$this->docexcel->getActiveSheet()->mergeCells('A3:L3');
 
-		$this->docexcel->getActiveSheet()->getStyle('A4:K4')->applyFromArray($styleTitulos);
-		$this->docexcel->getActiveSheet()->mergeCells('A4:K4');
+		$this->docexcel->getActiveSheet()->getStyle('A4:L4')->applyFromArray($styleTitulos);
+		$this->docexcel->getActiveSheet()->mergeCells('A4:L4');
 
 
 		$this->docexcel->getActiveSheet()->setCellValue('A5','NRO.');
@@ -188,12 +188,13 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->setCellValue('N5','CTE USD');
 		$this->docexcel->getActiveSheet()->setCellValue('O5','MCO USD');
 		$this->docexcel->getActiveSheet()->setCellValue('P5','OTRO USD');
-		$this->docexcel->getActiveSheet()->setCellValue('Q5','CASH BOB');
-		$this->docexcel->getActiveSheet()->setCellValue('R5','CC BOB');
-		$this->docexcel->getActiveSheet()->setCellValue('S5','CTE BOB');
-		$this->docexcel->getActiveSheet()->setCellValue('T5','MCO BOB');
-		$this->docexcel->getActiveSheet()->setCellValue('U5','OTRO BOB');
+		$this->docexcel->getActiveSheet()->setCellValue('Q5','CASH '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('R5','CC '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('S5','CTE '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('T5','MCO '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('U5','OTRO '.$mone_base[0]['moneda']);
 		$this->docexcel->getActiveSheet()->setCellValue('V5','FORMA PAGO');
+		$this->docexcel->getActiveSheet()->setCellValue('W5','DESC AUX');
 
 		$this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(7);
 		$this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(10);
@@ -217,10 +218,11 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->getColumnDimension('T')->setWidth(20);
 		$this->docexcel->getActiveSheet()->getColumnDimension('U')->setWidth(20);
 		$this->docexcel->getActiveSheet()->getColumnDimension('V')->setWidth(30);
+		$this->docexcel->getActiveSheet()->getColumnDimension('W')->setWidth(30);
 
 
-		$this->docexcel->getActiveSheet()->getStyle('A5:V5')->applyFromArray($styleTitulosTabla);
-		$this->docexcel->getActiveSheet()->getStyle('A5:V5')->getAlignment()->setWrapText(true);
+		$this->docexcel->getActiveSheet()->getStyle('A5:W5')->applyFromArray($styleTitulosTabla);
+		$this->docexcel->getActiveSheet()->getStyle('A5:W5')->getAlignment()->setWrapText(true);
 
 		// $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(7);
 		// $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(7);
@@ -329,6 +331,8 @@ class RResumenVentasBoaXLS
 
 		$datos = $this->objParam->getParametro('datos');
 		$config = $this->objParam->getParametro('conceptos');
+		$base = $this->objParam->getParametro('base');
+
 
 		$conceptos = array();
 		for ($i = 0;$i < count($config);$i++) {
@@ -336,7 +340,7 @@ class RResumenVentasBoaXLS
 		}
 
 		//Imprime cabecera de resumen
-		$this->imprimeCabecera(0,'si');
+		$this->imprimeCabecera(0,'si','',$base);
 
 		$fila = 5;
 		$fila_general = 5;
@@ -430,6 +434,7 @@ class RResumenVentasBoaXLS
 			$this->docexcel->getActiveSheet()->setCellValue('T'.$fila,$value['monto_mco_mb']);
 			$this->docexcel->getActiveSheet()->setCellValue('U'.$fila,$value['monto_otro_mb']);
 			$this->docexcel->getActiveSheet()->setCellValue('V'.$fila,$value['forma_pago']);
+			$this->docexcel->getActiveSheet()->setCellValue('W'.$fila,$value['codigo_auxiliar']);
 
 
 			if ($value['mensaje_error'] != '') {
@@ -452,7 +457,7 @@ class RResumenVentasBoaXLS
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('I'.$fila_general,$value['moneda_emision']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('K'.$fila_general,$value['neto']);
       $this->docexcel->setActiveSheetIndex(0)->setCellValue('J'.$fila_general,$value['comision']);
-			$this->docexcel->getActiveSheet()->getStyle("A$fila_general:U$fila_general")->applyFromArray($fondoContenido);
+			$this->docexcel->getActiveSheet()->getStyle("A$fila_general:W$fila_general")->applyFromArray($fondoContenido);
 
 			//$this->docexcel->setActiveSheetIndex($sheetId);
 
@@ -554,7 +559,7 @@ class RResumenVentasBoaXLS
 		//TOTALES RESUMEN
 		$total = $fila_general + 1;
 		$this->docexcel->setActiveSheetIndex(0)->setCellValue('A'.($fila_general + 1),'TOTALES');
-		$this->docexcel->getActiveSheet()->getStyle("A$total:U$total")->applyFromArray($styleTotal);
+		$this->docexcel->getActiveSheet()->getStyle("A$total:V$total")->applyFromArray($styleTotal);
 		$this->docexcel->getActiveSheet()->mergeCells("A$total:I$total");
 
 		for ($i=6; $i <= $fila_general; $i++) {

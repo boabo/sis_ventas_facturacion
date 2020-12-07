@@ -27,7 +27,6 @@ $body$
     v_parametros  		record;
     v_nombre_funcion   	text;
     v_resp				varchar;
-    v_existencia		integer;
 
   BEGIN
 
@@ -44,15 +43,6 @@ $body$
     if(p_transaccion='VF_PUVE_SEL')then
 
       begin
-      	select count (usu.id_depto)
-        into
-        v_existencia
-        from param.tdepto_usuario usu
-        inner join param.tdepto depto on depto.id_depto = usu.id_depto
-        where usu.id_usuario = p_id_usuario and depto.codigo like 'VE-%';
-
-      	if (v_existencia > 0) then
-
         --Sentencia de la consulta
         v_consulta:='select
 						puve.id_punto_venta,
@@ -77,42 +67,10 @@ $body$
 						inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
 				        inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
-
-                        where suc.id_depto = ANY (select usu.id_depto
-                                                  from param.tdepto_usuario usu
-                                                  inner join param.tdepto depto on depto.id_depto = usu.id_depto
-                                                  where usu.id_usuario = '||p_id_usuario||' and depto.codigo like ''VE-%'')  and ';
-                        v_consulta:=v_consulta||v_parametros.filtro;
-
-        else
-        v_consulta:='select
-                        puve.id_punto_venta,
-                        puve.estado_reg,
-                        puve.id_sucursal,
-                        puve.nombre,
-                        puve.descripcion,
-                        puve.id_usuario_reg,
-                        puve.fecha_reg,
-                        puve.id_usuario_ai,
-                        puve.usuario_ai,
-                        puve.id_usuario_mod,
-                        puve.fecha_mod,
-                        usu1.cuenta as usr_reg,
-                        usu2.cuenta as usr_mod,
-                        puve.codigo,
-                        puve.habilitar_comisiones,
-                        suc.formato_comprobante,
-                        puve.tipo,
-                        suc.enviar_correo
-                        from vef.tpunto_venta puve
-                        inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
-                        left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
-                        inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
                         where  ';
 
         --Definicion de la respuesta
-          v_consulta:=v_consulta||v_parametros.filtro;
-        end if;
+        v_consulta:=v_consulta||v_parametros.filtro;
         v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
         raise notice '%',v_consulta;
         --Devuelve la respuesta
@@ -170,24 +128,6 @@ $body$
     elsif(p_transaccion='VF_PUVE_CONT')then
 
       begin
-      	select count (usu.id_depto)
-        into
-        v_existencia
-        from param.tdepto_usuario usu
-         where usu.id_usuario = p_id_usuario and depto.codigo like 'VE-%';
-
-        if (v_existencia > 0) then
-        v_consulta:='select count(id_punto_venta)
-					    from vef.tpunto_venta puve
-					    inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
-					    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
-                       where suc.id_depto = ANY (select usu.id_depto
-                                                  from param.tdepto_usuario usu
-                                                  inner join param.tdepto depto on depto.id_depto = usu.id_depto
-                                                  where usu.id_usuario = '||p_id_usuario||' and depto.codigo like ''VE-%'')  and ';
-        v_consulta:=v_consulta||v_parametros.filtro;
-        else
         --Sentencia de la consulta de conteo de registros
         v_consulta:='select count(id_punto_venta)
 					    from vef.tpunto_venta puve
@@ -198,7 +138,7 @@ $body$
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
-		end if;
+
         --Devuelve la respuesta
         return v_consulta;
 
