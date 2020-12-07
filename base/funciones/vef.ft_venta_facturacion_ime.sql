@@ -167,6 +167,7 @@ DECLARE
     v_fecha_limite_emision	varchar;
     v_año_actual			varchar;
     v_id_dosificacion_ro	integer;
+    v_existencia			numeric;
 
 BEGIN
 
@@ -4021,26 +4022,37 @@ BEGIN
 
   	BEGIN
 
-            select 'administrador'::varchar as rol into v_tipo_usuario
-            from segu.tusuario_rol usurol
-            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 190 or usurol.id_rol = 1);
+        select count (usu.id_depto)
+        into
+        v_existencia
+        from param.tdepto_usuario usu
+        where usu.id_usuario = p_id_usuario;
 
-        if (v_tipo_usuario is null) then
+        IF (v_existencia > 0) THEN
+        	select 'administrador'::varchar as rol into v_tipo_usuario;
+        else
 
-            if (v_parametros.vista = 'cajero') then
+        select 'administrador'::varchar as rol into v_tipo_usuario
+        from segu.tusuario_rol usurol
+        where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 190 or usurol.id_rol = 1);
 
-            select 'cajero'::varchar as rol into v_tipo_usuario
-            from segu.tusuario_rol usurol
-            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 163 OR usurol.id_rol = 268);
+          if (v_tipo_usuario is null) then
 
-            elsif (v_parametros.vista = 'counter') then
+              if (v_parametros.vista = 'cajero') then
 
-            select 'vendedor'::varchar as rol into v_tipo_usuario
-            from segu.tusuario_rol usurol
-            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 189 OR usurol.id_rol = 267);
+              select 'cajero'::varchar as rol into v_tipo_usuario
+              from segu.tusuario_rol usurol
+              where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 163 OR usurol.id_rol = 268);
 
+              elsif (v_parametros.vista = 'counter') then
+
+              select 'vendedor'::varchar as rol into v_tipo_usuario
+              from segu.tusuario_rol usurol
+              where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 189 OR usurol.id_rol = 267);
+
+              end if;
           end if;
-        end if;
+    	end if;
 
       --Definition of the response
       	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Tipo Usuario');

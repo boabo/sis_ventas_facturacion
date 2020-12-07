@@ -34,23 +34,24 @@ class MODReportesVentas extends MODbase{
 		$this->captura('tipo_factura','varchar');
 		$this->captura('pasajero','varchar');
 		$this->captura('boleto','varchar');
+		$this->captura('pnr','varchar');
 		$this->captura('ruta','varchar');
 		$this->captura('conceptos','varchar');
 		$this->captura('forma_pago','text');
 		$this->captura('monto_cash_usd','numeric');
-        $this->captura('monto_cc_usd','numeric');
-        $this->captura('monto_cte_usd','numeric');
-        $this->captura('monto_mco_usd','numeric');
-        $this->captura('monto_otro_usd','numeric');
-        $this->captura('monto_cash_mb','numeric');
-        $this->captura('monto_cc_mb','numeric');
-        $this->captura('monto_cte_mb','numeric');
-        $this->captura('monto_mco_mb','numeric');
-        $this->captura('monto_otro_mb','numeric');
+    $this->captura('monto_cc_usd','numeric');
+    $this->captura('monto_cte_usd','numeric');
+    $this->captura('monto_mco_usd','numeric');
+    $this->captura('monto_otro_usd','numeric');
+    $this->captura('monto_cash_mb','numeric');
+    $this->captura('monto_cc_mb','numeric');
+    $this->captura('monto_cte_mb','numeric');
+    $this->captura('monto_mco_mb','numeric');
+    $this->captura('monto_otro_mb','numeric');
 		$this->captura('neto','numeric');
 		$this->captura('precios_detalles','varchar');
-        $this->captura('mensaje_error','varchar');
-        $this->captura('comision','numeric');
+    $this->captura('mensaje_error','varchar');
+    $this->captura('comision','numeric');
 
 
 		//Ejecuta la instruccion
@@ -147,6 +148,133 @@ class MODReportesVentas extends MODbase{
 
 
 		$this->ejecutarConsulta();
+		//var_dump("AQUI LLEGA",$this->respuesta);exit;
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarResumenFacturaComputarizada(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_repventa_sel';
+		$this->transaccion='VF_REPRESUCOMP_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		$this->setParametro('formato_reporte','formato_reporte','varchar');
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
+		$this->setParametro('id_concepto','id_concepto','integer');
+		$this->setParametro('desde','desde','varchar');
+		$this->setParametro('hasta','hasta','varchar');
+
+		$this->captura('conceptos','varchar');
+		$this->captura('total_precio','numeric');
+		$this->captura('nombre','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+    //var_dump($this->respuesta);
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarFacturaComputarizadaDetalle(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_repventa_sel';
+		$this->transaccion='VF_REPFACTDET_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		//$this->setCount(false);
+
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
+		$this->setParametro('id_concepto','id_concepto','integer');
+		$this->setParametro('desde','desde','varchar');
+		$this->setParametro('hasta','hasta','varchar');
+		$this->setCount(false);
+
+		$this->captura('id_venta','integer');
+		$this->captura('total_venta','varchar');
+		$this->captura('fecha','varchar');
+		$this->captura('conceptos','varchar');
+		$this->captura('nombre','varchar');
+		$this->captura('codigo','varchar');
+		$this->captura('observaciones','varchar');
+		$this->captura('nro_factura','integer');
+		$this->captura('cantidad','varchar');
+		$this->captura('precio','varchar');
+		$this->captura('exento','varchar');
+		$this->captura('comision','varchar');
+		$this->captura('total_precio','varchar');
+		$this->captura('moneda','varchar');
+		$this->captura('num_tarjeta','varchar');
+		$this->captura('total_monto','varchar');
+		$this->captura('forma_pago','varchar');
+		$this->captura('medio_pago','varchar');
+		$this->captura('lugar','varchar');
+		$this->captura('pais','varchar');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+    //var_dump($this->respuesta);exit;
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+	function listarFacturaComputarizadaCabecera(){
+
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_repventa_sel';
+		$this->transaccion='VF_REPFACTCABE_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		//$this->setCount(false);
+
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
+		$this->setParametro('id_concepto','id_concepto','integer');
+		$this->setParametro('desde','desde','varchar');
+		$this->setParametro('hasta','hasta','varchar');
+		$this->setCount(false);
+
+		$this->captura('nombre','varchar');
+		$this->captura('codigo','varchar');
+		$this->captura('lugar','varchar');
+		$this->captura('pais','varchar');
+
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+    //var_dump($this->respuesta);
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarFacturaConcepto(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_repventa_sel';
+		$this->transaccion='VF_REPFACTCON_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		//$this->setCount(false);
+
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
+		$this->setParametro('id_concepto','id_concepto','integer');
+		$this->setParametro('desde','desde','varchar');
+		$this->setParametro('hasta','hasta','varchar');
+		$this->setCount(false);
+
+		$this->captura('concepto','varchar');
+		$this->captura('total_precio','numeric');
+		$this->captura('nro_factura','varchar');
+		$this->captura('nroaut','varchar');
+		$this->captura('id_punto_venta','int4');
+		$this->captura('fecha','varchar');
+		$this->captura('nombre','varchar');
+		$this->captura('id_venta','integer');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+    //var_dump($this->respuesta);
 
 		//Devuelve la respuesta
 		return $this->respuesta;

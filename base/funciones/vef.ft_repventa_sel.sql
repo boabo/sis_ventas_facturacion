@@ -43,6 +43,11 @@ $body$
     v_filtro_cajero_factura		varchar;
     v_usuario			varchar;
 
+    v_filtro_fecha_desde	varchar;
+    v_filtro_fecha_hasta	varchar;
+    v_filtro_id_punto_venta	varchar;
+    v_filtro_id_concepto	varchar;
+
   BEGIN
 
     v_nombre_funcion = 'vef.ft_repventa_sel';
@@ -69,10 +74,10 @@ $body$
 
           if ( v_cod_moneda = 'USD') then
             v_select = 'select ''CASH USD''::varchar,''4MONEDA1''::varchar as tipo UNION ALL
-            		    select ''CC USD''::varchar ''4MONEDA1''::varchar as tipo UNION ALL
-                    	select ''CTE USD''::varchar ''4MONEDA1''::varchar as tipo UNION ALL
-                    	select ''MCO USD''::varchar ''4MONEDA1''::varchar as tipo UNION ALL
-                    			select ''OTRO USD''::varchar ''4MONEDA1''::varchar as tipo';
+            		    select ''CC USD''::varchar, ''4MONEDA1''::varchar as tipo UNION ALL
+                    	select ''CTE USD''::varchar, ''4MONEDA1''::varchar as tipo UNION ALL
+                    	select ''MCO USD''::varchar, ''4MONEDA1''::varchar as tipo UNION ALL
+                    			select ''OTRO USD''::varchar, ''4MONEDA1''::varchar as tipo';
           else
             v_select = 'select ''CASH USD''::varchar,''4MONEDA1''::varchar as tipo UNION ALL
             			select ''CC USD''::varchar, ''4MONEDA1''::varchar as tipo UNION ALL
@@ -325,6 +330,9 @@ $body$
                       v.tipo_factura::varchar,
                       cli.nombre_factura,
                       v.observaciones::varchar as boleto,
+                      /*Aumentando el Localizador*/
+                      ''''::varchar as localizador,
+                      /***************************/
                       ''''::varchar as ruta,
                       ''''::varchar as conceptos,
                       ';
@@ -548,6 +556,9 @@ $body$
              ''''::varchar as tipo_factura,
              b.pasajero::varchar as nombre_factura,
              b.nro_boleto::varchar as boleto,
+             /*Aumentando para el localizador*/
+             b.localizador::varchar as localizador,
+             /********************************/
              b.ruta_completa as ruta ,
              ''''::varchar as conceptos,
              ';
@@ -617,7 +628,7 @@ $body$
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador '|| v_group_by || ')
              order by fecha,boleto,correlativo_venta';
         raise notice '%',v_consulta;
         --Devuelve la respuesta
@@ -935,6 +946,273 @@ $body$
 
       end;
 
+    /*********************************
+ 	#TRANSACCION:  'VF_REPFACTDET_SEL'
+ 	#DESCRIPCION:	Reporte de Facturacion Computarizada
+ 	#AUTOR:		admin
+ 	#FECHA:		01-12-2020 14:47:00
+	***********************************/
+
+    elsif(p_transaccion='VF_REPFACTDET_SEL')then
+
+      begin
+       	--raise exception 'Aqui llega datos %',v_parametros.desde;
+        if (v_parametros.desde != '' || v_parametros.desde is not null) then
+        	v_filtro_fecha_desde = 'vent.fecha >= '''||v_parametros.desde||''' ';
+        else
+        	v_filtro_fecha_desde = '0=0';
+        end if;
+
+        if (v_parametros.hasta != '' || v_parametros.hasta is not null) then
+        	v_filtro_fecha_hasta = 'vent.fecha <= '''||v_parametros.hasta||''' ';
+        else
+        	v_filtro_fecha_hasta = '0=0';
+        end if;
+
+        if (v_parametros.id_punto_venta is not null) then
+        	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
+        else
+        	v_filtro_id_punto_venta = '0=0';
+        end if;
+
+         if (v_parametros.id_concepto is not null) then
+        	v_filtro_id_concepto = 'det.id_producto = '||v_parametros.id_concepto||'';
+        else
+        	v_filtro_id_concepto = '0=0';
+        end if;
+
+        v_consulta:='
+                       WITH  cabecera AS (select vent.id_venta,
+                                                 vent.total_venta,
+                                                 vent.fecha,
+                                                 list (ingas.desc_ingas) as conceptos ,
+                                                 pv.nombre ,
+                                                 pv.codigo,
+                                                 vent.observaciones,
+                                                 vent.nro_factura,
+                                                 list (det.cantidad::Varchar) cantidad,
+                                                 list (det.precio::varchar) as precio,
+                                                 vent.excento::varchar as exento,
+                                                 vent.comision::varchar as comision,
+                                                 list ((det.cantidad*det.precio)::Varchar) total_precio,
+                                                 lug.nombre as lugar,
+                                                 lug.id_lugar_fk
+                                          from vef.tventa vent
+                                          inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
+                                          inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
+                                          inner join vef.tsucursal suc on suc.id_sucursal = vent.id_sucursal
+                                          inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
+                                          where '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                                          group by vent.id_venta, pv.nombre, pv.codigo, lug.nombre,lug.id_lugar_fk),
+
+                      detalle as (
+                      select vent.id_venta,
+                             list (mon.codigo_internacional) AS moneda,
+                             list (fp.numero_tarjeta) as num_tarjeta,
+                             list (fp.monto_mb_efectivo::varchar) as total_monto,
+                             list (fpw.fop_code) as forma_pago,
+                             list (mp.mop_code) as medio_pago
+                      from vef.tventa vent
+                      inner join vef.tventa_forma_pago fp on fp.id_venta = vent.id_venta
+                      inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
+                      inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                      inner join obingresos.tforma_pago_pw fpw on fpw.id_forma_pago_pw = mp.forma_pago_id
+                      where '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
+
+                      group by vent.id_venta)
+
+                      select ca.id_venta::integer,
+                      	     ca.total_venta::varchar,
+                             to_char(ca.fecha,''DD/MM/YYYY'')::varchar as fecha,
+                             ca.conceptos::varchar,
+                             ca.nombre::varchar,
+                             ca.codigo::varchar,
+                             ca.observaciones::varchar,
+                             ca.nro_factura::integer,
+                             ca.cantidad::varchar,
+                             ca.precio::varchar,
+                             ca.exento,
+                             ca.comision,
+                             ca.total_precio::varchar,
+                             det.moneda::varchar,
+                             det.num_tarjeta::varchar,
+                             det.total_monto::varchar,
+                             det.forma_pago::varchar,
+                             det.medio_pago::varchar,
+                             ca.lugar,
+                             lug.nombre::varchar as pais
+                      from cabecera ca
+                      inner join detalle det on det.id_venta = ca.id_venta
+                      inner join param.tlugar lug on lug.id_lugar = ca.id_lugar_fk
+                      order by nombre, nro_factura ASC';
+		raise notice '%',v_consulta;
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+
+
+       /*********************************
+ 	#TRANSACCION:  'VF_REPFACTCABE_SEL'
+ 	#DESCRIPCION:	Reporte de Facturacion Computarizada
+ 	#AUTOR:		admin
+ 	#FECHA:		01-12-2020 14:47:00
+	***********************************/
+
+    elsif(p_transaccion='VF_REPFACTCABE_SEL')then
+
+      begin
+       	--raise exception 'Aqui llega datos %',v_parametros.desde;
+        if (v_parametros.desde != '' || v_parametros.desde is not null) then
+        	v_filtro_fecha_desde = 'vent.fecha >= '''||v_parametros.desde||''' ';
+        else
+        	v_filtro_fecha_desde = '0=0';
+        end if;
+
+        if (v_parametros.hasta != '' || v_parametros.hasta is not null) then
+        	v_filtro_fecha_hasta = 'vent.fecha <= '''||v_parametros.hasta||''' ';
+        else
+        	v_filtro_fecha_hasta = '0=0';
+        end if;
+
+        if (v_parametros.id_punto_venta is not null) then
+        	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
+        else
+        	v_filtro_id_punto_venta = '0=0';
+        end if;
+
+
+        v_consulta:='select
+                           pv.nombre::varchar,
+                           pv.codigo::varchar,
+                           lug.nombre::varchar as lugar,
+                           (select lg.nombre
+                           from param.tlugar lg
+                           where lg.id_lugar = lug.id_lugar_fk)::varchar as pais
+                    from vef.tventa vent
+                    inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
+                    inner join vef.tsucursal suc on suc.id_sucursal = vent.id_sucursal
+                    inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
+                    where '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
+                    group by pv.nombre, pv.codigo, lug.nombre, lug.id_lugar_fk';
+		raise notice '%',v_consulta;
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+
+      /*********************************
+ 	#TRANSACCION:  'VF_REPFACTCON_SEL'
+ 	#DESCRIPCION:	Reporte de Facturacion Computarizada por Concepto
+ 	#AUTOR:		admin
+ 	#FECHA:		01-12-2020 14:47:00
+	***********************************/
+
+    elsif(p_transaccion='VF_REPFACTCON_SEL')then
+
+      begin
+       	--raise exception 'Aqui llega datos %',v_parametros.desde;
+        if (v_parametros.desde != '' || v_parametros.desde is not null) then
+        	v_filtro_fecha_desde = 'vent.fecha >= '''||v_parametros.desde||''' ';
+        else
+        	v_filtro_fecha_desde = '0=0';
+        end if;
+
+        if (v_parametros.hasta != '' || v_parametros.hasta is not null) then
+        	v_filtro_fecha_hasta = 'vent.fecha <= '''||v_parametros.hasta||''' ';
+        else
+        	v_filtro_fecha_hasta = '0=0';
+        end if;
+
+        if (v_parametros.id_punto_venta is not null) then
+        	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
+        else
+        	v_filtro_id_punto_venta = '0=0';
+        end if;
+
+         if (v_parametros.id_concepto is not null) then
+        	v_filtro_id_concepto = 'det.id_producto = '||v_parametros.id_concepto||'';
+        else
+        	v_filtro_id_concepto = '0=0';
+        end if;
+
+        v_consulta:='select
+                         ingas.desc_ingas::varchar,
+                         (det.cantidad * det.precio)::numeric as total_precio,
+                         vent.nro_factura::varchar,
+                         dos.nroaut::varchar,
+                         vent.id_punto_venta::integer,
+                         to_char(vent.fecha,''DD/MM/YYYY'')::varchar as fecha,
+                         pv.nombre::varchar,
+                         vent.id_venta::integer
+                      from vef.tventa vent
+                      inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
+                      inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+                      inner join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
+                      inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
+                      where '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      order by  vent.id_venta, vent.nro_factura DESC
+                    ';
+		raise notice '%',v_consulta;
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+    /*********************************
+ 	#TRANSACCION:  'VF_REPRESUCOMP_SEL'
+ 	#DESCRIPCION:	Reporte de Facturacion Computarizada
+ 	#AUTOR:		admin
+ 	#FECHA:		01-12-2020 14:47:00
+	***********************************/
+
+    elsif(p_transaccion='VF_REPRESUCOMP_SEL')then
+
+      begin
+       	--raise exception 'Aqui llega datos %',v_parametros.desde;
+        if (v_parametros.desde != '' || v_parametros.desde is not null) then
+        	v_filtro_fecha_desde = 'vent.fecha >= '''||v_parametros.desde||''' ';
+        else
+        	v_filtro_fecha_desde = '0=0';
+        end if;
+
+        if (v_parametros.hasta != '' || v_parametros.hasta is not null) then
+        	v_filtro_fecha_hasta = 'vent.fecha <= '''||v_parametros.hasta||''' ';
+        else
+        	v_filtro_fecha_hasta = '0=0';
+        end if;
+
+        if (v_parametros.id_punto_venta is not null) then
+        	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
+        else
+        	v_filtro_id_punto_venta = '0=0';
+        end if;
+
+         if (v_parametros.id_concepto is not null) then
+        	v_filtro_id_concepto = 'det.id_producto = '||v_parametros.id_concepto||'';
+        else
+        	v_filtro_id_concepto = '0=0';
+        end if;
+
+
+
+		--raise exception 'Aqui llega param %',v_filtro_fecha_desde;
+        v_consulta:='select
+                         ingas.desc_ingas::varchar,
+                         SUM (det.cantidad * det.precio)::numeric as total_precio,
+                         pv.nombre::varchar
+                      from vef.tventa vent
+                      inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
+                      inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+                      inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
+                      where '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      group by ingas.desc_ingas, pv.nombre';
+		raise notice '%',v_consulta;
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+
     else
 
       raise exception 'Transaccion inexistente';
@@ -956,3 +1234,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_repventa_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

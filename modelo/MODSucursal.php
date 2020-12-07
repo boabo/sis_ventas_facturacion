@@ -19,6 +19,7 @@ class MODSucursal extends MODbase{
 		$this->transaccion='VF_SUC_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
+		$this->setParametro('tipo_usuario','tipo_usuario','varchar');
 		//Definicion de la lista del resultado del query
 		$this->captura('id_sucursal','int4');
         $this->captura('id_entidad','int4');
