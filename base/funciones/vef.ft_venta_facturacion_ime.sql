@@ -2969,6 +2969,43 @@ BEGIN
           --genera el numero de factura
           IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
 
+
+              /*Aqui separamos para veirificar la dosificacion por la sucursal y por el concepto*/
+
+              select d.* into v_dosificacion_sucursal
+              from vef.tdosificacion d
+              where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
+                    d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
+                    d.id_sucursal = v_venta.id_sucursal;
+
+              if (v_dosificacion_sucursal is null ) then
+                  raise exception 'No existe una dosificacion registrada para la sucursal. Favor contactarse con personal de Contabilidad.';
+              end if;
+
+              for v_dosificacion_concepto in (
+                                              select '{'||cig.id_actividad_economica||'}' as id_actividad,
+                                                     cig.desc_ingas
+                                              from vef.tventa_detalle vd
+                                                inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = vd.id_producto
+                                              where vd.id_venta = v_venta.id_venta and vd.estado_reg = 'activo'
+              )loop
+
+              select d.* into v_dosificacion_por_concepto
+              from vef.tdosificacion d
+              where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
+                    d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
+                    d.id_sucursal = v_venta.id_sucursal and
+                    d.id_activida_economica @> v_dosificacion_concepto.id_actividad::integer[];
+
+                if (v_dosificacion_por_concepto is null) then
+                    raise exception 'No existe parametrizada una dosificación para el concepto <b>%</b>. Favor Contactarse con personal de Contabilidad.',v_dosificacion_concepto.desc_ingas;
+                end if;
+
+
+              end loop;
+
+              /**********************************************************************************/
+
             select d.* into v_dosificacion
             from vef.tdosificacion d
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and

@@ -1873,6 +1873,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     }
                   ]
                 });
+
+
     },
 
     guardarDetalles : function(){
@@ -3771,6 +3773,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     registrarVariasFormasPago: function(){
 
       /*Datos a enviar al siguiente Formulario*/
+      var total_datos = this.megrid.store.data.items.length;
+      var suma = 0;
+      for (var i = 0; i < total_datos; i++) {
+          suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
+      }
+      this.suma_total = suma;
+
       var cliente = this.Cmp.id_cliente.getValue();
       var nit = this.Cmp.nit.getValue();
       var observaciones = this.Cmp.observaciones.getValue();
