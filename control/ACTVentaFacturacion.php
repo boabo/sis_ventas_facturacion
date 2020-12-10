@@ -164,7 +164,37 @@ class ACTVentaFacturacion extends ACTbase{
  		$this->res=$this->objFunc->insertarDosificacionRoManual($this->objParam);
  		$this->res->imprimirRespuesta($this->res->generarJson());
  	}
+
+	function insertarFormasPago(){
+			$this->objFunc=$this->create('MODVentaFacturacion');
+			$this->res=$this->objFunc->insertarFormasPago($this->objParam);
+			$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 	/***********************************************************/
+
+	/*Aumentando para los permisos de las sucursales*/
+	function insertarPermisosSucursal(){
+      $this->objFunc=$this->create('MODVentaFacturacion');
+      if($this->objParam->insertar('id_autorizacion')){
+          $this->res=$this->objFunc->insertarPermisosSucursal($this->objParam);
+      } else{
+          $this->res=$this->objFunc->modificarPermisosSucursal($this->objParam);
+      }
+      $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+	function eliminarPermisosSucursal(){
+			$this->objFunc=$this->create('MODVentaFacturacion');
+		$this->res=$this->objFunc->eliminarPermisosSucursal($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function listarPermisosSucursal(){
+			$this->objFunc=$this->create('MODVentaFacturacion');
+			$this->res=$this->objFunc->listarPermisosSucursal($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	/************************************************/
 
 }
 

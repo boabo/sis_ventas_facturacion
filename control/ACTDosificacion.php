@@ -20,9 +20,13 @@ class ACTDosificacion extends ACTbase{
             $this->objParam->addFiltro(" dos.tipo = ''F'' ");
 			$this->objParam->addFiltro(" dos.tipo_generacion = ''manual'' ");
         }
-	
+
 		if ($this->objParam->getParametro('fecha') != '') {
             $this->objParam->addFiltro(" dos.fecha_limite >= ''" .  $this->objParam->getParametro('fecha')."''");
+        }
+
+		if ($this->objParam->getParametro('id_dosificacion') != '') {
+            $this->objParam->addFiltro(" dos.id_dosificacion = " .  $this->objParam->getParametro('id_dosificacion'));
         }
 
 		$this->objParam->defecto('dir_ordenacion','asc');

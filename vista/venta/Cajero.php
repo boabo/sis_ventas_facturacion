@@ -19,7 +19,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
     //tipo_factura: 'recibo',
     nombreVista: 'ReciboLista',
 	solicitarSucursal: true, //para indicar si es forzoso o no indicar la sucrsal al iniciar
-	//tipo_usuario : 'cajero',
+	tipo_usuario : 'cajero',
 
 
 	constructor:function(config){
@@ -62,7 +62,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			}
 			Phx.vista.Cajero.superclass.constructor.call(this,request.arguments);
 			this.store.baseParams.tipo_usuario = this.tipo_usuario;
-			this.store.baseParams.pes_estado = 'borrador';
+			this.store.baseParams.pes_estado = 'caja';
 		//	this.bbar.add(this.cmbPuntoV);
 		this.addButton('ant_estado',{
 				grupo:[1],
@@ -209,10 +209,11 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	},
 
 
-	gruposBarraTareas:[{name:'borrador',title:'<H1 style="font-size:12px;" align="center"><i style="color:#FFAE00; font-size:15px;" class="fa fa-eraser"></i> Borrador</h1>',grupo:0,height:0},
-										 {name:'caja',title:'<H1 style="font-size:12px;" align="center"><i style="color:green; font-size:15px;" class="fa fa-usd"></i> En Caja</h1>',grupo:1,height:0},
+	gruposBarraTareas:[
+										  {name:'caja',title:'<H1 style="font-size:12px;" align="center"><i style="color:green; font-size:15px;" class="fa fa-usd"></i> En Caja</h1>',grupo:1,height:0},
 											{name:'finalizado',title:'<H1 style="font-size:12px;" align="center"><i style="color:#B61BFF; font-size:15px;" class="fa fa-check-circle"></i> Emitidos</h1>',grupo:2,height:0},
-											{name:'anulado',title:'<H1 style="font-size:12px;" align="center"><i style="color:red; font-size:15px;" class="fa fa-ban"></i> Anulados</h1>',grupo:3,height:0}
+											{name:'anulado',title:'<H1 style="font-size:12px;" align="center"><i style="color:red; font-size:15px;" class="fa fa-ban"></i> Anulados</h1>',grupo:3,height:0},
+											{name:'borrador',title:'<H1 style="font-size:12px;" align="center"><i style="color:#FFAE00; font-size:15px;" class="fa fa-eraser"></i> Borrador</h1>',grupo:0,height:0},
 										 ],
 
  actualizarSegunTab: function(name, indice){
@@ -306,7 +307,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	 bactGroups:  [0,1,2,3],
 	 btestGroups: [0],
 	 bexcelGroups: [0,1,2],
-	 bnewGroups: [0],
+	 bnewGroups: [0,1],
 	 bdelGroups:[0,1],
 
 	seleccionarPuntoVentaSucursal : function () {

@@ -19,7 +19,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.Servicios.superclass.constructor.call(this,config);
 		this.init();
 		this.iniciarEventos(that);
-		this.store.baseParams.movimiento='Ingreso';
+		this.store.baseParams.Facturacion = 'conceptos_facturacion';
 		/*Fondo color tbar (IRVA)*/
 		this.bbar.el.dom.style.background='#84BFE7';
 		this.tbar.el.dom.style.background='#84BFE7';
@@ -294,20 +294,14 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		if (rec.data.punto_venta_asociado == '') {
 			this.Cmp.punto_venta_asociado.reset();
 		}
-		if (rec.data.tipo_punto_venta == '') {
-			this.Cmp.tipo_punto_venta.reset();
-		}
+
 	},
 
 	iniciarEventos: function(that){
-		this.Cmp.tipo_punto_venta.on('select',function(c,r,i){
-			that.capturaFiltros();
-		});
-		this.Cmp.tipo_punto_venta.reset();
+
 	},
 
 	capturaFiltros: function (combo, record, index) {
-		this.Cmp.punto_venta_asociado.store.baseParams.tipo_pv = this.Cmp.tipo_punto_venta.getValue();
 		this.mostrarComponente(that.Cmp.punto_venta_asociado);
 	},
 
@@ -629,31 +623,6 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 form:true
 	 },
 	 {
-		 config:{
-				 name: 'tipo_punto_venta',
-				 fieldLabel: 'Tipo Punto de Venta',
-				 allowBlank: true,
-				 //anchor: '100%',
-				 width:200,
-				 emptyText:'tipo...',
-				 triggerAction: 'all',
-				 lazyRender:true,
-				 mode: 'local',
-				 displayField: 'text',
-				 valueField: 'value',
-				 enableMultiSelect:true,
-				 store:new Ext.data.SimpleStore({
-				 data : [['ato', 'ATO'], ['cto', 'CTO']],
-				 id : 'value',
-				 fields : ['value', 'text']
-	 })
-			 },
-			 type:'AwesomeCombo',
-			 id_grupo:0,
-			 form:true,
-			 grid:true
-	 },
-	 {
 		 config: {
 			 name: 'punto_venta_asociado',
 			 fieldLabel: 'Punto de Venta',
@@ -881,7 +850,6 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'punto_venta_asociado', type: 'string'},
-		{name:'tipo_punto_venta', type: 'string'},
 		{name:'id_moneda', type: 'numeric'},
 		{name:'precio', type: 'numeric'},
 		{name: 'desc_moneda', type: 'string'},

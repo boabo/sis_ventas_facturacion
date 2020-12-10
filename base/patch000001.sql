@@ -1360,3 +1360,35 @@ IS 'Si el concepto tiene un descuento';
 COMMENT ON COLUMN vef.tventa_detalle.llave_unica
 IS 'Llave unica para no repetir conceptos mediante servicio';
 /***********************************F-SCP-IRVA-VEF-0-26/11/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-08/12/2020****************************************/
+ALTER TABLE vef.tdosificacion
+  ALTER COLUMN llave TYPE VARCHAR(700) COLLATE pg_catalog."default";
+
+ALTER TABLE vef.tdosificacion
+  ALTER COLUMN glosa_impuestos TYPE VARCHAR(700) COLLATE pg_catalog."default";
+
+ALTER TABLE vef.tdosificacion
+  ALTER COLUMN glosa_empresa TYPE VARCHAR(700) COLLATE pg_catalog."default";
+
+ALTER TABLE vef.tdosificacion
+  ALTER COLUMN nroaut TYPE VARCHAR(300) COLLATE pg_catalog."default";
+
+ALTER TABLE vef.tdosificacion
+  ALTER COLUMN nro_tramite TYPE VARCHAR(300) COLLATE pg_catalog."default";
+/***********************************F-SCP-IRVA-VEF-0-08/12/2020****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-10/12/2020****************************************/
+  CREATE TABLE vef.tpermiso_sucursales (
+    id_autorizacion SERIAL,
+    id_funcionario INTEGER,
+    CONSTRAINT tpermiso_gerencias_id_funcionario_key UNIQUE(id_funcionario),
+    CONSTRAINT tpermiso_gerencias_pkey PRIMARY KEY(id_autorizacion)
+  ) INHERITS (pxp.tbase)
+  WITH (oids = false);
+
+  ALTER TABLE vef.tpermiso_sucursales
+    OWNER TO postgres;
+
+  ALTER TABLE vef.trespaldo_facturas_anuladas
+    RENAME COLUMN id_forma_pago TO id_medio_pago; 
+/***********************************F-SCP-IRVA-VEF-0-10/12/2020****************************************/

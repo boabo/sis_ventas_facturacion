@@ -123,22 +123,40 @@ class ACTCajero extends ACTbase{
 
 		$datos = $this->res->getDatos();
 		$datos = $datos[0];
-		// if ($datos['cantidad_descripciones'] > 0){
-		// 	$this->objFunc = $this->create('MODCajero');
-		// 	$this->res = $this->objFunc->listarFacturaDescripcion($this->objParam);
-		// 	$datos['detalle_descripcion'] = $this->res->getDatos();
-		// }
 
 		$this->objFunc = $this->create('MODCajero');
 		$this->res = $this->objFunc->listarFacturaDetalle($this->objParam);
 
 		$datos['detalle'] = $this->res->getDatos();
 
-		$reporte = new RFactura();
-		$temp = array();
-		$temp['html'] = $reporte->generarHtml($this->objParam->getParametro('formato_comprobante'),$datos);
-		$this->res->setDatos($temp);
-		$this->res->imprimirRespuesta($this->res->generarJson());
+		 $fecha_actual = date("d/m/Y");
+		 $fecha_venta = $datos["fecha_venta"];
+		 $tipo_usuario = $datos["tipo_usuario"];
+
+		/*Aqui aumentaremos condicionales para que solo se haga la reimpresion el mismo dia (Ismael Valdivia)*/
+		if ($tipo_usuario == 'administrador_facturacion') {
+				$reporte = new RFactura();
+				$temp = array();
+				$temp['html'] = $reporte->generarHtml($this->objParam->getParametro('formato_comprobante'),$datos);
+				$this->res->setDatos($temp);
+				$this->res->imprimirRespuesta($this->res->generarJson());
+		} else {
+			if ($fecha_venta == $fecha_actual) {
+					$reporte = new RFactura();
+					$temp = array();
+					$temp['html'] = $reporte->generarHtml($this->objParam->getParametro('formato_comprobante'),$datos);
+					$this->res->setDatos($temp);
+					$this->res->imprimirRespuesta($this->res->generarJson());
+			} else {
+				throw new Exception('Solo se puede realizar la reimpresión el mismo día de la emisión, Favor consulte con el Administrador.');
+			}
+		}
+
+
+
+		/*****************************************************************************************************/
+
+
 		// var_dump("llega aqui dato",$this->res->generarJson());
 	}
 
@@ -148,6 +166,7 @@ class ACTCajero extends ACTbase{
 			$this->res = $this->objFunc->listarFactura($this->objParam);
 
 			$datosVenta = $this->res->getDatos();
+			$datos = $datosVenta[0];
 
 			$this->objFunc = $this->create('MODCajero');
 			$this->detalle = $this->objFunc->listarFacturaDetalle($this->objParam);
@@ -171,20 +190,45 @@ class ACTCajero extends ACTbase{
 			$this->objParam->addParametro('tamano', 'LETTER');
 			$this->objParam->addParametro('nombre_archivo', $nombreArchivo);
 
-			if ($datosVenta[0]['tipo_factura'] == 'recibo' && $datosVenta[0]['moneda_base'] == 'USD') {
-				$this->objReporteFormato = new RReporteReciboMiamiA4($this->objParam);
-			} else {
-				$this->objReporteFormato = new RReporteFacturaA4($this->objParam);
-			}
-			$this->objReporteFormato->setDatos($this->res->datos,$this->detalle->datos,$this->casaMatriz->datos);
-			$this->objReporteFormato->generarReporte();
-			$this->objReporteFormato->output($this->objReporteFormato->url_archivo, 'F');
+			$fecha_actual = date("d/m/Y");
+ 		  $fecha_venta = $datos["fecha_venta"];
+			$tipo_usuario = $datos["tipo_usuario"];
 
-			$this->mensajeExito = new Mensaje();
-			$this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado',
-					'Se generó con éxito el reporte: ' .$nombreArchivo, 'control');
-			$this->mensajeExito->setArchivoGenerado($nombreArchivo);
-			$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+			if ($tipo_usuario == 'administrador_facturacion') {
+				if ($datosVenta[0]['tipo_factura'] == 'recibo' && $datosVenta[0]['moneda_base'] == 'USD') {
+					$this->objReporteFormato = new RReporteReciboMiamiA4($this->objParam);
+				} else {
+					$this->objReporteFormato = new RReporteFacturaA4($this->objParam);
+				}
+				$this->objReporteFormato->setDatos($this->res->datos,$this->detalle->datos,$this->casaMatriz->datos);
+				$this->objReporteFormato->generarReporte();
+				$this->objReporteFormato->output($this->objReporteFormato->url_archivo, 'F');
+
+				$this->mensajeExito = new Mensaje();
+				$this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado',
+						'Se generó con éxito el reporte: ' .$nombreArchivo, 'control');
+				$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+				$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+			} else {
+				if ($fecha_venta == $fecha_actual) {
+					if ($datosVenta[0]['tipo_factura'] == 'recibo' && $datosVenta[0]['moneda_base'] == 'USD') {
+						$this->objReporteFormato = new RReporteReciboMiamiA4($this->objParam);
+					} else {
+						$this->objReporteFormato = new RReporteFacturaA4($this->objParam);
+					}
+					$this->objReporteFormato->setDatos($this->res->datos,$this->detalle->datos,$this->casaMatriz->datos);
+					$this->objReporteFormato->generarReporte();
+					$this->objReporteFormato->output($this->objReporteFormato->url_archivo, 'F');
+
+					$this->mensajeExito = new Mensaje();
+					$this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado',
+							'Se generó con éxito el reporte: ' .$nombreArchivo, 'control');
+					$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+					$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+				} else {
+					throw new Exception('Solo se puede realizar la reimpresión el mismo día de la emisión, Favor consulte con el Administrador.');
+				}
+			}
 
 	}
 

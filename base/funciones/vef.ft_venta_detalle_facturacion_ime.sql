@@ -485,6 +485,134 @@ BEGIN
 
 		end;
 
+    /*********************************
+     #TRANSACCION:  'VF_FPDET_INS'
+     #DESCRIPCION:	Insercion de registros detalle de las n formas de pago
+     #AUTOR:		Ismael Valdivia
+     #FECHA:		8-12-2020 8:45:07
+    ***********************************/
+
+    elsif(p_transaccion='VF_FPDET_INS')then
+
+      begin
+
+        if (v_parametros.tipo = 'formula') then
+          v_id_formula = v_parametros.id_formula;
+          v_id_concepto_ingas = v_parametros.id_producto;
+        elsif (v_parametros.tipo = 'servicio' or
+               (v_parametros.tipo = 'producto_terminado' and pxp.f_get_variable_global('vef_integracion_almacenes') = 'false'))then
+                  v_id_concepto_ingas = v_parametros.id_producto;
+        else
+          v_id_item =  v_parametros.id_producto;
+        end if;
+
+        v_porcentaje_descuento = 0;
+
+        --verificar si existe vendedor o medico
+        v_id_vendedor = NULL;
+        v_id_medico = NULL;
+
+
+        if (pxp.f_existe_parametro(p_tabla,'descripcion')) then
+          v_descripcion =  v_parametros.descripcion;
+        else
+          v_descripcion = '';
+        end if;
+
+        v_bruto = 0;
+        v_ley = 0;
+        v_kg_fino = 0;
+
+        --Si el total a pagar debe estar redondeado a entero
+        if (pxp.f_get_variable_global('vef_redondeo_detalle') = 'true') then
+          --si el total no es entero
+          if (trunc((v_parametros.precio * v_parametros.cantidad_det) - (v_parametros.precio * v_parametros.cantidad_det * v_porcentaje_descuento / 100)) != ((v_parametros.precio * v_parametros.cantidad_det) - (v_parametros.precio * v_parametros.cantidad_det * v_porcentaje_descuento / 100))) then
+            v_total = ceil((v_parametros.precio * v_parametros.cantidad_det) - (v_parametros.precio * v_parametros.cantidad_det * v_porcentaje_descuento / 100));
+            v_parametros.precio = v_total / v_parametros.cantidad_det*100/(100 - v_porcentaje_descuento);
+          end if;
+        end if;
+
+        --Sentencia de la insercion
+        insert into vef.tventa_detalle(
+          id_venta,
+          id_item,
+          --id_sucursal_producto,
+          id_formula,
+          tipo,
+          estado_reg,
+          cantidad,
+          precio,
+          fecha_reg,
+          id_usuario_reg,
+          id_usuario_mod,
+          fecha_mod,
+          precio_sin_descuento,
+          porcentaje_descuento,
+          id_vendedor,
+          id_medico,
+          descripcion,
+          bruto,
+          ley,
+          kg_fino,
+          id_unidad_medida,
+          id_producto
+        ) values(
+          v_parametros.id_venta,
+          v_parametros.id_producto,
+          v_id_formula,
+          v_parametros.tipo,
+          'activo',
+          v_parametros.cantidad_det,
+          round(v_parametros.precio - (v_parametros.precio * v_porcentaje_descuento / 100),6),
+          now(),
+          p_id_usuario,
+          null,
+          null,
+          v_parametros.precio,
+          v_porcentaje_descuento,
+          v_id_vendedor,
+          v_id_medico,
+          v_descripcion,
+          v_bruto,
+          v_ley,
+          v_kg_fino,
+          v_id_unidad_medida,
+          v_parametros.id_producto
+        )RETURNING id_venta_detalle into v_id_venta_detalle;
+
+
+        --recupera datos de la venta
+        select
+          *
+        into
+          v_registros
+        from vef.tventa v
+        where v.id_venta = v_parametros.id_venta;
+
+
+        select precio, cantidad into  v_tmp
+        from vef.tventa_detalle
+        where id_venta = v_parametros.id_venta;
+
+        IF v_parametros.tipo_factura != 'computarizadaexpo' THEN
+          v_total = COALESCE(v_registros.transporte_fob ,0)  + COALESCE(v_registros.seguros_fob ,0)+ COALESCE(v_registros.otros_fob ,0) + COALESCE(v_registros.transporte_cif ,0) +  COALESCE(v_registros.seguros_cif ,0) + COALESCE(v_registros.otros_cif ,0);
+        ELSE
+          v_total = 0;
+        END IF;
+
+        update vef.tventa
+        set total_venta = round((select sum(round(precio * cantidad,2)) from vef.tventa_detalle where id_venta = v_parametros.id_venta) + v_total,2)
+        where id_venta = v_parametros.id_venta;
+
+        --Definicion de la respuesta
+        v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle de Venta almacenado(a) con exito (id_venta_detalle'||v_id_venta_detalle||')');
+        v_resp = pxp.f_agrega_clave(v_resp,'id_venta_detalle',v_id_venta_detalle::varchar);
+
+        --Devuelve la respuesta
+        return v_resp;
+
+      end;
+
 	else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;

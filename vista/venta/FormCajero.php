@@ -17,10 +17,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     tabEnter: true,
     autoScroll: false,
     breset: true,
-    bsubmit:false,
+    bsubmit:true,
     storeFormaPago : false,
     fwidth : '9%',
     cantidadAllowDecimals: false,
+    formUrl: '../../../sis_ventas_facturacion/vista/venta/FormVariasFormasPago.php',
+    formClass : 'FormVariasFormasPago',
     constructor:function(config)
     {
 		Ext.apply(this,config);
@@ -34,6 +36,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 	                fieldLabel: 'Punto de Venta',
 	                allowBlank: false,
                   width:200,
+                  //disable:true,
 	                emptyText: 'Elija un Pun...',
 	                store: new Ext.data.JsonStore({
 	                    url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
@@ -62,7 +65,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 	                queryDelay: 1000,
 	                gwidth: 200,
 	                minChars: 2,
-	                disabled:false,
+	                disabled:true,
 	                renderer : function(value, p, record) {
 	                    return String.format('{0}', record.data['nombre_punto_venta']);
 	                }
@@ -259,6 +262,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.buildGrupos();
 
         this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
+        this.labelSubmit = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
         Phx.vista.FormCajero.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
@@ -471,6 +475,28 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
     iniciarEventos : function () {
 
+      /*****Aqui poniendo el Boton para realizar pagos por WorlPay******/
+      // Ext.getCmp('dividirFormasPago').el.dom.style.height = '100px';
+      // Ext.getCmp('dividirFormasPago').el.dom.style.width = '200px';
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.height = '100px';
+      // Ext.getCmp('dividirFormasPago').el.dom.style.background = 'red';
+      //
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.fontSize = '22px';
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.textShadow = '2px 0px 0px #000000';
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = '#1479B8';
+      //
+      //
+      //
+      //   Ext.getCmp('dividirFormasPago').el.dom.onmouseover = function () {
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.background = '#065779';
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = 'white';
+      // }
+      //
+      //   Ext.getCmp('dividirFormasPago').el.dom.onmouseout = function () {
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.background = '';
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = '#1479B8';
+      // };
+
         /*Aqui aumentamos las condiciones para enviar por correo y el formato de la factura*/
         // this.Cmp.enviar_correo.setValue('NO');
         // this.Cmp.enviar_correo.fireEvent('select',this.Cmp.enviar_correo, this.Cmp.enviar_correo.getValue());
@@ -624,6 +650,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
           this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="190px";
           this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="50px";
+
+          this.arrayBotones[1].scope.form.buttons[1].container.dom.style.width="20px";
+          //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
+          this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.width="190px";
+          this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.height="50px";
 
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
@@ -1227,6 +1258,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         },this);
 
         this.Cmp.id_cliente.on('select',function(c,r,i) {
+
             if (r.data) {
                 this.Cmp.nit.setValue(r.data.nit);
             } else {
@@ -1236,20 +1268,21 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
         this.Cmp.nit.on('blur',function(c) {
+          if (this.accionFormulario != 'EDIT') {
+            	if (this.Cmp.nit.getValue() != '') {
+            		this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
+                	this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
+    		           callback : function (r) {
+    		           		this.Cmp.id_cliente.store.baseParams.nit = '';
+    		           		if (r.length == 1) {
 
-        	if (this.Cmp.nit.getValue() != '') {
-        		this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
-            	this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
-		           callback : function (r) {
-		           		this.Cmp.id_cliente.store.baseParams.nit = '';
-		           		if (r.length == 1) {
+    		           			this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
+    		           			}
 
-		           			this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
-		           			}
-
-		            }, scope : this
-		        });
-		    }
+    		            }, scope : this
+    		        });
+    		    }
+          }
         },this);
 
         this.Cmp.id_formula.on('select',function(c,r,i) {
@@ -1386,9 +1419,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.id_cliente.setDisabled(true);
         this.Cmp.id_formula.setDisabled(true);
         this.Cmp.observaciones.setDisabled(true);
-        this.Cmp.id_punto_venta.setDisabled(true);
+        //this.Cmp.id_punto_venta.setDisabled(true);
         this.Cmp.excento.setDisabled(true);
-        console.log("llega",this);
+        console.log("llega aqui para editar",this);
 
 
 
@@ -1398,14 +1431,14 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           if (r.data.value == 'NO') {
             this.Cmp.nit.setDisabled(true);
             this.Cmp.id_cliente.setDisabled(true);
-            this.Cmp.id_formula.setDisabled(true);
+            //this.Cmp.id_formula.setDisabled(true);
             this.Cmp.observaciones.setDisabled(true);
-            this.Cmp.id_punto_venta.setDisabled(true);
+            //this.Cmp.id_punto_venta.setDisabled(true);
             this.Cmp.excento.setDisabled(true);
-            this.megrid.topToolbar.items.items[0].setDisabled(true);
-            this.megrid.topToolbar.items.items[1].setDisabled(true);
-            this.megrid.topToolbar.items.items[2].setDisabled(true);
-            this.megrid.topToolbar.items.items[3].setDisabled(true);
+            // this.megrid.topToolbar.items.items[0].setDisabled(true);
+            // this.megrid.topToolbar.items.items[1].setDisabled(true);
+            // this.megrid.topToolbar.items.items[2].setDisabled(true);
+            // this.megrid.topToolbar.items.items[3].setDisabled(true);
             this.megrid.colModel.config[3].editor='';
             this.megrid.colModel.config[4].editor='';
             this.megrid.colModel.config[5].editor='';
@@ -1414,14 +1447,14 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           } else {
             this.Cmp.nit.setDisabled(false);
             this.Cmp.id_cliente.setDisabled(false);
-            this.Cmp.id_formula.setDisabled(false);
+            //this.Cmp.id_formula.setDisabled(false);
             this.Cmp.observaciones.setDisabled(false);
-            this.Cmp.id_punto_venta.setDisabled(false);
+            //this.Cmp.id_punto_venta.setDisabled(false);
             this.Cmp.excento.setDisabled(false);
-            this.megrid.topToolbar.items.items[0].setDisabled(false);
-            this.megrid.topToolbar.items.items[1].setDisabled(false);
-            this.megrid.topToolbar.items.items[2].setDisabled(false);
-            this.megrid.topToolbar.items.items[3].setDisabled(false);
+            // this.megrid.topToolbar.items.items[0].setDisabled(false);
+            // this.megrid.topToolbar.items.items[1].setDisabled(false);
+            // this.megrid.topToolbar.items.items[2].setDisabled(false);
+            // this.megrid.topToolbar.items.items[3].setDisabled(false);
 
             /*************************Habilitar la grilla para editar*************************/
             this.megrid.colModel.config[3].editor=this.editarDescripcion;
@@ -1606,7 +1639,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.tipo
                     },
                     {
-                        header: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/Servicio</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Producto/Servicio</span>',
                         dataIndex: 'id_producto',
                         width: 350,
                         editable: true,
@@ -1617,7 +1650,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.id_producto
                     },
                     {
-                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Descripción</span>',
                         dataIndex: 'descripcion',
                         width: 300,
                         //sortable: false,
@@ -1625,15 +1658,15 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
 
-                        header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Cantidad</span>',
                         dataIndex: 'cantidad',
                         align: 'right',
-                        width: 100,
+                        width: 150,
                         summaryType: 'sum',
                         editor: this.detCmp.cantidad
                     },
                     {
-                        header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> P / Unit</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
                         selectOnFocus: true,
@@ -1647,7 +1680,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
                         xtype: 'numbercolumn',
-                        header: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; color:red; font-size:17px;"> <b>Total</b></span>',
                         dataIndex: 'precio_total',
                         align: 'right',
                         width: 150,/*irva222*/
@@ -1789,7 +1822,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.tipo
                     },
                     {
-                        header: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Producto/Servicio</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaCompraColores.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Producto/Servicio</span>',
                         dataIndex: 'id_producto',
                         width: 350,
                         editable: true,
@@ -1800,7 +1833,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         //editor: this.detCmp.id_producto
                     },
                     {
-                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Descripción</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Descripción</span>',
                         dataIndex: 'descripcion',
                         width: 300,
                         //sortable: false,
@@ -1808,15 +1841,15 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
 
-                        header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cantidad</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Cantidad</span>',
                         dataIndex: 'cantidad',
                         align: 'right',
-                        width: 100,
+                        width: 130,
                         summaryType: 'sum',
                         editor: ''
                     },
                     {
-                        header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> P / Unit</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
                         selectOnFocus: true,
@@ -1830,7 +1863,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
                         xtype: 'numbercolumn',
-                        header: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Total</span>',
+                        header: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px; color:red"> <b>Total Bs</b></span>',
                         dataIndex: 'precio_total',
                         align: 'right',
                         width: 150,/*irva222*/
@@ -2032,7 +2065,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     	this.variables.items.items[1].setDisabled(false);
-    	this.variables.items.items[1].store.baseParams.tipo = tipo;
+    	//this.variables.items.items[1].store.baseParams.tipo = tipo;
       //this.variables.items.items[2].setVisible(false)
     	if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
     		this.variables.items.items[1].store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
@@ -2514,7 +2547,35 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                              id_grupo: 12,
                              items: [],
                           }]
-                      }
+                      },
+                      // {
+                      //  bodyStyle: 'padding-right:5px;',
+                      //
+                      //  border: false,
+                      //  items: [{
+                      //        xtype: 'fieldset',
+                      //        frame: true,
+                      //        layout: 'form',
+                      //        width: '33%',
+                      //        border: false,
+                      //        id:'botonFormasPago',
+                      //        title: '<br><br>',
+                      //        style: {
+                      //                 width: '40%',
+                      //               },
+                      //        padding: '0 0 0 10',
+                      //        bodyStyle: 'padding-left:5px;',
+                      //        id_grupo: 2,
+                      //        items: [{
+                      //          xtype:'button',
+                      //          id:'dividirFormasPago',
+                      //          text:'<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:50px; vertical-align: middle;"><br><span style="font-weight:bold;"> Varias Formas <br>de Pago</span>',
+                      //          handler: this.registrarVariasFormasPago,
+                      //          scope:this,
+                      //          scale: 'medium'
+                      //        }],
+                      //     }]
+                      // },
 
                       ]
                             }
@@ -2563,7 +2624,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     onReset:function(o){
 			this.generar = 'generar';
       if (this.mestore.modified.length == 0) {
-          this.onSubmit(o);
+          this.onSubmit2(o);
       } else {
         Ext.Msg.show({
          title:'Información',
@@ -2574,6 +2635,57 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       });
       }
 	   },
+
+     onSubmit:function(o){
+
+       var requiere_excento = [];
+
+       for (var i = 0; i < this.mestore.data.items.length; i++) {
+         requiere_excento.push(this.mestore.data.items[i].data.requiere_excento);
+       }
+
+       if (requiere_excento.includes( 'si' )) {
+         if (this.Cmp.excento.getValue() == 0) {
+           Ext.Msg.show({
+               title:'Información',
+               msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
+               maxWidth : 550,
+               width: 550,
+               buttons: Ext.Msg.OK,
+                icon: Ext.MessageBox.QUESTION,
+               scope:this
+            });
+         } else {
+           this.registrarVariasFormasPago();
+         }
+       } else if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+            Ext.Msg.show({
+                title:'Información',
+                msg: 'Favor Complete datos en la Cabecera.',
+                maxWidth : 550,
+                width: 550,
+                buttons: Ext.Msg.OK,
+                 icon: Ext.MessageBox.QUESTION,
+                scope:this
+             });
+          }
+
+          else if (this.mestore.data.items.length == 0) {
+            Ext.Msg.show({
+                title:'Información',
+                msg: 'Favor Complete datos en el detalle de Conceptos.',
+                maxWidth : 550,
+                width: 550,
+                buttons: Ext.Msg.OK,
+                 icon: Ext.MessageBox.QUESTION,
+                scope:this
+             });
+
+          } else {
+            this.registrarVariasFormasPago();
+          }
+
+ 	   },
 
      successWizard:function(resp){
          // var rec=this.sm.getSelected();
@@ -3656,7 +3768,89 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     	this.accionFormulario = 'NEW';
 	},
 
-    onSubmit: function(o) {
+    registrarVariasFormasPago: function(){
+
+      /*Datos a enviar al siguiente Formulario*/
+      var cliente = this.Cmp.id_cliente.getValue();
+      var nit = this.Cmp.nit.getValue();
+      var observaciones = this.Cmp.observaciones.getValue();
+      var paquetes = this.Cmp.id_formula.getValue();
+      var exento = this.Cmp.excento.getValue();
+      var sucursal = this.Cmp.id_sucursal.getValue();
+      var puntoVenta = this.Cmp.id_punto_venta.getValue();
+      var detalleConceptos = this.mestore.data.items;
+      var moneda_1 = this.Cmp.id_moneda.getValue();
+      var moneda_2 = this.Cmp.id_moneda_2.getValue();
+      var medio_pago_1 = this.Cmp.id_medio_pago.getValue();
+      var medio_pago_2 = this.Cmp.id_medio_pago_2.getValue();
+      var monto_mp_1 = this.Cmp.monto_forma_pago.getValue();
+      var monto_mp_2 = this.Cmp.monto_forma_pago_2.getValue();
+      var nro_tarjeta_1 = this.Cmp.numero_tarjeta.getValue();
+      var nro_tarjeta_2 = this.Cmp.numero_tarjeta_2.getValue();
+      var codigo_autorizacion_1 = this.Cmp.codigo_tarjeta.getValue();
+      var codigo_autorizacion_2 = this.Cmp.codigo_tarjeta_2.getValue();
+      var variables_globales = this.data.objPadre.variables_globales;
+      var total_pagar = this.suma_total;
+      var tipo_cambio = this.tipo_cambio;
+      /****************************************/
+          Phx.CP.loadWindows(this.formUrl,
+                                   '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
+                                   {
+                                       modal:true,
+                                       width:'100%',
+                                       height:'100%',
+                                       onEsc: function() {
+                                       var me = this;
+                                       Ext.Msg.confirm(
+                                           'Mensaje de Confirmación',
+                                           'Quiere cerrar el Formulario?, se perderán los datos que no han sido Guardados',
+                                           function(btn) {
+                                               if (btn == 'yes')
+                                                   this.hide();
+                                           }
+                                           );
+                                   },
+                                 },
+                                 {data:
+                                   { cliente: cliente,
+                                     nit: nit,
+                                     observaciones: observaciones,
+                                     paquetes: paquetes,
+                                     exento: exento,
+                                     sucursal: sucursal,
+                                     puntoVenta: puntoVenta,
+                                     detalleConceptos: detalleConceptos,
+                                     moneda_1: moneda_1,
+                                     moneda_2: moneda_2,
+                                     medio_pago_1: medio_pago_1,
+                                     medio_pago_2: medio_pago_2,
+                                     monto_mp_1: monto_mp_1,
+                                     monto_mp_2: monto_mp_2,
+                                     nro_tarjeta_1: nro_tarjeta_1,
+                                     nro_tarjeta_2: nro_tarjeta_2,
+                                     codigo_autorizacion_1: codigo_autorizacion_1,
+                                     codigo_autorizacion_2: codigo_autorizacion_2,
+                                     variables_globales: variables_globales,
+                                     total_pagar: total_pagar,
+                                     tipo_cambio: tipo_cambio,
+                                     panel_padre: this.panel,
+                                     tipo_factura: 'computarizada'
+                                   }
+                                  },
+                                   this.idContenedor,
+                                   this.formClass,
+                                   {
+                                       config:[{
+                                                 event:'successsave',
+                                                 delegate: this.onSaveForm,
+                                               }],
+
+                                       scope:this
+                                    });
+
+    },
+
+    onSubmit2: function(o) {
         //  validar formularios
         console.log("que es esto",this);
         var arra = [], i, me = this;
@@ -3702,9 +3896,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       if (this.generar == 'generar') {
         //Phx.CP.loadingShow();
   			var d = datos_respuesta.ROOT.datos;
-        console.log("datos respuesta es",d);
         if (this.data.objPadre.tipo_punto_venta == 'ato') {
-        console.log("llega aqui",d);
   			Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
   					params:{id_estado_wf_act:d.id_estado_wf,
@@ -3733,16 +3925,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       }
 
       if ('cambio' in datos_respuesta.ROOT.datos) {
-        Ext.Msg.show({
-         title:'DEVOLUCION',
-         msg: 'Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente',
-         buttons: Ext.Msg.OK,
-         fn: function () {
-            Phx.CP.getPagina(this.idContenedorPadre).reload();
-            this.panel.close();
-         },
-         scope:this
-      });
+        Phx.CP.getPagina(this.idContenedorPadre).reload();
+        this.panel.close();
+        //Comentando el mensaje temporalmente
+          //   Ext.Msg.show({
+          //    title:'DEVOLUCION',
+          //    msg: 'Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente',
+          //    buttons: Ext.Msg.OK,
+          //    fn: function () {
+          //       Phx.CP.getPagina(this.idContenedorPadre).reload();
+          //       this.panel.close();
+          //    },
+          //    scope:this
+          // });
       } else {
         Phx.CP.getPagina(this.idContenedorPadre).reload();
         this.panel.close();

@@ -1262,67 +1262,23 @@ class MODVentaFacturacion extends MODbase{
 	            //Definicion de variables para ejecucion del procedimiento
 	            $this->procedimiento = 'vef.ft_venta_facturacion_ime';
 	            $this->tipo_procedimiento = 'IME';
-							$this->transaccion = 'VF_FACVEN_INS';
+							$this->transaccion = 'VF_FPINS_INS';
 
 	            //Define los parametros para la funcion
-	            $this->setParametro('id_cliente','id_cliente','varchar');
 							$this->setParametro('nit','nit','varchar');
+	            $this->setParametro('id_cliente','id_cliente','varchar');
+	            $this->setParametro('observaciones','observaciones','text');
+	            $this->setParametro('excento','excento','numeric');
 	            $this->setParametro('id_sucursal','id_sucursal','int4');
-	            $this->setParametro('total_venta','total_venta','numeric');
-	            $this->setParametro('fecha_estimada_entrega','fecha_estimada_entrega','date');
 							$this->setParametro('id_punto_venta','id_punto_venta','int4');
-							$this->setParametro('id_forma_pago','id_forma_pago','int4');
-							$this->setParametro('id_forma_pago_2','id_forma_pago_2','int4');
-							/*Aumentando la instancia de pago*/
-							$this->setParametro('id_medio_pago','id_medio_pago','int4');
-							$this->setParametro('id_medio_pago_2','id_medio_pago_2','int4');
-							$this->setParametro('id_moneda_2','id_moneda_2','int4');
-							/********************************/
-
-							$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
-							$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
-							$this->setParametro('mco','mco','varchar');
-							$this->setParametro('mco_2','mco_2','varchar');
-							$this->setParametro('id_auxiliar','id_auxiliar','integer');
-							$this->setParametro('id_auxiliar_2','id_auxiliar_2','integer');
-
-							$this->setParametro('numero_tarjeta_2','numero_tarjeta_2','varchar');
-							$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
-							$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar');
-							$this->setParametro('codigo_tarjeta_2','codigo_tarjeta_2','varchar');
-							$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar');
-							$this->setParametro('tipo_tarjeta_2','tipo_tarjeta_2','varchar');
-	            $this->setParametro('porcentaje_descuento','porcentaje_descuento','integer');
-	            $this->setParametro('id_vendedor_medico','id_vendedor_medico','varchar');
-							$this->setParametro('comision','comision','numeric');
-							$this->setParametro('observaciones','observaciones','text');
-
+							$this->setParametro('total_venta','total_venta','numeric');
 							$this->setParametro('tipo_factura','tipo_factura','varchar');
-							$this->setParametro('fecha','fecha','date');
-	            $this->setParametro('nro_factura','nro_factura','varchar');
-							$this->setParametro('id_dosificacion','id_dosificacion','integer');
-							$this->setParametro('excento','excento','numeric');
-
-							$this->setParametro('id_moneda','id_moneda','int4');
-							$this->setParametro('tipo_cambio_venta','tipo_cambio_venta','numeric');
-							$this->setParametro('total_venta_msuc','total_venta_msuc','numeric');
-							$this->setParametro('transporte_fob','transporte_fob','numeric');
-							$this->setParametro('seguros_fob','seguros_fob','numeric');
-							$this->setParametro('otros_fob','otros_fob','numeric');
-							$this->setParametro('transporte_cif','transporte_cif','numeric');
-							$this->setParametro('seguros_cif','seguros_cif','numeric');
-							$this->setParametro('otros_cif','otros_cif','numeric');
-							$this->setParametro('valor_bruto','valor_bruto','numeric');
-							$this->setParametro('descripcion_bulto','descripcion_bulto','varchar');
-							$this->setParametro('id_cliente_destino','id_cliente_destino','varchar');
-							$this->setParametro('hora_estimada_entrega','hora_estimada_entrega','varchar');
-							$this->setParametro('forma_pedido','forma_pedido','varchar');
-
-							/*Aumentando mejora para facturacion enviar correo y registrar el tipo de formato emitido*/
-							//$this->setParametro('formato_factura','formato_factura','varchar');
-							$this->setParametro('enviar_correo','enviar_correo','varchar');
-							$this->setParametro('correo_electronico','correo_electronico','varchar');
-							/****************************************************************************************/
+							$this->setParametro('moneda_recibo','moneda_recibo','int4');
+							$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
+							$this->setParametro('nro_factura','nro_factura','int4');
+							$this->setParametro('id_dosificacion','id_dosificacion','int4');
+							$this->setParametro('informe','informe','varchar');
+							$this->setParametro('fecha_factura','fecha_factura','varchar');
 
 	            //Ejecuta la instruccion
 	            $this->armarConsulta();
@@ -1337,58 +1293,40 @@ class MODVentaFacturacion extends MODbase{
 	            }
 
 	            $respuesta = $resp_procedimiento['datos'];
-
 	            $id_venta = $respuesta['id_venta'];
+							$tipo_factura = $this->objParam->getParametro('tipo_factura');
 
-	            //decodifica JSON  de detalles
-	            $json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_new_records'));
+							$json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_detalle_venta'));
 
-	          //  var_dump('detalle',$json_detalle)   ;
-	            foreach($json_detalle as $f){
-
+	            foreach($json_detalle as $d){
 	                $this->resetParametros();
 	                //Definicion de variables para ejecucion del procedimiento
 	                $this->procedimiento='vef.ft_venta_detalle_facturacion_ime';
-	                $this->transaccion='VF_FACTDET_INS';
+	                $this->transaccion='VF_FPDET_INS';
 	                $this->tipo_procedimiento='IME';
 	                //modifica los valores de las variables que mandaremos
-	                $this->arreglo['id_item'] = $f['id_item'];
-									$this->arreglo['id_producto'] = $f['id_producto'];
-	                $this->arreglo['id_sucursal_producto'] = $f['id_sucursal_producto'];
-	              //  $this->arreglo['id_formula'] = $f['id_formula'];
-	                $this->arreglo['tipo'] = $f['tipo'];
-	                $this->arreglo['estado_reg'] = $f['estado_reg'];
-	                $this->arreglo['cantidad'] = $f['cantidad'];
-	                $this->arreglo['precio'] = $f['precio_unitario'];
-	                $this->arreglo['sw_porcentaje_formula'] = $f['sw_porcentaje_formula'];
-	                $this->arreglo['porcentaje_descuento'] = $f['porcentaje_descuento'];
-	                $this->arreglo['id_vendedor_medico'] = $f['id_vendedor_medico'];
-									$this->arreglo['descripcion'] = $f['descripcion'];
-	                $this->arreglo['id_venta'] = $id_venta;
-
-									$this->arreglo['bruto'] = $f['bruto'];
-									$this->arreglo['ley'] = $f['ley'];
-									$this->arreglo['kg_fino'] = $f['kg_fino'];
-									$this->arreglo['id_unidad_medida'] = $f['id_unidad_medida'];
+	                $this->arreglo['id_producto'] = $d['id_producto'];
+									$this->arreglo['id_formula'] = $d['id_formula'];
+	                $this->arreglo['tipo'] = $d['tipo'];
+	                $this->arreglo['precio_unitario'] = $d['precio_unitario'];
+	                $this->arreglo['cantidad'] = $d['cantidad'];
+	                $this->arreglo['precio'] = $d['precio_unitario'];
+	                $this->arreglo['precio_total'] = $d['precio_total'];
+									$this->arreglo['nombre_producto'] = $d['nombre_producto'];
+	                $this->arreglo['descripcion'] = $d['descripcion'];
+									$this->arreglo['id_venta'] = $id_venta;
+	                $this->arreglo['tipo_factura'] = $tipo_factura;
 
 	                //Define los parametros para la funcion
-	                $this->setParametro('id_venta','id_venta','int4');
-	                $this->setParametro('id_item','id_item','int4');
 									$this->setParametro('id_producto','id_producto','int4');
-	                $this->setParametro('id_sucursal_producto','id_sucursal_producto','int4');
 	                $this->setParametro('id_formula','id_formula','int4');
 	                $this->setParametro('tipo','tipo','varchar');
-	                $this->setParametro('estado_reg','estado_reg','varchar');
-	                $this->setParametro('cantidad_det','cantidad','numeric');
-	                $this->setParametro('precio','precio','numeric');
-	                $this->setParametro('sw_porcentaje_formula','sw_porcentaje_formula','varchar');
-	                $this->setParametro('porcentaje_descuento','porcentaje_descuento','int4');
-	                $this->setParametro('id_vendedor_medico','id_vendedor_medico','varchar');
+									$this->setParametro('precio','precio','numeric');
+									$this->setParametro('cantidad_det','cantidad','numeric');
+	                $this->setParametro('precio_total','precio_total','numeric');
+	                $this->setParametro('nombre_producto','nombre_producto','varchar');
 									$this->setParametro('descripcion','descripcion','text');
-									$this->setParametro('id_unidad_medida','id_unidad_medida','int4');
-									$this->setParametro('bruto','bruto','varchar');
-									$this->setParametro('ley','ley','varchar');
-									$this->setParametro('kg_fino','kg_fino','varchar');
+									$this->setParametro('id_venta','id_venta','int4');
 									$this->setParametro('tipo_factura','tipo_factura','varchar');
 
 	                //Ejecuta la instruccion
@@ -1405,76 +1343,84 @@ class MODVentaFacturacion extends MODbase{
 
 	            }
 
-				if ($this->aParam->getParametro('id_forma_pago') == '0') {
-					//decodifica JSON  de forma de pago
-		            $json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('formas_pago'));
-
-		            //var_dump("DATOS IRVA JSON",$json_detalle);
-		            foreach($json_detalle as $f){
-
-		                $this->resetParametros();
-		                //Definicion de variables para ejecucion del procedimiento
-		                $this->procedimiento='vef.ft_venta_forma_pago_ime';
-		                $this->transaccion='VF_VENFP_INS';
-		                $this->tipo_procedimiento='IME';
-		                //modifica los valores de las variables que mandaremos
-		                $this->arreglo['id_forma_pago'] = $f['id_forma_pago'];
-		                $this->arreglo['valor'] = $f['valor'];
-										$this->arreglo['numero_tarjeta'] = $f['numero_tarjeta'];
-										$this->arreglo['codigo_tarjeta'] = $f['codigo_tarjeta'];
-										$this->arreglo['tipo_tarjeta'] = $f['tipo_tarjeta'];
-										$this->arreglo['id_auxiliar'] = $f['id_auxiliar'];
-		                $this->arreglo['id_venta'] = $id_venta;
-
-		                //Define los parametros para la funcion
-		                $this->setParametro('id_venta','id_venta','int4');
-		                $this->setParametro('id_forma_pago','id_forma_pago','int4');
-										$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
-										$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar');
-										$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar');
-		                $this->setParametro('valor','valor','numeric');
-		                $this->setParametro('id_auxiliar','id_auxiliar','int4');
-										$this->setParametro('tipo_factura','tipo_factura','varchar');
-
-		                //Ejecuta la instruccion
-		                $this->armarConsulta();
-		                $stmt = $link->prepare($this->consulta);
-		                $stmt->execute();
-		                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-		                //recupera parametros devuelto depues de insertar ... (id_formula)
-		                $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
-		                if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
-		                    throw new Exception("Error al insertar detalle  en la bd", 3);
-		                }
-
-		            }
-		        }
-
-				if($this->aParam->getParametro('nombre_vista')!='FormVentaCounter') {
-					$this->resetParametros();
-					//Validar que todo este ok
-					$this->procedimiento = 'vef.ft_venta_facturacion_ime';
-					$this->transaccion = 'VF_FACVALI_MOD';
-					$this->setParametro('id_venta', 'id_venta', 'int4');
-					$this->setParametro('tipo_factura', 'tipo_factura', 'varchar');
-					$this->setParametro('tipo', 'tipo', 'varchar');
-					$this->setParametro('excento', 'excento', 'varchar');
-					//Ejecuta la instruccion
-					$this->armarConsulta();
-					$stmt = $link->prepare($this->consulta);
-					$stmt->execute();
-					$result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-					//recupera parametros devuelto depues de insertar ... (id_formula)
-					$resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
-					$respuesta = $resp_procedimiento['datos'];
 
 
-					if ($resp_procedimiento['tipo_respuesta'] == 'ERROR') {
-						throw new Exception("Error al ejecutar en la bd", 3);
-					}
-				}
+
+
+
+	            //decodifica JSON  de detalles
+	            $json_pago = $this->aParam->_json_decode($this->aParam->getParametro('json_formas_pago'));
+
+	          //  var_dump('detalle',$json_detalle)   ;
+	            foreach($json_pago as $p){
+									//var_dump("aqui llega las n formas de pago",$p);
+	                $this->resetParametros();
+
+									$this->procedimiento='vef.ft_venta_forma_pago_ime';
+	                $this->transaccion='VF_NFP_INS';
+	                $this->tipo_procedimiento='IME';
+	                //modifica los valores de las variables que mandaremos
+	                $this->arreglo['id_moneda'] = $p['id_moneda'];
+	                $this->arreglo['id_medio_pago'] = $p['id_medio_pago'];
+									$this->arreglo['id_auxiliar'] = $p['id_auxiliar'];
+									$this->arreglo['num_tarjeta'] = $p['num_tarjeta'];
+									$this->arreglo['codigo_autorizacion'] = $p['codigo_autorizacion'];
+									$this->arreglo['mco'] = $p['mco'];
+									$this->arreglo['monto_total_local'] = $p['monto_total_local'];
+									$this->arreglo['monto_total_extranjero'] = $p['monto_total_extranjero'];
+	                $this->arreglo['id_venta'] = $id_venta;
+									$this->arreglo['tipo_factura'] = $tipo_factura;
+
+
+	                //Define los parametros para la funcion
+									$this->setParametro('id_venta','id_venta','int4');
+	                $this->setParametro('id_moneda','id_moneda','int4');
+	                $this->setParametro('id_medio_pago','id_medio_pago','int4');
+									$this->setParametro('id_auxiliar','id_auxiliar','int4');
+									$this->setParametro('num_tarjeta','num_tarjeta','varchar');
+									$this->setParametro('codigo_autorizacion','codigo_autorizacion','varchar');
+									$this->setParametro('mco','mco','varchar');
+									$this->setParametro('monto_total_local','monto_total_local','numeric');
+									$this->setParametro('monto_total_extranjero','monto_total_extranjero','numeric');
+									$this->setParametro('tipo_factura','tipo_factura','varchar');
+
+	                //Ejecuta la instruccion
+	                $this->armarConsulta();
+	                $stmt = $link->prepare($this->consulta);
+	                $stmt->execute();
+	                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	                //recupera parametros devuelto depues de insertar ... (id_formula)
+	                $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+	                if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
+	                    throw new Exception("Error al insertar detalle  en la bd", 3);
+	                }
+
+	            }
+
+							$this->resetParametros();
+							//Validar que todo este ok
+							$this->procedimiento = 'vef.ft_venta_forma_pago_ime';
+							$this->transaccion = 'VF_FACFPVALI_MOD';
+							$this->setParametro('id_venta', 'id_venta', 'int4');
+							$this->setParametro('tipo_factura','tipo_factura','varchar');
+							//Ejecuta la instruccion
+							$this->armarConsulta();
+							$stmt = $link->prepare($this->consulta);
+							$stmt->execute();
+							$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+							//recupera parametros devuelto depues de insertar ... (id_formula)
+							$resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+							$respuesta = $resp_procedimiento['datos'];
+
+
+							if ($resp_procedimiento['tipo_respuesta'] == 'ERROR') {
+								throw new Exception("Error al ejecutar en la bd", 3);
+							}
+
+
+
 
 	            //si todo va bien confirmamos y regresamos el resultado
 	            $link->commit();
@@ -1497,6 +1443,91 @@ class MODVentaFacturacion extends MODbase{
 
 	        return $this->respuesta;
 	    }
+
+			function insertarPermisosSucursal(){
+				//Definicion de variables para ejecucion del procedimiento
+				$this->procedimiento='vef.ft_permisos_sucursales_ime';
+				$this->transaccion='VEF_SUCPERMISOS_INS';
+				$this->tipo_procedimiento='IME';
+
+				//Define los parametros para la funcion
+				$this->setParametro('id_funcionario','id_funcionario','int4');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+			}
+
+			function modificarPermisosSucursal(){
+				//Definicion de variables para ejecucion del procedimiento
+				$this->procedimiento='vef.ft_permisos_sucursales_ime';
+				$this->transaccion='VEF_SUCPERMISOS_MOD';
+				$this->tipo_procedimiento='IME';
+
+
+				//Define los parametros para la funcion
+				$this->setParametro('id_funcionario','id_funcionario','int4');
+				$this->setParametro('id_autorizacion','id_autorizacion','int4');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+			}
+
+			function eliminarPermisosSucursal(){
+				//Definicion de variables para ejecucion del procedimiento
+				$this->procedimiento='vef.ft_permisos_sucursales_ime';
+				$this->transaccion='VEF_SUCPERMISOS_ELI';
+				$this->tipo_procedimiento='IME';
+
+				//Define los parametros para la funcion
+				$this->setParametro('id_autorizacion','id_autorizacion','int4');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+			}
+
+			function listarPermisosSucursal(){
+				//Definicion de variables para ejecucion del procedimientp
+				$this->procedimiento='vef.ft_permisos_sucursales_sel';
+				$this->transaccion='VEF_SUCPERMISOS_SEL';
+				$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+				//Definicion de la lista del resultado del query
+				$this->captura('id_autorizacion','int4');
+				$this->captura('id_funcionario','int4');
+				$this->captura('estado_reg','varchar');
+				$this->captura('id_usuario_ai','int4');
+				$this->captura('fecha_reg','timestamp');
+				$this->captura('usuario_ai','varchar');
+				$this->captura('id_usuario_reg','int4');
+				$this->captura('fecha_mod','timestamp');
+				$this->captura('id_usuario_mod','int4');
+				$this->captura('usr_reg','varchar');
+				$this->captura('usr_mod','varchar');			
+				$this->captura('desc_funcionario1','varchar');
+				$this->captura('nombre_cargo','varchar');
+
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+			}
+
+
 
 }
 ?>

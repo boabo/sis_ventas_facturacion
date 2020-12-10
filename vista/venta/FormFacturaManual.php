@@ -17,11 +17,13 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     tabEnter: true,
     autoScroll: false,
     breset: true,
-    bsubmit:false,
+    bsubmit:true,
     storeFormaPago : false,
     fwidth : '9%',
     //labelSubmit: '<i class="fa fa-check"></i> Guardar',
     cantidadAllowDecimals: false,
+    formUrl: '../../../sis_ventas_facturacion/vista/venta/FormVariasFormasPago.php',
+    formClass : 'FormVariasFormasPago',
     constructor:function(config)
     {
 		Ext.apply(this,config);
@@ -237,6 +239,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         this.buildGrupos();
 
         this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
+        this.labelSubmit = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
         Phx.vista.FormFacturaManual.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
@@ -636,6 +639,12 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
           this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="190px";
           this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="50px";
+
+          this.arrayBotones[1].scope.form.buttons[1].container.dom.style.width="20px";
+          //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
+          this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.width="190px";
+          this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.height="50px";
+
 
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
@@ -2421,7 +2430,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     onReset:function(o){
 			this.generar = 'generar';
       if (this.mestore.modified.length == 0) {
-          this.onSubmit(o);
+          this.onSubmit2(o);
       } else {
         Ext.Msg.show({
          title:'Información',
@@ -2433,6 +2442,62 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       });
       }
 	   },
+
+     onSubmit:function(o){
+
+       var requiere_excento = [];
+       console.log("aqui llega doss",this.Cmp.id_dosificacion.getValue());
+       console.log("aqui llega doss",this.Cmp);
+       for (var i = 0; i < this.mestore.data.items.length; i++) {
+         requiere_excento.push(this.mestore.data.items[i].data.requiere_excento);
+       }
+
+       if (requiere_excento.includes( 'si' )) {
+         if (this.Cmp.excento.getValue() == 0) {
+           Ext.Msg.show({
+               title:'Información',
+               msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
+               maxWidth : 550,
+               width: 550,
+               buttons: Ext.Msg.OK,
+                icon: Ext.MessageBox.QUESTION,
+               scope:this
+            });
+         } else {
+           this.registrarVariasFormasPago();
+         }
+       } else if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+            Ext.Msg.show({
+                title:'Información',
+                msg: 'Favor Complete datos en la Cabecera.',
+                maxWidth : 550,
+                width: 550,
+                buttons: Ext.Msg.OK,
+                 icon: Ext.MessageBox.QUESTION,
+                scope:this
+             });
+          } else if (this.Cmp.anulado.getValue() == 'VALIDA') {
+            if (this.mestore.data.items.length == 0) {
+              Ext.Msg.show({
+                  title:'Información',
+                  msg: 'Favor Complete datos en el detalle de Conceptos.',
+                  maxWidth : 550,
+                  width: 550,
+                  buttons: Ext.Msg.OK,
+                   icon: Ext.MessageBox.QUESTION,
+                  scope:this
+               });
+            } else {
+              this.registrarVariasFormasPago();
+            }
+          }
+           else {
+            this.registrarVariasFormasPago();
+          }
+
+      },
+
+
 
      successWizard:function(resp){
          // var rec=this.sm.getSelected();
@@ -3502,7 +3567,94 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     	this.accionFormulario = 'NEW';
 	},
 
-    onSubmit: function(o) {
+
+  registrarVariasFormasPago: function(){
+
+    /*Datos a enviar al siguiente Formulario*/
+    var cliente = this.Cmp.id_cliente.getValue();
+    var nit = this.Cmp.nit.getValue();
+    var observaciones = this.Cmp.observaciones.getValue();
+    var paquetes = this.Cmp.id_formula.getValue();
+    var exento = this.Cmp.excento.getValue();
+    var sucursal = this.Cmp.id_sucursal.getValue();
+    var puntoVenta = this.Cmp.id_punto_venta.getValue();
+    var detalleConceptos = this.mestore.data.items;
+    var moneda_1 = this.Cmp.id_moneda.getValue();
+    var moneda_2 = this.Cmp.id_moneda_2.getValue();
+    var medio_pago_1 = this.Cmp.id_medio_pago.getValue();
+    var medio_pago_2 = this.Cmp.id_medio_pago_2.getValue();
+    var monto_mp_1 = this.Cmp.monto_forma_pago.getValue();
+    var monto_mp_2 = this.Cmp.monto_forma_pago_2.getValue();
+    var nro_tarjeta_1 = this.Cmp.numero_tarjeta.getValue();
+    var nro_tarjeta_2 = this.Cmp.numero_tarjeta_2.getValue();
+    var codigo_autorizacion_1 = this.Cmp.codigo_tarjeta.getValue();
+    var codigo_autorizacion_2 = this.Cmp.codigo_tarjeta_2.getValue();
+    var variables_globales = this.data.objPadre.variables_globales;
+    var total_pagar = this.suma_total;
+    var tipo_cambio = this.tipo_cambio;
+    /****************************************/
+        Phx.CP.loadWindows(this.formUrl,
+                                 '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
+                                 {
+                                     modal:true,
+                                     width:'100%',
+                                     height:'100%',
+                                     onEsc: function() {
+                                     var me = this;
+                                     Ext.Msg.confirm(
+                                         'Mensaje de Confirmación',
+                                         'Quiere cerrar el Formulario?, se perderán los datos que no han sido Guardados',
+                                         function(btn) {
+                                             if (btn == 'yes')
+                                                 this.hide();
+                                         }
+                                         );
+                                 },
+                               },
+                               {data:
+                                 { cliente: cliente,
+                                   nit: nit,
+                                   observaciones: observaciones,
+                                   paquetes: paquetes,
+                                   exento: exento,
+                                   sucursal: sucursal,
+                                   puntoVenta: puntoVenta,
+                                   detalleConceptos: detalleConceptos,
+                                   moneda_1: moneda_1,
+                                   moneda_2: moneda_2,
+                                   medio_pago_1: medio_pago_1,
+                                   medio_pago_2: medio_pago_2,
+                                   monto_mp_1: monto_mp_1,
+                                   monto_mp_2: monto_mp_2,
+                                   nro_tarjeta_1: nro_tarjeta_1,
+                                   nro_tarjeta_2: nro_tarjeta_2,
+                                   codigo_autorizacion_1: codigo_autorizacion_1,
+                                   codigo_autorizacion_2: codigo_autorizacion_2,
+                                   variables_globales: variables_globales,
+                                   total_pagar: total_pagar,
+                                   tipo_cambio: tipo_cambio,
+                                   panel_padre: this.panel,
+                                   tipo_factura: 'manual',
+                                   id_dosificacion: this.Cmp.id_dosificacion.getValue(),
+                                   nro_factura: this.Cmp.nro_factura.getValue(),
+                                   informe: this.Cmp.informe.getValue(),
+                                   fecha_factura: this.Cmp.fecha.getValue()
+                                 }
+                                },
+                                 this.idContenedor,
+                                 this.formClass,
+                                 {
+                                     config:[{
+                                               event:'successsave',
+                                               delegate: this.onSaveForm,
+                                             }],
+
+                                     scope:this
+                                  });
+
+  },
+
+    onSubmit2: function(o) {
         //  validar formularios
         var arra = [], i, me = this;
         var formapa = [];

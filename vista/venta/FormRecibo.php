@@ -17,11 +17,13 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     tabEnter: true,
     autoScroll: false,
     breset: true,
-    bsubmit:false,
+    bsubmit:true,
     storeFormaPago : false,
     fwidth : '9%',
     //labelSubmit: '<i class="fa fa-check"></i> Guardar',
     cantidadAllowDecimals: false,
+    formUrl: '../../../sis_ventas_facturacion/vista/venta/FormVariasFormasPago.php',
+    formClass : 'FormVariasFormasPago',
     constructor:function(config)
     {
 
@@ -259,8 +261,10 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
         if (this.data.objPadre.variables_globales.codigo_moneda_base=='USD') {
           this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERATE</span></div>';
+          this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">MANY FP</span></div>';
         } else {
           this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
+          this.labelSubmit = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
         }
 
         Phx.vista.FormRecibo.superclass.constructor.call(this,config);
@@ -476,6 +480,27 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     },
 
     iniciarEventos : function () {
+      /*****Aqui poniendo el Boton para realizar pagos por WorlPay******/
+      // Ext.getCmp('dividirFormasPago').el.dom.style.height = '100px';
+      // Ext.getCmp('dividirFormasPago').el.dom.style.width = '200px';
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.height = '100px';
+      // Ext.getCmp('dividirFormasPago').el.dom.style.background = 'red';
+      //
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.fontSize = '22px';
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.textShadow = '2px 0px 0px #000000';
+      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = '#1479B8';
+      //
+      //
+      //
+      //   Ext.getCmp('dividirFormasPago').el.dom.onmouseover = function () {
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.background = '#065779';
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = 'white';
+      // }
+      //
+      //   Ext.getCmp('dividirFormasPago').el.dom.onmouseout = function () {
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.background = '';
+      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = '#1479B8';
+      // };
 
 
         /*****Aqui poniendo el Boton para realizar pagos por WorlPay******/
@@ -545,6 +570,11 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
           this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.width="190px";
           this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="50px";
+
+          this.arrayBotones[1].scope.form.buttons[1].container.dom.style.width="20px";
+          //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.border="2px solid blue";
+          this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.width="190px";
+          this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.height="50px";
 
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
           this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
@@ -2005,6 +2035,34 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                              }],
                           }]
                       },
+                      // {
+                      //  bodyStyle: 'padding-right:5px;',
+                      //
+                      //  border: false,
+                      //  items: [{
+                      //        xtype: 'fieldset',
+                      //        frame: true,
+                      //        layout: 'form',
+                      //        width: '33%',
+                      //        border: false,
+                      //        id:'botonFormasPago',
+                      //        title: '<br><br>',
+                      //        style: {
+                      //                 width: '40%',
+                      //               },
+                      //        padding: '0 0 0 10',
+                      //        bodyStyle: 'padding-left:5px;',
+                      //        id_grupo: 20,
+                      //        items: [{
+                      //          xtype:'button',
+                      //          id:'dividirFormasPago',
+                      //          text:'<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:50px; vertical-align: middle;"><br><span style="font-weight:bold;"> Varias Formas <br>de Pago</span>',
+                      //          handler: this.registrarVariasFormasPago,
+                      //          scope:this,
+                      //          scale: 'medium'
+                      //        }],
+                      //     }]
+                      // },
                       ]
                       }
                          ]
@@ -2019,7 +2077,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     onReset:function(o){
 			this.generar = 'generar';
       if (this.mestore.modified.length == 0) {
-          this.onSubmit(o);
+          this.onSubmit2(o);
       } else {
         Ext.Msg.show({
          title:'Información',
@@ -2030,6 +2088,55 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       });
       }
 	   },
+
+     onSubmit:function(o){
+
+          if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+            Ext.Msg.show({
+                title:'Información',
+                msg: 'Favor Complete datos en la Cabecera.',
+                maxWidth : 550,
+                width: 550,
+                buttons: Ext.Msg.OK,
+                 icon: Ext.MessageBox.QUESTION,
+                scope:this
+             });
+          }
+
+          else if (this.mestore.data.items.length == 0) {
+            Ext.Msg.show({
+                title:'Información',
+                msg: 'Favor Complete datos en el detalle de Conceptos.',
+                maxWidth : 550,
+                width: 550,
+                buttons: Ext.Msg.OK,
+                 icon: Ext.MessageBox.QUESTION,
+                scope:this
+             });
+          }
+
+
+          else if  (this.instanciasPagoAnticipo == 'si') {
+            console.log("aqui llega datos para mandar",this.instanciasPagoAnticipo);
+            console.log("aqui llega datos para mandar22222",this.Cmp.id_auxiliar_anticipo.getValue());
+            if (this.Cmp.id_auxiliar_anticipo.getValue() == '' || this.Cmp.id_auxiliar_anticipo.getValue() == null) {
+              Ext.Msg.show({
+                    title:'Información',
+                    msg: 'Tiene un concepto del tipo Anticipo favor complete la información de la cuenta corriente.',
+                    maxWidth : 550,
+                    width: 550,
+                    buttons: Ext.Msg.OK,
+                     icon: Ext.MessageBox.QUESTION,
+                    scope:this
+                 });
+            } else {
+              this.registrarVariasFormasPago();
+            }
+          } else {
+            this.registrarVariasFormasPago();
+          }
+
+ 	   },
 
      successWizard:function(resp){
          // var rec=this.sm.getSelected();
@@ -4176,9 +4283,92 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
     },
 
+    registrarVariasFormasPago: function(){
 
-    onSubmit: function(o) {
+      /*Datos a enviar al siguiente Formulario*/
+      var cliente = this.Cmp.id_cliente.getValue();
+      var nit = this.Cmp.nit.getValue();
+      var observaciones = this.Cmp.observaciones.getValue();
+      var paquetes = this.Cmp.id_formula.getValue();
+      //var exento = this.Cmp.excento.getValue();
+      var sucursal = this.Cmp.id_sucursal.getValue();
+      var puntoVenta = this.Cmp.id_punto_venta.getValue();
+      var detalleConceptos = this.mestore.data.items;
+      var moneda_1 = this.Cmp.id_moneda.getValue();
+      var moneda_2 = this.Cmp.id_moneda_2.getValue();
+      var medio_pago_1 = this.Cmp.id_medio_pago.getValue();
+      var medio_pago_2 = this.Cmp.id_medio_pago_2.getValue();
+      var monto_mp_1 = this.Cmp.monto_forma_pago.getValue();
+      var monto_mp_2 = this.Cmp.monto_forma_pago_2.getValue();
+      var nro_tarjeta_1 = this.Cmp.numero_tarjeta.getValue();
+      var nro_tarjeta_2 = this.Cmp.numero_tarjeta_2.getValue();
+      var codigo_autorizacion_1 = this.Cmp.codigo_tarjeta.getValue();
+      var codigo_autorizacion_2 = this.Cmp.codigo_tarjeta_2.getValue();
+      var variables_globales = this.data.objPadre.variables_globales;
+      var total_pagar = this.suma_total;
+      var tipo_cambio = this.tipo_cambio;
+      var id_auxiliar_anticipo = this.Cmp.id_auxiliar_anticipo.getValue();
+      /****************************************/
+        Phx.CP.loadWindows(this.formUrl,
+                                 '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
+                                 {
+                                     modal:true,
+                                     width:'100%',
+                                     height:'100%',
+                                     onEsc: function() {
+                                     var me = this;
+                                     Ext.Msg.confirm(
+                                         'Mensaje de Confirmación',
+                                         'Quiere cerrar el Formulario?, se perderán los datos que no han sido Guardados',
+                                         function(btn) {
+                                             if (btn == 'yes')
+                                                 this.hide();
+                                         }
+                                         );
+                                 },
+                               },
+                               {data:
+                                 { cliente: cliente,
+                                   nit: nit,
+                                   observaciones: observaciones,
+                                   paquetes: paquetes,
+                                   sucursal: sucursal,
+                                   puntoVenta: puntoVenta,
+                                   detalleConceptos: detalleConceptos,
+                                   moneda_1: moneda_1,
+                                   moneda_2: moneda_2,
+                                   medio_pago_1: medio_pago_1,
+                                   medio_pago_2: medio_pago_2,
+                                   monto_mp_1: monto_mp_1,
+                                   monto_mp_2: monto_mp_2,
+                                   nro_tarjeta_1: nro_tarjeta_1,
+                                   nro_tarjeta_2: nro_tarjeta_2,
+                                   codigo_autorizacion_1: codigo_autorizacion_1,
+                                   codigo_autorizacion_2: codigo_autorizacion_2,
+                                   variables_globales: variables_globales,
+                                   total_pagar: total_pagar,
+                                   tipo_cambio: tipo_cambio,
+                                   panel_padre: this.panel,
+                                   tipo_factura: 'recibo',
+                                   id_auxiliar_anticipo: id_auxiliar_anticipo
+                                 }
+                                },
+                                 this.idContenedor,
+                                 this.formClass,
+                                 {
+                                     config:[{
+                                               event:'successsave',
+                                               delegate: this.onSaveForm,
+                                             }],
+
+                                     scope:this
+                                  });
+    },
+
+
+    onSubmit2: function(o) {
         //  validar formularios
+        console.log("aqui llega data 2222 irva");
         var arra = [], i, me = this;
         var formapa = [];
         for (i = 0; i < me.megrid.store.getCount(); i++) {

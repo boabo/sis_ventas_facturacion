@@ -137,7 +137,7 @@ DECLARE
     v_codigo_tarjeta_instancia varchar;
     v_numero_tarjeta varchar;
     v_monto_transaccion varchar;
-    v_id_moneda varchar;
+    v_id_moneda integer;
     /********************/
 
 
@@ -168,6 +168,17 @@ DECLARE
     v_año_actual			varchar;
     v_id_dosificacion_ro	integer;
     v_existencia			numeric;
+
+    /*Aumentando para verificar dosificacion*/
+    v_dosificacion_sucursal	record;
+    v_dosificacion_concepto	record;
+    v_dosificacion_por_concepto record;
+    /****************************************/
+
+    /*Aumentando para los recibos en n formas de pago (Ismael Valdivia 09/12/2020)*/
+    v_id_moneda_venta_recibo integer;
+    v_id_auxiliar_anticipo	integer;
+    /******************************************************************************/
 
 BEGIN
 
@@ -2570,7 +2581,9 @@ BEGIN
           --por que  valida al insertar la factura, donde se genera el nro de la factura
           END IF;
 
-         select array_agg(distinct cig.id_actividad_economica) into v_id_actividad_economica
+         select array_agg(distinct cig.id_actividad_economica)
+         	    into
+                v_id_actividad_economica
           from vef.tventa_detalle vd
             --inner join vef.tsucursal_producto sp on vd.id_sucursal_producto = sp.id_sucursal_producto
             --inner join param.tconcepto_ingas cig on  cig.id_concepto_ingas = sp.id_concepto_ingas
@@ -2579,6 +2592,42 @@ BEGIN
 
           --genera el numero de factura
           IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
+
+          	/*Aqui separamos para veirificar la dosificacion por la sucursal y por el concepto*/
+
+			select d.* into v_dosificacion_sucursal
+            from vef.tdosificacion d
+            where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
+                  d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
+                  d.id_sucursal = v_venta.id_sucursal;
+
+			if (v_dosificacion_sucursal is null ) then
+            	raise exception 'No existe una dosificacion registrada para la sucursal. Favor contactarse con personal de Contabilidad.';
+            end if;
+
+            for v_dosificacion_concepto in (
+                                            select '{'||cig.id_actividad_economica||'}' as id_actividad,
+                                            	   cig.desc_ingas
+                                            from vef.tventa_detalle vd
+                                              inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = vd.id_producto
+                                            where vd.id_venta = v_venta.id_venta and vd.estado_reg = 'activo'
+            )loop
+
+            select d.* into v_dosificacion_por_concepto
+            from vef.tdosificacion d
+            where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
+                  d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
+                  d.id_sucursal = v_venta.id_sucursal and
+                  d.id_activida_economica @> v_dosificacion_concepto.id_actividad::integer[];
+
+              if (v_dosificacion_por_concepto is null) then
+                  raise exception 'No existe parametrizada una dosificación para el concepto <b>%</b>. Favor Contactarse con personal de Contabilidad.',v_dosificacion_concepto.desc_ingas;
+              end if;
+
+
+            end loop;
+
+            /**********************************************************************************/
 
             select d.* into v_dosificacion
             from vef.tdosificacion d
@@ -3736,43 +3785,40 @@ BEGIN
     elseif(p_transaccion='VEF_ANULAR_IME')then
       begin
 
-     	/*for v_respaldo in ( select
-        	  ven.id_venta,
-              ven.nombre_factura,
-              ven.nit,
-              ven.cod_control,
-              ven.nro_factura,
-              ven.total_venta,
-              ven.total_venta_msuc,
-              ven.id_sucursal,
-              ven.id_cliente,
-              ven.id_punto_venta,
-              ven.observaciones,
-              ven.id_moneda,
-              ven.excento,
-              ven.fecha,
-              vendet.id_sucursal_producto,
-              vendet.id_formula,
-              vendet.id_producto,
-              vendet.cantidad,
-              vendet.precio,
-              vendet.tipo,
-              vendet.descripcion,
-              fp.id_forma_pago,
-              fp.monto,
-              fp.monto_transaccion,
-              fp.monto_mb_efectivo,
-              fp.numero_tarjeta,
-              fp.codigo_tarjeta,
-              fp.tipo_tarjeta,
-              fp.id_auxiliar,
-              dos.nroaut,
-              ven.id_dosificacion
-        from vef.tventa ven
-        inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
-        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
-        inner join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-        where ven.id_venta = v_parametros.id_venta ) LOOP*/
+     	select * into v_venta
+        from vef.tventa v
+        where v.id_venta = v_parametros.id_venta;
+
+        if (v_venta.id_punto_venta is null) then
+          select  su.tipo_usuario into v_tipo_usuario
+          from vef.tsucursal_usuario su
+          where id_sucursal = v_venta.id_sucursal and su.id_usuario = p_id_usuario;
+        else
+          select  su.tipo_usuario into v_tipo_usuario
+          from vef.tsucursal_usuario su
+          where su.id_punto_venta = v_venta.id_punto_venta and su.id_usuario = p_id_usuario;
+        end if;
+
+        if (p_administrador != 1) then
+
+        	select  count (permiso.id_autorizacion) into v_existencia
+            from vef.tpermiso_sucursales permiso
+            where permiso.id_funcionario = (select fun.id_funcionario
+                                            from segu.tusuario usu
+                                            inner join orga.vfuncionario funcio on funcio.id_persona = usu.id_persona
+                                            inner join orga.vfuncionario_ultimo_cargo fun on fun.id_funcionario = funcio.id_funcionario
+                                            where usu.id_usuario = p_id_usuario);
+            if (v_existencia = 0) then
+              if (v_tipo_usuario = 'cajero') then
+                if (v_venta.fecha != now()::date ) then
+                        raise exception 'La venta solo puede ser anulada el mismo dia o por un administrador';
+                end if;
+              end if;
+            end if;
+
+
+
+        end if;
 
         select 	* into v_respaldo
         from vef.tventa ven
@@ -3803,7 +3849,7 @@ BEGIN
                 precio,
                 tipo,
                 descripcion,
-                id_forma_pago,
+                id_medio_pago,
                 monto,
                 monto_transaccion,
                 monto_mb_efectivo,
@@ -3838,7 +3884,7 @@ BEGIN
                 v_respaldo.precio,
                 v_respaldo.tipo,
                 v_respaldo.descripcion,
-                v_respaldo.id_forma_pago,
+                v_respaldo.id_medio_pago,
                 v_respaldo.monto,
                 v_respaldo.monto_transaccion,
                 v_respaldo.monto_mb_efectivo,
@@ -3879,39 +3925,7 @@ BEGIN
 
 
 
-        select * into v_venta
-        from vef.tventa v
-        where v.id_venta = v_parametros.id_venta;
 
-        v_tipo_usuario = 'vendedor';
-
-        if (v_venta.id_punto_venta is null) then
-          select  su.tipo_usuario into v_tipo_usuario
-          from vef.tsucursal_usuario su
-          where id_sucursal = v_venta.id_sucursal and su.id_usuario = p_id_usuario;
-        else
-          select  su.tipo_usuario into v_tipo_usuario
-          from vef.tsucursal_usuario su
-          where su.id_punto_venta = v_venta.id_punto_venta and su.id_usuario = p_id_usuario;
-        end if;
-
-        /*if ((v_tipo_usuario = 'vendedor' and v_venta.fecha != now()::date) or p_administrador != 1) then
-          raise exception 'La venta solo puede ser anulada el mismo dia o por un administrador';
-        end if;*/
-
-        if ((v_tipo_usuario = 'vendedor' or v_tipo_usuario = 'cajero')) then
-          if (v_venta.id_usuario_reg != p_id_usuario and v_venta.fecha != now()::date ) then
-                  raise exception 'La venta solo puede ser anulada el mismo dia o por un administrador';
-          end if;
-        else
-        	select 'administrador'::varchar as rol into v_tipo_usuario
-            from segu.tusuario_rol usurol
-            where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 190 or usurol.id_rol = 1);
-
-        	if ((v_tipo_usuario != 'administrador')) then
-            	raise exception 'La venta solo puede ser anulada el mismo dia o por un administrador';
-            end if;
-        end if;
 
         --obtenemos datos basicos
         select
@@ -4022,37 +4036,32 @@ BEGIN
 
   	BEGIN
 
-        select count (usu.id_depto)
-        into
-        v_existencia
-        from param.tdepto_usuario usu
-        where usu.id_usuario = p_id_usuario;
+        select  count (permiso.id_autorizacion) into v_existencia
+        from vef.tpermiso_sucursales permiso
+        where permiso.id_funcionario = (select fun.id_funcionario
+                                        from segu.tusuario usu
+                                        inner join orga.vfuncionario funcio on funcio.id_persona = usu.id_persona
+                                        inner join orga.vfuncionario_ultimo_cargo fun on fun.id_funcionario = funcio.id_funcionario
+                                        where usu.id_usuario = p_id_usuario);
 
-        IF (v_existencia > 0) THEN
-        	select 'administrador'::varchar as rol into v_tipo_usuario;
+    	if (v_existencia > 0) then
+        	select 'administrador_facturacion'::varchar as rol into v_tipo_usuario;
         else
-
-        select 'administrador'::varchar as rol into v_tipo_usuario
-        from segu.tusuario_rol usurol
-        where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 190 or usurol.id_rol = 1);
-
-          if (v_tipo_usuario is null) then
 
               if (v_parametros.vista = 'cajero') then
 
-              select 'cajero'::varchar as rol into v_tipo_usuario
-              from segu.tusuario_rol usurol
-              where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 163 OR usurol.id_rol = 268);
+                    select 'cajero'::varchar as rol into v_tipo_usuario
+                    from segu.tusuario_rol usurol
+                    where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 163 OR usurol.id_rol = 268);
 
               elsif (v_parametros.vista = 'counter') then
 
-              select 'vendedor'::varchar as rol into v_tipo_usuario
-              from segu.tusuario_rol usurol
-              where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 189 OR usurol.id_rol = 267);
+                    select 'vendedor'::varchar as rol into v_tipo_usuario
+                    from segu.tusuario_rol usurol
+                    where usurol.id_usuario = p_id_usuario and usurol.estado_reg = 'activo' and (usurol.id_rol = 189 OR usurol.id_rol = 267);
 
               end if;
-          end if;
-    	end if;
+        end if;
 
       --Definition of the response
       	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Tipo Usuario');
@@ -4603,6 +4612,558 @@ BEGIN
                 v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Registro exitoso');
                 --Devuelve la respuesta
                 return v_resp;
+
+            end;
+
+
+            /*********************************
+             #TRANSACCION:  'VF_FPINS_INS'
+             #DESCRIPCION:	Inserccion de n formas de pago para una venta
+             #AUTOR:		Ismael Valdivia
+             #FECHA:		07-12-2020 15:12:00
+            ***********************************/
+
+            elsif(p_transaccion='VF_FPINS_INS')then
+
+              begin
+              	if (v_parametros.tipo_factura = 'computarizada' OR v_parametros.tipo_factura = 'recibo') then
+                	v_fecha = now()::date;
+                ELSIF (v_parametros.tipo_factura = 'manual' OR v_parametros.tipo_factura = 'recibo_manual') then
+                	v_fecha = v_parametros.fecha_factura::date;
+                end if;
+                v_tiene_formula = 'no';
+                v_anulado = 'NO';
+
+				v_tipo_factura = v_parametros.tipo_factura;
+
+                select id_periodo into v_id_periodo from
+                  param.tperiodo per
+                where per.fecha_ini <= v_fecha
+                      and per.fecha_fin >=  v_fecha
+                limit 1 offset 0;
+
+                if (pxp.f_existe_parametro(p_tabla,'id_punto_venta')) then
+                  select pv.codigo into v_codigo_tabla
+                  from vef.tpunto_venta pv
+                  where id_punto_venta = v_parametros.id_punto_venta;
+                else
+                  select pv.codigo into v_codigo_tabla
+                  from vef.tsucursal pv
+                  where id_sucursal = v_parametros.id_sucursal;
+                end if;
+
+
+                if (pxp.f_existe_parametro(p_tabla,'id_punto_venta')) then
+                  v_id_punto_venta = v_parametros.id_punto_venta;
+
+                  if (v_tipo_factura = 'manual') then
+                      --validar que no exista el mismo nro para la dosificacion
+                      if (exists(	select 1
+                                   from vef.tventa ven
+                                   where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
+                        raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
+                      end if;
+
+                      --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                      if (exists(	select 1
+                                   from vef.tdosificacion dos
+                                   where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+                        raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
+                      end if;
+
+                      --validar que la fecha de factura no sea superior a la fecha limite de emision
+                      if (exists(	select 1
+                                   from vef.tdosificacion dos
+                                   where dos.fecha_limite < v_parametros.fecha_factura::date and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+                        raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
+                      end if;
+
+                      if (exists(	select 1
+                                   from vef.tapertura_cierre_caja acc
+                                   where acc.fecha_apertura_cierre = v_parametros.fecha_factura::date and
+                                         acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
+                                         acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
+                        raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
+                      end if;
+
+
+                      if (not exists(	select 1
+                                       from vef.tapertura_cierre_caja acc
+                                       where acc.fecha_apertura_cierre = v_parametros.fecha_factura::date and
+                                             acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                                             acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
+                        raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+                      end if;
+                  ELSIF (v_tipo_factura = 'recibo_manual') then
+
+						select d.* into v_dosificacion
+                        from vef.tdosificacion_ro d
+                        where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_fecha and
+                              d.fecha_limite >= v_fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'manual' and
+                              d.id_sucursal = v_parametros.id_sucursal;
+
+                        if (v_dosificacion is null) then
+                                raise exception 'No existe una dosificacion activa para emitir el Recibo';
+                        end if;
+
+                        v_id_dosificacion_ro = v_dosificacion.id_dosificacion_ro;
+						v_id_dosificacion = null;
+                        --validaciones de factura manual
+                        --validar que no exista el mismo nro para la dosificacion
+                        if (exists(	select 1
+                                     from vef.tventa ven
+                                     where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'Ya existe el mismo número de Recibo en otra venta. Por favor revise los datos';
+                        end if;
+
+                        --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                        if (exists(	select 1
+                                     from vef.tdosificacion_ro dos
+                                     where v_parametros.nro_factura::integer < dos.inicial and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'El número de Recibo es menor al número Inicial permitido para esta dosificacion';
+                        end if;
+
+                        --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                        if (exists(	select 1
+                                     from vef.tdosificacion_ro dos
+                                     where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
+                        end if;
+
+                        --validar que la fecha de factura no sea superior a la fecha limite de emision
+                        if (exists(	select 1
+                                     from vef.tdosificacion_ro dos
+                                     where dos.fecha_limite < v_parametros.fecha_factura::date and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'La fecha de la Recibo supera la fecha limite de emision de la dosificacion';
+                        end if;
+                  else
+                      if (exists(	select 1
+                                   from vef.tapertura_cierre_caja acc
+                                   where acc.fecha_apertura_cierre = v_fecha and
+                                         acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
+                                         acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
+                        raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
+                      end if;
+
+
+                      if (not exists(	select 1
+                                       from vef.tapertura_cierre_caja acc
+                                       where acc.fecha_apertura_cierre = v_fecha and
+                                             acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                                             acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
+                        raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+                      end if;
+                  end if;
+
+
+
+                else
+                  v_id_punto_venta = NULL;
+					if (v_tipo_factura = 'manual') then
+
+                    	--validar que no exista el mismo nro para la dosificacion
+                        if (exists(	select 1
+                                     from vef.tventa ven
+                                     where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
+                          raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
+                        end if;
+
+                        --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                        if (exists(	select 1
+                                     from vef.tdosificacion dos
+                                     where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+                          raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
+                        end if;
+
+                        --validar que la fecha de factura no sea superior a la fecha limite de emision
+                        if (exists(	select 1
+                                     from vef.tdosificacion dos
+                                     where dos.fecha_limite < v_parametros.fecha_factura::date and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+                          raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
+                        end if;
+
+
+                    	 if (exists(	select 1
+                               from vef.tapertura_cierre_caja acc
+                               where acc.fecha_apertura_cierre = v_parametros.fecha_factura::date and
+                                     acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
+                                     acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
+                          raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
+                        end if;
+
+
+                        if (not exists(	select 1
+                                         from vef.tapertura_cierre_caja acc
+                                         where acc.fecha_apertura_cierre = v_parametros.fecha_factura and
+                                               acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                                               acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
+                          raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+                        end if;
+                    ELSIF (v_tipo_factura = 'recibo_manual') then
+
+						select d.* into v_dosificacion
+                        from vef.tdosificacion_ro d
+                        where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_fecha and
+                              d.fecha_limite >= v_fecha and d.tipo = 'Recibo' and d.tipo_generacion = 'manual' and
+                              d.id_sucursal = v_parametros.id_sucursal;
+
+                        if (v_dosificacion is null) then
+                                raise exception 'No existe una dosificacion activa para emitir el Recibo';
+                        end if;
+
+                        v_id_dosificacion_ro = v_dosificacion.id_dosificacion_ro;
+                        v_id_dosificacion = null;
+
+                        --validaciones de factura manual
+                        --validar que no exista el mismo nro para la dosificacion
+                        if (exists(	select 1
+                                     from vef.tventa ven
+                                     where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'Ya existe el mismo número de Recibo en otra venta. Por favor revise los datos';
+                        end if;
+
+                        --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                        if (exists(	select 1
+                                     from vef.tdosificacion_ro dos
+                                     where v_parametros.nro_factura::integer < dos.inicial and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'El número de Recibo es menor al número Inicial permitido para esta dosificacion';
+                        end if;
+
+                        --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+                        if (exists(	select 1
+                                     from vef.tdosificacion_ro dos
+                                     where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
+                        end if;
+
+                        --validar que la fecha de factura no sea superior a la fecha limite de emision
+                        if (exists(	select 1
+                                     from vef.tdosificacion_ro dos
+                                     where dos.fecha_limite < v_parametros.fecha_factura::date and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                          raise exception 'La fecha de la Recibo supera la fecha limite de emision de la dosificacion';
+                        end if;
+                    else
+                    	if (exists(	select 1
+                               from vef.tapertura_cierre_caja acc
+                               where acc.fecha_apertura_cierre = v_fecha and
+                                     acc.estado_reg = 'activo' and acc.estado = 'cerrado' and
+                                     acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
+                          raise exception 'La caja ya fue cerrada, el cajero necesita tener la caja abierta para poder registrar la venta';
+                        end if;
+
+
+                        if (not exists(	select 1
+                                         from vef.tapertura_cierre_caja acc
+                                         where acc.fecha_apertura_cierre = v_fecha and
+                                               acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                                               acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
+                          raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+                        end if;
+
+                    end if;
+
+
+                end if;
+
+                -- obtener correlativo
+                v_num_ven =   param.f_obtener_correlativo(
+                    'VEN',
+                    v_id_periodo,-- par_id,
+                    NULL, --id_uo
+                    NULL,    -- id_depto
+                    p_id_usuario,
+                    'VEF',
+                    NULL,
+                    0,
+                    0,
+                    (case when v_id_punto_venta is not null then
+                      'vef.tpunto_venta'
+                     else
+                       'vef.tsucursal'
+                     end),
+                    (case when v_id_punto_venta is not null then
+                      v_id_punto_venta
+                     else
+                       v_parametros.id_sucursal
+                     end),
+                    v_codigo_tabla
+                );
+
+                --fin obtener correlativo
+                IF (v_num_ven is NULL or v_num_ven ='') THEN
+                  raise exception 'No se pudo obtener un numero correlativo para la venta consulte con el administrador';
+                END IF;
+
+                v_porcentaje_descuento = 0;
+
+
+                if (v_id_punto_venta is not null) then
+                  select id_sucursal into v_id_sucursal
+                  from vef.tpunto_venta
+                  where id_punto_venta = v_id_punto_venta;
+                else
+                  v_id_sucursal = v_parametros.id_sucursal;
+
+                end if;
+
+				v_a_cuenta = 0;
+				v_comision = 0;
+                v_fecha_estimada_entrega = now();
+				v_hora_estimada_entrega = now()::time;
+             	v_forma_pedido ='cajero';
+
+
+                if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
+                  v_id_cliente = v_parametros.id_cliente::integer;
+
+                  update vef.tcliente
+                  set nit = v_parametros.nit
+                  where id_cliente = v_id_cliente;
+
+                  select c.nombre_factura into v_nombre_factura
+                  from vef.tcliente c
+                  where c.id_cliente = v_id_cliente;
+                else
+                  INSERT INTO
+                    vef.tcliente
+                    (
+                      id_usuario_reg,
+                      fecha_reg,
+                      estado_reg,
+                      nombre_factura,
+                      nit
+                    )
+                  VALUES (
+                    p_id_usuario,
+                    now(),
+                    'activo',
+                    upper(v_parametros.id_cliente),
+                    v_parametros.nit
+                  ) returning id_cliente into v_id_cliente;
+
+                  v_nombre_factura = v_parametros.id_cliente;
+
+                end if;
+
+                v_id_cliente_destino = null;
+
+
+                --obtener gestion a partir de la fecha actual
+                select id_gestion into v_id_gestion
+                from param.tgestion
+                where gestion = extract(year from now())::integer;
+
+                select nextval('vef.tventa_id_venta_seq') into v_id_venta;
+
+                v_codigo_proceso = 'VEN-' || v_id_venta;
+
+
+                select f.id_funcionario into  v_id_funcionario_inicio
+                from segu.tusuario u
+                  inner join orga.tfuncionario f on f.id_persona = u.id_persona
+                where u.id_usuario = p_id_usuario;
+
+                SELECT
+                  ps_num_tramite ,
+                  ps_id_proceso_wf ,
+                  ps_id_estado_wf ,
+                  ps_codigo_estado
+                into
+                  v_num_tramite,
+                  v_id_proceso_wf,
+                  v_id_estado_wf,
+                  v_codigo_estado
+
+                FROM wf.f_inicia_tramite(
+                    p_id_usuario,
+                    v_parametros._id_usuario_ai,
+                    v_parametros._nombre_usuario_ai,
+                    v_id_gestion,
+                    'VEN',
+                    v_id_funcionario_inicio,
+                    NULL,
+                    NULL,
+                    v_codigo_proceso);
+
+                /*Poniendo la condicion de facturacion*/
+                if (pxp.f_existe_parametro(p_tabla,'formato_factura')) then
+                    v_formato_factura = v_parametros.formato_factura;
+                else
+                    v_formato_factura = null;
+                end if;
+
+                if (pxp.f_existe_parametro(p_tabla,'correo_electronico')) then
+                    v_correo_electronico = v_parametros.correo_electronico;
+                else
+                    v_correo_electronico = null;
+                end if;
+                /**************************************/
+
+                /*Aqui seteamos los valores para recibos*/
+                if (v_parametros.tipo_factura = 'recibo') then
+                	v_id_moneda_venta_recibo = v_parametros.moneda_recibo;
+                    v_id_auxiliar_anticipo = v_parametros.id_auxiliar_anticipo;
+                    v_id_moneda = v_parametros.moneda_recibo;
+                    v_id_dosificacion = null;
+                    v_nro_factura = null;
+                    v_informe = null;
+
+                elsif (v_parametros.tipo_factura = 'manual') then
+                	v_id_dosificacion = v_parametros.id_dosificacion;
+                    v_nro_factura = v_parametros.nro_factura;
+                    v_informe = v_parametros.informe;
+
+                elsif (v_parametros.tipo_factura = 'recibo_manual') then
+
+                	v_id_moneda_venta_recibo = v_parametros.moneda_recibo;
+                    v_id_auxiliar_anticipo = v_parametros.id_auxiliar_anticipo;
+                    v_id_moneda = v_parametros.moneda_recibo;
+                	v_id_dosificacion = null;
+                    v_nro_factura = v_parametros.nro_factura;
+                    v_informe = null;
+
+                else
+                	v_id_moneda_venta_recibo = null;
+                    v_id_auxiliar_anticipo = null;
+                    v_id_dosificacion = null;
+                    v_nro_factura = null;
+                    v_informe = null;
+
+                    select mon.id_moneda into v_id_moneda
+                    from param.tmoneda mon
+                    where mon.tipo_moneda = 'base';
+
+
+                end if;
+                /****************************************/
+
+                --Sentencia de la insercion
+                insert into vef.tventa(
+                  id_venta,
+                  id_cliente,
+                  id_sucursal,
+                  id_proceso_wf,
+                  id_estado_wf,
+                  estado_reg,
+                  nro_tramite,
+                  a_cuenta,
+                  fecha_estimada_entrega,
+                  usuario_ai,
+                  fecha_reg,
+                  id_usuario_reg,
+                  id_usuario_ai,
+                  id_usuario_mod,
+                  fecha_mod,
+                  estado,
+                  id_punto_venta,
+                  id_vendedor_medico,
+                  porcentaje_descuento,
+                  comision,
+                  observaciones,
+                  correlativo_venta,
+                  tipo_factura,
+                  fecha,
+                  nro_factura,
+                  id_dosificacion,
+                  excento,
+
+                  id_moneda,
+                  transporte_fob,
+                  seguros_fob,
+                  otros_fob,
+                  transporte_cif,
+                  seguros_cif,
+                  otros_cif,
+                  tipo_cambio_venta,
+                  valor_bruto,
+                  descripcion_bulto,
+                  nit,
+                  nombre_factura,
+                  id_cliente_destino,
+                  hora_estimada_entrega,
+                  tiene_formula,
+                  forma_pedido,
+                  informe,
+                  anulado,
+                  /*Aumentando para registrar nuevos campos*/
+                  formato_factura_emitida,
+                  enviar_correo,
+                  correo_electronico,
+                  total_venta,
+                  total_venta_msuc,
+                  id_usuario_cajero,
+                  id_moneda_venta_recibo,
+                  id_auxiliar_anticipo,
+                  id_dosificacion_ro
+                  /*****************************************/
+                ) values(
+                  v_id_venta,
+                  v_id_cliente,
+                  v_id_sucursal,
+                  v_id_proceso_wf,
+                  v_id_estado_wf,
+                  'activo',
+                  v_num_tramite,
+                  v_a_cuenta,
+                  v_fecha_estimada_entrega,
+                  v_parametros._nombre_usuario_ai,
+                  now(),
+                  p_id_usuario,
+                  v_parametros._id_usuario_ai,
+                  null,
+                  null,
+                  v_codigo_estado,
+                  v_id_punto_venta,
+                  v_id_vendedor_medico,
+                  v_porcentaje_descuento,
+                  v_comision,
+                  upper(v_parametros.observaciones),
+                  v_num_ven,
+                  v_tipo_factura,
+                  v_fecha,
+                  v_nro_factura,
+                  v_id_dosificacion,
+                  v_parametros.excento,
+
+
+                  v_id_moneda,
+                  COALESCE(v_transporte_fob,0),
+                  COALESCE(v_seguros_fob,0),
+                  COALESCE(v_otros_fob,0),
+                  COALESCE(v_transporte_cif,0),
+                  COALESCE(v_seguros_cif,0),
+                  COALESCE(v_otros_cif,0),
+                  COALESCE(v_tipo_cambio_venta,0),
+                  COALESCE(v_valor_bruto,0),
+                  COALESCE(v_descripcion_bulto,''),
+                  v_parametros.nit,
+                  v_nombre_factura,
+                  v_id_cliente_destino,
+                  v_hora_estimada_entrega,
+                  v_tiene_formula,
+                  v_forma_pedido,
+                  v_informe,
+                  v_anulado,
+
+                  v_formato_factura,
+                  v_enviar_correo,
+                  v_correo_electronico,
+                  v_parametros.total_venta,
+				  v_parametros.total_venta,
+                  p_id_usuario,
+                  v_id_moneda_venta_recibo,
+                  v_id_auxiliar_anticipo,
+                  v_id_dosificacion_ro
+
+                ) returning id_venta into v_id_venta;
+
+
+              --Definicion de la respuesta
+              v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Ventas almacenado(a) con exito (id_venta'||v_id_venta||')');
+              v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_id_venta::varchar);
+
+              --Devuelve la respuesta
+              return v_resp;
 
             end;
 

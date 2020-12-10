@@ -25,12 +25,6 @@ class ACTServicios extends ACTbase{
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
 			}
 		}
-		// if($this->objParam->getParametro('regionales')!=''){
-		// 		$this->objParam->addFiltro("''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales)");
-		// }
-		/**************************************************************************************************************/
-
-
 
 		/*Listamos los conceptos de acuerdo al tipo seleccionado para los paquetes (Ismael Valdivia)*/
 		if($this->objParam->getParametro('tipo_serv') != '') {
@@ -39,7 +33,6 @@ class ACTServicios extends ACTbase{
 		}
 		/********************************************************************************************/
 
-
 		/*Filtro para que solo liste los servicios de movimiento ingreso o recurso*/
 		if($this->objParam->getParametro('movimiento') != '') {
 			$this->objParam->addFiltro("(ingas.movimiento = ''ingreso'' or ingas.movimiento = ''recurso'' )
@@ -47,15 +40,12 @@ class ACTServicios extends ACTbase{
 																	and ingas.estado_reg = ''activo''");
 		}
 		/**************************************************************************/
-		/**************************************Filtramos por PV y Tipo PV(ATO CTO)**************************************/
-		// if($this->objParam->getParametro('tipo_pv') != '') {
-		// 	$this->objParam->addFiltro("''".$this->objParam->getParametro('tipo_pv')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.tipo_punto_venta,'','')::varchar, '','')))");
-		// }
-		//
-		// if($this->objParam->getParametro('id_punto_venta_producto') != '') {
-		// 	$this->objParam->addFiltro("''".$this->objParam->getParametro('id_punto_venta_producto')."''::varchar in (SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.punto_venta_asociado,'','')::varchar, '','')))");
-		// }
-		/***************************************************************************************************************/
+
+		if($this->objParam->getParametro('Facturacion') != '') {
+			if ($this->objParam->getParametro('conceptos_facturacion')) {
+				$this->objParam->addFiltro("(''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion))");
+			}
+		}
 
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

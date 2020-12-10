@@ -32,6 +32,7 @@ DECLARE
     v_tipo_usuario		varchar;
     v_condicion			varchar;
     v_tipo_punto_venta	varchar;
+    v_existencia		integer;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_venta_facturacion_sel';
@@ -162,42 +163,42 @@ BEGIN
     	begin
 
         	/*Aumentando para listar las facturas emititas de un cajero especifico si es admin o no*/
-            if (p_administrador != 1) then
-            	select us.tipo_usuario
-                		into
-                        v_tipo_usuario
-                from vef.tsucursal_usuario us
-                where us.id_usuario = p_id_usuario and us.id_punto_venta = v_parametros.id_punto_venta;
 
-                select pv.tipo
-                       into
-                       v_tipo_punto_venta
-                from vef.tpunto_venta pv
-                where pv.id_punto_venta = v_parametros.id_punto_venta;
+            select  permiso.id_autorizacion into v_existencia
+            from vef.tpermiso_sucursales permiso
+            where permiso.id_funcionario = (select fun.id_funcionario
+                                            from segu.tusuario usu
+                                            inner join orga.vfuncionario funcio on funcio.id_persona = usu.id_persona
+                                            inner join orga.vfuncionario_ultimo_cargo fun on fun.id_funcionario = funcio.id_funcionario
+                                            where usu.id_usuario = p_id_usuario);
 
-            	if (v_tipo_punto_venta = 'cto') THEN
+            IF (v_existencia > 0) then
+            	v_condicion = '0=0';
+            else
+            	 if (p_administrador != 1) then
+                    select pv.tipo
+                           into
+                           v_tipo_punto_venta
+                    from vef.tpunto_venta pv
+                    where pv.id_punto_venta = v_parametros.id_punto_venta;
 
-                	if (v_parametros.pes_estado = 'caja' or v_tipo_usuario = 'administrador') then
-                    	v_condicion = '0=0';
+                    if (v_tipo_punto_venta = 'cto') THEN
+                        if (v_parametros.pes_estado = 'caja') then
+                            v_condicion = '0=0';
+                        else
+                            v_condicion = 'fact.id_usuario_cajero = '||p_id_usuario;
+                        end if;
                     else
-                    	v_condicion = 'fact.id_usuario_cajero = '||p_id_usuario;
+
+                        v_condicion = 'fact.id_usuario_cajero = '||p_id_usuario;
+
                     end if;
                 else
-                  IF (v_tipo_usuario = 'administrador') then
-                		v_condicion = '0=0';
-                    else
-                        v_condicion = 'fact.id_usuario_cajero = '||p_id_usuario;
-                    end if;
+                    v_condicion = '0=0';
                 end if;
+            end  if;
 
-
-
-            else
-            	v_condicion = '0=0';
-            end if;
             /***************************************************************************************/
-
-
 
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -397,11 +398,34 @@ BEGIN
 
     	begin
 
+        	  /*Aqui aumentamos para controlar la reimpresion que solo sea por un administrador asignado*/
+              if (p_administrador = 1) then
+              	v_tipo_usuario = 'administrador_facturacion'::varchar;
+              else
+                select  count(permiso.id_autorizacion) into v_existencia
+                from vef.tpermiso_sucursales permiso
+                where permiso.id_funcionario = (select fun.id_funcionario
+                                                from segu.tusuario usu
+                                                inner join orga.vfuncionario funcio on funcio.id_persona = usu.id_persona
+                                                inner join orga.vfuncionario_ultimo_cargo fun on fun.id_funcionario = funcio.id_funcionario
+                                                where usu.id_usuario = p_id_usuario);
+
+                if (v_existencia > 0) then
+                    v_tipo_usuario = 'administrador_facturacion'::varchar;
+                else
+                    v_tipo_usuario = 'operador_facturacion'::varchar;
+                end if;
+              end if;
+              /******************************************************************************************/
+
+
+
+
              /*if v_parametros.tipo_factura = 'pedido' then
                v_join_destino = '	inner join vef.vcliente clides on clides.id_cliente = ven.id_cliente_destino';
                v_columnas_destino = ' clides.nombre_factura as cliente_destino, clides.lugar as lugar_destino ';
             else*/
-               v_join_destino = '';
+               	v_join_destino = '';
                 v_columnas_destino = ' ''''::varchar as cliente_destino,''''::varchar as lugar_destino  ';
             --end if;
 
@@ -490,7 +514,10 @@ BEGIN
 
             pv.codigo::varchar as codigo_iata,
             COALESCE(to_char((EXTRACT(DAY FROM ven.fecha::date)),''00'')||substring(Upper(to_char(ven.fecha::date,''month''))from 1 for 3)||RIGHT((EXTRACT(YEAR FROM ven.fecha::date))::varchar,2))::varchar as fecha_ingles,
-            REPLACE(list(ip.mop_code),'','',''/'')::varchar as forma_pago
+            REPLACE(list(ip.mop_code),'','',''/'')::varchar as forma_pago,
+
+            '''||v_tipo_usuario||'''::varchar as tipo_usuario
+
             /************************************/
 
             from vef.tventa ven

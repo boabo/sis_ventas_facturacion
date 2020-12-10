@@ -33,6 +33,18 @@ DECLARE
     v_forma_pago			record;
     v_res					varchar;
 
+    v_codigo_tarjeta		varchar;
+    v_codigo_fp				varchar;
+    v_monto					numeric;
+    v_venta					record;
+    v_id_moneda_venta		integer;
+    v_id_moneda_suc			integer;
+    v_monto_fp				numeric;
+    v_acumulado_fp			numeric;
+    v_registros				record;
+
+    v_moneda_base			integer;
+    v_monto_venta			numeric;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_forma_pago_ime';
@@ -157,6 +169,213 @@ BEGIN
 
 		end;
 
+    /*********************************
+ 	#TRANSACCION:  'VF_NFP_INS'
+ 	#DESCRIPCION:	Insercion de registros n formas de pago
+ 	#AUTOR:		Ismael Vadivia
+ 	#FECHA:		8-12-2020 9:00:46
+	***********************************/
+
+	elsif(p_transaccion='VF_NFP_INS')then
+
+        begin
+        	/*Aqui Hacemos las validaciones de las tarjetas y mco ingrseados*/
+
+        	 if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
+
+                  select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
+                  from obingresos.tmedio_pago_pw mp
+                  inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                  where mp.id_medio_pago_pw = v_parametros.id_medio_pago;
+
+                  v_codigo_tarjeta = (case when v_codigo_tarjeta is not null then
+                                                  v_codigo_tarjeta
+                                          else
+                                                NULL
+                                        end);
+
+                  if (v_codigo_tarjeta is not null and v_codigo_fp = 'CC') then
+                      if (substring(v_parametros.num_tarjeta::varchar from 1 for 1) != 'X') then
+                          v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.num_tarjeta::varchar,v_codigo_tarjeta);
+                      end if;
+                  end if;
+              end if;
+
+
+              if (left (v_parametros.mco,3)  <> '930' and v_parametros.mco <> '')then
+                  raise exception 'El numero del MCO tiene que empezar con 930';
+              end if;
+
+              if (char_length(v_parametros.mco::varchar) <> 15 and v_parametros.mco <> '' ) then
+                  raise exception 'El numero del MCO debe tener 15 digitos obligatorios, 930000000012345';
+              end if;
+            /************************************************************************************************/
+
+            v_monto = 0;
+            v_acumulado_fp = 0;
+
+            IF (v_parametros.id_moneda = 2) then
+            	v_monto = v_parametros.monto_total_extranjero;
+            else
+            	v_monto = v_parametros.monto_total_local;
+            end if;
+
+
+
+            --Sentencia de la insercion
+        	insert into vef.tventa_forma_pago(
+            usuario_ai,
+            fecha_reg,
+            id_usuario_reg,
+            id_usuario_ai,
+            estado_reg,
+            id_venta,
+            monto_transaccion,
+            monto,
+            cambio,
+            monto_mb_efectivo,
+            numero_tarjeta,
+            codigo_tarjeta,
+            id_auxiliar,
+            tipo_tarjeta,
+            /*Aumentamos el id_instancia*/
+            id_medio_pago,
+            id_moneda
+            /****************************/
+          )
+          values(
+            v_parametros._nombre_usuario_ai,
+            now(),
+            p_id_usuario,
+            v_parametros._id_usuario_ai,
+            'activo',
+            v_parametros.id_venta,
+            v_monto,
+            0,
+            0,
+            0,
+            v_parametros.num_tarjeta,
+            replace(upper(v_parametros.codigo_autorizacion),' ',''),
+            v_parametros.id_auxiliar,
+            '',
+            /*Aumentamos el id_instancia y el id_moneda*/
+            v_parametros.id_medio_pago,
+            v_parametros.id_moneda
+            /****************************/
+          )RETURNING id_venta_forma_pago into v_id_venta_forma_pago;
+
+			--Definicion de la respuesta
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Forma de Pago almacenado(a) con exito (id_venta_forma_pago'||v_id_venta_forma_pago||')');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_venta_forma_pago',v_id_venta_forma_pago::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_FACFPVALI_MOD'
+ 	#DESCRIPCION:	Validacion de las formas de pago
+ 	#AUTOR:		Ismael Valdivia
+ 	#FECHA:		8-12-2020 10:10:00
+	***********************************/
+
+	elsif(p_transaccion='VF_FACFPVALI_MOD')then
+
+		begin
+			 /*Aqui validaremos los montos y la moneda para devolver el cambio*/
+              select
+                v.* ,
+                sm.id_moneda as id_moneda_base,
+                m.codigo  as moneda ,
+                v.id_dosificacion as id_dosificacion_venta
+              into
+                v_venta
+              from vef.tventa v
+                inner join vef.tsucursal suc on suc.id_sucursal = v.id_sucursal
+                inner join vef.tsucursal_moneda sm on suc.id_sucursal = sm.id_sucursal and sm.tipo_moneda = 'moneda_base'
+                inner join param.tmoneda m on m.id_moneda = sm.id_moneda
+              where id_venta = v_parametros.id_venta;
+            /*****************************************************************/
+            v_acumulado_fp = 0;
+
+            v_moneda_base = param.f_get_moneda_base();
+
+            IF  v_venta.tipo_factura in ('computarizadaexpo','computarizadaexpomin') THEN
+              v_id_moneda_venta = v_venta.id_moneda;
+            ELSE
+              v_id_moneda_venta = v_venta.id_moneda_base;
+            END IF;
+
+            v_id_moneda_suc = v_venta.id_moneda_base;
+
+
+            /*Aqui Ponemos la condicion para el monto venta*/
+            if (v_parametros.tipo_factura = 'recibo') then
+                if (v_venta.id_moneda_venta_recibo = 2 and v_moneda_base != 2) then
+                    v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+                else
+                    v_monto_venta = v_venta.total_venta;
+                end if;
+            else
+            	v_monto_venta = v_venta.total_venta;
+            end if;
+            /***********************************************/
+
+
+
+           for v_registros in (select vfp.id_venta_forma_pago, vfp.id_moneda,vfp.monto_transaccion
+                              from vef.tventa_forma_pago vfp
+                              where vfp.id_venta = v_parametros.id_venta)
+        	loop
+
+
+
+              if (v_registros.id_moneda != v_id_moneda_venta) then
+                IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
+                  v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
+                ELSE
+                  v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'O',2,NULL,'si');
+                END IF;
+              else
+                v_monto_fp = v_registros.monto_transaccion;
+              end if;
+
+
+               update vef.tventa_forma_pago set
+                monto = v_monto_fp,
+                cambio = (case when (v_monto_fp + v_acumulado_fp - v_monto_venta) > 0 then
+                  (v_monto_fp + v_acumulado_fp - v_monto_venta)
+                          else
+                            0
+                          end),
+                monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_monto_venta) > 0 then
+                  v_monto_fp - (v_monto_fp + v_acumulado_fp - v_monto_venta)
+                                     else
+                                       v_monto_fp
+                                     end)
+              where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+           	  v_acumulado_fp = v_acumulado_fp + v_monto_fp;
+        	end loop;
+
+
+
+
+		end;
+
+        /*Mandamos los valores devueltos para finalizar el estado de la venta*/
+        v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Forma de Pago almacenado(a) con exito (id_venta_forma_pago'||v_id_venta_forma_pago||')');
+        v_resp = pxp.f_agrega_clave(v_resp,'id_venta_forma_pago',v_registros.id_venta_forma_pago::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_venta.id_venta::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'id_proceso_wf',v_venta.id_proceso_wf::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'id_estado_wf',v_venta.id_estado_wf::varchar);
+
+        /**********************************************************************/
+
+        --Definicion de la respuesta
+
+            --Devuelve la respuesta
+            return v_resp;
 	else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;
