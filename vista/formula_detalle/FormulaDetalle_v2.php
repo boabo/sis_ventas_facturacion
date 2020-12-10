@@ -64,26 +64,26 @@ Phx.vista.FormulaDetalle_v2=Ext.extend(Phx.gridInterfaz,{
 		// 		grid:true,
 		// 		form:true
 		// },
-		{
-			config:{
-				name: 'tipo',
-				fieldLabel: 'Tipo detalle',
-				allowBlank:false,
-				width:200,
-				emptyText:'Tipo...',
-				typeAhead: true,
-				triggerAction: 'all',
-				lazyRender:true,
-				mode: 'local',
-				gwidth: 150,
-				store:['Producto','Servicio']
-			},
-				type:'ComboBox',
-				filters:{pfiltro:'factdet.tipo',type:'string'},
-				id_grupo:1,
-				grid:false,
-				form:true
-		},
+		// {
+		// 	config:{
+		// 		name: 'tipo',
+		// 		fieldLabel: 'Tipo detalle',
+		// 		allowBlank:false,
+		// 		width:200,
+		// 		emptyText:'Tipo...',
+		// 		typeAhead: true,
+		// 		triggerAction: 'all',
+		// 		lazyRender:true,
+		// 		mode: 'local',
+		// 		gwidth: 150,
+		// 		store:['Producto','Servicio']
+		// 	},
+		// 		type:'ComboBox',
+		// 		filters:{pfiltro:'factdet.tipo',type:'string'},
+		// 		id_grupo:1,
+		// 		grid:false,
+		// 		form:true
+		// },
 		{
 			config: {
 				name: 'id_concepto_ingas',
@@ -311,14 +311,14 @@ Phx.vista.FormulaDetalle_v2=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	iniciarEventos: function(that){
-		this.Cmp.tipo.on('select',function(c,r,i){
-			that.capturaFiltros();
-		});
-		this.Cmp.tipo.reset();
+		// this.Cmp.tipo.on('select',function(c,r,i){
+		// 	that.capturaFiltros();
+		// });
+		// this.Cmp.tipo.reset();
 	},
 
 	capturaFiltros: function (combo, record, index) {
-		this.Cmp.id_concepto_ingas.store.baseParams.tipo_serv = this.Cmp.tipo.getValue();
+		//this.Cmp.id_concepto_ingas.store.baseParams.tipo_serv = this.Cmp.tipo.getValue();
 	},
 
 	onButtonNew: function(){

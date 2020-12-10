@@ -136,36 +136,17 @@ BEGIN
     	begin
 
     		--Sentencia de la consulta
-			v_consulta:='with servicios as (
-                                            SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.punto_venta_asociado,'','')::varchar, '',''))::integer as puntos_venta_servicios,
-                                            ingas.id_concepto_ingas,
-                                            ingas.desc_ingas,
-                                            ingas.precio,
-                                            ingas.id_moneda,
-                                            excento,
-                                            requiere_descripcion,
-                                            mon.codigo_internacional as desc_moneda,
-                                            ingas.tipo
-                                            from param.tconcepto_ingas ingas
-                                            left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
-                                            where ingas.punto_venta_asociado is not null),
-
-                                    formula as (
-                                            SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(form.punto_venta_asociado,'','')::varchar, '',''))::integer as puntos_venta_formula
-                                            from vef.tformula form
-                                            where form.id_formula = '||v_parametros.id_formula||')
-
-                                            SELECT 	DISTINCT (ser.id_concepto_ingas),
-                                            		ser.desc_ingas,
-                                                    ser.precio,
-                                                    ser.id_moneda,
-                                                    ser.excento,
-                                                    ser.requiere_descripcion,
-                                                    ser.desc_moneda,
-                                                    ser.tipo
-                                            FROM servicios ser
-                                            INNER JOIN formula form on form.puntos_venta_formula = ser.puntos_venta_servicios
-                                            where ';
+			v_consulta:='SELECT   ingas.id_concepto_ingas,
+                                  ingas.desc_ingas,
+                                  ingas.precio,
+                                  ingas.id_moneda,
+                                  excento,
+                                  requiere_descripcion,
+                                  mon.codigo_internacional as desc_moneda,
+                                  ingas.tipo
+                          from param.tconcepto_ingas ingas
+                          left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
+                          where (''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion)) AND ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -187,29 +168,10 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='with servicios as (
-                                            SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(ingas.punto_venta_asociado,'','')::varchar, '',''))::integer as puntos_venta_servicios,
-                                            ingas.id_concepto_ingas,
-                                            ingas.desc_ingas,
-                                            ingas.precio,
-                                            ingas.id_moneda,
-                                            excento,
-                                            requiere_descripcion,
-                                            mon.codigo_internacional as desc_moneda,
-                                            ingas.tipo
-                                            from param.tconcepto_ingas ingas
-                                            left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
-                                            where ingas.punto_venta_asociado is not null),
-
-                                    formula as (
-                                            SELECT UNNEST(REGEXP_SPLIT_TO_ARRAY(array_to_string(form.punto_venta_asociado,'','')::varchar, '',''))::integer as puntos_venta_formula
-                                            from vef.tformula form
-                                            where form.id_formula = '||v_parametros.id_formula||')
-
-                                            SELECT  count (ser.id_concepto_ingas)
-                                            FROM servicios ser
-                                            INNER JOIN formula form on form.puntos_venta_formula = ser.puntos_venta_servicios
-                                            where ';
+			v_consulta:=' SELECT   count (ingas.id_concepto_ingas)
+                          from param.tconcepto_ingas ingas
+                          left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
+                          where (''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion)) AND  ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
