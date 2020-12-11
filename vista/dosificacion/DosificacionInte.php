@@ -350,11 +350,13 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
                 pageSize : 10,
                 queryDelay : 1000,
                 gwidth : 170,
+								listWidth:'800',
                 minChars : 2,
+								resizable: true,
                 enableMultiSelect:true,
                 renderer:function(value, p, record){return String.format('{0}', record.data['desc_actividad_economica']);}
             },
-            type : 'AwesomeCombo',
+            type : 'ComboBox',
             id_grupo : 0,
             form : true,
             grid:true
