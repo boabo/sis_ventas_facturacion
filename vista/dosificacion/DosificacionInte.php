@@ -455,7 +455,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'glosa_impuestos',
-                fieldLabel: 'Glosa Impuestos',
+                fieldLabel: 'Leyenda Impuestos',
                 allowBlank: true,
                 anchor: '100%',
                 gwidth: 300,
@@ -470,7 +470,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         {
             config : {
                 name : 'glosa_empresa',
-                fieldLabel : 'Glosa Empresa',
+                fieldLabel : 'Leyenda Consumidor',
                 anchor : '90%',
                 tinit : false,
                 allowBlank : false,
