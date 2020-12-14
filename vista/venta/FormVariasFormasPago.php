@@ -913,13 +913,16 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.total_venta.setValue(this.data.total_pagar);
         /************************************/
 
-        if (this.data.medio_pago_1 != '') {
+        if (this.data.medio_pago_1 != '' && this.data.monto_mp_1 != '') {
           this.recuperarFormasdePago1();
         }
 
         if (this.data.medio_pago_2 != '') {
           this.recuperarFormasdePago2();
         }
+
+        this.Cmp.id_formula.setValue(this.data.paquetes);
+        this.Cmp.id_venta.setValue(this.data.id_venta);
 
 
     },
@@ -1185,6 +1188,34 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
   			form:true,
   			//valorInicial:'0'
   		},
+      {
+  			config:{
+  				name: 'id_formula',
+  				fieldLabel: 'Formula',
+  				allowBlank: false,
+  				width:200,
+          hidden:true,
+          disabled:true,
+  			},
+  			type:'TextField',
+  			id_grupo:0,
+  			form:true,
+  			//valorInicial:'0'
+  		},
+      {
+        config:{
+          name: 'id_venta',
+          fieldLabel: 'id_venta',
+          allowBlank: false,
+          width:200,
+          hidden:true,
+          disabled:true,
+        },
+        type:'TextField',
+        id_grupo:0,
+        form:true,
+        //valorInicial:'0'
+      },
       {
   			config:{
   				name: 'fecha_factura',
@@ -1726,16 +1757,32 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
       					scope:this
       			});
           } else {
-            Ext.Ajax.request({
-              url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
-              params:{id_estado_wf_act:d.id_estado_wf,
-                id_proceso_wf_act:d.id_proceso_wf,
-                tipo:'recibo'},
-                success:this.successWizard,
-                failure: this.conexionFailure,
-                timeout:this.timeout,
-                scope:this
-              });
+            if (this.data.tipo_punto_venta != 'ato') {            
+              Ext.Ajax.request({
+        					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
+        					params:{id_estado_wf_act:d.id_estado_wf,
+        									id_proceso_wf_act:d.id_proceso_wf,
+        								  tipo:'recibo'},
+        					success:this.successWizard,
+        					failure: this.conexionFailure,
+        					timeout:this.timeout,
+        					scope:this
+        			});
+
+            } else {
+              Ext.Ajax.request({
+                url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
+                params:{id_estado_wf_act:d.id_estado_wf,
+                  id_proceso_wf_act:d.id_proceso_wf,
+                  tipo:'recibo'},
+                  success:this.successWizard,
+                  failure: this.conexionFailure,
+                  timeout:this.timeout,
+                  scope:this
+                });
+            }
+
+
           }
         this.data.panel_padre.close();
         this.panel.close();

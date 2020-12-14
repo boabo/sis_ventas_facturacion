@@ -1258,145 +1258,227 @@ class MODVentaFacturacion extends MODbase{
 	            /////////////////////////
 	            //  inserta cabecera de la solicitud de compra
 	            ///////////////////////
+							if ($this->objParam->getParametro('id_venta') == '' || $this->objParam->getParametro('id_venta') == null) {
+								//Definicion de variables para ejecucion del procedimiento
+		            $this->procedimiento = 'vef.ft_venta_facturacion_ime';
+		            $this->tipo_procedimiento = 'IME';
+								$this->transaccion = 'VF_FPINS_INS';
 
-	            //Definicion de variables para ejecucion del procedimiento
-	            $this->procedimiento = 'vef.ft_venta_facturacion_ime';
-	            $this->tipo_procedimiento = 'IME';
-							$this->transaccion = 'VF_FPINS_INS';
+		            //Define los parametros para la funcion
+								$this->setParametro('nit','nit','varchar');
+		            $this->setParametro('id_cliente','id_cliente','varchar');
+		            $this->setParametro('observaciones','observaciones','text');
+		            $this->setParametro('excento','excento','numeric');
+		            $this->setParametro('id_sucursal','id_sucursal','int4');
+								$this->setParametro('id_punto_venta','id_punto_venta','int4');
+								$this->setParametro('total_venta','total_venta','numeric');
+								$this->setParametro('tipo_factura','tipo_factura','varchar');
+								$this->setParametro('moneda_recibo','moneda_recibo','int4');
+								$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
+								$this->setParametro('nro_factura','nro_factura','int4');
+								$this->setParametro('id_dosificacion','id_dosificacion','int4');
+								$this->setParametro('informe','informe','varchar');
+								$this->setParametro('fecha_factura','fecha_factura','varchar');
+								$this->setParametro('id_formula','id_formula','integer');
+								//$this->setParametro('id_venta','id_venta','integer');
 
-	            //Define los parametros para la funcion
-							$this->setParametro('nit','nit','varchar');
-	            $this->setParametro('id_cliente','id_cliente','varchar');
-	            $this->setParametro('observaciones','observaciones','text');
-	            $this->setParametro('excento','excento','numeric');
-	            $this->setParametro('id_sucursal','id_sucursal','int4');
-							$this->setParametro('id_punto_venta','id_punto_venta','int4');
-							$this->setParametro('total_venta','total_venta','numeric');
-							$this->setParametro('tipo_factura','tipo_factura','varchar');
-							$this->setParametro('moneda_recibo','moneda_recibo','int4');
-							$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
-							$this->setParametro('nro_factura','nro_factura','int4');
-							$this->setParametro('id_dosificacion','id_dosificacion','int4');
-							$this->setParametro('informe','informe','varchar');
-							$this->setParametro('fecha_factura','fecha_factura','varchar');
+		            //Ejecuta la instruccion
+		            $this->armarConsulta();
+		            $stmt = $link->prepare($this->consulta);
+		            $stmt->execute();
+		            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-	            //Ejecuta la instruccion
-	            $this->armarConsulta();
-	            $stmt = $link->prepare($this->consulta);
-	            $stmt->execute();
-	            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+		            //recupera parametros devuelto depues de insertar ... (id_formula)
+		            $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+		            if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
+		                throw new Exception("Error al ejecutar en la bd", 3);
+		            }
 
-	            //recupera parametros devuelto depues de insertar ... (id_formula)
-	            $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
-	            if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
-	                throw new Exception("Error al ejecutar en la bd", 3);
-	            }
+		            $respuesta = $resp_procedimiento['datos'];
+		            $id_venta = $respuesta['id_venta'];
+								$tipo_factura = $this->objParam->getParametro('tipo_factura');
+								$id_formula = $this->objParam->getParametro('id_formula');
 
-	            $respuesta = $resp_procedimiento['datos'];
-	            $id_venta = $respuesta['id_venta'];
-							$tipo_factura = $this->objParam->getParametro('tipo_factura');
+								$json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_detalle_venta'));
 
-							$json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_detalle_venta'));
-
-	            foreach($json_detalle as $d){
-	                $this->resetParametros();
-	                //Definicion de variables para ejecucion del procedimiento
-	                $this->procedimiento='vef.ft_venta_detalle_facturacion_ime';
-	                $this->transaccion='VF_FPDET_INS';
-	                $this->tipo_procedimiento='IME';
-	                //modifica los valores de las variables que mandaremos
-	                $this->arreglo['id_producto'] = $d['id_producto'];
-									$this->arreglo['id_formula'] = $d['id_formula'];
-	                $this->arreglo['tipo'] = $d['tipo'];
-	                $this->arreglo['precio_unitario'] = $d['precio_unitario'];
-	                $this->arreglo['cantidad'] = $d['cantidad'];
-	                $this->arreglo['precio'] = $d['precio_unitario'];
-	                $this->arreglo['precio_total'] = $d['precio_total'];
-									$this->arreglo['nombre_producto'] = $d['nombre_producto'];
-	                $this->arreglo['descripcion'] = $d['descripcion'];
-									$this->arreglo['id_venta'] = $id_venta;
-	                $this->arreglo['tipo_factura'] = $tipo_factura;
-
-	                //Define los parametros para la funcion
-									$this->setParametro('id_producto','id_producto','int4');
-	                $this->setParametro('id_formula','id_formula','int4');
-	                $this->setParametro('tipo','tipo','varchar');
-									$this->setParametro('precio','precio','numeric');
-									$this->setParametro('cantidad_det','cantidad','numeric');
-	                $this->setParametro('precio_total','precio_total','numeric');
-	                $this->setParametro('nombre_producto','nombre_producto','varchar');
-									$this->setParametro('descripcion','descripcion','text');
-									$this->setParametro('id_venta','id_venta','int4');
-									$this->setParametro('tipo_factura','tipo_factura','varchar');
-
-	                //Ejecuta la instruccion
-	                $this->armarConsulta();
-	                $stmt = $link->prepare($this->consulta);
-	                $stmt->execute();
-	                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-	                //recupera parametros devuelto depues de insertar ... (id_formula)
-	                $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
-	                if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
-	                    throw new Exception("Error al insertar detalle  en la bd", 3);
-	                }
-
-	            }
+		            foreach($json_detalle as $d){
+		                $this->resetParametros();
+		                //Definicion de variables para ejecucion del procedimiento
+		                $this->procedimiento='vef.ft_venta_detalle_facturacion_ime';
+		                $this->transaccion='VF_FPDET_INS';
+		                $this->tipo_procedimiento='IME';
+		                //modifica los valores de las variables que mandaremos
+		                $this->arreglo['id_producto'] = $d['id_producto'];
+										$this->arreglo['id_formula'] = $id_formula;
+		                $this->arreglo['tipo'] = $d['tipo'];
+		                $this->arreglo['precio_unitario'] = $d['precio_unitario'];
+		                $this->arreglo['cantidad'] = $d['cantidad'];
+		                $this->arreglo['precio'] = $d['precio_unitario'];
+		                $this->arreglo['precio_total'] = $d['precio_total'];
+										$this->arreglo['nombre_producto'] = $d['nombre_producto'];
+		                $this->arreglo['descripcion'] = $d['descripcion'];
+										$this->arreglo['id_venta'] = $id_venta;
+										$this->arreglo['tipo_factura'] = $tipo_factura;
 
 
 
+		                //Define los parametros para la funcion
+										$this->setParametro('id_producto','id_producto','int4');
+		                $this->setParametro('id_formula','id_formula','int4');
+		                $this->setParametro('tipo','tipo','varchar');
+										$this->setParametro('precio','precio','numeric');
+										$this->setParametro('cantidad_det','cantidad','numeric');
+		                $this->setParametro('precio_total','precio_total','numeric');
+		                $this->setParametro('nombre_producto','nombre_producto','varchar');
+										$this->setParametro('descripcion','descripcion','text');
+										$this->setParametro('id_venta','id_venta','int4');
+										$this->setParametro('tipo_factura','tipo_factura','varchar');
+
+		                //Ejecuta la instruccion
+		                $this->armarConsulta();
+		                $stmt = $link->prepare($this->consulta);
+		                $stmt->execute();
+		                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		                //recupera parametros devuelto depues de insertar ... (id_formula)
+		                $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+		                if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
+		                    throw new Exception("Error al insertar detalle  en la bd", 3);
+		                }
+
+		            }
+
+								//decodifica JSON  de detalles
+							 $json_pago = $this->aParam->_json_decode($this->aParam->getParametro('json_formas_pago'));
+
+						 //  var_dump('detalle',$json_detalle)   ;
+							 foreach($json_pago as $p){
+									 //var_dump("aqui llega las n formas de pago",$p);
+									 $this->resetParametros();
+
+									 $this->procedimiento='vef.ft_venta_forma_pago_ime';
+									 $this->transaccion='VF_NFP_INS';
+									 $this->tipo_procedimiento='IME';
+									 //modifica los valores de las variables que mandaremos
+									 $this->arreglo['id_moneda'] = $p['id_moneda'];
+									 $this->arreglo['id_medio_pago'] = $p['id_medio_pago'];
+									 $this->arreglo['id_auxiliar'] = $p['id_auxiliar'];
+									 $this->arreglo['num_tarjeta'] = $p['num_tarjeta'];
+									 $this->arreglo['codigo_autorizacion'] = $p['codigo_autorizacion'];
+									 $this->arreglo['mco'] = $p['mco'];
+									 $this->arreglo['monto_total_local'] = $p['monto_total_local'];
+									 $this->arreglo['monto_total_extranjero'] = $p['monto_total_extranjero'];
+									 $this->arreglo['id_venta'] = $id_venta;
+									 $this->arreglo['tipo_factura'] = $tipo_factura;
 
 
+									 //Define los parametros para la funcion
+									 $this->setParametro('id_venta','id_venta','int4');
+									 $this->setParametro('id_moneda','id_moneda','int4');
+									 $this->setParametro('id_medio_pago','id_medio_pago','int4');
+									 $this->setParametro('id_auxiliar','id_auxiliar','int4');
+									 $this->setParametro('num_tarjeta','num_tarjeta','varchar');
+									 $this->setParametro('codigo_autorizacion','codigo_autorizacion','varchar');
+									 $this->setParametro('mco','mco','varchar');
+									 $this->setParametro('monto_total_local','monto_total_local','numeric');
+									 $this->setParametro('monto_total_extranjero','monto_total_extranjero','numeric');
+									 $this->setParametro('tipo_factura','tipo_factura','varchar');
 
-	            //decodifica JSON  de detalles
-	            $json_pago = $this->aParam->_json_decode($this->aParam->getParametro('json_formas_pago'));
+									 //Ejecuta la instruccion
+									 $this->armarConsulta();
+									 $stmt = $link->prepare($this->consulta);
+									 $stmt->execute();
+									 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-	          //  var_dump('detalle',$json_detalle)   ;
-	            foreach($json_pago as $p){
-									//var_dump("aqui llega las n formas de pago",$p);
-	                $this->resetParametros();
+									 //recupera parametros devuelto depues de insertar ... (id_formula)
+									 $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+									 if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
+											 throw new Exception("Error al insertar detalle  en la bd", 3);
+									 }
 
-									$this->procedimiento='vef.ft_venta_forma_pago_ime';
-	                $this->transaccion='VF_NFP_INS';
-	                $this->tipo_procedimiento='IME';
-	                //modifica los valores de las variables que mandaremos
-	                $this->arreglo['id_moneda'] = $p['id_moneda'];
-	                $this->arreglo['id_medio_pago'] = $p['id_medio_pago'];
-									$this->arreglo['id_auxiliar'] = $p['id_auxiliar'];
-									$this->arreglo['num_tarjeta'] = $p['num_tarjeta'];
-									$this->arreglo['codigo_autorizacion'] = $p['codigo_autorizacion'];
-									$this->arreglo['mco'] = $p['mco'];
-									$this->arreglo['monto_total_local'] = $p['monto_total_local'];
-									$this->arreglo['monto_total_extranjero'] = $p['monto_total_extranjero'];
-	                $this->arreglo['id_venta'] = $id_venta;
-									$this->arreglo['tipo_factura'] = $tipo_factura;
+							 }
 
 
-	                //Define los parametros para la funcion
-									$this->setParametro('id_venta','id_venta','int4');
-	                $this->setParametro('id_moneda','id_moneda','int4');
-	                $this->setParametro('id_medio_pago','id_medio_pago','int4');
-									$this->setParametro('id_auxiliar','id_auxiliar','int4');
-									$this->setParametro('num_tarjeta','num_tarjeta','varchar');
-									$this->setParametro('codigo_autorizacion','codigo_autorizacion','varchar');
-									$this->setParametro('mco','mco','varchar');
-									$this->setParametro('monto_total_local','monto_total_local','numeric');
-									$this->setParametro('monto_total_extranjero','monto_total_extranjero','numeric');
-									$this->setParametro('tipo_factura','tipo_factura','varchar');
+							} else {
 
-	                //Ejecuta la instruccion
-	                $this->armarConsulta();
-	                $stmt = $link->prepare($this->consulta);
-	                $stmt->execute();
-	                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+								$this->resetParametros();
+								$id_venta = $this->objParam->getParametro('id_venta');
 
-	                //recupera parametros devuelto depues de insertar ... (id_formula)
-	                $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
-	                if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
-	                    throw new Exception("Error al insertar detalle  en la bd", 3);
-	                }
+								$this->procedimiento = 'vef.ft_venta_forma_pago_ime';
+								$this->transaccion = 'VF_FACFPELI_DEL';
+								$this->tipo_procedimiento='IME';
 
-	            }
+								 $this->arreglo['id_venta'] = $id_venta;
+
+
+								$this->setParametro('id_venta', 'id_venta', 'int4');
+
+								$this->armarConsulta();
+								$stmt = $link->prepare($this->consulta);
+								$stmt->execute();
+								$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+								$resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+
+								if ($resp_procedimiento['tipo_respuesta'] == 'ERROR') {
+									throw new Exception("Error al ejecutar en la bd", 3);
+								}
+
+								$id_venta = $this->objParam->getParametro('id_venta');
+								$tipo_factura = $this->objParam->getParametro('tipo_factura');
+								$id_formula = $this->objParam->getParametro('id_formula');
+
+								//decodifica JSON  de detalles
+							 $json_pago = $this->aParam->_json_decode($this->aParam->getParametro('json_formas_pago'));
+
+						 //  var_dump('detalle',$json_detalle)   ;
+							 foreach($json_pago as $p){
+									 //var_dump("aqui llega las n formas de pago",$p);
+									 $this->resetParametros();
+
+									 $this->procedimiento='vef.ft_venta_forma_pago_ime';
+									 $this->transaccion='VF_NFP_INS';
+									 $this->tipo_procedimiento='IME';
+									 //modifica los valores de las variables que mandaremos
+									 $this->arreglo['id_moneda'] = $p['id_moneda'];
+									 $this->arreglo['id_medio_pago'] = $p['id_medio_pago'];
+									 $this->arreglo['id_auxiliar'] = $p['id_auxiliar'];
+									 $this->arreglo['num_tarjeta'] = $p['num_tarjeta'];
+									 $this->arreglo['codigo_autorizacion'] = $p['codigo_autorizacion'];
+									 $this->arreglo['mco'] = $p['mco'];
+									 $this->arreglo['monto_total_local'] = $p['monto_total_local'];
+									 $this->arreglo['monto_total_extranjero'] = $p['monto_total_extranjero'];
+									 $this->arreglo['id_venta'] = $id_venta;
+									 $this->arreglo['tipo_factura'] = $tipo_factura;
+
+
+									 //Define los parametros para la funcion
+									 $this->setParametro('id_venta','id_venta','int4');
+									 $this->setParametro('id_moneda','id_moneda','int4');
+									 $this->setParametro('id_medio_pago','id_medio_pago','int4');
+									 $this->setParametro('id_auxiliar','id_auxiliar','int4');
+									 $this->setParametro('num_tarjeta','num_tarjeta','varchar');
+									 $this->setParametro('codigo_autorizacion','codigo_autorizacion','varchar');
+									 $this->setParametro('mco','mco','varchar');
+									 $this->setParametro('monto_total_local','monto_total_local','numeric');
+									 $this->setParametro('monto_total_extranjero','monto_total_extranjero','numeric');
+									 $this->setParametro('tipo_factura','tipo_factura','varchar');
+
+									 //Ejecuta la instruccion
+									 $this->armarConsulta();
+									 $stmt = $link->prepare($this->consulta);
+									 $stmt->execute();
+									 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+									 //recupera parametros devuelto depues de insertar ... (id_formula)
+									 $resp_procedimiento = $this->divRespuesta($result['f_intermediario_ime']);
+									 if ($resp_procedimiento['tipo_respuesta']=='ERROR') {
+											 throw new Exception("Error al insertar detalle  en la bd", 3);
+									 }
+
+							 }
+
+							}
 
 							$this->resetParametros();
 							//Validar que todo este ok
@@ -1515,7 +1597,7 @@ class MODVentaFacturacion extends MODbase{
 				$this->captura('fecha_mod','timestamp');
 				$this->captura('id_usuario_mod','int4');
 				$this->captura('usr_reg','varchar');
-				$this->captura('usr_mod','varchar');			
+				$this->captura('usr_mod','varchar');
 				$this->captura('desc_funcionario1','varchar');
 				$this->captura('nombre_cargo','varchar');
 

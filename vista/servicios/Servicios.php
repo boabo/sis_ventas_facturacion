@@ -282,18 +282,18 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.Servicios.superclass.onButtonNew.call(this);
 		this.Cmp.movimiento.setValue('recurso');
 		this.Cmp.tipo.setValue('Servicio');
-		this.ocultarComponente(this.Cmp.punto_venta_asociado);
+		//this.ocultarComponente(this.Cmp.punto_venta_asociado);
 		this.form.el.dom.firstChild.childNodes[0].style.background = '#84BFE7';
 	},
 
 	onButtonEdit:function () {
 		Phx.vista.Servicios.superclass.onButtonEdit.call(this);
-		this.mostrarComponente(this.Cmp.punto_venta_asociado);
+		///this.mostrarComponente(this.Cmp.punto_venta_asociado);
 		this.form.el.dom.firstChild.childNodes[0].style.background = '#84BFE7';
 		var rec = this.sm.getSelected();
-		if (rec.data.punto_venta_asociado == '') {
-			this.Cmp.punto_venta_asociado.reset();
-		}
+		// if (rec.data.punto_venta_asociado == '') {
+		// 	this.Cmp.punto_venta_asociado.reset();
+		// }
 
 	},
 
@@ -302,7 +302,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	capturaFiltros: function (combo, record, index) {
-		this.mostrarComponente(that.Cmp.punto_venta_asociado);
+		//this.mostrarComponente(that.Cmp.punto_venta_asociado);
 	},
 
 	Atributos:[
@@ -622,49 +622,49 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 grid:true,
 			 form:true
 	 },
-	 {
-		 config: {
-			 name: 'punto_venta_asociado',
-			 fieldLabel: 'Punto de Venta',
-			 allowBlank: true,
-			 emptyText: 'Elija su punto de venta...',
-			 store: new Ext.data.JsonStore({
-				 url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
-				 id: 'id_punto_venta',
-				 root: 'datos',
-				 sortInfo: {
-					 field: 'nombre',
-					 direction: 'ASC'
-				 },
-				 totalProperty: 'total',
-				 fields: ['id_punto_venta', 'nombre', 'codigo'],
-				 remoteSort: true,
-				 baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
-			 }),
-			 valueField: 'id_punto_venta',
-			 displayField: 'nombre',
-			 gdisplayField: 'nombres_punto_venta',
-			 //hiddenName: 'id_punto_venta',
-			 forceSelection: true,
-			 typeAhead: true,
-			 triggerAction: 'all',
-			 lazyRender: true,
-			 mode: 'remote',
-			 pageSize: 15,
-			 queryDelay: 1000,
-			 //anchor: '100%',
-			 width:200,
-			 gwidth: 150,
-			 minChars: 2,
-			 enableMultiSelect:true,
-			 itemSelector: 'div.awesomecombo-5item',
-			 tpl:'<tpl for="."><div class="awesomecombo-5item {checked}"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
-		 },
-		 type: 'AwesomeCombo',
-		 id_grupo: 0,
-		 grid: true,
-		 form: true
-	 },
+	 // {
+		//  config: {
+		// 	 name: 'punto_venta_asociado',
+		// 	 fieldLabel: 'Punto de Venta',
+		// 	 allowBlank: true,
+		// 	 emptyText: 'Elija su punto de venta...',
+		// 	 store: new Ext.data.JsonStore({
+		// 		 url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
+		// 		 id: 'id_punto_venta',
+		// 		 root: 'datos',
+		// 		 sortInfo: {
+		// 			 field: 'nombre',
+		// 			 direction: 'ASC'
+		// 		 },
+		// 		 totalProperty: 'total',
+		// 		 fields: ['id_punto_venta', 'nombre', 'codigo'],
+		// 		 remoteSort: true,
+		// 		 baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
+		// 	 }),
+		// 	 valueField: 'id_punto_venta',
+		// 	 displayField: 'nombre',
+		// 	 gdisplayField: 'nombres_punto_venta',
+		// 	 //hiddenName: 'id_punto_venta',
+		// 	 forceSelection: true,
+		// 	 typeAhead: true,
+		// 	 triggerAction: 'all',
+		// 	 lazyRender: true,
+		// 	 mode: 'remote',
+		// 	 pageSize: 15,
+		// 	 queryDelay: 1000,
+		// 	 //anchor: '100%',
+		// 	 width:200,
+		// 	 gwidth: 150,
+		// 	 minChars: 2,
+		// 	 enableMultiSelect:true,
+		// 	 itemSelector: 'div.awesomecombo-5item',
+		// 	 tpl:'<tpl for="."><div class="awesomecombo-5item {checked}"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
+		//  },
+		//  type: 'AwesomeCombo',
+		//  id_grupo: 0,
+		//  grid: true,
+		//  form: true
+	 // },
 	 {
 			 config:{
 				 name: 'sw_autorizacion',
@@ -849,7 +849,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		{name:'punto_venta_asociado', type: 'string'},
+		//{name:'punto_venta_asociado', type: 'string'},
 		{name:'id_moneda', type: 'numeric'},
 		{name:'precio', type: 'numeric'},
 		{name: 'desc_moneda', type: 'string'},

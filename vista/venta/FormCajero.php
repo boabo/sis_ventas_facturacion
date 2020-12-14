@@ -3844,6 +3844,14 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       var variables_globales = this.data.objPadre.variables_globales;
       var total_pagar = this.suma_total;
       var tipo_cambio = this.tipo_cambio;
+
+      var tipo_punto_venta = this.data.objPadre.tipo_punto_venta;
+
+      if (this.data.datos_originales == undefined) {
+        var  id_venta = '';
+      } else {
+        var  id_venta = this.data.datos_originales.data.id_venta;
+      }
       /****************************************/
           Phx.CP.loadWindows(this.formUrl,
                                    '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
@@ -3887,7 +3895,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                      tipo_cambio: tipo_cambio,
                                      panel_padre: this.panel,
                                      tipo_factura: 'computarizada',
-                                     
+
                                      desc_moneda1: desc_moneda1,
                                      desc_moneda2:desc_moneda2,
                                      desc_medio_pago_1:desc_medio_pago_1,
@@ -3897,7 +3905,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                      id_auxiliar:id_auxiliar,
                                      desc_id_auxiliar:desc_id_auxiliar,
                                      id_auxiliar_2:id_auxiliar_2,
-                                     desc_id_auxiliar2:desc_id_auxiliar2
+                                     desc_id_auxiliar2:desc_id_auxiliar2,
+                                     id_venta:id_venta,
+                                     tipo_punto_venta:tipo_punto_venta
 
                                    }
                                   },
