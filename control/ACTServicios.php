@@ -42,7 +42,7 @@ class ACTServicios extends ACTbase{
 		/**************************************************************************/
 
 		if($this->objParam->getParametro('Facturacion') != '') {
-			if ($this->objParam->getParametro('conceptos_facturacion')) {
+			if ($this->objParam->getParametro('Facturacion') == 'conceptos_facturacion') {
 				$this->objParam->addFiltro("(''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion))");
 			}
 		}

@@ -113,9 +113,11 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_concepto_ingas)
 					    from param.tconcepto_ingas ingas
-					    inner join segu.tusuario usu1 on usu1.id_usuario = ingas.id_usuario_reg
+						inner join segu.tusuario usu1 on usu1.id_usuario = ingas.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ingas.id_usuario_mod
-					    where ';
+                        left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
+                        left join vef.tactividad_economica act on act.id_actividad_economica = ingas.id_actividad_economica
+				        where ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
