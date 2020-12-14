@@ -1995,7 +1995,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_moneda', 'codigo', 'moneda', 'codigo_internacional'],
                     remoteSort: true,
-                    baseParams: {filtrar: 'si'}
+                    baseParams: {par_filtro: 'moneda.codigo#moneda.codigo_internacional', filtrar: 'si'}
                 }),
                 valueField: 'id_moneda',
                 gdisplayField : 'codigo_internacional',
