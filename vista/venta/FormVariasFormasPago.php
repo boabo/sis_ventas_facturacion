@@ -658,10 +658,10 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                 var suma_local = 0;
                 var suma_extranjera = 0;
                 for (var i = 0; i < total_datos; i++) {
-                     console.log("aqui el recorrido",this.megrid.store.data.items[i].data);
                     suma_local = suma_local + parseFloat(this.megrid.store.data.items[i].data.monto_total_local);
                     suma_extranjera = suma_extranjera + parseFloat(this.megrid.store.data.items[i].data.monto_total_extranjero);
                 }
+
                 this.suma_total_local = suma_local;
                 this.suma_total_extranjera = suma_extranjera;
                 this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[7].childNodes[0].style.color="red";
@@ -912,6 +912,16 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.cantidad_conceptos.setValue(cantidad_detalle);
         this.Cmp.total_venta.setValue(this.data.total_pagar);
         /************************************/
+
+        if (this.data.medio_pago_1 != '') {
+          this.recuperarFormasdePago1();
+        }
+
+        if (this.data.medio_pago_2 != '') {
+          this.recuperarFormasdePago2();
+        }
+
+
     },
 
     formularioDet:function(){
@@ -1064,6 +1074,95 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
       this.megrid.getView().refresh();
       this.obtenersuma();
     },
+
+
+    recuperarFormasdePago1 : function (win) {
+
+      var grillaRecord =  Ext.data.Record.create([
+          {name:'id_moneda', type: 'numeric'},
+          {name:'desc_moneda', type: 'varchar'},
+          {name:'id_medio_pago', type: 'numeric'},
+          {name:'desc_medio_pago', type: 'varchar'},
+          {name:'id_auxiliar', type: 'numeric'},
+          {name:'desc_auxiliar', type: 'varchar'},
+          {name:'num_tarjeta', type: 'varchar'},
+          {name:'codigo_autorizacion', type: 'varchar'},
+          {name:'mco', type: 'varchar'},
+          {name:'monto_total_local', type: 'numeric'},
+          {name:'monto_total_extranjero', type: 'numeric'}
+    ]);
+
+    if (this.data.desc_moneda1 == 'USD') {
+      var monto_local = 0;
+      var monto_extranjero = this.data.monto_mp_1;
+    } else {
+      var monto_local = this.data.monto_mp_1;
+      var monto_extranjero = 0;
+    }
+
+
+    var myNewRecord = new grillaRecord({
+          id_moneda: this.data.moneda_1??"",
+          desc_moneda: this.data.desc_moneda1??"",
+          id_medio_pago: this.data.medio_pago_1??"",
+          desc_medio_pago: this.data.desc_medio_pago_1??"",
+          id_auxiliar: this.data.id_auxiliar??"",
+          desc_auxiliar: this.data.desc_id_auxiliar??"",
+          num_tarjeta: this.data.nro_tarjeta_1??"",
+          codigo_autorizacion: this.data.codigo_autorizacion_1??"",
+          mco: this.data.mco1??"",
+          monto_total_local: monto_local,
+          monto_total_extranjero: monto_extranjero
+      });
+      this.mestore.add(myNewRecord);
+      this.guardarDetalles();
+
+    },
+
+    recuperarFormasdePago2 : function (win) {
+      console.log("aqui datos llega",this.data);
+      var grillaRecord =  Ext.data.Record.create([
+          {name:'id_moneda', type: 'numeric'},
+          {name:'desc_moneda', type: 'varchar'},
+          {name:'id_medio_pago', type: 'numeric'},
+          {name:'desc_medio_pago', type: 'varchar'},
+          {name:'id_auxiliar', type: 'numeric'},
+          {name:'desc_auxiliar', type: 'varchar'},
+          {name:'num_tarjeta', type: 'varchar'},
+          {name:'codigo_autorizacion', type: 'varchar'},
+          {name:'mco', type: 'varchar'},
+          {name:'monto_total_local', type: 'numeric'},
+          {name:'monto_total_extranjero', type: 'numeric'}
+    ]);
+
+    if (this.data.desc_moneda2 == 'USD') {
+      var monto_local = 0;
+      var monto_extranjero = this.data.monto_mp_2;
+    } else {
+      var monto_local = this.data.monto_mp_2;
+      var monto_extranjero = 0;
+    }
+
+
+    var myNewRecord = new grillaRecord({
+          id_moneda: this.data.moneda_2??"",
+          desc_moneda: this.data.desc_moneda2??"",
+          id_medio_pago: this.data.medio_pago_2??"",
+          desc_medio_pago: this.data.desc_medio_pago_2??"",
+          id_auxiliar: (this.data.id_auxiliar2??""),
+          desc_auxiliar: (this.data.desc_id_auxiliar2??""),
+          num_tarjeta: this.data.nro_tarjeta_2??"",
+          codigo_autorizacion: this.data.codigo_autorizacion_2??"",
+          mco: this.data.mco2??"",
+          monto_total_local: monto_local,
+          monto_total_extranjero: monto_extranjero
+      });
+      this.mestore.add(myNewRecord);
+      this.guardarDetalles();
+
+    },
+
+
 
     loadValoresIniciales:function()
     {

@@ -1177,6 +1177,39 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           }
 
         },this);
+
+
+        this.Cmp.monto_forma_pago_2.on('change',function(field,newValue,oldValue){
+          if (this.Cmp.id_moneda.getValue() == 2) {
+            var cambio_calculado_2 = this.suma_total - (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio);
+          } else {
+            var cambio_calculado_2 = this.suma_total - this.Cmp.monto_forma_pago.getValue();
+          }
+
+          if (this.Cmp.id_moneda_2.getValue() == 2) {
+            this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago_2.getValue()*this.tipo_cambio)-cambio_calculado_2);
+            this.Cmp.cambio_moneda_extranjera.setValue(this.Cmp.monto_forma_pago_2.getValue()-(cambio_calculado_2/this.tipo_cambio));
+          } else {
+            this.Cmp.cambio.setValue(this.Cmp.monto_forma_pago_2.getValue()-cambio_calculado_2);
+            this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago_2.getValue()-cambio_calculado_2)/this.tipo_cambio);
+          }
+
+          if (this.Cmp.cambio.getValue()>0) {
+            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
+            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
+            this.Cmp.cambio.label.dom.control.style.color = "";
+            this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
+          } else {
+            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+            this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+            this.Cmp.cambio.label.dom.control.style.color = "red";
+            this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+          }
+
+
+        },this);
+
+
         /**************************************************************************************************************/
 
         /*Comentando para aumentar la instancia de pago*/
@@ -3789,15 +3822,25 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       var puntoVenta = this.Cmp.id_punto_venta.getValue();
       var detalleConceptos = this.mestore.data.items;
       var moneda_1 = this.Cmp.id_moneda.getValue();
+      var desc_moneda1 = this.Cmp.id_moneda.lastSelectionText;
       var moneda_2 = this.Cmp.id_moneda_2.getValue();
+      var desc_moneda2 = this.Cmp.id_moneda_2.lastSelectionText;
       var medio_pago_1 = this.Cmp.id_medio_pago.getValue();
+      var desc_medio_pago_1 = this.Cmp.id_medio_pago.lastSelectionText;
       var medio_pago_2 = this.Cmp.id_medio_pago_2.getValue();
+      var desc_medio_pago_2 = this.Cmp.id_medio_pago_2.lastSelectionText;
       var monto_mp_1 = this.Cmp.monto_forma_pago.getValue();
       var monto_mp_2 = this.Cmp.monto_forma_pago_2.getValue();
       var nro_tarjeta_1 = this.Cmp.numero_tarjeta.getValue();
       var nro_tarjeta_2 = this.Cmp.numero_tarjeta_2.getValue();
       var codigo_autorizacion_1 = this.Cmp.codigo_tarjeta.getValue();
+      var mco1 = this.Cmp.mco.getValue();
       var codigo_autorizacion_2 = this.Cmp.codigo_tarjeta_2.getValue();
+      var mco2 = this.Cmp.mco_2.getValue();
+      var id_auxiliar = this.Cmp.id_auxiliar.getValue();
+      var desc_id_auxiliar = this.Cmp.id_auxiliar.lastSelectionText;
+      var id_auxiliar_2 = this.Cmp.id_auxiliar_2.getValue();
+      var desc_id_auxiliar2 = this.Cmp.id_auxiliar_2.lastSelectionText;
       var variables_globales = this.data.objPadre.variables_globales;
       var total_pagar = this.suma_total;
       var tipo_cambio = this.tipo_cambio;
@@ -3843,7 +3886,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                      total_pagar: total_pagar,
                                      tipo_cambio: tipo_cambio,
                                      panel_padre: this.panel,
-                                     tipo_factura: 'computarizada'
+                                     tipo_factura: 'computarizada',
+                                     
+                                     desc_moneda1: desc_moneda1,
+                                     desc_moneda2:desc_moneda2,
+                                     desc_medio_pago_1:desc_medio_pago_1,
+                                     desc_medio_pago_2:desc_medio_pago_2,
+                                     mco1:mco1,
+                                     mco2:mco2,
+                                     id_auxiliar:id_auxiliar,
+                                     desc_id_auxiliar:desc_id_auxiliar,
+                                     id_auxiliar_2:id_auxiliar_2,
+                                     desc_id_auxiliar2:desc_id_auxiliar2
+
                                    }
                                   },
                                    this.idContenedor,

@@ -753,6 +753,37 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
           }
 
+
+          this.Cmp.monto_forma_pago_2.on('change',function(field,newValue,oldValue){
+            if (this.Cmp.id_moneda.getValue() == 2) {
+              var cambio_calculado_2 = this.suma_total - (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio);
+            } else {
+              var cambio_calculado_2 = this.suma_total - this.Cmp.monto_forma_pago.getValue();
+            }
+
+            if (this.Cmp.id_moneda_2.getValue() == 2) {
+              this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago_2.getValue()*this.tipo_cambio)-cambio_calculado_2);
+              this.Cmp.cambio_moneda_extranjera.setValue(this.Cmp.monto_forma_pago_2.getValue()-(cambio_calculado_2/this.tipo_cambio));
+            } else {
+              this.Cmp.cambio.setValue(this.Cmp.monto_forma_pago_2.getValue()-cambio_calculado_2);
+              this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago_2.getValue()-cambio_calculado_2)/this.tipo_cambio);
+            }
+
+            if (this.Cmp.cambio.getValue()>0) {
+              this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
+              this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
+              this.Cmp.cambio.label.dom.control.style.color = "";
+              this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
+            } else {
+              this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+              this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+              this.Cmp.cambio.label.dom.control.style.color = "red";
+              this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+            }
+
+
+          },this);
+
         },this);
         /**************************************************************************************************************/
 

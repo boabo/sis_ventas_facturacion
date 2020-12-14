@@ -1166,7 +1166,35 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
        },this);
        /**************************************************************************************************************/
 
+       this.Cmp.monto_forma_pago_2.on('change',function(field,newValue,oldValue){
+         if (this.Cmp.id_moneda.getValue() == 2) {
+           var cambio_calculado_2 = this.suma_total - (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio);
+         } else {
+           var cambio_calculado_2 = this.suma_total - this.Cmp.monto_forma_pago.getValue();
+         }
 
+         if (this.Cmp.id_moneda_2.getValue() == 2) {
+           this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago_2.getValue()*this.tipo_cambio)-cambio_calculado_2);
+           this.Cmp.cambio_moneda_extranjera.setValue(this.Cmp.monto_forma_pago_2.getValue()-(cambio_calculado_2/this.tipo_cambio));
+         } else {
+           this.Cmp.cambio.setValue(this.Cmp.monto_forma_pago_2.getValue()-cambio_calculado_2);
+           this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago_2.getValue()-cambio_calculado_2)/this.tipo_cambio);
+         }
+
+         if (this.Cmp.cambio.getValue()>0) {
+           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
+           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
+           this.Cmp.cambio.label.dom.control.style.color = "";
+           this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
+         } else {
+           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+           this.Cmp.cambio.label.dom.control.style.color = "red";
+           this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+         }
+
+
+       },this);
 
 /*Comentando para aumentar la instancia de pago*/
         // this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
@@ -3598,6 +3626,17 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     var variables_globales = this.data.objPadre.variables_globales;
     var total_pagar = this.suma_total;
     var tipo_cambio = this.tipo_cambio;
+
+    var desc_moneda1 = this.Cmp.id_moneda.lastSelectionText;
+    var desc_moneda2 = this.Cmp.id_moneda_2.lastSelectionText;
+    var desc_medio_pago_1 = this.Cmp.id_medio_pago.lastSelectionText;
+    var desc_medio_pago_2 = this.Cmp.id_medio_pago_2.lastSelectionText;
+    var mco1 = this.Cmp.mco.getValue();
+    var mco2 = this.Cmp.mco_2.getValue();
+    var id_auxiliar = this.Cmp.id_auxiliar.getValue();
+    var desc_id_auxiliar = this.Cmp.id_auxiliar.lastSelectionText;
+    var id_auxiliar_2 = this.Cmp.id_auxiliar_2.getValue();
+    var desc_id_auxiliar2 = this.Cmp.id_auxiliar_2.lastSelectionText;
     /****************************************/
         Phx.CP.loadWindows(this.formUrl,
                                  '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
@@ -3644,7 +3683,20 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                    id_dosificacion: this.Cmp.id_dosificacion.getValue(),
                                    nro_factura: this.Cmp.nro_factura.getValue(),
                                    informe: this.Cmp.informe.getValue(),
-                                   fecha_factura: this.Cmp.fecha.getValue()
+                                   fecha_factura: this.Cmp.fecha.getValue(),
+
+                                   desc_moneda1: desc_moneda1,
+                                   desc_moneda2:desc_moneda2,
+                                   desc_medio_pago_1:desc_medio_pago_1,
+                                   desc_medio_pago_2:desc_medio_pago_2,
+                                   mco1:mco1,
+                                   mco2:mco2,
+                                   id_auxiliar:id_auxiliar,
+                                   desc_id_auxiliar:desc_id_auxiliar,
+                                   id_auxiliar_2:id_auxiliar_2,
+                                   desc_id_auxiliar2:desc_id_auxiliar2
+
+
                                  }
                                 },
                                  this.idContenedor,
