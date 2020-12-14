@@ -274,6 +274,29 @@ BEGIN
 		end;
 
     /*********************************
+ 	#TRANSACCION:  'VF_FACFPELI_DEL'
+ 	#DESCRIPCION:	Eliminacion de registros
+ 	#AUTOR:		ismaelvaldivia
+ 	#FECHA:		14-12-2020 14:45:46
+	***********************************/
+
+	elsif(p_transaccion='VF_FACFPELI_DEL')then
+
+		begin
+			--Sentencia de la eliminacion
+			delete from vef.tventa_forma_pago
+            where id_venta=v_parametros.id_venta;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Forma de Pago eliminado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_parametros.id_venta::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+    /*********************************
  	#TRANSACCION:  'VF_FACFPVALI_MOD'
  	#DESCRIPCION:	Validacion de las formas de pago
  	#AUTOR:		Ismael Valdivia
