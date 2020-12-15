@@ -53,6 +53,15 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			});
 
 
+			/*Recuperamos de la venta detalle si existe algun concepto con excento*/
+
+
+
+
+			//
+			// /**********************************************************************/
+
+
 
 	},
 
@@ -170,6 +179,25 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#EAEAEA';
 
 
+			this.Cmp.id_formula.on('select',function(c,r,i) {
+				Ext.Ajax.request({
+						url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
+						params:{id_formula:this.Cmp.id_formula.getValue()},
+						success: function(resp){
+								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+								this.requiere_excento = reg.ROOT.datos.v_tiene_excento;
+								if (this.requiere_excento == 'si') {
+									this.mostrarComponente(this.Cmp.excento);
+									this.Cmp.excento.setValue(0);
+								}
+						},
+						failure: this.conexionFailure,
+						timeout:this.timeout,
+						scope:this
+				});
+			},this);
+
+
 	},
 
 	gruposBarraTareas:[{name:'borrador',title:'<H1 style="font-size:12px;" align="center"><i style="color:#FFAE00; font-size:15px;" class="fa fa-eraser"></i> En Registro</h1>',grupo:0,height:0},
@@ -191,9 +219,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			var rec = this.sm.getSelected();
 			this.getBoton('anular_fact').enable();
 			this.getBoton('sgt_estado').enable();
-			if (rec.data.excento > 0) {
-				this.getBoton('mod_excento').enable();
-			}
+			this.getBoton('mod_excento').enable();
+			// if (rec.data.excento > 0) {
+			// 	this.getBoton('mod_excento').enable();
+			// }
 			Phx.vista.VentaFacturacion.superclass.preparaMenu.call(this);
 		},
 
@@ -545,6 +574,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			}
 			},this);
 
+			this.ocultarComponente(this.Cmp.excento);
+
 		},
 			onButtonEdit:function () {
 				Phx.vista.VentaFacturacion.superclass.onButtonEdit.call(this);
@@ -849,25 +880,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	 },
 	 {
 		 config:{
-			 name: 'excento',
-			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
-			 allowBlank: true,
-			 anchor:'100%',
-			 gwidth: 100,
-			 maxLength:1179650,
-			 galign:'right',
-			 renderer:function (value,p,record){
-			 return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
-		 }
-		 },
-			 type:'NumberField',
-			 filters:{pfiltro:'ven.excento',type:'numeric'},
-			 id_grupo:1,
-			 grid:true,
-			 form:false
-	 },
-	 {
-		 config:{
 			 name: 'credito_fiscal',
 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Crédito Fiscal</span>',
 			 allowBlank: true,
@@ -946,7 +958,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		 config:{
 			 name: 'observaciones',
 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
-			 allowBlank: true,
+			 allowBlank: false,
 			 anchor:'100%',
 			 gwidth: 200,
 			 style:'text-transform:uppercase;',
@@ -1125,6 +1137,26 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		 type : 'TrigguerCombo',
 		 id_grupo : 0,
 		 form : true
+	 },
+	 {
+		 config:{
+			 name: 'excento',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
+			 allowBlank: true,
+			 anchor:'100%',
+			 gwidth: 100,
+			 hidden:true,
+			 maxLength:1179650,
+			 galign:'right',
+			 renderer:function (value,p,record){
+			 return  String.format('<div style="font-size:12px; color:red; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
+		 }
+		 },
+			 type:'NumberField',
+			 filters:{pfiltro:'ven.excento',type:'numeric'},
+			 id_grupo:1,
+			 grid:true,
+			 form:true
 	 },
 
 		// {

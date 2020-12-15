@@ -244,7 +244,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				width:350,
 				gwidth: 300,
-				maxLength:-5
+				//maxLength:20
 			},
 				type:'TextArea',
 				filters:{pfiltro:'form.descripcion',type:'string'},

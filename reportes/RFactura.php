@@ -6,9 +6,7 @@ class RFactura
 
 
 
-				$cadena_qr = 'Fecha: '.$datos['fecha_venta'] . '<br />' .
-						'Total a pagar: '.$datos['total_venta'] . '<br />' .
-						'Cliente: '.$datos['cliente'];
+				$cadena_qr = $datos['nit_entidad'] .'|'.$datos['numero_factura'] .'|'.$datos['autorizacion'].'|'.$datos['fecha_venta'].'|'.$datos['total_venta'].'|'.$datos['sujeto_credito'].'|'.$datos['codigo_control'].'|'.$datos['nit_cliente'].'|0.00|0.00|'.$datos['excento'].'|0.00';
 
 				$barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,H');
 
@@ -29,23 +27,42 @@ class RFactura
 
 					$html.='<body style="font-size: 11pt;">';
 
-				$html .= '<center>
-					<table style="width:295px;" >
-				<thead>
-				<tr   >
-						<td colspan="2" style=" text-align: center;" align="center" >
-							' . $datos['nombre_entidad'] . '<br />
-							SUCURSAL ' . $datos['codigo_sucursal'] . '<br />
-							' . $datos['nombre_sucursal'] . '<br />
-							' . $datos['direccion_sucursal'].'<br />
-							' . $datos['zona'] . '<br />
-							TELF: ' . $datos['telefono_sucursal'].'<br />
-							' . $datos['lugar_sucursal'].'<br />
-						<hr/>
-						</td>
-				</tr>
+				if ($datos['codigo_sucursal'] == 0) {
+					$html .= '<center>
+						<table style="width:295px;" >
+					<thead>
+					<tr   >
+							<td colspan="2" style=" text-align: center;" align="center" >
+								' . $datos['nombre_entidad'] . '<br />							
+								' . $datos['nombre_sucursal'] . '<br />
+								' . $datos['direccion_sucursal'].'<br />
+								' . $datos['zona'] . '<br />
+								TELF: ' . $datos['telefono_sucursal'].'<br />
+								' . $datos['lugar_sucursal'].'<br />
+							<hr/>
+							</td>
+					</tr>';
+				} else {
+					$html .= '<center>
+						<table style="width:295px;" >
+					<thead>
+					<tr   >
+							<td colspan="2" style=" text-align: center;" align="center" >
+								' . $datos['nombre_entidad'] . '<br />
+								SUCURSAL ' . $datos['codigo_sucursal'] . '<br />
+								' . $datos['nombre_sucursal'] . '<br />
+								' . $datos['direccion_sucursal'].'<br />
+								' . $datos['zona'] . '<br />
+								TELF: ' . $datos['telefono_sucursal'].'<br />
+								' . $datos['lugar_sucursal'].'<br />
+							<hr/>
+							</td>
+					</tr>';
+				}
 
-				<tr>
+
+
+				$html .= '<tr>
 					<td colspan="2" align="center" style="text-align: center;"><strong>FACTURA</strong><hr/></td>
 				</tr>
 
@@ -87,12 +104,20 @@ class RFactura
 
 					}
 					$html.='<tr><td colspan="4"></td></tr>';
+
 					$html.='</tbody>
 							<tfoot>
 							<tr>
 								<td colspan="2" align="left"><hr/><b>TOTAL A PAGAR</b><hr/></td>
 								<td colspan="2" align="right"><hr/><b>' .$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
 							</tr>';
+
+					if ($datos['excento'] > 0) {
+						$html .= '<tr>
+												<td colspan="2" align="left"><b>EXENTO</b> <hr/></td>
+												<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['excento'], 2, '.', ',').'</b><hr/></td>
+											</tr>';
+					}
 
 					if ($datos['total_venta'] > $datos['sujeto_credito']) {
 						$html .= '<tr>

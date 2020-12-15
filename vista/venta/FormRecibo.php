@@ -79,9 +79,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         config:{
           name: 'observaciones',
           fieldLabel: 'Observaciones',
-          allowBlank: true,
+          allowBlank: false,
           width:200,
-          //maxLength:30,
+          minLength:12,
           style:'text-transform:uppercase;'
         },
           type:'TextArea',
@@ -3555,13 +3555,28 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_medio_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
             this.Cmp.monto_forma_pago_2.setValue(this.Cmp.monto_forma_pago.getValue());
-            this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
-               callback : function (r) {
-               		this.Cmp.id_moneda_2.setValue(this.data.objPadre.variables_globales.id_moneda_base);
-                  this.Cmp.id_moneda_2.fireEvent('select',this.Cmp.id_sucursal, this.Cmp.id_moneda_2.store.getById(this.data.objPadre.variables_globales.id_moneda_base));
 
-                }, scope : this
-            });
+            /*Aqui para que moneda esta por defecto*/
+            this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+                   callback : function (r) {
+                     for (var i = 0; i < r.length; i++) {
+                       if (r[i].data.id_moneda == this.data.objPadre.variables_globales.id_moneda_base) {
+                         this.Cmp.id_moneda_2.setValue(r[i].data.id_moneda);
+                         this.Cmp.id_moneda_2.fireEvent('select', this.Cmp.id_moneda_2,this.Cmp.id_moneda_2.store.getById(r[i].data.id_moneda));
+
+                       }
+                     }
+                    }, scope : this
+                });
+            /***************************************/
+
+            // this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+            //    callback : function (r) {
+            //    		this.Cmp.id_moneda_2.setValue(this.data.objPadre.variables_globales.id_moneda_base);
+            //       this.Cmp.id_moneda_2.fireEvent('select',this.Cmp.id_sucursal, this.Cmp.id_moneda_2.store.getById(this.data.objPadre.variables_globales.id_moneda_base));
+            //
+            //     }, scope : this
+            // });
           } else {
             Ext.getCmp('segunda_forma_pago').hide();
             this.Cmp.id_moneda_2.disable();
@@ -3619,6 +3634,20 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.monto_forma_pago_2.enable();
           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)));
 
+          /*Aqui para que moneda esta por defecto*/
+          this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+                 callback : function (r) {
+                   for (var i = 0; i < r.length; i++) {
+                     if (r[i].data.id_moneda == this.data.objPadre.variables_globales.id_moneda_base) {
+                       this.Cmp.id_moneda_2.setValue(r[i].data.id_moneda);
+                       this.Cmp.id_moneda_2.fireEvent('select', this.Cmp.id_moneda_2,this.Cmp.id_moneda_2.store.getById(r[i].data.id_moneda));
+
+                     }
+                   }
+                  }, scope : this
+              });
+          /***************************************/
+
 
         }else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) && this.Cmp.monto_forma_pago.getValue() < (this.suma_total*this.tipo_cambio)) {
 
@@ -3636,6 +3665,20 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.monto_forma_pago_2.enable();
           this.Cmp.monto_forma_pago_2.setValue(((this.suma_total*this.tipo_cambio)-this.Cmp.monto_forma_pago.getValue()));
 
+          /*Aqui para que moneda esta por defecto*/
+          this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+                 callback : function (r) {
+                   for (var i = 0; i < r.length; i++) {
+                     if (r[i].data.id_moneda == this.data.objPadre.variables_globales.id_moneda_base) {
+                       this.Cmp.id_moneda_2.setValue(r[i].data.id_moneda);
+                       this.Cmp.id_moneda_2.fireEvent('select', this.Cmp.id_moneda_2,this.Cmp.id_moneda_2.store.getById(r[i].data.id_moneda));
+
+                     }
+                   }
+                  }, scope : this
+              });
+          /***************************************/
+
         } else if ((this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio == 2) && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
 
 
@@ -3651,6 +3694,20 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.id_medio_pago_2.enable();
           this.Cmp.monto_forma_pago_2.enable();
           this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+
+          /*Aqui para que moneda esta por defecto*/
+          this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+                 callback : function (r) {
+                   for (var i = 0; i < r.length; i++) {
+                     if (r[i].data.id_moneda == this.data.objPadre.variables_globales.id_moneda_base) {
+                       this.Cmp.id_moneda_2.setValue(r[i].data.id_moneda);
+                       this.Cmp.id_moneda_2.fireEvent('select', this.Cmp.id_moneda_2,this.Cmp.id_moneda_2.store.getById(r[i].data.id_moneda));
+
+                     }
+                   }
+                  }, scope : this
+              });
+          /***************************************/
         } else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio != 2) && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
 
           /**********************************Cambiamos el Style *****************************************/
@@ -3665,6 +3722,20 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.id_medio_pago_2.enable();
           this.Cmp.monto_forma_pago_2.enable();
           this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+
+          /*Aqui para que moneda esta por defecto*/
+          this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
+                 callback : function (r) {
+                   for (var i = 0; i < r.length; i++) {
+                     if (r[i].data.id_moneda == this.data.objPadre.variables_globales.id_moneda_base) {
+                       this.Cmp.id_moneda_2.setValue(r[i].data.id_moneda);
+                       this.Cmp.id_moneda_2.fireEvent('select', this.Cmp.id_moneda_2,this.Cmp.id_moneda_2.store.getById(r[i].data.id_moneda));
+
+                     }
+                   }
+                  }, scope : this
+              });
+          /***************************************/
         }
 
         else{

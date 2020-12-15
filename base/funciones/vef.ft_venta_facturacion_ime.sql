@@ -297,10 +297,13 @@ BEGIN
 
         	if (v_tipo_base = 'computarizada') THEN
           	v_fecha = now()::date;
+            v_excento = COALESCE(v_parametros.excento,0);
+
 
         	ELSIF(v_tipo_base = 'manual') then
           	v_fecha = v_parametros.fecha;
           	v_nro_factura = v_parametros.nro_factura;
+
           	v_excento = v_parametros.excento;
           	v_id_dosificacion = v_parametros.id_dosificacion;
 
@@ -3510,8 +3513,8 @@ BEGIN
 
         --Validar que si hay un concepto con excento el importe excento no sea 0
         if (v_venta.tipo_factura <> 'recibo') then
-          if (v_cantidad > 0 and v_venta.excento = 0) then
-            raise exception 'Tiene un concepto que requiere un importe excento y el importe excento para esta venta es 0';
+          if (v_cantidad > 0 and v_venta.excento < 0) then
+            raise exception 'Tiene un concepto que requiere un importe excento y el importe excento para esta venta es menor 0';
           end if;
         end if;
       	--raise exception 'lelga cant:%, tipo_fac:%, v_venta.excento:%',v_cantidad,v_venta.tipo_factura,v_venta.excento;

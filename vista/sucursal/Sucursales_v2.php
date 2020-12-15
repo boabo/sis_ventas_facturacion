@@ -75,6 +75,26 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
 	onButtonEdit: function (){
 		Phx.vista.Sucursales_v2.superclass.onButtonEdit.call(this);
 		this.form.el.dom.firstChild.childNodes[0].style.background = '#77C5BB';
+
+		var rec = this.sm.getSelected();
+
+		this.Cmp.id_depto.store.load({params:{start:0,limit:200},
+			callback : function (r) {
+				for (var i = 0; i < r.length; i++) {
+					if (r[i].data.id_depto == rec.data.id_depto) {
+						this.Cmp.id_depto.setValue(r[i].data.id_depto);
+						this.Cmp.id_depto.fireEvent('select', this.Cmp.id_depto,this.Cmp.id_depto.store.getById(r[i].data.id_depto));
+
+					}
+				}
+			 }, scope : this
+		});
+
+
+		console.log("rec",rec);
+		this.Cmp.id_depto.setValue(rec.data.nombre_depto);
+		this.Cmp.id_depto.fireEvent('select',this.Cmp.id_depto, this.Cmp.id_depto.store.getById(rec.data.id_depto));
+
 	},
 
 	// onButtonProductos : function() {
@@ -230,8 +250,8 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
                 type:'TextField',
                 filters:{pfiltro:'suc.nombre_comprobante',type:'string'},
                 id_grupo:1,
-                grid:true,
-                form:true
+                grid:false,
+                form:false
         },
         {
    			config:{
@@ -378,7 +398,7 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
 					fields: ['id_lugar','id_lugar_fk','codigo','nombre','tipo','sw_municipio','sw_impuesto','codigo_largo'],
 					// turn on remote sorting
 					remoteSort: true,
-					baseParams:{par_filtro:'lug.nombre',tipo:'departamento'}
+					baseParams:{par_filtro:'lug.nombre#lug.id_lugar',tipo:'departamento'}
 				}),
 				valueField: 'id_lugar',
 				displayField: 'nombre',
@@ -392,7 +412,7 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
 				anchor:"80%",
 				gwidth:150,
 				minChars:2,
-				renderer:function (value, p, record){return String.format('{0}', record.data['nombre_lugar']);}
+				//renderer:function (value, p, record){return String.format('{0}', record.data['nombre_lugar']);}
 			},
 			type:'ComboBox',
 			filters:{pfiltro:'lug.nombre',type:'string'},
@@ -412,8 +432,8 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
             },
                 type:'TextField',
                 id_grupo:1,
-                grid:true,
-                form:true
+                grid:false,
+                form:false
         },
 
         {
@@ -427,8 +447,8 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
             },
                 type:'TextField',
                 id_grupo:1,
-                grid:true,
-                form:true
+                grid:false,
+                form:false
         },
 
         // {
@@ -603,8 +623,8 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
                 },
                 type:'AwesomeCombo',
                 id_grupo:0,
-                grid:true,
-                form:true
+                grid:false,
+                form:false
         },
 
         {
@@ -649,8 +669,8 @@ Phx.vista.Sucursales_v2=Ext.extend(Phx.gridInterfaz,{
                 },
                 type:'AwesomeCombo',
                 id_grupo:0,
-                grid:true,
-                form:true
+                grid:false,
+                form:false
         },
 
         {

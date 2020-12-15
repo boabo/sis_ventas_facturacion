@@ -148,7 +148,7 @@ class MODVentaDetalleFacturacion extends MODbase{
 			$this->transaccion='VF_FACTEXCEN_INS';
 			$this->tipo_procedimiento='IME';//tipo de transaccion
 
-			$this->setParametro('id_venta','id_venta','int4');
+			$this->setParametro('id_formula','id_formula','int4');
 
 			//Ejecuta la instruccion
 			$this->armarConsulta();

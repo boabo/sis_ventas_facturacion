@@ -360,6 +360,22 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			bottom_filter:true
     },
 		{
+ 			 config:{
+ 				 name: 'sw_autorizacion',
+ 				 fieldLabel: 'Autorizaciones',
+ 				 allowBlank: true,
+ 				 anchor: '80%',
+ 				 gwidth: 200,
+ 				 maxLength:500
+ 			 },
+ 			 type:'TextArea',
+ 			 filters: {pfiltro:'conig.sw_autorizacion', type:'string'},
+
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 form:false
+ 			},
+		{
       config:{
         name: 'codigo',
         fieldLabel: 'Código del Servicio',
@@ -372,14 +388,14 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
       type:'TextField',
       filters:{pfiltro:'ingas.codigo',type:'string'},
       id_grupo:1,
-      grid:true,
-      form:true
+      grid:false,
+      form:false
     },
 		{
       config : {
           name : 'id_actividad_economica',
           fieldLabel : 'Actividad Economica',
-          allowBlank : false,
+          allowBlank : true,
           emptyText : 'Actividad...',
 					listWidth:'500',
 					//anchor: '100%',
@@ -443,7 +459,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 						name: 'id_moneda',
 						origen: 'MONEDA',
 						allowBlank: false,
-						fieldLabel: 'Moneda Deposito',
+						fieldLabel: 'Moneda Concepto',
 						gdisplayField: 'desc_moneda',//mapea al store del grid
 						//anchor:'100%',
 						width:200,
@@ -665,22 +681,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		//  grid: true,
 		//  form: true
 	 // },
-	 {
-			 config:{
-				 name: 'sw_autorizacion',
-				 fieldLabel: 'Autorizaciones',
-				 allowBlank: true,
-				 anchor: '80%',
-				 gwidth: 200,
-				 maxLength:500
-			 },
-			 type:'TextArea',
-			 filters: {pfiltro:'conig.sw_autorizacion', type:'string'},
 
-			 id_grupo:1,
-			 grid:true,
-			 form:false
-			},
 			{
 			config:{
 				name: 'regionales',

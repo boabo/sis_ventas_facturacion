@@ -441,10 +441,19 @@ BEGIN
 	elsif(p_transaccion='VF_FACTEXCEN_INS')then
 
 		begin
-        	select count (ing.excento) into v_existe_excento
+
+
+            select count (ingas.excento) into v_existe_excento
+            from vef.tformula form
+            inner join vef.tformula_detalle det on det.id_formula = form.id_formula
+            inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_concepto_ingas
+            where ingas.excento = 'si' and form.id_formula = v_parametros.id_formula;
+
+
+        	/*select count (ing.excento) into v_existe_excento
             from vef.tventa_detalle det
             inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = det.id_producto
-            where det.id_venta = v_parametros.id_venta and ing.excento = 'si';
+            where det.id_venta = v_parametros.id_venta and ing.excento = 'si';*/
 
             if (v_existe_excento > 0) then
             	v_tiene_excento = 'si';
