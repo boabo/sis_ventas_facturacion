@@ -2673,8 +2673,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 					id : 'id_cliente',
 					root : 'datos',
 					sortInfo : {
-						field : 'nombres',
-						direction : 'ASC'
+            field : 'id_cliente',
+						direction : 'DESC'
 					},
 					totalProperty : 'total',
 					fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
