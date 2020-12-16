@@ -434,7 +434,7 @@ end if;
 		from vef.tdosificacion d
 		inner join vef.tsucursal su on su.id_sucursal = d.id_sucursal
 		inner join param.tlugar lu on lu.id_lugar = su.id_lugar
-        where extract(day from d.fecha_limite)-4 = extract(day from current_date)
+        where extract(day from d.fecha_limite)-5 = extract(day from current_date)
         and extract(month from d.fecha_limite) = extract(month from current_date))loop
 
         v_asunto = 'Vencimiento de Dosificación';
@@ -469,7 +469,7 @@ end if;
                                                     COALESCE(v_parametros_ad,''),
                                                     null,  --destino de la alarma
                                                     v_asunto,
-                                                    'xzambrana@boa.bo,mcaballero@boa.bo,gvelasquezcolque@gmail.com,miguel.ale19934@gmail.com'
+                                                    'xzambrana@boa.bo,mcaballero@boa.bo,gvelasquez@boa.bo,ismael.valdivia@boa.bo'
                                                     );
 
       end loop;
@@ -496,3 +496,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_dosificacion_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;
