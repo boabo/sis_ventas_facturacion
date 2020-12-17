@@ -1896,63 +1896,64 @@ BEGIN
             /*Aumentamos para asociar los boletos registrados*/
         if (pxp.f_existe_parametro(p_tabla,'boleto_asociado')) then
 
+          if (v_parametros.boleto_asociado != '') then
+              select substring(v_parametros.boleto_asociado from 1 for 3) into v_inicial_boleto;
 
-        	select substring(v_parametros.boleto_asociado from 1 for 3) into v_inicial_boleto;
+              if (v_inicial_boleto <> '930') then
+                  raise exception 'Los digitos no corresponden a un boleto, verifique.';
+              end if;
 
-			if (v_inicial_boleto <> '930') then
-            	raise exception 'Los digitos no corresponden a un boleto, verifique.';
-            end if;
+               select count (bole.id_boleto_amadeus)
+                      into v_existencia
+                  from obingresos.tboleto_amadeus bole
+                  where bole.nro_boleto = v_parametros.boleto_asociado and bole.estado_reg = 'activo';
 
-             select count (bole.id_boleto_amadeus)
-                    into v_existencia
-                from obingresos.tboleto_amadeus bole
-                where bole.nro_boleto = v_parametros.boleto_asociado and bole.estado_reg = 'activo';
+               if (v_existencia > 0) then
 
-             if (v_existencia > 0) then
-
-             	select
-                	bole.nro_boleto,
-                    --bole.nit,
-                    bole.pasajero,
-                    --bole.razon,
-                    --(bole.origen || '-' || bole.destino) as ruta,
-                    bole.fecha_emision,
-                    bole.id_boleto_amadeus
-                    into v_datos_boletos
-                from obingresos.tboleto_amadeus bole
-                where bole.nro_boleto = v_parametros.boleto_asociado;
+                  select
+                      bole.nro_boleto,
+                      --bole.nit,
+                      bole.pasajero,
+                      --bole.razon,
+                      --(bole.origen || '-' || bole.destino) as ruta,
+                      bole.fecha_emision,
+                      bole.id_boleto_amadeus
+                      into v_datos_boletos
+                  from obingresos.tboleto_amadeus bole
+                  where bole.nro_boleto = v_parametros.boleto_asociado;
 
 
-                --Sentencia de la insercion
-                insert into vef.tboletos_asociados_fact(
-                estado_reg,
-                id_boleto,
-                id_venta,
-                nro_boleto,
-                fecha_emision,
-                pasajero,
-                --nit,
-                --ruta,
-                --razon,
-                fecha_reg,
-                id_usuario_reg
-                ) values(
-                'activo',
-                v_datos_boletos.id_boleto_amadeus,
-                v_id_venta,
-                v_datos_boletos.nro_boleto,
-                v_datos_boletos.fecha_emision,
-                v_datos_boletos.pasajero,
-				--v_datos_boletos.nit,
-                --v_datos_boletos.ruta,
-                --v_datos_boletos.razon,
-                now(),
-                p_id_usuario
-                )RETURNING id_boleto_asociado into v_id_boleto_asociado;
+                  --Sentencia de la insercion
+                  insert into vef.tboletos_asociados_fact(
+                  estado_reg,
+                  id_boleto,
+                  id_venta,
+                  nro_boleto,
+                  fecha_emision,
+                  pasajero,
+                  --nit,
+                  --ruta,
+                  --razon,
+                  fecha_reg,
+                  id_usuario_reg
+                  ) values(
+                  'activo',
+                  v_datos_boletos.id_boleto_amadeus,
+                  v_id_venta,
+                  v_datos_boletos.nro_boleto,
+                  v_datos_boletos.fecha_emision,
+                  v_datos_boletos.pasajero,
+                  --v_datos_boletos.nit,
+                  --v_datos_boletos.ruta,
+                  --v_datos_boletos.razon,
+                  now(),
+                  p_id_usuario
+                  )RETURNING id_boleto_asociado into v_id_boleto_asociado;
 
-             else
-             	raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
-             end if;
+               else
+                  raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
+               end if;
+           end if;
         end if;
         /*************************************************/
 
@@ -2351,7 +2352,7 @@ BEGIN
          /*Aumentamos para asociar los boletos registrados*/
         if (pxp.f_existe_parametro(p_tabla,'boleto_asociado')) then
 
-
+		if (v_parametros.boleto_asociado != '') then
         	select substring(v_parametros.boleto_asociado from 1 for 3) into v_inicial_boleto;
 
 			if (v_inicial_boleto <> '930') then
@@ -2408,6 +2409,7 @@ BEGIN
              else
              	raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
              end if;
+            end if;
         end if;
         /*************************************************/
 
