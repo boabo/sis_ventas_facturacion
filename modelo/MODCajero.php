@@ -249,6 +249,7 @@ class MODCajero extends MODbase{
 		$this->captura('id_usuario_reg','int4');
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('fecha_mod','timestamp');
+		$this->captura('boleto_asociado','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -584,6 +585,22 @@ class MODCajero extends MODbase{
 		$this->ejecutarConsulta();
 		//var_dump($this->respuesta);
 		return $this->respuesta;
+	}
+
+	function getConceptoAsociar(){
+			//Definicion de variables para ejecucion del procedimientp
+			$this->procedimiento='vef.ft_venta_facturacion_ime';
+			$this->transaccion='VF_CONBOLE_IME';
+			$this->tipo_procedimiento='IME';//tipo de transaccion
+
+			$this->setParametro('id_venta','id_venta','int4');
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+
+			//Devuelve la respuesta
+			return $this->respuesta;
 	}
 
 }

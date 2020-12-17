@@ -265,7 +265,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 								direction: 'ASC'
 						},
 						totalProperty: 'total',
-						fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
+						fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable'],
 						remoteSort: true,
 						baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP', emision:'facturacion'}
 				}),
@@ -304,6 +304,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 					 '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
 					 '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
 					 '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+					 '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
 					 '</div></tpl>'
 				 ]),
 			},
@@ -638,7 +639,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
-	bedit:false,
+	bedit:true,
 
 	onReloadPage: function(m){
 		this.maestro=m;
@@ -650,20 +651,24 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
 
 		// /*Recuperamos de la venta detalle si existe algun concepto con excento*/
-		// Ext.Ajax.request({
-		// 		url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
-		// 		params:{id_venta:this.maestro.id_venta},
-		// 		success: function(resp){
-		// 				var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-		// 				this.requiere_excento = reg.ROOT.datos.v_tiene_excento;
-		// 				this.valor_excento = this.maestro.excento;
-		// 				 var that = this;
-		// 				this.crearFormulatio(that);
-		// 		},
-		// 		failure: this.conexionFailure,
-		// 		timeout:this.timeout,
-		// 		scope:this
-		// });
+
+		console.log("aqui maestro viene",m);
+
+
+		Ext.Ajax.request({
+				url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
+				params:{id_venta:this.maestro.id_venta},
+				success: function(resp){
+						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+						this.requiere_excento = reg.ROOT.datos.v_tiene_excento;
+						this.valor_excento = this.maestro.excento;
+						 var that = this;
+						this.crearFormulatio(that);
+				},
+				failure: this.conexionFailure,
+				timeout:this.timeout,
+				scope:this
+		});
 		//
 		// /**********************************************************************/
 
@@ -671,85 +676,85 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.load({params: {start: 0, limit: 50}});
 	},
 
-	// crearFormulatio: function (that) {
-	// 	if (this.requiere_excento == 'si' && this.valor_excento == 0) {
-	//
-	// 		var simple = new Ext.FormPanel({
-	// 		 labelWidth: 75, // label settings here cascade unless overridden
-	// 		 frame:true,
-	// 		 bodyStyle:'padding:5px 5px 0; background:linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%);',
-	// 		 width: 300,
-	// 		 height:70,
-	// 		 defaultType: 'textfield',
-	// 		 items: [
-	// 						  new Ext.form.NumberField({
-	// 																	name: 'excento',
-	// 																	msgTarget: 'title',
-	// 																	fieldLabel: 'Valor Excento',
-	// 																	allowBlank: false,
-	// 																	allowDecimals: true,
-	// 																	decimalPrecision : 2,
-	// 																	style:{
-	// 																		width: '190px'
-	// 																	},
-	// 																	enableKeyEvents : true,
-	//
-	// 													}),
-	// 							]
-	//
-	//  					});
-	// 			this.excento_formulario = simple;
-	//
-	// 		var formu_excento = new Ext.Window({
-	// 			title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Excento<p></h1>', //the title of the window
-	// 			width:320,
-	// 			height:150,
-	// 			//closeAction:'hide',
-	// 			modal:true,
-	// 			plain: true,
-	// 			items:simple,
-	// 			buttons: [{
-	// 									text:'<p style="color:green; font-size:15px; font-weight:bold;"><i class="fa fa-floppy-o fa-lg"></i> Guardar</p>',
-	// 									scope:this,
-	// 									handler: function(){
-	// 											this.insertarNuevo(formu_excento);
-	// 									}
-	// 							},{
-	// 									text: '<p style="color:red; font-size:15px; font-weight:bold;"><i class="fa fa-times-circle fa-lg"></i> Cancelar</p>',
-	// 									handler: function(){
-	// 											formu_excento.hide();
-	// 									}
-	// 							}]
-	//
-	// 		});
-	//
-	//
-	// 		// formu_excento.buttons[0].btnEl.dom.style.height = '200px;'
-	// 		formu_excento.show();
-	// 		formu_excento.buttons[0].el.dom.style.width = '100px';
-	// 		formu_excento.buttons[0].el.dom.style.height = '30px';
-	//
-	// 		formu_excento.buttons[1].el.dom.style.width = '100px';
-	// 		formu_excento.buttons[1].el.dom.style.height = '30px';
-	// 		this.excento_formulario.items.items[0].setValue(this.valor_excento);
-	//
-	// 	}
-	// },
-	insertarNuevo : function (formu_excento) {
-		if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
-				Ext.Msg.show({
-				 title:'<h1 style="font-size:15px;">Aviso!</h1>',
-				 msg: '<p style="font-weight:bold; font-size:12px;">Tiene un concepto que requiere excento y el valor excento no debe ser vacio o 0!</p>',
-				 buttons: Ext.Msg.OK,
-				 width:320,
- 				 height:150,
-				 icon: Ext.MessageBox.WARNING,
-				 scope:this
+	crearFormulatio: function (that) {
+		if (this.requiere_excento == 'si' && this.valor_excento == 0) {
+
+			var simple = new Ext.FormPanel({
+			 labelWidth: 75, // label settings here cascade unless overridden
+			 frame:true,
+			 bodyStyle:'padding:5px 5px 0; background:linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%);',
+			 width: 300,
+			 height:70,
+			 defaultType: 'textfield',
+			 items: [
+							  new Ext.form.NumberField({
+																		name: 'excento',
+																		msgTarget: 'title',
+																		fieldLabel: 'Valor Excento',
+																		allowBlank: false,
+																		allowDecimals: true,
+																		decimalPrecision : 2,
+																		style:{
+																			width: '190px'
+																		},
+																		enableKeyEvents : true,
+
+														}),
+								]
+
+	 					});
+				this.excento_formulario = simple;
+
+			var formu_excento = new Ext.Window({
+				title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Excento<p></h1>', //the title of the window
+				width:320,
+				height:150,
+				//closeAction:'hide',
+				modal:true,
+				plain: true,
+				items:simple,
+				buttons: [{
+										text:'<p style="color:green; font-size:15px; font-weight:bold;"><i class="fa fa-floppy-o fa-lg"></i> Guardar</p>',
+										scope:this,
+										handler: function(){
+												this.insertarNuevo(formu_excento);
+										}
+								},{
+										text: '<p style="color:red; font-size:15px; font-weight:bold;"><i class="fa fa-times-circle fa-lg"></i> Cancelar</p>',
+										handler: function(){
+												formu_excento.hide();
+										}
+								}]
+
 			});
-		} else {
+
+
+			// formu_excento.buttons[0].btnEl.dom.style.height = '200px;'
+			formu_excento.show();
+			formu_excento.buttons[0].el.dom.style.width = '100px';
+			formu_excento.buttons[0].el.dom.style.height = '30px';
+
+			formu_excento.buttons[1].el.dom.style.width = '100px';
+			formu_excento.buttons[1].el.dom.style.height = '30px';
+			this.excento_formulario.items.items[0].setValue(this.valor_excento);
+
+		}
+	},
+	insertarNuevo : function (formu_excento) {
+		// if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
+		// 		Ext.Msg.show({
+		// 		 title:'<h1 style="font-size:15px;">Aviso!</h1>',
+		// 		 msg: '<p style="font-weight:bold; font-size:12px;">Tiene un concepto que requiere excento y el valor excento no debe ser vacio o 0!</p>',
+		// 		 buttons: Ext.Msg.OK,
+		// 		 width:320,
+ 		// 		 height:150,
+		// 		 icon: Ext.MessageBox.WARNING,
+		// 		 scope:this
+		// 	});
+		// } else {
 		this.guardarDetalles();
 		formu_excento.hide();
-		}
+		//}
 
 	},
 
@@ -768,6 +773,30 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 			});
 			Phx.CP.getPagina(this.idContenedorPadre).reload();
 		/**********************************************************************/
+	},
+
+	onButtonSave:function(o){
+			var filas=this.store.getModifiedRecords();
+			if(filas.length>0){
+							//prepara una matriz para guardar los datos de la grilla
+							var data={};
+							for(var i=0;i<filas.length;i++){
+									data[i]=filas[i].data;
+									data[i]._fila=this.store.indexOf(filas[i])+1
+									this.agregarArgsExtraSubmit(filas[i].data);
+									Ext.apply(data[i],this.argumentExtraSubmit);
+							}
+							Phx.CP.loadingHide();
+							Ext.Ajax.request({
+									url:this.ActSave,
+									params:{_tipo:'matriz','row':String(Ext.util.JSON.encode(data))},
+									//isUpload:this.fileUpload,
+									success:this.successSave,
+									failure: this.conexionFailure,
+									timeout:this.timeout,
+									scope:this
+							});
+			}
 	},
 
 	loadValoresIniciales: function(){

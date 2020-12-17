@@ -136,6 +136,7 @@ class MODVentaFacturacion extends MODbase{
 		$this->setParametro('otros_fob','otros_fob','numeric');
 		$this->setParametro('fecha_estimada_entrega','fecha_estimada_entrega','date');
 		$this->setParametro('id_formula','id_formula','integer');
+		//$this->setParametro('nombre_factura','nombre_factura','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -153,7 +154,7 @@ class MODVentaFacturacion extends MODbase{
 
 		//Define los parametros para la funcion
 		$this->setParametro('id_venta','id_venta','int4');
-		$this->setParametro('id_cliente','id_cliente','int4');
+		$this->setParametro('id_cliente','id_cliente','varchar');
 		$this->setParametro('observaciones','observaciones','text');
 		$this->setParametro('nombre_factura','nombre_factura','varchar');
 		$this->setParametro('nit','nit','varchar');
@@ -291,7 +292,6 @@ class MODVentaFacturacion extends MODbase{
 			} else {
 				$this->transaccion = 'VF_FACVEN_INS';
 			}
-
             //Define los parametros para la funcion
             $this->setParametro('id_cliente','id_cliente','varchar');
 						$this->setParametro('nit','nit','varchar');
@@ -352,6 +352,8 @@ class MODVentaFacturacion extends MODbase{
 			//$this->setParametro('formato_factura','formato_factura','varchar');
 			$this->setParametro('enviar_correo','enviar_correo','varchar');
 			$this->setParametro('correo_electronico','correo_electronico','varchar');
+			$this->setParametro('nombre_factura','nombre_factura','varchar');
+			$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 			/****************************************************************************************/
 
             //Ejecuta la instruccion
@@ -373,7 +375,7 @@ class MODVentaFacturacion extends MODbase{
             //decodifica JSON  de detalles
             $json_detalle = $this->aParam->_json_decode($this->aParam->getParametro('json_new_records'));
 
-          //  var_dump('detalle',$json_detalle)   ;
+
             foreach($json_detalle as $f){
 
                 $this->resetParametros();
@@ -639,6 +641,8 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('forma_pedido','forma_pedido','varchar');
 			$this->setParametro('informe','informe','text');
 			$this->setParametro('anulado','anulado','varchar');
+			$this->setParametro('nombre_factura','nombre_factura','varchar');
+			$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 
 
             //Ejecuta la instruccion
@@ -1603,6 +1607,25 @@ class MODVentaFacturacion extends MODbase{
 
 				//Ejecuta la instruccion
 				$this->armarConsulta();
+				$this->ejecutarConsulta();
+
+				//Devuelve la respuesta
+				return $this->respuesta;
+			}
+
+
+			function RecuperarCliente(){
+				//Definicion de variables para ejecucion del procedimiento
+				$this->procedimiento='vef.ft_venta_facturacion_ime';
+				$this->transaccion='VEF_RECUCLI_MOD';
+				$this->tipo_procedimiento='IME';
+
+				//Define los parametros para la funcion
+				$this->setParametro('nit','nit','varchar');
+				$this->setParametro('razon_social','razon_social','varchar');
+				//Ejecuta la instruccion
+				$this->armarConsulta();
+
 				$this->ejecutarConsulta();
 
 				//Devuelve la respuesta

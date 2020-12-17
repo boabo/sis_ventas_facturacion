@@ -112,6 +112,21 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               id_grupo:22,
               form:true
           },
+          {
+            config:{
+              name: 'boleto_asociado',
+              fieldLabel: '<img src="../../../lib/imagenes/facturacion/ticket.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Boleto Asociado</span>',
+              allowBlank: true,
+              width:200,
+              hidden:true,
+              minLength:13,
+              maxLength:13,
+              //style:'text-transform:uppercase;'
+            },
+              type:'TextField',
+              id_grupo:22,
+              form:true
+          },
       /*Aumentnado para formato de impresion*/
       // {
       //    config : {
@@ -228,8 +243,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			this.Atributos.push({
 		            config:{
 		                name: 'excento',
-		                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
+		                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Exento</span>',
 		                allowBlank: false,
+                    disabled:true,
 		                //anchor: '80%',
                     width:200,
                     style:{
@@ -255,6 +271,20 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         //this.buildDetailGrid();
         if (this.data.tipo_form == 'edit') {
           this.buildDetailGridEdit();
+
+          Ext.Ajax.request({
+              url:'../../sis_ventas_facturacion/control/Cajero/getConceptoAsociar',
+              params:{id_venta:this.data.datos_originales.data.id_venta},
+              success: function(resp){
+                  var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                  this.asociar_boleto = reg.ROOT.datos.v_asociado;
+                  this.requiere_excento = reg.ROOT.datos.v_requiere_excento;
+              },
+              failure: this.conexionFailure,
+              timeout:this.timeout,
+              scope:this
+          });
+
         } else {
           this.buildDetailGridNew();
         }
@@ -346,7 +376,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                     direction: 'ASC'
                                                 },
                                                 totalProperty: 'total',
-                                                fields: ['id_concepto_ingas', 'tipo','desc_ingas','requiere_descripcion','precio','excento'],
+                                                fields: ['id_concepto_ingas', 'tipo','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado'],
                                                 remoteSort: true,
                                                 baseParams: {par_filtro: 'ingas.desc_ingas'}
                                             }),
@@ -361,8 +391,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                         				'<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
                                         				'<p><b>Descripcion:</b> <span style="color: blue; font-weight:bold;">{desc_ingas}</span></p>',
                                         				'<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-                                        				'<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
-                                        				'<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
+                                        				'<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
+                                                '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
+                                                '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
+                                        				'<p><b>Asociar:</b> <span style="color: red; font-weight:bold;">{boleto_asociado}</span></p>',
                                         				'</div></tpl>'
                                         			]),
                                             typeAhead: false,
@@ -475,45 +507,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
     iniciarEventos : function () {
 
-      /*****Aqui poniendo el Boton para realizar pagos por WorlPay******/
-      // Ext.getCmp('dividirFormasPago').el.dom.style.height = '100px';
-      // Ext.getCmp('dividirFormasPago').el.dom.style.width = '200px';
-      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.height = '100px';
-      // Ext.getCmp('dividirFormasPago').el.dom.style.background = 'red';
-      //
-      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.fontSize = '22px';
-      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.textShadow = '2px 0px 0px #000000';
-      // Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = '#1479B8';
-      //
-      //
-      //
-      //   Ext.getCmp('dividirFormasPago').el.dom.onmouseover = function () {
-      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.background = '#065779';
-      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = 'white';
-      // }
-      //
-      //   Ext.getCmp('dividirFormasPago').el.dom.onmouseout = function () {
-      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.background = '';
-      //   Ext.getCmp('dividirFormasPago').btnEl.dom.style.color = '#1479B8';
-      // };
-
-        /*Aqui aumentamos las condiciones para enviar por correo y el formato de la factura*/
-        // this.Cmp.enviar_correo.setValue('NO');
-        // this.Cmp.enviar_correo.fireEvent('select',this.Cmp.enviar_correo, this.Cmp.enviar_correo.getValue());
-        //
-        // this.Cmp.enviar_correo.on('select',function(c,r,i) {
-        //   if (r.data.value == 'NO') {
-        //     this.ocultarComponente(this.Cmp.correo_electronico);
-        //     this.Cmp.correo_electronico.allowBlank = true;
-        //     this.Cmp.correo_electronico.reset();
-        //   } else {
-        //     this.mostrarComponente(this.Cmp.correo_electronico);
-        //     this.Cmp.correo_electronico.allowBlank = false;
-        //   }
-        // },this);
         /**********************************************************************************/
         /*Aumentando para poner Condiciones en Regionales (Ismael Valdivia 14/10/2020)*/
         this.condicionesRegionales();
+        this.Cmp.id_formula.store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
         /*****************************************************************************/
 
         /*Aqui aumentamos para que muestre el campo de correo electronico*/
@@ -525,23 +522,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           this.mostrarComponente(this.Cmp.correo_electronico);
           this.Cmp.correo_electronico.allowBlank = false;
         }
-        /****************************************************************/
+        /***************************************************************/
 
-
-
-        /*Aumentamos el formato de la factura rollo o carta*/
-        // this.Cmp.formato_factura.store.load({params:{start:0,limit:50},
-        //        callback : function (r) {
-        //             this.Cmp.formato_factura.setValue('Rollo');
-        //             this.Cmp.formato_factura.fireEvent('select', this.Cmp.formato_factura,'Rollo',0);
-        //         }, scope : this
-        //     });
-        /***************************************************/
 
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
-        /*Filtramos la lista de paquetes por la sucursal seleccionada*/
-    		//this.Cmp.id_formula.store.baseParams.tipo_punto_venta = this.variables_globales.tipo_pv;
     		this.Cmp.id_formula.store.baseParams.id_punto_venta = this.data.objPadre.variables_globales.id_punto_venta;
     		/*************************************************************/
 
@@ -622,6 +607,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           this.megrid.body.dom.childNodes[0].firstChild.children[0].firstChild.style.background='#FFF4EB';
 
         } else {
+
           this.megrid.topToolbar.items.items[0].container.dom.style.width="80px";
           this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
           this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
@@ -635,9 +621,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           this.megrid.topToolbar.items.items[2].container.dom.style.height="35px";
           this.megrid.topToolbar.items.items[2].btnEl.dom.style.height="35px";
 
-
-
-          // this.megrid.topToolbar.items.items[1].setDisabled(false);
 
           this.megrid.topToolbar.el.dom.style.background="#3AC2B6";
           this.megrid.topToolbar.el.dom.style.height="45px";
@@ -1341,33 +1324,82 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.cambiarCombo(r.data.field1);
         },this);
 
-        this.Cmp.id_cliente.on('select',function(c,r,i) {
-
-            if (r.data) {
-                this.Cmp.nit.setValue(r.data.nit);
-            } else {
-                this.Cmp.nit.setValue(r.nit);
-            }
-        },this);
-
+        // this.Cmp.id_cliente.on('select',function(c,r,i) {
+        //
+        //     if (r.data) {
+        //         this.Cmp.nit.setValue(r.data.nit);
+        //     } else {
+        //         this.Cmp.nit.setValue(r.nit);
+        //     }
+        // },this);
 
         this.Cmp.nit.on('blur',function(c) {
-          if (this.accionFormulario != 'EDIT') {
-            	if (this.Cmp.nit.getValue() != '') {
-            		this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
-                	this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
-    		           callback : function (r) {
-    		           		this.Cmp.id_cliente.store.baseParams.nit = '';
-    		           		if (r.length == 1) {
+        if (this.accionFormulario != 'EDIT') {
+  				if (this.Cmp.nit.getValue() != '') {
+            this.Cmp.nombre_factura.reset();
+            this.Cmp.id_cliente.reset();
+  					Ext.Ajax.request({
+  							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+  							params : {
+  								'nit' : this.Cmp.nit.getValue(),
+  								'razon_social' : this.Cmp.nombre_factura.getValue(),
+  							},
+  							success: function(resp){
+  	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+  	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+  	            },
+  							failure : this.conexionFailure,
+  							timeout : this.timeout,
+  							scope : this
+  						});
 
-    		           			this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
-    		           			}
+  				}
+        } else {
+          if (this.Cmp.nit.getValue() == '' || this.Cmp.habilitar_edicion.getValue() == 'SI') {
+            this.Cmp.nombre_factura.reset();
+            this.Cmp.id_cliente.reset();
+  					Ext.Ajax.request({
+  							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+  							params : {
+  								'nit' : this.Cmp.nit.getValue(),
+  								'razon_social' : this.Cmp.nombre_factura.getValue(),
+  							},
+  							success: function(resp){
+  	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    //this.Cmp.nombre_factura.reset();
+                    this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+  	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+  	            },
+  							failure : this.conexionFailure,
+  							timeout : this.timeout,
+  							scope : this
+  						});
 
-    		            }, scope : this
-    		        });
-    		    }
-          }
-        },this);
+  				}
+        }
+
+  			},this);
+
+
+
+        // this.Cmp.nit.on('blur',function(c) {
+        //   if (this.accionFormulario != 'EDIT') {
+        //     	if (this.Cmp.nit.getValue() != '') {
+        //     		this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
+        //         	this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
+    		//            callback : function (r) {
+    		//            		this.Cmp.id_cliente.store.baseParams.nit = '';
+    		//            		if (r.length == 1) {
+        //
+    		//            			this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
+    		//            			}
+        //
+    		//             }, scope : this
+    		//         });
+    		//     }
+        //   }
+        // },this);
 
         this.Cmp.id_formula.on('select',function(c,r,i) {
             if (r.data) {
@@ -1485,6 +1517,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 		        });*/
       }
       if (this.accionFormulario == 'EDIT') {
+
         this.mostrarComponente(this.Cmp.habilitar_edicion);
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
@@ -1494,27 +1527,34 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         } else {
           this.mostrarComponente(this.Cmp.excento);
         }
+
+        if (this.asociar_boleto == 'si') {
+          this.mostrarComponente(this.Cmp.boleto_asociado);
+          this.Cmp.boleto_asociado.allowBlank=false;
+        } else {
+          this.ocultarComponente(this.Cmp.boleto_asociado);
+          this.Cmp.boleto_asociado.allowBlank=true;
+        }
         /**********************************************************************/
 
         /*****************Habilitamos los campos si se pone editar***************/
         this.Cmp.habilitar_edicion.setValue('NO');
 
         this.Cmp.nit.setDisabled(true);
-        this.Cmp.id_cliente.setDisabled(true);
+        //this.Cmp.id_cliente.setDisabled(true);
+        this.Cmp.nombre_factura.setDisabled(true);
         this.Cmp.id_formula.setDisabled(true);
         this.Cmp.observaciones.setDisabled(true);
         //this.Cmp.id_punto_venta.setDisabled(true);
         this.Cmp.excento.setDisabled(true);
-        console.log("llega aqui para editar",this);
-
-
 
               //  this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(this.data.datos_originales.data.id_formula));
         this.Cmp.habilitar_edicion.on('select',function(c,r,i) {
-          console.log("llega aqui r",r.data.value);
+
           if (r.data.value == 'NO') {
             this.Cmp.nit.setDisabled(true);
             this.Cmp.id_cliente.setDisabled(true);
+            this.Cmp.nombre_factura.setDisabled(true);
             //this.Cmp.id_formula.setDisabled(true);
             this.Cmp.observaciones.setDisabled(true);
             //this.Cmp.id_punto_venta.setDisabled(true);
@@ -1527,10 +1567,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.megrid.colModel.config[4].editor='';
             this.megrid.colModel.config[5].editor='';
             //this.mestore.rollbChanges();
-            console.log("llega auqi para editar",this.megrid);
           } else {
             this.Cmp.nit.setDisabled(false);
             this.Cmp.id_cliente.setDisabled(false);
+            this.Cmp.nombre_factura.setDisabled(false);
             //this.Cmp.id_formula.setDisabled(false);
             this.Cmp.observaciones.setDisabled(false);
             //this.Cmp.id_punto_venta.setDisabled(false);
@@ -1541,14 +1581,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             // this.megrid.topToolbar.items.items[3].setDisabled(false);
 
             /*************************Habilitar la grilla para editar*************************/
-            this.megrid.colModel.config[3].editor=this.editarDescripcion;
-            this.megrid.colModel.config[4].editor=this.detCmp.cantidad;
-            this.megrid.colModel.config[5].editor=this.detCmp.precio_unitario;
+            this.megrid.colModel.config[3].editor='';
+            this.megrid.colModel.config[4].editor='';
+            this.megrid.colModel.config[5].editor='';
 
           }
         },this);
         /**************************************************************************/
-        console.log("llega aqui editar",this.data.datos_originales.data.id_formula);
         /*Aqui cargamos el combo q se selecciono*/
         this.Cmp.id_formula.store.load({params:{start:0,limit:50},
            callback : function (r) {
@@ -1571,10 +1610,84 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       for (var i = 0; i < total_datos; i++) {
           suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
       }
+
       this.suma_total = suma;
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="20px";
+
+      /*Aqui pára mantener el campo*/
+      var requiere_excento = [];
+      var requiere_asociar = [];
+
+      if (this.megrid.store.data.items.length>0) {
+        for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+          if (!requiere_excento.includes(this.megrid.store.data.items[i].data.requiere_excento)) {
+              requiere_excento.push(this.megrid.store.data.items[i].data.requiere_excento);
+          }
+        }
+      } else {
+        requiere_excento = [];
+      }
+
+
+      if (this.requiere_excento != undefined) {
+        requiere_excento.push(this.requiere_excento);
+        this.Cmp.excento.setDisabled(true);
+      }
+
+        if (requiere_excento.includes('si')) {
+          this.mostrarComponente(this.Cmp.excento);
+          this.Cmp.excento.allowBlank = false;
+
+          if (this.accionFormulario != 'EDIT') {
+            this.Cmp.excento.setDisabled(false);
+          }
+
+
+        } else {
+          this.ocultarComponente(this.Cmp.excento);
+          this.Cmp.boleto_asociado.allowBlank = true;
+          this.Cmp.boleto_asociado.reset();
+        }
+
+        if (this.asociar_boleto != undefined) {
+          requiere_asociar.push(this.asociar_boleto);
+        }
+
+        if (this.megrid.store.data.items.length>0) {
+          for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+            if (!requiere_asociar.includes(this.megrid.store.data.items[i].data.asociar_boletos)) {
+                requiere_asociar.push(this.megrid.store.data.items[i].data.asociar_boletos);
+            }
+
+
+          }
+
+        } else {
+          requiere_asociar = [];
+          //this.requiere_asociar_boleto = undefined;
+        }
+
+
+
+      if (requiere_asociar.includes('si')) {
+        this.mostrarComponente(this.Cmp.boleto_asociado);
+        this.Cmp.boleto_asociado.allowBlank = false;
+      } else {
+        this.ocultarComponente(this.Cmp.boleto_asociado);
+        this.Cmp.boleto_asociado.allowBlank = true;
+        this.Cmp.boleto_asociado.reset();
+      }
+
+
+        // if (this.requiere_asociar_boleto != undefined) {
+        //   if (this.requiere_asociar_boleto == 'si') {
+        //     this.mostrarComponente(this.Cmp.boleto_asociado);
+        //     this.Cmp.boleto_asociado.allowBlank = false;
+        //   }
+        // }
+
     },
 
 
@@ -1687,10 +1800,20 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             this.mestore.remove(rec);
                             this.obtenersuma();
                             /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
-                            if (rec.data.requiere_excento == 'si') {
-                              this.ocultarComponente(this.Cmp.excento);
-                              this.Cmp.excento.reset();
-                            }
+                            // if (rec.data.requiere_excento == 'si') {
+                            //   this.ocultarComponente(this.Cmp.excento);
+                            //   this.Cmp.excento.reset();
+                            // }
+                            //
+                            // /*Cuando eliminamos un servicio que requiere boleto reseteamos y ocultamos el campo*/
+                            // if (rec.data.asociar_boleto == 'si') {
+                            //   this.ocultarComponente(this.Cmp.boleto_asociado);
+                            //   this.Cmp.boleto_asociado.reset();
+                            //   this.Cmp.boleto_asociado.allowBlank=true;
+                            // }
+
+
+
                             /***********************************************************************************/
                         }
 
@@ -1813,6 +1936,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         {name:'id_usuario_reg', type: 'numeric'},
                         {name:'id_usuario_mod', type: 'numeric'},
                         {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+                        {name:'boleto_asociado', type: 'string'},
 
                     ],
                     remoteSort: true,
@@ -1874,6 +1998,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             if (rec.data.requiere_excento == 'si') {
                               this.ocultarComponente(this.Cmp.excento);
                               this.Cmp.excento.reset();
+                            }
+                            if (rec.data.asociar_boleto == 'si') {
+                              this.ocultarComponente(this.Cmp.boleto_asociado);
+                              this.Cmp.boleto_asociado.reset();
+                              this.Cmp.boleto_asociado.allowBlank=true;
                             }
                             /***********************************************************************************/
                         }
@@ -1957,14 +2086,14 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     }
                   ]
                 });
-
-
     },
 
     guardarDetalles : function(){
+
       for (var i = 0; i < this.megrid.store.data.items.length; i++) {
         this.megrid.store.data.items[i].data.precio_total=(this.megrid.store.data.items[i].data.precio_unitario * this.megrid.store.data.items[i].data.cantidad);
       }
+
       this.mestore.commitChanges();
       this.megrid.getView().refresh();
       this.obtenersuma();
@@ -2009,7 +2138,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                               direction: 'ASC'
                                                           },
                                                           totalProperty: 'total',
-                                                          fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
+                                                          fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado'],
                                                           remoteSort: true,
                                                           baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP', emision:'facturacion'}
                                                       }),
@@ -2024,8 +2153,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                          '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
                                                          '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
                                                          '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-                                                         '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+                                                         '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
                                                          '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+                                                         '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
+                                                         '<p><b>Asociar:</b> <span style="color: red; font-weight:bold;">{boleto_asociado}</span></p>',
                                                          '</div></tpl>'
                                                        ]),
                                                       typeAhead: false,
@@ -2119,7 +2250,29 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     id:'botonGuardarFormulario',
                     scope:this,
                     handler: function(){
+                      if (this.megrid.store.data.items.length == 0) {
                         this.insertarNuevo(win);
+                      } else {
+                        var array = new Array();
+                        for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+                          if (!array.includes(this.megrid.store.data.items[i].data.contabilizable)) {
+                            array.push(this.megrid.store.data.items[i].data.contabilizable);
+                          }
+                        }
+
+                        if (array.includes(this.contabilizable)) {
+                          this.insertarNuevo(win);
+                        } else {
+                          Ext.Msg.show({
+                      			   title:'Información',
+                      			   msg: 'No puede utilizar conceptos contabilizables y no contabilizables en la misma venta!',
+                      			   buttons: Ext.Msg.OK,
+                               icon: Ext.MessageBox.QUESTION,
+                      			   scope:this
+                      			});
+                        }
+
+                      }
                     }
                 },{
                     text: '<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/cancelar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:13px;">Cancelar</span></div>',
@@ -2169,24 +2322,59 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               this.ventana_detalle.body.dom.style.height = "150px";
               }
 
+
+
+
       /***************Habilitamos el campo Excento****************/
       if (this.data.datos_originales == undefined) {
-        if (r.data.excento == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
-          this.mostrarComponente(this.Cmp.excento);
-        }else{
-          this.ocultarComponente(this.Cmp.excento);
-          this.Cmp.excento.reset();
-        }
+        // if (r.data.excento == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }else{
+        //   this.ocultarComponente(this.Cmp.excento);
+        //   this.Cmp.excento.reset();
+        // }
+
+        // if (r.data.boleto_asociado == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
+        //   this.mostrarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank = false;
+        // }else{
+        //   this.ocultarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.reset();
+        //   this.Cmp.boleto_asociado.allowBlank = true;
+        // }
+
+
+
       } else {
-        if (r.data.excento == 'si' || this.data.datos_originales.data.excento > 0) {
-          this.mostrarComponente(this.Cmp.excento);
-        }else{
-          this.ocultarComponente(this.Cmp.excento);
-          this.Cmp.excento.reset();
-        }
+        // if (r.data.excento == 'si' || this.data.datos_originales.data.excento > 0) {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }else{
+        //   this.ocultarComponente(this.Cmp.excento);
+        //   this.Cmp.excento.reset();
+        // }
+
+        // if (r.data.boleto_asociado == 'si') {
+        //   this.mostrarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank = false;
+        // }else{
+        //   this.ocultarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.reset();
+        //   this.Cmp.boleto_asociado.allowBlank = true;
+        // }
+
+
+      }
+
+      console.log("aqui llega data",r);
+      if (r.data.requiere_descripcion == 'si') {
+        this.variables.items.items[2].setDisabled(false);
+        this.variables.items.items[2].setVisible(true);
+        this.ventana_detalle.body.dom.style.height = "230px";
       }
 
           this.requiere_excento = r.data.excento;
+          this.contabilizable = r.data.contabilizable??"no";
+          this.asociar_boleto = r.data.boleto_asociado??"no";
 
 
      /***********************************************************/
@@ -2264,7 +2452,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       precio_unitario: this.variables.items.items[4].getValue(),
       precio_total:this.variables.items.items[5].getValue() ,
       requiere_excento:this.requiere_excento,        //
-      id_venta:this.Cmp.id_venta.getValue()        //
+      id_venta:this.Cmp.id_venta.getValue()  ,      //
+      contabilizable:this.contabilizable??"no",     //
+      asociar_boletos:this.asociar_boleto??"no"        //
       });
       this.mestore.add(myNewRecord);
       this.obtenersuma();
@@ -2317,13 +2507,16 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   this.id_producto_recu = reg.ROOT.datos.v_id_producto;
                   this.id_formula_recu = reg.ROOT.datos.v_id_formula;
                   this.tiene_excento = reg.ROOT.datos.v_excento_req;
+                  this.boletos_asociados = reg.ROOT.datos.v_boletos_asociados;
                   this.excento_formula = reg.ROOT.datos.v_requiere_excento;
+                  this.requiere_asociar_boleto = reg.ROOT.datos.v_boleto_asociado;
                   this.precio_inde = reg.ROOT.datos.v_precio;
                   this.producto_nombre = this.nombre_producto.split(",");
                   this.producto_id = this.id_producto_recu.split(",");
                   this.id_formula = this.id_formula_recu.split(",");
                   this.req_excento = this.tiene_excento.split(",");
                   this.precio_form = this.precio_inde.split(",");
+                  this.boletos_asociados_recup = this.boletos_asociados.split(",");
                   this.desc_moneda_recu = reg.ROOT.datos.v_desc_moneda;
                   this.nombre_moneda = this.desc_moneda_recu.split(",");
 
@@ -2366,16 +2559,22 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     cantidad : '1',
                     requiere_excento:this.req_excento[i],
                     precio_unitario : precio_base,
-                    precio_total: precio_base*1              //
+                    precio_total: precio_base*1,
+                    asociar_boletos: this.boletos_asociados_recup[i],
+                                  //boletos_asociados_recup
                   });
 
                    this.mestore.add(myNewRecord);
               }
 
                   //this.mestore.commitChanges();
-
+                  console.log("aqui llega data",this);
                   if (this.excento_formula == 'si') {
                     this.mostrarComponente(this.Cmp.excento);
+                  }
+
+                  if (this.requiere_asociar_boleto == 'si') {
+                    this.mostrarComponente(this.Cmp.boleto_asociado);
                   }
 
                   this.obtenersuma();
@@ -2731,20 +2930,32 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
        }
 
        if (requiere_excento.includes( 'si' )) {
-         if (this.Cmp.excento.getValue() == 0) {
-           Ext.Msg.show({
-               title:'Información',
-               msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
-               maxWidth : 550,
-               width: 550,
-               buttons: Ext.Msg.OK,
-                icon: Ext.MessageBox.QUESTION,
-               scope:this
-            });
-         } else {
+         // if (this.Cmp.excento.getValue() == 0) {
+         //   Ext.Msg.show({
+         //       title:'Información',
+         //       msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
+         //       maxWidth : 550,
+         //       width: 550,
+         //       buttons: Ext.Msg.OK,
+         //        icon: Ext.MessageBox.QUESTION,
+         //       scope:this
+         //    });
+         // } else {
            this.registrarVariasFormasPago();
-         }
-       } else if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+         //}
+       }
+       // else if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+       //      Ext.Msg.show({
+       //          title:'Información',
+       //          msg: 'Favor Complete datos en la Cabecera.',
+       //          maxWidth : 550,
+       //          width: 550,
+       //          buttons: Ext.Msg.OK,
+       //           icon: Ext.MessageBox.QUESTION,
+       //          scope:this
+       //       });
+       //    }
+       else if (this.Cmp.nombre_factura.getValue() == '' || this.Cmp.nombre_factura.getValue() == null) {
             Ext.Msg.show({
                 title:'Información',
                 msg: 'Favor Complete datos en la Cabecera.',
@@ -2885,6 +3096,16 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			type:'Field',
 			form:true
 		},
+    {
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_cliente'
+			},
+			type:'Field',
+			form:true
+		},
 		{
 			config:{
 				name: 'nit',
@@ -2902,66 +3123,83 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			id_grupo:0,
 			form:true,
 		},
-		{
-			config : {
-				name : 'id_cliente',
-				fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
-        style:{
-        //  width:'5000px',
-          textTransform:'uppercase',
-        },
-        width:200,
-				allowBlank : false,
-        // listeners: {
-        //   afterrender: function(field) {
-        //     field.focus(false);
-        //   }
-        // },
-				emptyText : 'Cliente...',
-				store : new Ext.data.JsonStore({
-					url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
-					id : 'id_cliente',
-					root : 'datos',
-					sortInfo : {
-						field : 'id_cliente',
-						direction : 'DESC'
-					},
-					totalProperty : 'total',
-					fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
-					remoteSort : true,
-					baseParams : {
-						par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
-					}
-				}),
-				valueField : 'id_cliente',
-				displayField : 'nombre_factura',
-				gdisplayField : 'nombre_factura',
-				hiddenName : 'id_cliente',
-				forceSelection : false,
-				typeAhead : false,
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
-				triggerAction : 'all',
-				lazyRender : true,
-				mode : 'remote',
-				pageSize : 10,
-        listWidth:'450',
-        maxHeight : 450,
-				queryDelay : 1000,
-				turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
-				ttitle:'Clientes',
-				tasignacion : true,
-				tname : 'id_cliente',
-				tdata:{},
-				cls:'uppercase',
-				tcls:'Cliente',
-				gwidth : 170,
-				minChars : 2,
-				//style:';'
-			},
-			type : 'TrigguerCombo',
-			id_grupo : 0,
-			form : true
-		},
+    {
+ 		 config:{
+ 			 name: 'nombre_factura',
+ 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+ 			 allowBlank: true,
+ 			 width:200,
+ 			 gwidth: 150,
+ 			 maxLength:100,
+			 style:'text-transform:uppercase'
+ 		 },
+ 			 type:'TextField',
+ 			 filters:{pfiltro:'fact.nombre_factura',type:'string'},
+ 			 id_grupo:0,
+ 			 grid:true,
+ 			 bottom_filter:true,
+ 			 form:true
+ 	 },
+		// {
+		// 	config : {
+		// 		name : 'id_cliente',
+		// 		fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+    //     style:{
+    //     //  width:'5000px',
+    //       textTransform:'uppercase',
+    //     },
+    //     width:200,
+		// 		allowBlank : false,
+    //     // listeners: {
+    //     //   afterrender: function(field) {
+    //     //     field.focus(false);
+    //     //   }
+    //     // },
+		// 		emptyText : 'Cliente...',
+		// 		store : new Ext.data.JsonStore({
+		// 			url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
+		// 			id : 'id_cliente',
+		// 			root : 'datos',
+		// 			sortInfo : {
+		// 				field : 'id_cliente',
+		// 				direction : 'DESC'
+		// 			},
+		// 			totalProperty : 'total',
+		// 			fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
+		// 			remoteSort : true,
+		// 			baseParams : {
+		// 				par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
+		// 			}
+		// 		}),
+		// 		valueField : 'id_cliente',
+		// 		displayField : 'nombre_factura',
+		// 		gdisplayField : 'nombre_factura',
+		// 		hiddenName : 'id_cliente',
+		// 		forceSelection : false,
+		// 		typeAhead : false,
+		// 		tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+		// 		triggerAction : 'all',
+		// 		lazyRender : true,
+		// 		mode : 'remote',
+		// 		pageSize : 10,
+    //     listWidth:'450',
+    //     maxHeight : 450,
+		// 		queryDelay : 1000,
+		// 		turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
+		// 		ttitle:'Clientes',
+		// 		tasignacion : true,
+		// 		tname : 'id_cliente',
+		// 		tdata:{},
+		// 		cls:'uppercase',
+		// 		tcls:'Cliente',
+		// 		gwidth : 170,
+		// 		minChars : 2,
+		// 		//style:';'
+		// 	},
+		// 	type : 'TrigguerCombo',
+		// 	id_grupo : 0,
+		// 	form : true
+		// },
     {
 			config : {
 				name : 'id_formula',
@@ -3001,18 +3239,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				mode : 'remote',
 				pageSize : 10,
 				queryDelay : 1000,
-				turl:'../../../sis_ventas_facturacion/vista/formula/Formula.php',
-				ttitle:'Formula',
-				tasignacion : true,
-				tname : 'id_formula',
-				tdata:{},
 				cls:'uppercase',
-				tcls:'Formula',
 				gwidth : 500,
 				minChars : 2,
 				style:'text-transform:uppercase;'
 			},
-			type : 'TrigguerCombo',
+			type : 'ComboBox',
 			id_grupo : 0,
 			form : true
 		},
@@ -3846,8 +4078,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
         this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
         this.mestore.load();
-      //  this.Cmp.id_forma_pago.reset();
-
 
     },
     onNew: function(){
@@ -4033,7 +4263,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
   					scope:this
   			});
       } else {
-        console.log("esta llegando aqui el dato",this);
         Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
   					params:{id_estado_wf_act:d.id_estado_wf,

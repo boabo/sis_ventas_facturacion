@@ -108,7 +108,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 			this.Atributos.push({
 		            config:{
 		                name: 'excento',
-		                fieldLabel: 'Excento',
+		                fieldLabel: 'Exento',
 		                allowBlank: false,
 		                //anchor: '80%',
                     width:200,
@@ -240,7 +240,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
                                         				'<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
                                         				'<p><b>Descripcion:</b> <span style="color: blue; font-weight:bold;">{desc_ingas}</span></p>',
                                         				'<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-                                        				'<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
+                                        				'<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
                                         				'<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{desc_ingas}</span></p>',
                                         				'</div></tpl>'
                                         			]),

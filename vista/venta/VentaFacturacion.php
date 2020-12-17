@@ -90,11 +90,11 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 			this.addButton('mod_excento',{
 					grupo:[0],
-					text :'Modificar Excento',
+					text :'Modificar Exento',
 					iconCls : 'bmoney',
 					disabled: true,
 					handler : this.modExcento,
-					tooltip : '<b>Modificar el valor excento de la venta</b>'
+					tooltip : '<b>Modificar el valor exento de la venta</b>'
 			});
 
 			this.addButton('anular_fact',
@@ -181,7 +181,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 			this.Cmp.id_formula.on('select',function(c,r,i) {
 				Ext.Ajax.request({
-						url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
+						url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcentoFormula',
 						params:{id_formula:this.Cmp.id_formula.getValue()},
 						success: function(resp){
 								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
@@ -218,8 +218,13 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	preparaMenu: function () {
 			var rec = this.sm.getSelected();
 			this.getBoton('anular_fact').enable();
-			this.getBoton('sgt_estado').enable();
+			//this.getBoton('sgt_estado').enable();
 			this.getBoton('mod_excento').enable();
+
+			if (rec.data.total_venta > 0) {
+				this.getBoton('sgt_estado').enable();
+			}
+
 			// if (rec.data.excento > 0) {
 			// 	this.getBoton('mod_excento').enable();
 			// }
@@ -549,30 +554,71 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 					}, scope : this
 			});
 
-			this.Cmp.id_cliente.on('select',function(c,r,i) {
-					if (r.data) {
-							this.Cmp.nit.setValue(r.data.nit);
-					} else {
-							this.Cmp.nit.setValue(r.nit);
-					}
-			},this);
-
-
+			/*Comentando Para que solo muestre el cliente del nit*/
+			// this.Cmp.id_cliente.on('select',function(c,r,i) {
+			// 		if (r.data) {
+			// 				this.Cmp.nit.setValue(r.data.nit);
+			// 		} else {
+			// 				this.Cmp.nit.setValue(r.nit);
+			// 		}
+			// },this);
+			/******************************************************/
 			this.Cmp.nit.on('blur',function(c) {
-
 				if (this.Cmp.nit.getValue() != '') {
-					this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
-						this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
-						 callback : function (r) {
-								this.Cmp.id_cliente.store.baseParams.nit = '';
-								if (r.length == 1) {
-									this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
-									}
+					this.Cmp.nombre_factura.reset();
+					Ext.Ajax.request({
+							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+							params : {
+								'nit' : this.Cmp.nit.getValue(),
+								'razon_social' : this.Cmp.nombre_factura.getValue(),
+							},
+							success: function(resp){
+	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+									this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+	            },
+							failure : this.conexionFailure,
+							timeout : this.timeout,
+							scope : this
+						});
+				}
 
-							}, scope : this
-					});
-			}
+				// if (this.Cmp.nit.getValue() != '') {
+				// 	this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
+				// 		this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
+				// 		 callback : function (r) {
+				// 				this.Cmp.id_cliente.store.baseParams.nit = '';
+				// 				if (r.length == 1) {
+				// 					this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
+				// 					}
+				//
+				// 			}, scope : this
+				// 	});
+				// }
+
+
 			},this);
+
+
+			// this.Cmp.nombre_factura.on('blur',function(c) {
+			// 	if (this.Cmp.nombre_factura.getValue() != '') {
+			// 		Ext.Ajax.request({
+			// 				url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+			// 				params : {
+			// 					'nit' : this.Cmp.nit.getValue(),
+			// 					'razon_social' : this.Cmp.nombre_factura.getValue(),
+			// 				},
+			// 				success: function(resp){
+	    //             var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+			// 						this.Cmp.nit.setValue(reg.ROOT.datos.nit);
+	    //             this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+	    //         },
+			// 				failure : this.conexionFailure,
+			// 				timeout : this.timeout,
+			// 				scope : this
+			// 			});
+			// 	}
+			// },this);
 
 			this.ocultarComponente(this.Cmp.excento);
 
@@ -609,6 +655,26 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 								this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(rec.data.id_formula));
 						}, scope : this
 				});
+
+				this.Cmp.nit.on('blur',function(c) {
+					if (this.Cmp.nit.getValue() != '') {
+						Ext.Ajax.request({
+								url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+								params : {
+									'nit' : this.Cmp.nit.getValue(),
+									'razon_social' : this.Cmp.nombre_factura.getValue(),
+								},
+								success: function(resp){
+		                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+										this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+		                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+		            },
+								failure : this.conexionFailure,
+								timeout : this.timeout,
+								scope : this
+							});
+					}
+				},this);
 
 			},
 
@@ -652,10 +718,6 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
          var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 				 Phx.CP.getPagina(this.idContenedor).reload();
 				 resp.argument.wizard.panel.destroy();
-				 //console.log("ventana",panel);
-				 console.log("this",resp);
-
-				 //
 
       },
 			anular : function () {
@@ -687,7 +749,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 								  new Ext.form.NumberField({
 																			name: 'excento',
 																			msgTarget: 'title',
-																			fieldLabel: 'Valor Excento',
+																			fieldLabel: 'Valor Exento',
 																			allowBlank: false,
 																			allowDecimals: true,
 																			decimalPrecision : 2,
@@ -703,7 +765,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 					this.excento_formulario = simple;
 
 				var win = new Ext.Window({
-					title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Excento<p></h1>', //the title of the window
+					title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Exento<p></h1>', //the title of the window
 					width:320,
 					height:150,
 					//closeAction:'hide',
@@ -730,20 +792,20 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			},
 			modificarNuevo : function (win) {
 				//console.log("llega auqi datos de la ventana",this);
-				if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
-						Ext.Msg.show({
-						 title:'<h1 style="font-size:15px;">Aviso!</h1>',
-						 msg: '<p style="font-weight:bold; font-size:12px;">Tiene un concepto que requiere excento y el valor excento no debe ser vacio o 0!</p>',
-						 buttons: Ext.Msg.OK,
-						 width:320,
-		 				 height:150,
-						 icon: Ext.MessageBox.WARNING,
-						 scope:this
-					});
-				} else {
+				// if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {
+				// 		Ext.Msg.show({
+				// 		 title:'<h1 style="font-size:15px;">Aviso!</h1>',
+				// 		 msg: '<p style="font-weight:bold; font-size:12px;">Tiene un concepto que requiere excento y el valor excento no debe ser vacio o 0!</p>',
+				// 		 buttons: Ext.Msg.OK,
+				// 		 width:320,
+		 		// 		 height:150,
+				// 		 icon: Ext.MessageBox.WARNING,
+				// 		 scope:this
+				// 	});
+				// } else {
 				this.guardarDetalles();
 				win.hide();
-				}
+			//	}
 
 			},
 
@@ -773,6 +835,16 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 					labelSeparator:'',
 					inputType:'hidden',
 					name: 'id_venta'
+			},
+			type:'Field',
+			form:true
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_cliente'
 			},
 			type:'Field',
 			form:true
@@ -847,14 +919,15 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
  			 allowBlank: true,
  			 anchor:'100%',
  			 gwidth: 150,
- 			 maxLength:100
+ 			 maxLength:100,
+			 style:'text-transform:uppercase'
  		 },
  			 type:'TextField',
  			 filters:{pfiltro:'fact.nombre_factura',type:'string'},
  			 id_grupo:1,
  			 grid:true,
  			 bottom_filter:true,
- 			 form:false
+ 			 form:true
  	 },
 	 {
 		 config:{
@@ -866,7 +939,16 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 renderer:function (value,p,record) {
 					var dato =  value.replace('.', ",")
 									.replace(/(\d)(?:(?=\d+(?=[^\d.]))(?=(?:[0-9]{3})+\b)|(?=\d+(?=\.))(?=(?:[0-9]{3})+(?=\.)))/g, "$1.");
-					return '<div style="text-align:right; font-weight:bold; font-size:12px; ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
+
+					if (value>0) {
+						console.log("entra aqui 1");
+						return '<div style="text-align:right; font-weight:bold; font-size:12px; ext:qtip="Optimo"><p> <font color="blue"><b>'+dato+'</b></font></p></div>';
+					} else {
+						console.log("entra aqui 222222");
+						return '<div style="text-align:right; font-weight:bold; font-size:20px; ext:qtip="Optimo"><p> <font color="red"><b>'+dato+'</b></font></p></div>';
+					}
+
+
 
 				},
 			 decimalPrecision:2,
@@ -902,58 +984,58 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 grid:true,
 			 form:false
 	 },
-		{
- 		 config : {
- 			 name : 'id_cliente',
- 			 fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
- 			 style:'text-transform:uppercase;',
- 			 anchor:'100%',
- 			 allowBlank : false,
- 			 emptyText : 'Cliente...',
- 			 store : new Ext.data.JsonStore({
- 				 url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
- 				 id : 'id_cliente',
- 				 root : 'datos',
- 				 sortInfo : {
- 					 field : 'nombres',
- 					 direction : 'ASC'
- 				 },
- 				 totalProperty : 'total',
- 				 fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
- 				 remoteSort : true,
- 				 baseParams : {
- 					 par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
- 				 }
- 			 }),
- 			 valueField : 'id_cliente',
- 			 displayField : 'nombre_factura',
- 			 gdisplayField : 'nombre_factura',
- 			 hiddenName : 'id_cliente',
- 			 forceSelection : false,
- 			 typeAhead : false,
-			 tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
-			 triggerAction : 'all',
- 			 lazyRender : true,
- 			 mode : 'remote',
- 			 pageSize : 10,
- 			 listWidth:'450',
- 			 maxHeight : 450,
- 			 queryDelay : 1000,
- 			 turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
- 			 ttitle:'Clientes',
- 			 tasignacion : true,
- 			 tname : 'id_cliente',
- 			 tdata:{},
- 			 cls:'uppercase',
- 			 tcls:'Cliente',
- 			 gwidth : 170,
- 			 minChars : 2,
- 			 //style:';'
- 		 },
- 		 type : 'TrigguerCombo',
- 		 id_grupo : 0,
- 		 form : true
- 	 },
+		// {
+ 		//  config : {
+ 		// 	 name : 'id_cliente',
+ 		// 	 fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+ 		// 	 style:'text-transform:uppercase;',
+ 		// 	 anchor:'100%',
+ 		// 	 allowBlank : false,
+ 		// 	 emptyText : 'Cliente...',
+ 		// 	 store : new Ext.data.JsonStore({
+ 		// 		 url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
+ 		// 		 id : 'id_cliente',
+ 		// 		 root : 'datos',
+ 		// 		 sortInfo : {
+ 		// 			 field : 'nombres',
+ 		// 			 direction : 'ASC'
+ 		// 		 },
+ 		// 		 totalProperty : 'total',
+ 		// 		 fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
+ 		// 		 remoteSort : true,
+ 		// 		 baseParams : {
+ 		// 			 par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
+ 		// 		 }
+ 		// 	 }),
+ 		// 	 valueField : 'id_cliente',
+ 		// 	 displayField : 'nombre_factura',
+ 		// 	 gdisplayField : 'nombre_factura',
+ 		// 	 hiddenName : 'id_cliente',
+ 		// 	 forceSelection : false,
+ 		// 	 typeAhead : false,
+		// 	 tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+		// 	 triggerAction : 'all',
+ 		// 	 lazyRender : true,
+ 		// 	 mode : 'remote',
+ 		// 	 pageSize : 10,
+ 		// 	 listWidth:'450',
+ 		// 	 maxHeight : 450,
+ 		// 	 queryDelay : 1000,
+ 		// 	 turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
+ 		// 	 ttitle:'Clientes',
+ 		// 	 tasignacion : true,
+ 		// 	 tname : 'id_cliente',
+ 		// 	 tdata:{},
+ 		// 	 cls:'uppercase',
+ 		// 	 tcls:'Cliente',
+ 		// 	 gwidth : 170,
+ 		// 	 minChars : 2,
+ 		// 	 //style:';'
+ 		//  },
+ 		//  type : 'TrigguerCombo',
+ 		//  id_grupo : 0,
+ 		//  form : true
+ 	 // },
 	 {
 		 config:{
 			 name: 'observaciones',
@@ -1108,7 +1190,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				 remoteSort : true,
 				 baseParams : {
 					 par_filtro : 'form.nombre',
-					 emision:'FACTCOMP'
+					 emision:'FACTCOMP',
+					 tipo_pv:'cto'
 				 }
 			 }),
 			 valueField : 'id_formula',
@@ -1134,14 +1217,14 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 minChars : 2,
 			 style:'text-transform:uppercase;'
 		 },
-		 type : 'TrigguerCombo',
+		 type : 'ComboBox',
 		 id_grupo : 0,
 		 form : true
 	 },
 	 {
 		 config:{
 			 name: 'excento',
-			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Excento</span>',
+			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Exento</span>',
 			 allowBlank: true,
 			 anchor:'100%',
 			 gwidth: 100,

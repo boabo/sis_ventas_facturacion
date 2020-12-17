@@ -29,6 +29,7 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_formula_detalle	integer;
+    v_cantidad				integer;
 
 BEGIN
 
@@ -46,6 +47,10 @@ BEGIN
 
         begin
         --raise exception 'llega aqui parametros:%.',v_parametros.id_concepto_ingas;
+
+
+
+
         	--Sentencia de la insercion
         	insert into vef.tformula_detalle(
 			estado_reg,
@@ -69,10 +74,21 @@ BEGIN
 			v_parametros._nombre_usuario_ai,
 			null,
 			null
-
-
-
 			)RETURNING id_formula_detalle into v_id_formula_detalle;
+
+
+
+             /*Verificamos si el concepto es contabilizable para no mezclar*/
+              select count(distinct inga.contabilizable) into v_cantidad
+              from vef.tformula_detalle det
+              inner join param.tconcepto_ingas inga on inga.id_concepto_ingas = det.id_concepto_ingas
+              where det.id_formula = v_parametros.id_formula;
+
+              if (v_cantidad > 1) then
+                raise exception 'No puede utilizar conceptos contabilizables y no contabilizables en la misma venta';
+              end if;
+        /******************************************************************/
+
 
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle de formula almacenado(a) con exito (id_formula_detalle'||v_id_formula_detalle||')');

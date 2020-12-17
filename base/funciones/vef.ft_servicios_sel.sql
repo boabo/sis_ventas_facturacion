@@ -81,7 +81,9 @@ BEGIN
 
 
                         array_to_string( ingas.regionales, '','',''null'')::varchar,
-                        array_to_string( ingas.nivel_permiso, '','',''null'')::varchar
+                        array_to_string( ingas.nivel_permiso, '','',''null'')::varchar,
+                        ingas.contabilizable,
+                        ingas.boleto_asociado
                         /************************/
 
 						from param.tconcepto_ingas ingas
@@ -113,11 +115,9 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_concepto_ingas)
 					    from param.tconcepto_ingas ingas
-						inner join segu.tusuario usu1 on usu1.id_usuario = ingas.id_usuario_reg
+					    inner join segu.tusuario usu1 on usu1.id_usuario = ingas.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ingas.id_usuario_mod
-                        left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
-                        left join vef.tactividad_economica act on act.id_actividad_economica = ingas.id_actividad_economica
-				        where ';
+					    where ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -145,7 +145,9 @@ BEGIN
                                   excento,
                                   requiere_descripcion,
                                   mon.codigo_internacional as desc_moneda,
-                                  ingas.tipo
+                                  ingas.tipo,
+                                  ingas.boleto_asociado,
+                                  ingas.contabilizable
                           from param.tconcepto_ingas ingas
                           left join param.tmoneda mon on mon.id_moneda = ingas.id_moneda
                           where (''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion)) AND ';

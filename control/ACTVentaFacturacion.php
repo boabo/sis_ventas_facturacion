@@ -196,6 +196,12 @@ class ACTVentaFacturacion extends ACTbase{
 	}
 	/************************************************/
 
+	function RecuperarCliente(){
+			$this->objFunc=$this->create('MODVentaFacturacion');
+			$this->res=$this->objFunc->RecuperarCliente($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
 }
 
 ?>

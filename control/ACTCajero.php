@@ -232,7 +232,6 @@ class ACTCajero extends ACTbase{
 
 	}
 
-
 	function getTipoUsuario(){
 		 $this->objFunc=$this->create('MODCajero');
 		 $this->res=$this->objFunc->getTipoUsuario($this->objParam);
@@ -242,6 +241,11 @@ class ACTCajero extends ACTbase{
 		$this->objFunc=$this->create('MODCajero');
 		$this->res=$this->objFunc->listarInstanciaPago($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
+}
+function getConceptoAsociar(){
+	 $this->objFunc=$this->create('MODCajero');
+	 $this->res=$this->objFunc->getConceptoAsociar($this->objParam);
+	 $this->res->imprimirRespuesta($this->res->generarJson());
 }
 
 

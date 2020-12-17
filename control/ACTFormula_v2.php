@@ -27,7 +27,7 @@ class ACTFormula_v2 extends ACTbase{
 
 		/*Aumentando para filtrar solo los conceptos que seran para Recibos Oficiales (Ismael Valdivia 14/07/2020)*/
 		if($this->objParam->getParametro('emision')!=''){
-				$this->objParam->addFiltro("''".$this->objParam->getParametro('emision')."''=ANY (form.sw_autorizacion) AND ''".$this->objParam->getParametro('regional')."''=ANY (form.regionales)");
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('emision')."''=ANY (form.sw_autorizacion) AND ''".$this->objParam->getParametro('regional')."''=ANY (form.regionales) AND''".$this->objParam->getParametro('tipo_pv')."''=ANY (form.nivel_permiso)");
 		}
 
 		// if($this->objParam->getParametro('regional')!=''){

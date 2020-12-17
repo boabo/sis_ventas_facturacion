@@ -132,6 +132,8 @@ $body$
     v_id_dosificacion_ro	integer;
     v_fecha_limite_emision	varchar;
     v_id_medio_pago			integer;
+    v_boleto_asociado		varchar;
+    v_boletos_asociados		varchar;
 
   BEGIN
 
@@ -2577,8 +2579,9 @@ $body$
           string_agg (ing.precio::varchar, ','),
           string_agg (ing.excento::varchar, ','),
           string_agg (ing.id_moneda::varchar, ','),
-          string_agg (mon.codigo_internacional::varchar, ',')
-          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req, v_id_moneda_paquetes, v_desc_moneda
+          string_agg (mon.codigo_internacional::varchar, ','),
+          string_agg (ing.boleto_asociado::varchar, ',')
+          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req, v_id_moneda_paquetes, v_desc_moneda, v_boletos_asociados
           from vef.tformula_detalle form
           inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
           left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
@@ -2591,10 +2594,22 @@ $body$
           inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
           where form.id_formula = v_parametros.id_formula and ing.excento = 'si';
 
+          select distinct (ing.boleto_asociado) into v_boleto_asociado
+          from vef.tformula_detalle form
+          inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
+          where form.id_formula = v_parametros.id_formula and ing.boleto_asociado = 'si';
+
+
 
           if (v_requiere_excento is null) then
           	v_requiere_excento = 'no';
           end if;
+
+          if (v_boleto_asociado is null) then
+          	v_boleto_asociado = 'no';
+          end if;
+
+
 
           --raise exception 'LLEGA AQUI EL contador %',v_parametros.id_formula;
           --Definition of the response
@@ -2607,6 +2622,8 @@ $body$
             v_resp = pxp.f_agrega_clave(v_resp,'v_requiere_excento',v_requiere_excento::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_id_moneda_paquetes',v_id_moneda_paquetes::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_desc_moneda',v_desc_moneda::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_boleto_asociado',v_boleto_asociado::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_boletos_asociados',v_boletos_asociados::varchar);
 
 
           --Returns the answer

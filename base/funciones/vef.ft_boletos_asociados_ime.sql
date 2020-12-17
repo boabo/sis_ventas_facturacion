@@ -3,19 +3,20 @@ CREATE OR REPLACE FUNCTION vef.ft_boletos_asociados_ime (
   p_id_usuario integer,
   p_tabla varchar,
   p_transaccion varchar
-) 
-RETURNS varchar AS'
+)
+RETURNS varchar AS
+$body$
 /**************************************************************************
  SISTEMA:		Sistema de Ventas
  FUNCION: 		vef.ft_boletos_asociados_ime
- DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''vef.tboletos_asociados_fact''
+ DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'vef.tboletos_asociados_fact'
  AUTOR: 		 (ivaldivia)
  FECHA:	        18-10-2019 12:15:00
  COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
- #0				18-10-2019 12:15:00								Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''vef.tboletos_asociados_fact''
+ #0				18-10-2019 12:15:00								Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'vef.tboletos_asociados_fact'
  #
  ***************************************************************************/
 
@@ -37,17 +38,17 @@ DECLARE
 
 BEGIN
 
-    v_nombre_funcion = ''vef.ft_apertura_cierre_caja_asociada_ime'';
+    v_nombre_funcion = 'vef.ft_apertura_cierre_caja_asociada_ime';
     v_parametros = pxp.f_get_record(p_tabla);
 
 	/*********************************
- 	#TRANSACCION:  ''VF_ASOBOLETOS_INS''
+ 	#TRANSACCION:  'VF_ASOBOLETOS_INS'
  	#DESCRIPCION:	Insercion de registros
  	#AUTOR:		ivaldivia
  	#FECHA:		18-10-2019 12:15:00
 	***********************************/
 
-	if(p_transaccion=''VF_ASOBOLETOS_INS'')then
+	if(p_transaccion='VF_ASOBOLETOS_INS')then
 
         begin
 
@@ -58,27 +59,27 @@ BEGIN
 
              select substring(v_parametros.nro_boleto from 1 for 3) into v_inicial_boleto;
 
-			if (v_inicial_boleto <> ''930'') then
-            	raise exception ''Los digitos no corresponden a un boleto, verifique.'';
+			if (v_inicial_boleto <> '930') then
+            	raise exception 'Los digitos no corresponden a un boleto, verifique.';
             end if;
 
-             select count (bole.id_boleto)
+             select count (bole.id_boleto_amadeus)
                     into v_existencia
-                from obingresos.tboleto bole
-                where bole.nro_boleto = v_parametros.nro_boleto and bole.estado_reg = ''activo'';
+                from obingresos.tboleto_amadeus bole
+                where bole.nro_boleto = v_parametros.nro_boleto and bole.estado_reg = 'activo';
 
              if (v_existencia > 0) then
 
              	select
                 	bole.nro_boleto,
-                    bole.nit,
+                    --bole.nit,
                     bole.pasajero,
-                    bole.razon,
-                    (bole.origen || ''-'' || bole.destino) as ruta,
+                    --bole.razon,
+                    --(bole.origen || '-' || bole.destino) as ruta,
                     bole.fecha_emision,
-                    bole.id_boleto
+                    bole.id_boleto_amadeus
                     into v_datos_boletos
-                from obingresos.tboleto bole
+                from obingresos.tboleto_amadeus bole
                 where bole.nro_boleto = v_parametros.nro_boleto;
 
 
@@ -90,34 +91,34 @@ BEGIN
                 nro_boleto,
                 fecha_emision,
                 pasajero,
-                nit,
-                ruta,
-                razon,
+                --nit,
+                --ruta,
+                --razon,
                 fecha_reg,
                 id_usuario_reg
                 ) values(
-                ''activo'',
-                v_datos_boletos.id_boleto,
+                'activo',
+                v_datos_boletos.id_boleto_amadeus,
                 v_parametros.id_venta,
                 v_datos_boletos.nro_boleto,
                 v_datos_boletos.fecha_emision,
                 v_datos_boletos.pasajero,
-				v_datos_boletos.nit,
-                v_datos_boletos.ruta,
-                v_datos_boletos.razon,
+				--v_datos_boletos.nit,
+                --v_datos_boletos.ruta,
+                --v_datos_boletos.razon,
                 now(),
                 p_id_usuario
                 )RETURNING id_boleto_asociado into v_id_boleto_asociado;
 
 
              else
-             	raise exception ''El número de boleto no se encuentra registrado, por favor verifique el número ingresado'';
+             	raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
              end if;
 
 
         /* --Insertar varios Boletos
 
-          v_arreglo = string_to_array(v_parametros.id_boleto,'','');
+          v_arreglo = string_to_array(v_parametros.id_boleto,',');
           v_length = array_length(v_arreglo,1);
 
 
@@ -129,7 +130,7 @@ BEGIN
                     bole.nit,
                     bole.pasajero,
                     bole.razon,
-                    (bole.origen || ''-'' || bole.destino) as ruta,
+                    (bole.origen || '-' || bole.destino) as ruta,
                     bole.fecha_emision
                     into v_datos_boletos
                 from obingresos.tboleto bole
@@ -151,7 +152,7 @@ BEGIN
                 fecha_reg,
                 id_usuario_reg
                 ) values(
-                ''activo'',
+                'activo',
                 v_arreglo[i]::integer,
                 v_parametros.id_venta,
                 v_datos_boletos.nro_boleto,
@@ -169,8 +170,8 @@ BEGIN
 
 
 			--Definicion de la respuesta
-			v_resp = pxp.f_agrega_clave(v_resp,''mensaje'',''CajaAsociada almacenado(a) con exito (id_apertura_asociada''||v_id_boleto_asociado||'')'');
-            v_resp = pxp.f_agrega_clave(v_resp,''id_apertura_asociada'',v_id_boleto_asociado::varchar);
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','CajaAsociada almacenado(a) con exito (id_apertura_asociada'||v_id_boleto_asociado||')');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_apertura_asociada',v_id_boleto_asociado::varchar);
 
             --Devuelve la respuesta
             return v_resp;
@@ -179,13 +180,13 @@ BEGIN
 		end;
 /*
 	/*********************************
- 	#TRANSACCION:  ''VF_ASOBOLETOS_MOD''
+ 	#TRANSACCION:  'VF_ASOBOLETOS_MOD'
  	#DESCRIPCION:	Modificacion de registros
  	#AUTOR:		ivaldivia
  	#FECHA:		15-08-2019 13:15:22
 	***********************************/
 
-	elsif(p_transaccion=''VF_ASOBOLETOS_MOD'')then
+	elsif(p_transaccion='VF_ASOBOLETOS_MOD')then
 
 		begin
 			--Sentencia de la modificacion
@@ -199,8 +200,8 @@ BEGIN
 			where id_apertura_asociada=v_parametros.id_apertura_asociada;
 
 			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,''mensaje'',''CajaAsociada modificado(a)'');
-            v_resp = pxp.f_agrega_clave(v_resp,''id_apertura_asociada'',v_parametros.id_apertura_asociada::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','CajaAsociada modificado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_apertura_asociada',v_parametros.id_apertura_asociada::varchar);
 
             --Devuelve la respuesta
             return v_resp;
@@ -208,13 +209,13 @@ BEGIN
 		end;
 */
 	/*********************************
- 	#TRANSACCION:  ''VF_ASOBOLETOS_ELI''
+ 	#TRANSACCION:  'VF_ASOBOLETOS_ELI'
  	#DESCRIPCION:	Eliminacion de registros
  	#AUTOR:		ivaldivia
  	#FECHA:		15-08-2019 13:15:22
 	***********************************/
 
-	elsif(p_transaccion=''VF_ASOBOLETOS_ELI'')then
+	elsif(p_transaccion='VF_ASOBOLETOS_ELI')then
 
 		begin
 
@@ -223,8 +224,8 @@ BEGIN
             where id_boleto_asociado = v_parametros.id_boleto_asociado;
 
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,''mensaje'',''Boleto Asociado eliminado(a)'');
-            v_resp = pxp.f_agrega_clave(v_resp,''id_apertura_asociada'',v_parametros.id_boleto_asociado::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Boleto Asociado eliminado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_apertura_asociada',v_parametros.id_boleto_asociado::varchar);
 
             --Devuelve la respuesta
             return v_resp;
@@ -234,21 +235,22 @@ BEGIN
 
 	else
 
-    	raise exception ''Transaccion inexistente: %'',p_transaccion;
+    	raise exception 'Transaccion inexistente: %',p_transaccion;
 
 	end if;
 
 EXCEPTION
 
 	WHEN OTHERS THEN
-		v_resp='''';
-		v_resp = pxp.f_agrega_clave(v_resp,''mensaje'',SQLERRM);
-		v_resp = pxp.f_agrega_clave(v_resp,''codigo_error'',SQLSTATE);
-		v_resp = pxp.f_agrega_clave(v_resp,''procedimientos'',v_nombre_funcion);
-		raise exception ''%'',v_resp;
+		v_resp='';
+		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+		raise exception '%',v_resp;
 
 END;
-'LANGUAGE 'plpgsql'
+$body$
+LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER

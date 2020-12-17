@@ -66,8 +66,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 									 fields: ['codigo','descripcion'],
 									 remoteSort : true,
 									 baseParams:{
-										cod_subsistema:'PARAM',
-										catalogo_tipo:'autorizaciones_concepto'
+										cod_subsistema:'VEF',
+										catalogo_tipo:'autorizaciones_concepto_ventas'
 									},
 								 }),
 								 valueField: 'codigo',
@@ -280,7 +280,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 
 	onButtonNew:function () {
 		Phx.vista.Servicios.superclass.onButtonNew.call(this);
-		this.Cmp.movimiento.setValue('recurso');
+		//this.Cmp.movimiento.setValue('recurso');
 		this.Cmp.tipo.setValue('Servicio');
 		//this.ocultarComponente(this.Cmp.punto_venta_asociado);
 		this.form.el.dom.firstChild.childNodes[0].style.background = '#84BFE7';
@@ -359,22 +359,164 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
       form:true,
 			bottom_filter:true
     },
+		// {
+ 		// 	 config:{
+ 		// 		 name: 'sw_autorizacion',
+ 		// 		 fieldLabel: 'Autorizaciones',
+ 		// 		 allowBlank: true,
+ 		// 		 anchor: '80%',
+ 		// 		 gwidth: 200,
+ 		// 		 maxLength:500
+ 		// 	 },
+ 		// 	 type:'TextArea',
+ 		// 	 filters: {pfiltro:'conig.sw_autorizacion', type:'string'},
+		//
+ 		// 	 id_grupo:1,
+ 		// 	 grid:true,
+ 		// 	 form:false
+ 		// 	},
 		{
- 			 config:{
- 				 name: 'sw_autorizacion',
- 				 fieldLabel: 'Autorizaciones',
- 				 allowBlank: true,
- 				 anchor: '80%',
- 				 gwidth: 200,
- 				 maxLength:500
+ 		config : {
+ 			name : 'sw_autorizacion',
+ 			fieldLabel : 'Autorizaciones',
+ 			//anchor: '100%',
+ 			width: 200,
+ 			allowBlank : false,
+ 			emptyText : 'Autorizaciones...',
+ 			store : new Ext.data.JsonStore({
+ 				url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+ 				id : 'id_catalogo',
+ 				root : 'datos',
+ 				sortInfo : {
+ 					field : 'codigo',
+ 					direction : 'ASC'
+ 				},
+ 				totalProperty : 'total',
+ 				fields: ['codigo','descripcion'],
+ 				remoteSort : true,
+ 				baseParams:{
+ 				 cod_subsistema:'VEF',
+ 				 catalogo_tipo:'autorizaciones_concepto_ventas'
  			 },
- 			 type:'TextArea',
- 			 filters: {pfiltro:'conig.sw_autorizacion', type:'string'},
-
- 			 id_grupo:1,
- 			 grid:true,
- 			 form:false
+ 			}),
+ 			valueField : 'codigo',
+ 			displayField : 'descripcion',
+ 			gdisplayField : 'sw_autorizacion',
+ 			hiddenName : 'descripcion',
+ 			forceSelection : true,
+ 			typeAhead : false,
+ 			triggerAction : 'all',
+ 			lazyRender : true,
+ 			mode : 'remote',
+ 			pageSize : 25,
+ 			listWidth:'450',
+ 			maxHeight : 450,
+ 			queryDelay : 1000,
+ 			gwidth : 170,
+ 			minChars : 2,
+ 			resizable:true,
+ 			enableMultiSelect: true
+ 		},
+ 		type : 'AwesomeCombo',
+ 		id_grupo : 2,
+ 		grid: true,
+ 		form: true
+ 	},
+ 	{
+ 	 config : {
+ 		 name : 'regionales',
+ 		 fieldLabel : 'Regionales',
+ 		 //anchor: '100%',
+ 		 width: 200,
+ 		 allowBlank : false,
+ 		 emptyText : 'Regionales...',
+ 		 store : new Ext.data.JsonStore({
+ 			 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+ 			 id : 'id_catalogo',
+ 			 root : 'datos',
+ 			 sortInfo : {
+ 				 field : 'codigo',
+ 				 direction : 'ASC'
+ 			 },
+ 			 totalProperty : 'total',
+ 			 fields: ['codigo','descripcion'],
+ 			 remoteSort : true,
+ 			 baseParams:{
+ 				cod_subsistema:'PARAM',
+ 				catalogo_tipo:'regionales_conceptos'
  			},
+ 		 }),
+ 		 valueField : 'codigo',
+ 		 displayField : 'codigo',
+ 		 gdisplayField : 'regionales',
+ 		 hiddenName : 'codigo',
+ 		 forceSelection : true,
+ 		 typeAhead : false,
+ 		 triggerAction : 'all',
+ 		 lazyRender : true,
+ 		 mode : 'remote',
+ 		 pageSize : 25,
+ 		 listWidth:'450',
+ 		 maxHeight : 450,
+ 		 queryDelay : 1000,
+ 		 gwidth : 170,
+ 		 minChars : 2,
+ 		 resizable:true,
+ 		 enableMultiSelect: true
+ 	 },
+ 	 type : 'AwesomeCombo',
+ 	 id_grupo : 2,
+ 	 grid: true,
+ 	 form: true
+  },
+
+		{
+	 	 config : {
+	 		 name : 'nivel_permiso',
+	 		 fieldLabel : 'Nivel Permiso',
+	 		 //anchor: '100%',
+	 		 width: 200,
+	 		 allowBlank : false,
+	 		 emptyText : 'Nivel Permiso...',
+	 		 store : new Ext.data.JsonStore({
+	 			 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+	 			 id : 'id_catalogo',
+	 			 root : 'datos',
+	 			 sortInfo : {
+	 				 field : 'codigo',
+	 				 direction : 'ASC'
+	 			 },
+	 			 totalProperty : 'total',
+	 			 fields: ['codigo','descripcion'],
+	 			 remoteSort : true,
+	 			 baseParams:{
+	 				cod_subsistema:'PARAM',
+	 				catalogo_tipo:'nivel_permiso'
+	 			},
+	 		 }),
+	 		 valueField : 'codigo',
+	 		 displayField : 'codigo',
+	 		 gdisplayField : 'nivel_permiso',
+	 		 hiddenName : 'codigo',
+	 		 forceSelection : true,
+	 		 typeAhead : false,
+	 		 triggerAction : 'all',
+	 		 lazyRender : true,
+	 		 mode : 'remote',
+	 		 pageSize : 25,
+	 		 listWidth:'450',
+	 		 maxHeight : 450,
+	 		 queryDelay : 1000,
+	 		 gwidth : 170,
+	 		 minChars : 2,
+	 		 resizable:true,
+	 		 enableMultiSelect: true
+	 	 },
+	 	 type : 'AwesomeCombo',
+	 	 id_grupo : 2,
+	 	 grid: true,
+	 	 form: true
+	  },
 		{
       config:{
         name: 'codigo',
@@ -451,8 +593,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'ingas.movimiento',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 				config: {
@@ -503,7 +645,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
           config:{
             name:'sw_tes',
             fieldLabel:'Habilitar en Tesoreria',
-            allowBlank:false,
+            allowBlank:true,
 						//anchor: '100%',
 						width:200,
             emptyText:'Tipo...',
@@ -533,8 +675,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
           },
           type:'ComboBox',
           id_grupo:0,
-          grid:true,
-          form:true
+          grid:false,
+          form:false
        },
     {
      config: {
@@ -543,7 +685,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
       // anchor: '100%',
 			 width:200,
        tinit: false,
-       allowBlank: false,
+       allowBlank: true,
        origen: 'CATALOGO',
        gdisplayField: 'activo_fijo',
        gwidth: 100,
@@ -556,8 +698,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
      type: 'ComboRec',
      id_grupo: 0,
      filters:{pfiltro:'conig.activo_fijo',type:'string'},
-     grid: true,
-     form: true
+     grid: false,
+     form: false
    },
    {
      config: {
@@ -566,7 +708,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
        //anchor: '100%',
 			 width:200,
        tinit: false,
-       allowBlank: false,
+       allowBlank: true,
        origen: 'CATALOGO',
        gdisplayField: 'almacenable',
        gwidth: 100,
@@ -579,8 +721,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
      type: 'ComboRec',
      id_grupo: 0,
      filters:{pfiltro:'conig.almacenable',type:'string'},
-     grid: true,
-     form: true
+     grid: false,
+     form: false
    },
 	 {
 			 config:{
@@ -638,6 +780,63 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 grid:true,
 			 form:true
 	 },
+	 {
+			 config:{
+					 name: 'contabilizable',
+					 fieldLabel: 'Contabilizable?',
+					 allowBlank: false,
+					 //anchor: '100%',
+					 width:200,
+					 gwidth: 130,
+					 maxLength:2,
+					 emptyText:'si/no...',
+					 typeAhead: true,
+					 triggerAction: 'all',
+					 lazyRender:true,
+					 mode: 'local',
+					// displayField: 'descestilo',
+					 store:['si','no']
+			 },
+			 type:'ComboBox',
+			 //filters:{pfiltro:'promac.inicio',type:'string'},
+			 id_grupo:2,
+			 filters:{
+										type: 'list',
+										pfiltro:'sprod.contabilizable',
+										options: ['si','no'],
+							 },
+			 grid:true,
+			 form:true
+	 },
+	 {
+			 config:{
+					 name: 'boleto_asociado',
+					 fieldLabel: 'Boleto Asociado?',
+					 allowBlank: false,
+					 //anchor: '100%',
+					 width:200,
+					 gwidth: 130,
+					 maxLength:2,
+					 emptyText:'si/no...',
+					 typeAhead: true,
+					 triggerAction: 'all',
+					 lazyRender:true,
+					 mode: 'local',
+					// displayField: 'descestilo',
+					 store:['si','no']
+			 },
+			 type:'ComboBox',
+			 //filters:{pfiltro:'promac.inicio',type:'string'},
+			 id_grupo:2,
+			 filters:{
+										type: 'list',
+										pfiltro:'sprod.boleto_asociado',
+										options: ['si','no'],
+							 },
+			 grid:true,
+			 form:true
+	 },
+
 	 // {
 		//  config: {
 		// 	 name: 'punto_venta_asociado',
@@ -682,38 +881,38 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		//  form: true
 	 // },
 
-			{
-			config:{
-				name: 'regionales',
-				fieldLabel: 'Regionales',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 200,
-				maxLength:500
-			},
-			type:'TextArea',
-			filters: {pfiltro:'conig.regionales', type:'string'},
-
-			id_grupo:1,
-			grid:true,
-			form:false
-		 },
-		 {
-		 config:{
-			 name: 'nivel_permiso',
-			 fieldLabel: 'Nivel Permiso',
-			 allowBlank: true,
-			 anchor: '80%',
-			 gwidth: 200,
-			 maxLength:500
-		 },
-		 type:'TextArea',
-		 filters: {pfiltro:'conig.nivel_permiso', type:'string'},
-
-		 id_grupo:1,
-		 grid:true,
-		 form:false
-		},
+			// {
+			// config:{
+			// 	name: 'regionales',
+			// 	fieldLabel: 'Regionales',
+			// 	allowBlank: true,
+			// 	anchor: '80%',
+			// 	gwidth: 200,
+			// 	maxLength:500
+			// },
+			// type:'TextArea',
+			// filters: {pfiltro:'conig.regionales', type:'string'},
+		 //
+			// id_grupo:1,
+			// grid:true,
+			// form:false
+		 // },
+		//  {
+		//  config:{
+		// 	 name: 'nivel_permiso',
+		// 	 fieldLabel: 'Nivel Permiso',
+		// 	 allowBlank: true,
+		// 	 anchor: '80%',
+		// 	 gwidth: 200,
+		// 	 maxLength:500
+		//  },
+		//  type:'TextArea',
+		//  filters: {pfiltro:'conig.nivel_permiso', type:'string'},
+		//
+		//  id_grupo:1,
+		//  grid:true,
+		//  form:false
+		// },
 		{
 			config:{
 				name: 'usr_reg',
@@ -859,6 +1058,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name: 'id_actividad_economica', type: 'numeric'},
 		{name: 'nombre_actividad', type: 'string'},
 		{name: 'nombres_punto_venta', type: 'string'},
+		{name: 'contabilizable', type: 'string'},
+		{name: 'boleto_asociado', type: 'string'},
 		'sw_autorizacion','regionales','nivel_permiso'
 	],
 	sortInfo:{

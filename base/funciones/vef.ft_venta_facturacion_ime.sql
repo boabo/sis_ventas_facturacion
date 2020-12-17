@@ -178,6 +178,12 @@ DECLARE
     /*Aumentando para los recibos en n formas de pago (Ismael Valdivia 09/12/2020)*/
     v_id_moneda_venta_recibo integer;
     v_id_auxiliar_anticipo	integer;
+    v_cliente				record;
+    v_boleto_asociado		varchar;
+    v_inicial_boleto		varchar;
+    v_datos_boletos			record;
+    v_id_boleto_asociado	integer;
+    v_requiere_excento		varchar;
     /******************************************************************************/
 
 BEGIN
@@ -197,17 +203,21 @@ BEGIN
         begin
 
         /*********************Inserccion de cliente si existe o no******************************/
+
          if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
 
           update vef.tcliente
-          set nit = v_parametros.nit
+          set nit = v_parametros.nit,
+              nombre_factura = UPPER(v_parametros.nombre_factura)
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
           from vef.tcliente c
           where c.id_cliente = v_id_cliente;
+
         else
+
           INSERT INTO
             vef.tcliente
             (
@@ -221,11 +231,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.id_cliente),
+            upper(v_parametros.nombre_factura),
             v_parametros.nit
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = v_parametros.id_cliente;
+          v_nombre_factura = upper(v_parametros.nombre_factura);
 
         end if;
 
@@ -634,7 +644,7 @@ BEGIN
             v_parametros.id_formula,
             'formula',
             (case when (v_formula.precio is NULL) then
-            		1
+            		0
             	   else
                    v_formula.precio
             end
@@ -681,12 +691,48 @@ BEGIN
 	elsif(p_transaccion='VF_fact_MOD')then
 
 		begin
+    		 if (pxp.f_is_positive_integer(v_parametros.id_cliente::varchar)) THEN
+                v_id_cliente = v_parametros.id_cliente::integer;
+
+                update vef.tcliente
+                set nit = v_parametros.nit,
+                    nombre_factura = UPPER(v_parametros.nombre_factura)
+                where id_cliente = v_id_cliente;
+
+                select c.nombre_factura into v_nombre_factura
+                from vef.tcliente c
+                where c.id_cliente = v_id_cliente;
+
+              else
+
+                INSERT INTO
+                  vef.tcliente
+                  (
+                    id_usuario_reg,
+                    fecha_reg,
+                    estado_reg,
+                    nombre_factura,
+                    nit
+                  )
+                VALUES (
+                  p_id_usuario,
+                  now(),
+                  'activo',
+                  upper(v_parametros.nombre_factura),
+                  v_parametros.nit
+                ) returning id_cliente into v_id_cliente;
+
+                v_nombre_factura = upper(v_parametros.nombre_factura);
+
+              end if;
+
 
 			--Sentencia de la modificacion
 			update vef.tventa set
-			id_cliente = v_parametros.id_cliente,
+			id_cliente = v_parametros.id_cliente::integer,
 			observaciones = v_parametros.observaciones,
-			nit = v_parametros.nit
+			nit = v_parametros.nit,
+            nombre_factura = upper(v_parametros.nombre_factura)
 			where id_venta=v_parametros.id_venta;
 
             if ( v_parametros.id_formula is not null) then
@@ -1366,7 +1412,6 @@ BEGIN
                   and sm.estado_reg = 'activo' and sm.tipo_moneda = 'moneda_base';
           end if;
         end if;*/
-
        if (pxp.f_existe_parametro(p_tabla,'tipo_factura')) then
           v_tipo_factura = v_parametros.tipo_factura;
         else
@@ -1590,7 +1635,7 @@ BEGIN
         end if;
 
 
-        if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
+       if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
 
           update vef.tcliente
@@ -1614,11 +1659,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.id_cliente),
+            upper(v_parametros.nombre_factura),
             v_parametros.nit
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = v_parametros.id_cliente;
+          v_nombre_factura = v_parametros.nombre_factura;
 
         end if;
 
@@ -1846,6 +1891,72 @@ BEGIN
 
 
         ) returning id_venta into v_id_venta;
+
+
+            /*Aumentamos para asociar los boletos registrados*/
+        if (pxp.f_existe_parametro(p_tabla,'boleto_asociado')) then
+
+
+        	select substring(v_parametros.boleto_asociado from 1 for 3) into v_inicial_boleto;
+
+			if (v_inicial_boleto <> '930') then
+            	raise exception 'Los digitos no corresponden a un boleto, verifique.';
+            end if;
+
+             select count (bole.id_boleto_amadeus)
+                    into v_existencia
+                from obingresos.tboleto_amadeus bole
+                where bole.nro_boleto = v_parametros.boleto_asociado and bole.estado_reg = 'activo';
+
+             if (v_existencia > 0) then
+
+             	select
+                	bole.nro_boleto,
+                    --bole.nit,
+                    bole.pasajero,
+                    --bole.razon,
+                    --(bole.origen || '-' || bole.destino) as ruta,
+                    bole.fecha_emision,
+                    bole.id_boleto_amadeus
+                    into v_datos_boletos
+                from obingresos.tboleto_amadeus bole
+                where bole.nro_boleto = v_parametros.boleto_asociado;
+
+
+                --Sentencia de la insercion
+                insert into vef.tboletos_asociados_fact(
+                estado_reg,
+                id_boleto,
+                id_venta,
+                nro_boleto,
+                fecha_emision,
+                pasajero,
+                --nit,
+                --ruta,
+                --razon,
+                fecha_reg,
+                id_usuario_reg
+                ) values(
+                'activo',
+                v_datos_boletos.id_boleto_amadeus,
+                v_id_venta,
+                v_datos_boletos.nro_boleto,
+                v_datos_boletos.fecha_emision,
+                v_datos_boletos.pasajero,
+				--v_datos_boletos.nit,
+                --v_datos_boletos.ruta,
+                --v_datos_boletos.razon,
+                now(),
+                p_id_usuario
+                )RETURNING id_boleto_asociado into v_id_boleto_asociado;
+
+             else
+             	raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
+             end if;
+        end if;
+        /*************************************************/
+
+
 		/*raise exception 'lelga hasta aqui';*/
         --if (v_parametros.id_forma_pago != 0 ) then
 
@@ -2184,11 +2295,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.id_cliente),
+            upper(v_parametros.nombre_factura),
             v_parametros.nit
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = v_parametros.id_cliente;
+          v_nombre_factura = upper(v_parametros.nombre_factura);
         end if;
        /*************************************************************************/
 
@@ -2235,6 +2346,72 @@ BEGIN
               nombre_factura = v_nombre_factura ,
               id_cliente_destino = v_id_cliente_destino
         where id_venta=v_parametros.id_venta;
+
+
+         /*Aumentamos para asociar los boletos registrados*/
+        if (pxp.f_existe_parametro(p_tabla,'boleto_asociado')) then
+
+
+        	select substring(v_parametros.boleto_asociado from 1 for 3) into v_inicial_boleto;
+
+			if (v_inicial_boleto <> '930') then
+            	raise exception 'Los digitos no corresponden a un boleto, verifique.';
+            end if;
+
+             select count (bole.id_boleto_amadeus)
+                    into v_existencia
+                from obingresos.tboleto_amadeus bole
+                where bole.nro_boleto = v_parametros.boleto_asociado and bole.estado_reg = 'activo';
+
+             if (v_existencia > 0) then
+
+             	select
+                	bole.nro_boleto,
+                    --bole.nit,
+                    bole.pasajero,
+                    --bole.razon,
+                    --(bole.origen || '-' || bole.destino) as ruta,
+                    bole.fecha_emision,
+                    bole.id_boleto_amadeus
+                    into v_datos_boletos
+                from obingresos.tboleto_amadeus bole
+                where bole.nro_boleto = v_parametros.boleto_asociado;
+
+
+                --Sentencia de la insercion
+                insert into vef.tboletos_asociados_fact(
+                estado_reg,
+                id_boleto,
+                id_venta,
+                nro_boleto,
+                fecha_emision,
+                pasajero,
+                --nit,
+                --ruta,
+                --razon,
+                fecha_reg,
+                id_usuario_reg
+                ) values(
+                'activo',
+                v_datos_boletos.id_boleto_amadeus,
+                v_parametros.id_venta,
+                v_datos_boletos.nro_boleto,
+                v_datos_boletos.fecha_emision,
+                v_datos_boletos.pasajero,
+				--v_datos_boletos.nit,
+                --v_datos_boletos.ruta,
+                --v_datos_boletos.razon,
+                now(),
+                p_id_usuario
+                )RETURNING id_boleto_asociado into v_id_boleto_asociado;
+
+             else
+             	raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
+             end if;
+        end if;
+        /*************************************************/
+
+
 
 
 
@@ -2852,6 +3029,7 @@ BEGIN
           inner join vef.ttipo_venta tv on tv.codigo = v.tipo_factura and tv.estado_reg = 'activo'
         where v.id_proceso_wf = v_parametros.id_proceso_wf_act;
         /***********************************************************/
+
 
         /*Obtenemos el id del estado finalizado*/
         v_estado_finalizado = (v_id_tipo_estado+1);
@@ -3483,24 +3661,26 @@ BEGIN
         end if;
 
         --Validar que solo haya conceptos contabilizables o no contabilizables
-        select count(distinct sp.contabilizable) into v_cantidad
-        from vef.tventa_detalle vd
-          left join vef.tsucursal_producto sp on sp.id_sucursal_producto = vd.id_sucursal_producto
-        where vd.id_venta = v_parametros.id_venta;
+        select count(distinct inga.contabilizable) into v_cantidad
+        from vef.tventa_detalle det
+        inner join param.tconcepto_ingas inga on inga.id_concepto_ingas = det.id_producto
+        where det.id_venta = v_parametros.id_venta;
+
 
         if (v_cantidad > 1) then
           raise exception 'No puede utilizar conceptos contabilizables y no contabilizables en la misma venta';
         else
-        	update vef.tventa set contabilizable = 'si'
-          where id_venta = v_parametros.id_venta;
+        	update vef.tventa set contabilizable =
+           (
+                          select distinct(sp.contabilizable)
+                          from vef.tventa_detalle vd
+                            inner join param.tconcepto_ingas sp on sp.id_concepto_ingas = vd.id_producto
+                          where vd.id_venta = v_parametros.id_venta)
 
-         /* update vef.tventa set contabilizable = (
-            select distinct sp.contabilizable
-            from vef.tventa_detalle vd
-              left join vef.tsucursal_producto sp on sp.id_sucursal_producto = vd.id_sucursal_producto
-            where vd.id_venta = v_parametros.id_venta)
-          where id_venta = v_parametros.id_venta; */
+          where id_venta = v_parametros.id_venta;
         end if;
+
+
 
 		/*****************************VERIFICAMOS SI EL CONCEPTO TIENE EXCENTO*******************************/
         select count(*) into v_cantidad
@@ -5206,6 +5386,95 @@ BEGIN
               return v_resp;
 
             end;
+
+	/*********************************
+        #TRANSACCION:  'VEF_RECUCLI_MOD'
+        #DESCRIPCION:	Recuperacion del Cliente
+        #AUTOR:		ivaldivia
+        #FECHA:		16-12-2020 15:40:57
+        ***********************************/
+
+        elsif(p_transaccion='VEF_RECUCLI_MOD')then
+
+            begin
+
+               IF (v_parametros.nit != '') THEN
+               		select cli.id_cliente,
+                           cli.nombre_factura,
+                           cli.nit
+                    INTO
+                    	   v_cliente
+                    from vef.tcliente cli
+                    where cli.nit = v_parametros.nit
+                    ORDER BY cli.id_cliente DESC
+                    limit 1;
+               end if;
+
+               IF (v_parametros.razon_social != '') THEN
+               		select cli.id_cliente,
+                           cli.nombre_factura,
+                           cli.nit
+                    into
+                    	   v_cliente
+                    from vef.tcliente cli
+                    where cli.nombre_factura = UPPER(v_parametros.razon_social)
+                    ORDER BY cli.id_cliente DESC
+                    limit 1;
+               end if;
+
+
+
+
+                --Definicion de la respuesta
+                v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Datos del deposito');
+                v_resp = pxp.f_agrega_clave(v_resp,'id_cliente',v_cliente.id_cliente::varchar);
+                v_resp = pxp.f_agrega_clave(v_resp,'nit',v_cliente.nit::varchar);
+                v_resp = pxp.f_agrega_clave(v_resp,'razon',v_cliente.nombre_factura::varchar);
+
+                --Devuelve la respuesta
+                return v_resp;
+
+            end;
+
+            /*********************************
+    #TRANSACCION: 'VF_CONBOLE_IME'
+    #DESCRIPCION: RECUPERA EL TIPO DE USUARIO
+    #AUTOR: ISMAEL VALDIVIA ARANIBAR
+    #FECHA: 08/07/2019
+    ***********************************/
+
+	elsif (p_transaccion = 'VF_CONBOLE_IME') then
+
+  	BEGIN
+
+       	select distinct (ing.boleto_asociado) into v_boleto_asociado
+        from vef.tventa_detalle det
+        left join param.tconcepto_ingas ing on ing.id_concepto_ingas = det.id_producto
+        where det.id_venta = v_parametros.id_venta and ing.boleto_asociado = 'si';
+
+
+        select distinct (ing.excento) into v_requiere_excento
+        from vef.tventa_detalle det
+        left join param.tconcepto_ingas ing on ing.id_concepto_ingas = det.id_producto
+        where det.id_venta = v_parametros.id_venta and ing.excento = 'si';
+
+        if (v_requiere_excento = '' OR v_requiere_excento = null) then
+        	v_requiere_excento = 'no';
+        end if;
+
+
+
+
+      --Definition of the response
+      	v_resp = pxp.f_agrega_clave(v_resp, 'message ', 'Tipo Usuario');
+        v_resp = pxp.f_agrega_clave(v_resp,'v_asociado',v_boleto_asociado::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'v_requiere_excento',v_requiere_excento::varchar);
+
+
+      --Returns the answer
+        return v_resp;
+
+  	END;
 
 
 

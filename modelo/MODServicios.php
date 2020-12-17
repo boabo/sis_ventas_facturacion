@@ -56,6 +56,8 @@ class MODServicios extends MODbase{
 
 		$this->captura('regionales','varchar');
 		$this->captura('nivel_permiso','varchar');
+		$this->captura('contabilizable','varchar');
+		$this->captura('boleto_asociado','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -79,6 +81,8 @@ class MODServicios extends MODbase{
 		$this->captura('requiere_descripcion','varchar');
 		$this->captura('desc_moneda','varchar');
 		$this->captura('tipo','varchar');
+		$this->captura('boleto_asociado','varchar');
+		$this->captura('contabilizable','varchar');
 
 
 		//Ejecuta la instruccion
@@ -104,7 +108,7 @@ class MODServicios extends MODbase{
 		$this->setParametro('sw_tes','sw_tes','varchar');
 		$this->setParametro('activo_fijo','activo_fijo','varchar');
 		$this->setParametro('almacenable','almacenable','varchar');
-		$this->setParametro('sw_autorizacion','sw_autorizacion','_varchar');
+		$this->setParametro('sw_autorizacion','sw_autorizacion','varchar');
 		$this->setParametro('codigo','codigo','varchar');
 		$this->setParametro('tipo_punto_venta','tipo_punto_venta','varchar');
 		$this->setParametro('punto_venta_asociado','punto_venta_asociado','varchar');
@@ -113,6 +117,10 @@ class MODServicios extends MODbase{
 		$this->setParametro('requiere_descripcion','requiere_descripcion','varchar');
 		$this->setParametro('excento','excento','varchar');
 		$this->setParametro('id_actividad_economica','id_actividad_economica','int4');
+		$this->setParametro('contabilizable','contabilizable','varchar');
+		$this->setParametro('regionales','regionales','varchar');
+		$this->setParametro('nivel_permiso','nivel_permiso','varchar');
+		$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -137,7 +145,7 @@ class MODServicios extends MODbase{
 		$this->setParametro('sw_tes','sw_tes','varchar');
 		$this->setParametro('activo_fijo','activo_fijo','varchar');
 		$this->setParametro('almacenable','almacenable','varchar');
-		$this->setParametro('sw_autorizacion','sw_autorizacion','_varchar');
+		$this->setParametro('sw_autorizacion','sw_autorizacion','varchar');
 		$this->setParametro('codigo','codigo','varchar');
 		$this->setParametro('tipo_punto_venta','tipo_punto_venta','varchar');
 		$this->setParametro('punto_venta_asociado','punto_venta_asociado','varchar');
@@ -146,6 +154,10 @@ class MODServicios extends MODbase{
 		$this->setParametro('requiere_descripcion','requiere_descripcion','varchar');
 		$this->setParametro('excento','excento','varchar');
 		$this->setParametro('id_actividad_economica','id_actividad_economica','int4');
+		$this->setParametro('contabilizable','contabilizable','varchar');
+		$this->setParametro('regionales','regionales','varchar');
+		$this->setParametro('nivel_permiso','nivel_permiso','varchar');
+		$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

@@ -67,18 +67,24 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+            contabilizable,
+            sw_autorizacion,
+            regionales,
+            nivel_permiso,
+            boleto_asociado
+
           	) values(
 			'activo',
 			v_parametros.tipo,
 			v_parametros.desc_ingas,
-			v_parametros.movimiento,
-			v_parametros.sw_tes,
-			v_parametros.activo_fijo,
-			v_parametros.almacenable,
-			v_parametros.codigo,
-            string_to_array (v_parametros.tipo_punto_venta,',')::VARCHAR[],
-            string_to_array (v_parametros.punto_venta_asociado,',')::integer[],
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+            NULL,
+            NULL,
             v_parametros.id_moneda,
             v_parametros.precio,
             v_parametros.requiere_descripcion,
@@ -89,9 +95,12 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
-
-
+			null,
+			v_parametros.contabilizable,
+            string_to_array(v_parametros.sw_autorizacion,',')::varchar[],
+            string_to_array(v_parametros.regionales,',')::varchar[],
+            string_to_array(v_parametros.nivel_permiso,',')::varchar[],
+			v_parametros.boleto_asociado
 
 			)RETURNING id_concepto_ingas into v_id_concepto_ingas;
 
@@ -118,11 +127,9 @@ BEGIN
 			update param.tconcepto_ingas set
 			tipo = v_parametros.tipo,
 			desc_ingas = v_parametros.desc_ingas,
-			movimiento = v_parametros.movimiento,
-			activo_fijo = v_parametros.activo_fijo,
-			almacenable = v_parametros.almacenable,
-            --tipo_punto_venta = string_to_array (v_parametros.tipo_punto_venta,',')::VARCHAR[],
-            --punto_venta_asociado = string_to_array (v_parametros.punto_venta_asociado,',')::integer[],
+			--movimiento = v_parametros.movimiento,
+			--activo_fijo = v_parametros.activo_fijo,
+			--almacenable = v_parametros.almacenable,
             id_moneda = v_parametros.id_moneda,
             precio = v_parametros.precio,
             requiere_descripcion = v_parametros.requiere_descripcion,
@@ -131,7 +138,15 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+            contabilizable = v_parametros.contabilizable,
+            sw_autorizacion = string_to_array(v_parametros.sw_autorizacion,',')::varchar[],
+            /*Aumentando para incluir regionales en los conceptos de gasto (Ismael Valdivia 16/10/2020)*/
+            regionales = string_to_array(v_parametros.regionales,',')::varchar[],
+            nivel_permiso = string_to_array(v_parametros.nivel_permiso,',')::varchar[],
+            boleto_asociado = v_parametros.boleto_asociado
+            /********************************************************************************************/
+
 			where id_concepto_ingas=v_parametros.id_concepto_ingas;
 
 			--Definicion de la respuesta

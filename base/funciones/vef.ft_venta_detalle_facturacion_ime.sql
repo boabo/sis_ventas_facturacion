@@ -58,6 +58,7 @@ DECLARE
     v_precio					numeric;
     v_existe_excento			integer;
     v_tiene_excento				varchar;
+    v_cantidad					integer;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_detalle_facturacion_ime';
@@ -74,11 +75,7 @@ BEGIN
 
         begin
 
-        /*Recuperamos el id_concepto_ingas para registrar en venta detalle*/
-        /*select pro.id_concepto_ingas into v_concepto_ingas
-        from vef.tsucursal_producto pro
-        where pro.id_sucursal_producto = v_parametros.id_producto; */
-        /******************************************************************/
+
         	--Sentencia de la insercion
         	insert into vef.tventa_detalle(
 			id_venta,
@@ -105,6 +102,30 @@ BEGIN
             now()
 
 			)RETURNING id_venta_detalle into v_id_venta_detalle;
+
+            /*Verificamos si el concepto es contabilizable para no mezclar*/
+
+       	select count(distinct inga.contabilizable) into v_cantidad
+        from vef.tventa_detalle det
+        inner join param.tconcepto_ingas inga on inga.id_concepto_ingas = det.id_producto
+        where det.id_venta = v_parametros.id_venta;
+
+        if (v_cantidad > 1) then
+          raise exception 'No puede utilizar conceptos contabilizables y no contabilizables en la misma venta';
+        else
+
+          update vef.tventa set contabilizable =
+           (
+                          select distinct(sp.contabilizable)
+                          from vef.tventa_detalle vd
+                            inner join param.tconcepto_ingas sp on sp.id_concepto_ingas = vd.id_producto
+                          where vd.id_venta = v_parametros.id_venta)
+
+          where id_venta = v_parametros.id_venta;
+
+        end if;
+
+        /******************************************************************/
 
             select sum(ven.precio * ven.cantidad) into v_total_venta
               from vef.tventa_detalle ven
@@ -268,9 +289,8 @@ BEGIN
           v_ley,
           v_kg_fino,
           v_id_unidad_medida,
-          v_parametros.id_producto---v_id_concepto_ingas
+          v_parametros.id_producto
         )RETURNING id_venta_detalle into v_id_venta_detalle;
-
 
         --recupera datos de la venta
         select
@@ -294,6 +314,9 @@ BEGIN
         update vef.tventa
         set total_venta = round((select sum(round(precio * cantidad,2)) from vef.tventa_detalle where id_venta = v_parametros.id_venta) + v_total,2)
         where id_venta = v_parametros.id_venta;
+
+
+
 
         --raise exception 'llega auqi tipo %',v_parametros.tipo_factura;
         --verificar si existe el sistema obingresos, si existe actualizar el ib_boleto
@@ -373,8 +396,8 @@ BEGIN
             /***Actualizamos el total de la venta***/
             update vef.tventa set
             total_venta = venta_total,
-            total_venta_msuc = venta_total,
-            excento = v_parametros.excento
+            total_venta_msuc = venta_total
+            --excento = v_parametros.excento
             where id_venta = v_parametros.id_venta;
             /*****************************************/
 
@@ -443,21 +466,66 @@ BEGIN
 		begin
 
 
-            select count (ingas.excento) into v_existe_excento
+            /*select count (ingas.excento) into v_existe_excento
             from vef.tformula form
             inner join vef.tformula_detalle det on det.id_formula = form.id_formula
             inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_concepto_ingas
-            where ingas.excento = 'si' and form.id_formula = v_parametros.id_formula;
+            where ingas.excento = 'si' and form.id_formula = v_parametros.id_formula;*/
 
+
+            select DISTINCT (ingas.excento) into v_tiene_excento
+            from vef.tventa_detalle det
+            inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+            where ingas.excento = 'si' and det.id_venta = v_parametros.id_venta;
 
         	/*select count (ing.excento) into v_existe_excento
             from vef.tventa_detalle det
             inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = det.id_producto
             where det.id_venta = v_parametros.id_venta and ing.excento = 'si';*/
 
-            if (v_existe_excento > 0) then
-            	v_tiene_excento = 'si';
-            ELSE
+            if (v_tiene_excento = '' or v_tiene_excento = null) then
+            	v_tiene_excento = 'no';
+            end if;
+
+			--Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta_detalle_facturacion modificado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'v_tiene_excento',v_tiene_excento::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+        /*********************************
+ 	#TRANSACCION:  'VF_EXCENFOR_INS'
+ 	#DESCRIPCION:	Verificacion si algun concepto tiene excento
+ 	#AUTOR:		ivaldivia
+ 	#FECHA:		10-05-2019 19:33:22
+	***********************************/
+
+	elsif(p_transaccion='VF_EXCENFOR_INS')then
+
+		begin
+
+
+            select DISTINCT (ingas.excento) into v_tiene_excento
+            from vef.tformula form
+            inner join vef.tformula_detalle det on det.id_formula = form.id_formula
+            inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_concepto_ingas
+            where ingas.excento = 'si' and form.id_formula = v_parametros.id_formula;
+
+
+            /*select DISTINCT (ingas.excento) into v_tiene_excento
+            from vef.tventa_detalle det
+            inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+            where ingas.excento = 'si' and det.id_venta = v_parametros.id_venta;
+        	*/
+        	/*select count (ing.excento) into v_existe_excento
+            from vef.tventa_detalle det
+            inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = det.id_producto
+            where det.id_venta = v_parametros.id_venta and ing.excento = 'si';*/
+
+            if (v_tiene_excento = '' or v_tiene_excento = null) then
             	v_tiene_excento = 'no';
             end if;
 

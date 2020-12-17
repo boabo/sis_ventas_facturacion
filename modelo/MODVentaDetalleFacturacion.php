@@ -148,6 +148,22 @@ class MODVentaDetalleFacturacion extends MODbase{
 			$this->transaccion='VF_FACTEXCEN_INS';
 			$this->tipo_procedimiento='IME';//tipo de transaccion
 
+			$this->setParametro('id_venta','id_venta','int4');
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+
+			//Devuelve la respuesta
+			return $this->respuesta;
+	}
+
+	function verificarExcentoFormula(){
+			//Definicion de variables para ejecucion del procedimientp
+			$this->procedimiento='vef.ft_venta_detalle_facturacion_ime';
+			$this->transaccion='VF_EXCENFOR_INS';
+			$this->tipo_procedimiento='IME';//tipo de transaccion
+
 			$this->setParametro('id_formula','id_formula','int4');
 
 			//Ejecuta la instruccion

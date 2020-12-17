@@ -38,6 +38,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 		if(data){
 			this.cmpAuto.setValue(data.sw_autorizacion);
 			this.cmpRegionales.setValue(data.regionales);
+			this.cmpNivelPermiso.setValue(data.nivel_permiso);
 			this.wAuto.show();
 		}
 
@@ -50,6 +51,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
                 params: {
 												sw_autorizacion: this.cmpAuto.getValue(),
 												regionales: this.cmpRegionales.getValue(),
+												nivel_permiso: this.cmpNivelPermiso.getValue(),
                 	      id_formula: d.id_formula
                 	    },
                 success: this.successSinc,
@@ -107,8 +109,8 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 										 fields: ['codigo','descripcion'],
 										 remoteSort : true,
 										 baseParams:{
-											cod_subsistema:'PARAM',
-											catalogo_tipo:'autorizaciones_concepto'
+											cod_subsistema:'VEF',
+											catalogo_tipo:'autorizaciones_concepto_ventas'
 										},
 									 }),
 									 valueField: 'codigo',
@@ -161,7 +163,43 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 									 enableMultiSelect: true,
 									 pageSize: 200,
 									 queryDelay: 100
-								}
+								},
+								{
+									 name:'nivel_permiso',
+									 xtype:"awesomecombo",
+									 fieldLabel:'Nivel Permiso',
+									 allowBlank: true,
+									 emptyText:'Nivel Permiso...',
+									 store : new Ext.data.JsonStore({
+										 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+										 id : 'id_catalogo',
+										 root : 'datos',
+										 sortInfo : {
+											 field : 'codigo',
+											 direction : 'ASC'
+										 },
+										 totalProperty : 'total',
+										 fields: ['codigo','descripcion'],
+										 remoteSort : true,
+										 baseParams:{
+											cod_subsistema:'PARAM',
+											catalogo_tipo:'nivel_permiso'
+										},
+									 }),
+									 valueField: 'codigo',
+									 displayField: 'descripcion',
+									 mode: 'remote',
+									 forceSelection:true,
+									 typeAhead: true,
+									 triggerAction: 'all',
+									 lazyRender: true,
+									 queryDelay: 1000,
+									 width: 250,
+									 minChars: 2 ,
+								   enableMultiSelect: true,
+									 pageSize: 200,
+		 							 queryDelay: 100
+								},
 						]
 					});
 
@@ -196,7 +234,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 
 						this.cmpAuto = this.formAuto.getForm().findField('sw_autorizacion');
 						this.cmpRegionales = this.formAuto.getForm().findField('regionales');
-
+						this.cmpNivelPermiso = this.formAuto.getForm().findField('nivel_permiso');
 
 		},
 

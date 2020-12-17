@@ -170,7 +170,8 @@ BEGIN
                           ven.fecha_reg,
                           ven.id_usuario_reg,
                           ven.id_usuario_mod,
-                          ven.fecha_mod
+                          ven.fecha_mod,
+                          ing.boleto_asociado
                     from vef.tventa_detalle ven
                     inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = ven.id_producto
                     where ';

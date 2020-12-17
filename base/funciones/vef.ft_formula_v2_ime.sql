@@ -144,7 +144,8 @@ BEGIN
 
              update vef.tformula set
 			  sw_autorizacion = string_to_array(v_parametros.sw_autorizacion,',')::varchar[],
-              regionales = string_to_array(v_parametros.regionales,',')::varchar[]
+              regionales = string_to_array(v_parametros.regionales,',')::varchar[],
+              nivel_permiso = string_to_array(v_parametros.nivel_permiso,',')::varchar[]
              where id_formula = v_parametros.id_formula;
 
 

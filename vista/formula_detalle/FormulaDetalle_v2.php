@@ -100,7 +100,7 @@ Phx.vista.FormulaDetalle_v2=Ext.extend(Phx.gridInterfaz,{
 								direction: 'DESC'
 						},
 						totalProperty: 'total',
-						fields: ['id_concepto_ingas', 'tipo','desc_ingas','desc_moneda','requiere_descripcion','precio','excento'],
+						fields: ['id_concepto_ingas', 'tipo','desc_ingas','desc_moneda','requiere_descripcion','precio','excento','contabilizable'],
 						remoteSort: true,
 						baseParams: {par_filtro: 'ingas.desc_ingas', servicios_productos:'SI'}
 				}),
@@ -117,6 +117,7 @@ Phx.vista.FormulaDetalle_v2=Ext.extend(Phx.gridInterfaz,{
 					 '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
 					 '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
 					 '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+					 '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
 					 '</div></tpl>'
 				 ]),
 				typeAhead: false,

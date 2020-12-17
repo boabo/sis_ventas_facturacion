@@ -111,7 +111,8 @@ class MODFormula_v2 extends MODbase{
 		$this->setParametro('id_formula','id_formula','int4');
 		$this->setParametro('sw_autorizacion','sw_autorizacion','varchar');
 		$this->setParametro('regionales','regionales','varchar');
-
+		$this->setParametro('nivel_permiso','nivel_permiso','varchar');
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
