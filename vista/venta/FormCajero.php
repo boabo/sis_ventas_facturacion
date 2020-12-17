@@ -270,7 +270,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.buildComponentesDetalle();
         //this.buildDetailGrid();
         if (this.data.tipo_form == 'edit') {
-          this.buildDetailGridEdit();
 
           Ext.Ajax.request({
               url:'../../sis_ventas_facturacion/control/Cajero/getConceptoAsociar',
@@ -279,11 +278,23 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                   this.asociar_boleto = reg.ROOT.datos.v_asociado;
                   this.requiere_excento = reg.ROOT.datos.v_requiere_excento;
+
+                  if (this.asociar_boleto == 'si') {
+                    this.mostrarComponente(this.Cmp.boleto_asociado);
+                  }
+
+                  if (this.requiere_excento == 'si') {
+                    this.mostrarComponente(this.Cmp.excento);
+                  }
+
+
               },
               failure: this.conexionFailure,
               timeout:this.timeout,
               scope:this
           });
+
+          this.buildDetailGridEdit();
 
         } else {
           this.buildDetailGridNew();
@@ -1417,11 +1428,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         this.ocultarComponente(this.Cmp.habilitar_edicion);
         /*Ocultar campo excento*/
-        if (this.Cmp.excento.getValue() == 0) {
-          this.ocultarComponente(this.Cmp.excento);
-        } else {
-          this.mostrarComponente(this.Cmp.excento);
-        }
+        // if (this.Cmp.excento.getValue() == 0) {
+        //   this.ocultarComponente(this.Cmp.excento);
+        // } else {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }
     },
 
     roundTwo: function(can){
@@ -1522,19 +1533,19 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
         /*******************Mostramos si se tiene excento***********************/
-        if (this.Cmp.excento.getValue() == 0) {
-          this.ocultarComponente(this.Cmp.excento);
-        } else {
-          this.mostrarComponente(this.Cmp.excento);
-        }
+        // if (this.Cmp.excento.getValue() == 0) {
+        //   this.ocultarComponente(this.Cmp.excento);
+        // } else {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }
 
-        if (this.asociar_boleto == 'si') {
-          this.mostrarComponente(this.Cmp.boleto_asociado);
-          this.Cmp.boleto_asociado.allowBlank=false;
-        } else {
-          this.ocultarComponente(this.Cmp.boleto_asociado);
-          this.Cmp.boleto_asociado.allowBlank=true;
-        }
+        // if (this.asociar_boleto == 'si') {
+        //   this.mostrarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank=false;
+        // } else {
+        //   this.ocultarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank=true;
+        // }
         /**********************************************************************/
 
         /*****************Habilitamos los campos si se pone editar***************/
