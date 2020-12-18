@@ -1392,21 +1392,3 @@ ALTER TABLE vef.tdosificacion
   ALTER TABLE vef.trespaldo_facturas_anuladas
     RENAME COLUMN id_forma_pago TO id_medio_pago;
 /***********************************F-SCP-IRVA-VEF-0-10/12/2020****************************************/
-/***********************************I-SCP-IRVA-VEF-0-17/12/2020****************************************/
-
-ALTER TABLE param.tconcepto_ingas
-  ADD COLUMN contabilizable VARCHAR(5);
-
-COMMENT ON COLUMN param.tconcepto_ingas.contabilizable
-IS 'Diferenciar los conceptos contabilizables';
-
-
-ALTER TABLE param.tconcepto_ingas
-  ADD COLUMN boleto_asociado VARCHAR(5);
-
-COMMENT ON COLUMN param.tconcepto_ingas.boleto_asociado
-IS 'Campo para saber si el concepto debe estar asociado al boleto';
-
-ALTER TABLE vef.tformula
-  ADD COLUMN nivel_permiso VARCHAR(200) [];
-/***********************************F-SCP-IRVA-VEF-0-17/12/2020****************************************/
