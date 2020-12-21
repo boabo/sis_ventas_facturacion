@@ -845,7 +845,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
               this.variables = simple;
               this.variables.items.items[1].store.baseParams.regional = this.data.variables_globales.ESTACION_inicio;
                 var win = new Ext.Window({
-                  title: '<center><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;"> AGREGAR MEDIO DE PAGO</span></center>', //the title of the window
+                  title: '<center><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;"> EDITAR MEDIO DE PAGO</span></center>', //the title of the window
                   width:600,
                   height:220,
                   closeAction:'hide',
