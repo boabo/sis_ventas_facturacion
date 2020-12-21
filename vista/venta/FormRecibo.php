@@ -985,9 +985,27 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
     obtenersuma: function () {
       var total_datos = this.megrid.store.data.items.length;
+      var verificar_montos = [];
       var suma = 0;
       for (var i = 0; i < total_datos; i++) {
+        if (this.megrid.store.data.items[i].data.precio_total == 0 || isNaN(this.megrid.store.data.items[i].data.precio_total) || this.megrid.store.data.items[i].data.precio_total == '') {
+          verificar_montos.push(this.megrid.store.data.items[i].data.precio_total);
+        }
           suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
+      }
+
+      if (verificar_montos.length > 0 ) {
+          Ext.Msg.show({
+           title:'Información',
+           maxWidth : 550,
+           width: 550,
+           msg: 'Hay conceptos que no tienen precio unitario o el monto es 0, favor verifique y complete la información!',
+           buttons: Ext.Msg.OK,
+           icon: Ext.MessageBox.QUESTION,
+           scope:this
+        });
+
+        verificar_montos = [];
       }
       this.suma_total = suma;
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
@@ -2076,11 +2094,35 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     },
     onReset:function(o){
 			this.generar = 'generar';
-      if (this.mestore.modified.length == 0) {
+
+      var verificar_montos = [];
+      var total_datos = this.megrid.store.data.items.length;
+
+      for (var i = 0; i < total_datos; i++) {
+        if (this.megrid.store.data.items[i].data.precio_total == 0 || isNaN(this.megrid.store.data.items[i].data.precio_total) || this.megrid.store.data.items[i].data.precio_total == '') {
+          verificar_montos.push(this.megrid.store.data.items[i].data.precio_total);
+        }
+      }
+
+      if (this.mestore.modified.length == 0 && verificar_montos.length == 0) {
           this.onSubmit2(o);
-      } else {
+      } else if (verificar_montos.length > 0) {
+            Ext.Msg.show({
+             title:'Información',
+             maxWidth : 550,
+             width: 550,
+             msg: 'Hay conceptos que no tienen precio unitario o el monto es 0, favor verifique y complete la información!',
+             buttons: Ext.Msg.OK,
+             icon: Ext.MessageBox.QUESTION,
+             scope:this
+          });
+          verificar_montos = [];
+
+      } else if (this.mestore.modified.length > 0) {
         Ext.Msg.show({
          title:'Información',
+         maxWidth : 550,
+         width: 550,
          msg: 'Guarde la información modificada para obtener el total correcto y poder generar el recibo!',
          buttons: Ext.Msg.OK,
          icon: Ext.MessageBox.QUESTION,
@@ -3805,7 +3847,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             var codigo_forma_pago = r.data.fop_code;
           }
         }
-        this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+        this.arrayBotones[0].scope.form.buttons[1].setDisabled(false);
         if(r){
           if (r.data) {
             this.Cmp.tipo_tarjeta.setValue(r.data.name);
@@ -4132,7 +4174,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                               if (reg.ROOT.datos.cantidad_deposito > 0) {
                                 /*Bloqueamos el boton para que no genere si el deposito*/
-                                 this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
+                                 this.arrayBotones[0].scope.form.buttons[1].setDisabled(true);
                                  Ext.Msg.show({
                                      title: 'Alerta',
                                      msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
@@ -4149,7 +4191,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                  // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
                                  //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
                               }else {
-                                this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+                                this.arrayBotones[0].scope.form.buttons[1].setDisabled(false);
                                 //this.Cmp.fecha_deposito.reset();
                                 //this.Cmp.nro_deposito.reset();
                                 //this.Cmp.monto_deposito.setValue(0);
@@ -4182,7 +4224,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
            							var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                             if (reg.ROOT.datos.cantidad_deposito > 0) {
                               /*Bloqueamos el boton para que no genere si el deposito*/
-                               this.arrayBotones[0].scope.form.buttons[0].setDisabled(true);
+                               this.arrayBotones[0].scope.form.buttons[1].setDisabled(true);
                                Ext.Msg.show({
              											title: 'Alerta',
              											msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas e ingrese nuevamente el nro de depósito</p>',
@@ -4199,7 +4241,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
                                //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
                             }else {
-                              this.arrayBotones[0].scope.form.buttons[0].setDisabled(false);
+                              this.arrayBotones[0].scope.form.buttons[1].setDisabled(false);
                               //this.Cmp.fecha_deposito.reset();
                               //this.Cmp.nro_deposito.reset();
                               //this.Cmp.monto_deposito.setValue(0);
