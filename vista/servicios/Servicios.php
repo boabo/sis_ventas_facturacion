@@ -359,6 +359,53 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
       form:true,
 			bottom_filter:true
     },
+		{
+	 	 config : {
+	 		 name : 'agrupador',
+	 		 fieldLabel : 'Agrupador',
+	 		 //anchor: '100%',
+	 		 width: 200,
+	 		 allowBlank : false,
+	 		 emptyText : 'Agrupador...',
+	 		 store : new Ext.data.JsonStore({
+	 			 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+	 			 id : 'id_catalogo',
+	 			 root : 'datos',
+	 			 sortInfo : {
+	 				 field : 'codigo',
+	 				 direction : 'ASC'
+	 			 },
+	 			 totalProperty : 'total',
+	 			 fields: ['codigo','descripcion'],
+	 			 remoteSort : true,
+	 			 baseParams:{
+	 				cod_subsistema:'PARAM',
+	 				catalogo_tipo:'agrupador_conceptos'
+	 			},
+	 		 }),
+	 		 valueField : 'codigo',
+	 		 displayField : 'codigo',
+	 		 gdisplayField : 'agrupador',
+	 		 hiddenName : 'codigo',
+	 		 forceSelection : true,
+	 		 typeAhead : false,
+	 		 triggerAction : 'all',
+	 		 lazyRender : true,
+	 		 mode : 'remote',
+	 		 pageSize : 25,
+	 		 listWidth:'450',
+	 		 maxHeight : 450,
+	 		 queryDelay : 1000,
+	 		 gwidth : 170,
+	 		 minChars : 2,
+	 		 resizable:true,
+	 		 //enableMultiSelect: true
+	 	 },
+	 	 type : 'ComboBox',
+	 	 id_grupo : 2,
+	 	 grid: true,
+	 	 form: true
+	  },
 		// {
  		// 	 config:{
  		// 		 name: 'sw_autorizacion',
@@ -1060,6 +1107,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name: 'nombres_punto_venta', type: 'string'},
 		{name: 'contabilizable', type: 'string'},
 		{name: 'boleto_asociado', type: 'string'},
+		{name: 'agrupador', type: 'string'},
 		'sw_autorizacion','regionales','nivel_permiso'
 	],
 	sortInfo:{

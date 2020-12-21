@@ -444,7 +444,7 @@ BEGIN
                   )RETURNING id_boleto_asociado into v_id_boleto_asociado;
 
                else
-                  raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
+                  --raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
                end if;
             end if;
           end if;

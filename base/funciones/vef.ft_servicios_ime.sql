@@ -72,7 +72,8 @@ BEGIN
             sw_autorizacion,
             regionales,
             nivel_permiso,
-            boleto_asociado
+            boleto_asociado,
+            agrupador
 
           	) values(
 			'activo',
@@ -100,7 +101,8 @@ BEGIN
             string_to_array(v_parametros.sw_autorizacion,',')::varchar[],
             string_to_array(v_parametros.regionales,',')::varchar[],
             string_to_array(v_parametros.nivel_permiso,',')::varchar[],
-			v_parametros.boleto_asociado
+			v_parametros.boleto_asociado,
+            v_parametros.agrupador
 
 			)RETURNING id_concepto_ingas into v_id_concepto_ingas;
 
@@ -144,7 +146,8 @@ BEGIN
             /*Aumentando para incluir regionales en los conceptos de gasto (Ismael Valdivia 16/10/2020)*/
             regionales = string_to_array(v_parametros.regionales,',')::varchar[],
             nivel_permiso = string_to_array(v_parametros.nivel_permiso,',')::varchar[],
-            boleto_asociado = v_parametros.boleto_asociado
+            boleto_asociado = v_parametros.boleto_asociado,
+            agrupador = v_parametros.agrupador
             /********************************************************************************************/
 
 			where id_concepto_ingas=v_parametros.id_concepto_ingas;

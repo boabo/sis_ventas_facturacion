@@ -58,6 +58,7 @@ class MODServicios extends MODbase{
 		$this->captura('nivel_permiso','varchar');
 		$this->captura('contabilizable','varchar');
 		$this->captura('boleto_asociado','varchar');
+		$this->captura('agrupador','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -121,6 +122,7 @@ class MODServicios extends MODbase{
 		$this->setParametro('regionales','regionales','varchar');
 		$this->setParametro('nivel_permiso','nivel_permiso','varchar');
 		$this->setParametro('boleto_asociado','boleto_asociado','varchar');
+		$this->setParametro('agrupador','agrupador','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -158,6 +160,7 @@ class MODServicios extends MODbase{
 		$this->setParametro('regionales','regionales','varchar');
 		$this->setParametro('nivel_permiso','nivel_permiso','varchar');
 		$this->setParametro('boleto_asociado','boleto_asociado','varchar');
+		$this->setParametro('agrupador','agrupador','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

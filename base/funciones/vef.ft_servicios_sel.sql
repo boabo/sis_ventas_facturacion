@@ -83,7 +83,8 @@ BEGIN
                         array_to_string( ingas.regionales, '','',''null'')::varchar,
                         array_to_string( ingas.nivel_permiso, '','',''null'')::varchar,
                         ingas.contabilizable,
-                        ingas.boleto_asociado
+                        ingas.boleto_asociado,
+                        ingas.agrupador
                         /************************/
 
 						from param.tconcepto_ingas ingas
