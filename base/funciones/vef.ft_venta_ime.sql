@@ -490,7 +490,7 @@ $body$
             v_parametros.correo_electronico
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = v_parametros.id_cliente;
+          v_nombre_factura = UPPER (v_parametros.id_cliente);
 
         end if;
 

@@ -219,7 +219,10 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			var rec = this.sm.getSelected();
 			this.getBoton('anular_fact').enable();
 			//this.getBoton('sgt_estado').enable();
-			this.getBoton('mod_excento').enable();
+
+			if (rec.data.requiere_excento == 'si') {
+				this.getBoton('mod_excento').enable();
+			}
 
 			if (rec.data.total_venta > 0) {
 				this.getBoton('sgt_estado').enable();
@@ -448,11 +451,11 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 scope:this
 	 });
 
-	 this.timer_id=Ext.TaskMgr.start({
-			run: Ftimer2,
-			interval:300000,
-			scope:this
-	});
+	//  this.timer_id=Ext.TaskMgr.start({
+	// 		run: Ftimer2,
+	// 		interval:300000,
+	// 		scope:this
+	// });
 
 	 function Ftimer(){
 	if (this.variables_globales.id_punto_venta != '') {
@@ -516,11 +519,11 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		}
 	}
 
-	function Ftimer2(){
-			 if (this.variables_globales.id_punto_venta != '') {
-						 this.reload();
-				 }
-			 }
+	// function Ftimer2(){
+	// 		 if (this.variables_globales.id_punto_venta != '') {
+	// 					 this.reload();
+	// 			 }
+	// 		 }
 /************************************************/
 
 	},
@@ -1915,7 +1918,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_sucursal', type: 'string'},
-		{name:'id_formula', type: 'numeric'},
+		{name:'requiere_excento', type: 'string'},
+		{name:'excento_verificado', type: 'string'},
 
 	],
 	sortInfo:{

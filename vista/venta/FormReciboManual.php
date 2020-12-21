@@ -1070,9 +1070,27 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
     obtenersuma: function () {
       var total_datos = this.megrid.store.data.items.length;
+      var verificar_montos = [];
       var suma = 0;
       for (var i = 0; i < total_datos; i++) {
+        if (this.megrid.store.data.items[i].data.precio_total == 0 || isNaN(this.megrid.store.data.items[i].data.precio_total) || this.megrid.store.data.items[i].data.precio_total == '') {
+          verificar_montos.push(this.megrid.store.data.items[i].data.precio_total);
+        }
           suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
+      }
+
+      if (verificar_montos.length > 0 ) {
+          Ext.Msg.show({
+           title:'Información',
+           maxWidth : 550,
+           width: 550,
+           msg: 'Hay conceptos que no tienen precio unitario o el monto es 0, favor verifique y complete la información!',
+           buttons: Ext.Msg.OK,
+           icon: Ext.MessageBox.QUESTION,
+           scope:this
+        });
+
+        verificar_montos = [];
       }
       this.suma_total = suma;
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
@@ -2084,11 +2102,35 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     },
     onReset:function(o){
 			this.generar = 'generar';
-      if (this.mestore.modified.length == 0) {
+
+      var verificar_montos = [];
+      var total_datos = this.megrid.store.data.items.length;
+
+      for (var i = 0; i < total_datos; i++) {
+        if (this.megrid.store.data.items[i].data.precio_total == 0 || isNaN(this.megrid.store.data.items[i].data.precio_total) || this.megrid.store.data.items[i].data.precio_total == '') {
+          verificar_montos.push(this.megrid.store.data.items[i].data.precio_total);
+        }
+      }
+
+      if (this.mestore.modified.length == 0 && verificar_montos.length == 0) {
           this.onSubmit2(o);
-      } else {
+      } else if (verificar_montos.length > 0) {
+            Ext.Msg.show({
+             title:'Información',
+             maxWidth : 550,
+             width: 550,
+             msg: 'Hay conceptos que no tienen precio unitario o el monto es 0, favor verifique y complete la información!',
+             buttons: Ext.Msg.OK,
+             icon: Ext.MessageBox.QUESTION,
+             scope:this
+          });
+          verificar_montos = [];
+
+      } else if (this.mestore.modified.length > 0) {
         Ext.Msg.show({
          title:'Información',
+         maxWidth : 550,
+         width: 550,
          msg: 'Guarde la información modificada para obtener el total correcto y poder generar el recibo!',
          buttons: Ext.Msg.OK,
          icon: Ext.MessageBox.QUESTION,

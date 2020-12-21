@@ -46,6 +46,10 @@ class ACTServicios extends ACTbase{
 				$this->objParam->addFiltro("(''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion))");
 			}
 		}
+	
+		if($this->objParam->getParametro('id_actividad_economica')!=''){
+			$this->objParam->addFiltro("ingas.id_actividad_economica = ".$this->objParam->getParametro('id_actividad_economica'));
+		}
 
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

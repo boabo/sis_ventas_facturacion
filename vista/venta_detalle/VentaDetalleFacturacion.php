@@ -650,25 +650,26 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.Cmp.id_producto.store.baseParams.regionales=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.ESTACION_inicio;
 		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
 
-		// /*Recuperamos de la venta detalle si existe algun concepto con excento*/
+		
 
-		console.log("aqui maestro viene",m);
+		if (m.excento_verificado == 'no' &&  m.requiere_excento == 'si') {
+			this.crearFormulatio();
+		}
 
-
-		Ext.Ajax.request({
-				url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
-				params:{id_venta:this.maestro.id_venta},
-				success: function(resp){
-						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-						this.requiere_excento = reg.ROOT.datos.v_tiene_excento;
-						this.valor_excento = this.maestro.excento;
-						 var that = this;
-						this.crearFormulatio(that);
-				},
-				failure: this.conexionFailure,
-				timeout:this.timeout,
-				scope:this
-		});
+		// Ext.Ajax.request({
+		// 		url:'../../sis_ventas_facturacion/control/VentaDetalleFacturacion/verificarExcento',
+		// 		params:{id_venta:this.maestro.id_venta},
+		// 		success: function(resp){
+		// 				var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+		// 				this.requiere_excento = reg.ROOT.datos.v_tiene_excento;
+		// 				this.valor_excento = this.maestro.excento;
+		// 				 var that = this;
+		// 				this.crearFormulatio(that);
+		// 		},
+		// 		failure: this.conexionFailure,
+		// 		timeout:this.timeout,
+		// 		scope:this
+		// });
 		//
 		// /**********************************************************************/
 
@@ -677,7 +678,6 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	crearFormulatio: function (that) {
-		if (this.requiere_excento == 'si' && this.valor_excento == 0) {
 
 			var simple = new Ext.FormPanel({
 			 labelWidth: 75, // label settings here cascade unless overridden
@@ -738,7 +738,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 			formu_excento.buttons[1].el.dom.style.height = '30px';
 			this.excento_formulario.items.items[0].setValue(this.valor_excento);
 
-		}
+
 	},
 	insertarNuevo : function (formu_excento) {
 		// if (this.excento_formulario.items.items[0].getValue() == '' || this.excento_formulario.items.items[0].getValue() == 0) {

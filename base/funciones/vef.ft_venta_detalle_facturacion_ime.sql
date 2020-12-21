@@ -550,7 +550,8 @@ BEGIN
 		begin
 
         	update vef.tventa set
-            excento = v_parametros.valor_excento
+            excento = v_parametros.valor_excento,
+            excento_verificado = 'si'
 			where id_venta=v_parametros.id_venta;
 
 			--Definicion de la respuesta

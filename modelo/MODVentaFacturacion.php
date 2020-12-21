@@ -74,7 +74,9 @@ class MODVentaFacturacion extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		$this->captura('id_formula','int4');
+		$this->captura('requiere_excento','varchar');
+		$this->captura('excento_verificado','varchar');
+		//$this->captura('id_formula','int4');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion
@@ -492,6 +494,7 @@ class MODVentaFacturacion extends MODbase{
 				$this->setParametro('tipo_factura', 'tipo_factura', 'varchar');
 				$this->setParametro('tipo', 'tipo', 'varchar');
 				$this->setParametro('excento', 'excento', 'varchar');
+				$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 				//Ejecuta la instruccion
 				$this->armarConsulta();
 				$stmt = $link->prepare($this->consulta);
@@ -1284,6 +1287,7 @@ class MODVentaFacturacion extends MODbase{
 								$this->setParametro('informe','informe','varchar');
 								$this->setParametro('fecha_factura','fecha_factura','varchar');
 								$this->setParametro('id_formula','id_formula','integer');
+								$this->setParametro('asociar_boletos','asociar_boletos','varchar');
 								//$this->setParametro('id_venta','id_venta','integer');
 
 		            //Ejecuta la instruccion

@@ -340,7 +340,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                     direction: 'ASC'
                                                 },
                                                 totalProperty: 'total',
-                                                fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado'],
+                                                fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad'],
                                                 remoteSort: true,
                                                 baseParams: {par_filtro: 'todo.nombre'}
                                             }),
@@ -353,6 +353,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                '<tpl for=".">',
                                                '<div class="x-combo-list-item">',
                                                '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+                                               '<p><b>Actividad Económica:</b><span style="color: green; font-weight:bold;"> {nombre_actividad}</span></p></p>',
                                                '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
                                                '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
                                                '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
@@ -1544,10 +1545,29 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
     obtenersuma: function () {
       var total_datos = this.megrid.store.data.items.length;
+      var verificar_montos = [];
       var suma = 0;
       for (var i = 0; i < total_datos; i++) {
+        if (this.megrid.store.data.items[i].data.precio_total == 0 || isNaN(this.megrid.store.data.items[i].data.precio_total) || this.megrid.store.data.items[i].data.precio_total == '') {
+          verificar_montos.push(this.megrid.store.data.items[i].data.precio_total);
+        }
           suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
       }
+
+      if (verificar_montos.length > 0 ) {
+          Ext.Msg.show({
+           title:'Información',
+           maxWidth : 550,
+           width: 550,
+           msg: 'Hay conceptos que no tienen precio unitario o el monto es 0, favor verifique y complete la información!',
+           buttons: Ext.Msg.OK,
+           icon: Ext.MessageBox.QUESTION,
+           scope:this
+        });
+
+        verificar_montos = [];
+      }
+
       this.suma_total = suma;
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
@@ -1556,6 +1576,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       /*Aqui pára mantener el campo*/
       var requiere_excento = [];
       var requiere_asociar = [];
+
 
       if (this.megrid.store.data.items.length>0) {
         for (var i = 0; i < this.megrid.store.data.items.length; i++) {
@@ -1568,52 +1589,93 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       }
 
 
-      if (this.requiere_excento != undefined) {
-        requiere_excento.push(this.requiere_excento);
-        this.Cmp.excento.setDisabled(true);
+      if (requiere_excento.includes('si')) {
+        this.mostrarComponente(this.Cmp.excento);
+        this.Cmp.excento.setDisabled(false);
+      } else {
+        this.ocultarComponente(this.Cmp.excento);
       }
 
-        if (requiere_excento.includes('si')) {
-          this.mostrarComponente(this.Cmp.excento);
-          this.Cmp.excento.allowBlank = false;
 
-          if (this.accionFormulario != 'EDIT') {
-            this.Cmp.excento.setDisabled(false);
+      if (this.megrid.store.data.items.length>0) {
+        for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+          if (!requiere_asociar.includes(this.megrid.store.data.items[i].data.asociar_boletos)) {
+              requiere_asociar.push(this.megrid.store.data.items[i].data.asociar_boletos);
           }
-
-
-        } else {
-          this.ocultarComponente(this.Cmp.excento);
-          this.Cmp.boleto_asociado.allowBlank = true;
-          this.Cmp.boleto_asociado.reset();
         }
-
-        if (this.asociar_boleto != undefined) {
-          requiere_asociar.push(this.asociar_boleto);
-        }
-
-        if (this.megrid.store.data.items.length>0) {
-
-          for (var i = 0; i < this.megrid.store.data.items.length; i++) {
-            if (!requiere_asociar.includes(this.megrid.store.data.items[i].data.asociar_boletos)) {
-                requiere_asociar.push(this.megrid.store.data.items[i].data.asociar_boletos);
-            }
-          }
-
-        } else {
-          requiere_asociar = [];
-        }
-
-
+      } else {
+        requiere_asociar = [];
+      }
 
       if (requiere_asociar.includes('si')) {
         this.mostrarComponente(this.Cmp.boleto_asociado);
+        this.Cmp.excento.setDisabled(false);
         this.Cmp.boleto_asociado.allowBlank = false;
       } else {
         this.ocultarComponente(this.Cmp.boleto_asociado);
         this.Cmp.boleto_asociado.allowBlank = true;
-        this.Cmp.boleto_asociado.reset();
       }
+      //
+      //
+      // if (this.requiere_excento != undefined) {
+      //   if (!requiere_excento.includes(this.requiere_excento)) {
+      //     requiere_excento.push(this.requiere_excento);
+      //     this.Cmp.excento.setDisabled(true);
+      //   }
+      // }
+      //
+      //   if (requiere_excento.includes('si')) {
+      //     this.mostrarComponente(this.Cmp.excento);
+      //     this.Cmp.excento.allowBlank = false;
+      //
+      //     if (this.accionFormulario != 'EDIT') {
+      //       this.Cmp.excento.setDisabled(false);
+      //     }
+      //
+      //
+      //   } else {
+      //     this.ocultarComponente(this.Cmp.excento);
+      //     this.Cmp.boleto_asociado.allowBlank = true;
+      //     this.Cmp.boleto_asociado.reset();
+      //   }
+      //
+      //   if (this.asociar_boleto != undefined) {
+      //     requiere_asociar.push(this.asociar_boleto);
+      //   }
+      //
+      //   if (this.megrid.store.data.items.length>0) {
+      //     for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+      //       if (!requiere_asociar.includes(this.megrid.store.data.items[i].data.asociar_boletos)) {
+      //           requiere_asociar.push(this.megrid.store.data.items[i].data.asociar_boletos);
+      //       }
+      //
+      //
+      //     }
+      //
+      //   } else {
+      //     requiere_asociar = [];
+      //     //this.requiere_asociar_boleto = undefined;
+      //   }
+      //
+      //   console.log("aqui llega datos",requiere_asociar);
+      //   console.log("aqui llega datos22222",requiere_excento);
+      //
+      // if (requiere_asociar.includes('si')) {
+      //   this.mostrarComponente(this.Cmp.boleto_asociado);
+      //   this.Cmp.boleto_asociado.allowBlank = false;
+      // } else {
+      //   this.ocultarComponente(this.Cmp.boleto_asociado);
+      //   this.Cmp.boleto_asociado.allowBlank = true;
+      //   this.Cmp.boleto_asociado.reset();
+      // }
+
+
+        // if (this.requiere_asociar_boleto != undefined) {
+        //   if (this.requiere_asociar_boleto == 'si') {
+        //     this.mostrarComponente(this.Cmp.boleto_asociado);
+        //     this.Cmp.boleto_asociado.allowBlank = false;
+        //   }
+        // }
 
     },
 
@@ -1990,7 +2052,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                                direction: 'ASC'
                                                            },
                                                            totalProperty: 'total',
-                                                           fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado'],
+                                                           fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad'],
                                                            remoteSort: true,
                                                            baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'FACTCOMP', emision:'facturacion'}
                                                        }),
@@ -2003,6 +2065,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                                           '<tpl for=".">',
                                                           '<div class="x-combo-list-item">',
                                                           '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+                                                          '<p><b>Actividad Económica:</b><span style="color: green; font-weight:bold;"> {nombre_actividad}</span></p></p>',
                                                           '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
                                                           '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
                                                           '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
@@ -2360,7 +2423,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                     this.mostrarComponente(this.Cmp.boleto_asociado);
                   }
 
-                  this.obtenersuma();
+                  //this.obtenersuma();
                   this.guardarDetalles();
 
               },
@@ -2665,13 +2728,36 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     },
     onReset:function(o){
 			this.generar = 'generar';
-      if (this.mestore.modified.length == 0) {
+
+      var verificar_montos = [];
+      var total_datos = this.megrid.store.data.items.length;
+
+      for (var i = 0; i < total_datos; i++) {
+        if (this.megrid.store.data.items[i].data.precio_total == 0 || isNaN(this.megrid.store.data.items[i].data.precio_total) || this.megrid.store.data.items[i].data.precio_total == '') {
+          verificar_montos.push(this.megrid.store.data.items[i].data.precio_total);
+        }
+      }
+
+      if (this.mestore.modified.length == 0 && verificar_montos.length == 0) {
           this.onSubmit2(o);
-      } else {
+      } else if (verificar_montos.length > 0) {
+            Ext.Msg.show({
+             title:'Información',
+             maxWidth : 550,
+             width: 550,
+             msg: 'Hay conceptos que no tienen precio unitario o el monto es 0, favor verifique y complete la información!',
+             buttons: Ext.Msg.OK,
+             icon: Ext.MessageBox.QUESTION,
+             scope:this
+          });
+          verificar_montos = [];
+
+      } else if (this.mestore.modified.length > 0) {
         Ext.Msg.show({
          title:'Información',
-         width:900,
-         msg: 'Guarde la información modificada para obtener el total correcto y poder generar la Factura!',
+         maxWidth : 550,
+         width: 550,
+         msg: 'Guarde la información modificada para obtener el total correcto y poder generar el recibo!',
          buttons: Ext.Msg.OK,
          icon: Ext.MessageBox.QUESTION,
          scope:this
@@ -2682,17 +2768,35 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
      onSubmit:function(o){
 
        var requiere_excento = [];
-       console.log("aqui llega doss",this.Cmp.id_dosificacion.getValue());
-       console.log("aqui llega doss",this.Cmp);
+       var requiere_asociar = [];
+
        for (var i = 0; i < this.mestore.data.items.length; i++) {
          requiere_excento.push(this.mestore.data.items[i].data.requiere_excento);
        }
 
+       for (var i = 0; i < this.mestore.data.items.length; i++) {
+         requiere_asociar.push(this.mestore.data.items[i].data.asociar_boletos);
+       }
+
        if (requiere_excento.includes( 'si' )) {
-         if (this.Cmp.excento.getValue() == 0) {
+         // if (this.Cmp.excento.getValue() == 0) {
+         //   Ext.Msg.show({
+         //       title:'Información',
+         //       msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
+         //       maxWidth : 550,
+         //       width: 550,
+         //       buttons: Ext.Msg.OK,
+         //        icon: Ext.MessageBox.QUESTION,
+         //       scope:this
+         //    });
+         // } else {
+           this.registrarVariasFormasPago();
+         //}
+       } else if (requiere_asociar.includes( 'si' )) {
+          if (this.Cmp.boleto_asociado.getValue() == '') {
            Ext.Msg.show({
                title:'Información',
-               msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
+               msg: 'Tiene un concepto que requiere Asociar un boleto Favor verifique',
                maxWidth : 550,
                width: 550,
                buttons: Ext.Msg.OK,
@@ -3923,9 +4027,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                                    id_auxiliar:id_auxiliar,
                                    desc_id_auxiliar:desc_id_auxiliar,
                                    id_auxiliar_2:id_auxiliar_2,
-                                   desc_id_auxiliar2:desc_id_auxiliar2
-
-
+                                   desc_id_auxiliar2:desc_id_auxiliar2,
+                                   asociar_boletos:this.Cmp.boleto_asociado.getValue()
                                  }
                                 },
                                  this.idContenedor,

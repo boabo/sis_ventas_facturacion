@@ -1392,3 +1392,11 @@ ALTER TABLE vef.tdosificacion
   ALTER TABLE vef.trespaldo_facturas_anuladas
     RENAME COLUMN id_forma_pago TO id_medio_pago;
 /***********************************F-SCP-IRVA-VEF-0-10/12/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-18/12/2020****************************************/
+ALTER TABLE vef.tformula
+  ADD COLUMN nivel_permiso VARCHAR(200) [];
+/***********************************F-SCP-IRVA-VEF-0-18/12/2020****************************************/
+/***********************************I-SCP-IRVA-VEF-0-21/12/2020****************************************/
+ALTER TABLE vef.tventa
+  ADD COLUMN excento_verificado VARCHAR(2);
+/***********************************F-SCP-IRVA-VEF-0-21/12/2020****************************************/

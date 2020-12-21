@@ -197,14 +197,26 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                     plain: true,
                     plugins: [ this.summary],
                     stripeRows: true,
-                    tbar: [{
+                    tbar: [
+                    {
+                    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/Editar.svg" style="width:30px; vertical-align: middle;"> Editar FP</div>',
+                    scope: this,
+                    id:'botonEditar',
+                      handler : function(){
+                        var index = this.megrid.getSelectionModel().getSelectedCell();
+                        var rec = this.mestore.getAt(index[0]);
+                        this.formularioEditar(rec);
+                        }
+                    },
+                    {
                     text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar FP</div>',
                     scope: this,
                     id:'botonAgregar2',
                       handler : function(){
                         this.formularioAgregar();
                         }
-                    },{
+                    },
+                    {
                         text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
                         scope:this,
                         id:'botonEliminar2',
@@ -652,6 +664,215 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                 this.formularioDet();
               },
 
+
+              formularioEditar : function(datosEdit){
+                var simple = new Ext.FormPanel({
+                 labelWidth: 75, // label settings here cascade unless overridden
+                 frame:true,
+                 bodyStyle:'margin-left:-7px; margin-top:-7px; padding:10px 10px 0; background:#6EC8E3;',
+                 width: 900,
+                 height:500,
+                 defaultType: 'textfield',
+                 items: [
+                        new Ext.form.ComboBox({
+                                                name: 'id_moneda',
+                                                fieldLabel: '<img src="../../../lib/imagenes/facturacion/MonedaDolar.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Moneda</span>',
+                                                allowBlank: false,
+                                                width : 450,
+                                                listWidth:250,
+                                                resizable:true,
+                                                style: {
+                                                     background: '#EFFFD6',
+                                                     color: 'red',
+                                                     fontWeight:'bold'
+                                                   },
+                                                emptyText: 'Moneda a pagar...',
+                                                store: new Ext.data.JsonStore({
+                                                    url: '../../sis_parametros/control/Moneda/listarMoneda',
+                                                    id: 'id_moneda',
+                                                    root: 'datos',
+                                                    sortInfo: {
+                                                        field: 'moneda',
+                                                        direction: 'ASC'
+                                                    },
+                                                    totalProperty: 'total',
+                                                    fields: ['id_moneda', 'codigo', 'moneda', 'codigo_internacional'],
+                                                    remoteSort: true,
+                                                    baseParams: {filtrar: 'si',par_filtro: 'moneda.moneda#moneda.codigo#moneda.codigo_internacional'}
+                                                }),
+                                                valueField: 'id_moneda',
+                                                gdisplayField : 'codigo_internacional',
+                                                displayField: 'codigo_internacional',
+                                                hiddenName: 'id_moneda',
+                                                tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:green;"><b style="color:black;">Moneda:</b> <b>{moneda}</b></p><p style="color:red;"><b style="color:black;">Código:</b> <b>{codigo_internacional}</b></p></div></tpl>',
+                                                forceSelection: true,
+                                                typeAhead: false,
+                                                triggerAction: 'all',
+                                                lazyRender: true,
+                                                mode: 'remote',
+                                                pageSize: 15,
+                                                queryDelay: 1000,
+                                                //disabled:true,
+                                                minChars: 2
+
+                                              }),
+                         new Ext.form.ComboBox({
+                                                 name: 'id_medio_pago',
+                                                 fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
+                                                 allowBlank: false,
+                                                 width : 450,
+                                                 emptyText: 'Medio de pago...',
+                                                 store: new Ext.data.JsonStore({
+                                                     url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                                                     id: 'id_medio_pago',
+                                                     root: 'datos',
+                                                     sortInfo: {
+                                                         field: 'name',
+                                                         direction: 'ASC'
+                                                     },
+                                                     totalProperty: 'total',
+                                                     fields: ['id_medio_pago_pw', 'name', 'fop_code'],
+                                                     remoteSort: true,
+                                                     baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
+                                                 }),
+                                                 valueField: 'id_medio_pago_pw',
+                                                 displayField: 'name',
+                                                 gdisplayField: 'name',
+                                                 hiddenName: 'id_medio_pago_pw',
+                                                 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
+                                                 forceSelection: true,
+                                                 typeAhead: false,
+                                                 triggerAction: 'all',
+                                                 lazyRender: true,
+                                                 mode: 'remote',
+                                                 pageSize: 15,
+                                                 queryDelay: 1000,
+                                                 gwidth: 150,
+                                                 listWidth:250,
+                                                 resizable:true,
+                                                 minChars: 2
+
+                                               }),
+
+                         new Ext.form.ComboBox({
+                                                 name: 'id_auxiliar',
+                                                 fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
+                                         				allowBlank: true,
+                                                 width:450,
+                                         				emptyText: 'Cuenta Corriente...',
+                                         				store: new Ext.data.JsonStore({
+                                         					url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
+                                         					id: 'id_auxiliar',
+                                         					root: 'datos',
+                                         					sortInfo: {
+                                         						field: 'codigo_auxiliar',
+                                         						direction: 'ASC'
+                                         					},
+                                         					totalProperty: 'total',
+                                         					fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
+                                         					remoteSort: true,
+                                         					baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si'}
+                                         				}),
+                                         				valueField: 'id_auxiliar',
+                                         				displayField: 'nombre_auxiliar',
+                                         				gdisplayField: 'codigo_auxiliar',
+                                         				hiddenName: 'id_auxiliar',
+                                         				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+                                         				forceSelection: true,
+                                         				typeAhead: false,
+                                         				triggerAction: 'all',
+                                         				lazyRender: true,
+                                         				mode: 'remote',
+                                         				pageSize: 15,
+                                         				queryDelay: 1000,
+                                         				gwidth: 150,
+                                         				listWidth:350,
+                                         				resizable:true,
+                                         				minChars: 2,
+                                                hidden:true
+
+                                               }),
+                      new Ext.form.TextField({
+                                          name: 'numero_tarjeta',
+                                          msgTarget: 'title',
+                                          fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCreditos.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Tarjeta</span>',
+                                          allowBlank: true,
+                                          hidden:true,
+                                          width : 450,
+                                          maxLength:20,
+                                          minLength:15
+
+                                  }),
+                      new Ext.form.TextField({
+                                          name: 'codigo_tarjeta',
+                                          msgTarget: 'title',
+                                          fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Codigo de Autorización</span>',
+                                          allowBlank: true,
+                                          width : 450,
+                                          hidden:true,
+                                          minLength:6,
+                                          maxLength:6,
+                                          style:'text-transform:uppercase;',
+                                          maskRe: /[a-zA-Z0-9]+/i,
+                                          regex: /[a-zA-Z0-9]+/i
+
+                                  }),
+                      new Ext.form.TextField({
+                                          name: 'mco',
+                                          msgTarget: 'title',
+                                          fieldLabel: '<img src="../../../lib/imagenes/facturacion/Codigo.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> MCO</span>',
+                                          allowBlank: true,
+                                          width : 450,
+                                          hidden:true,
+                                          minLength:15,
+                                          maxLength:20
+
+                                  }),
+                      new Ext.form.NumberField({
+                                          name: 'monto_forma_pago',
+                                          msgTarget: 'title',
+                                          fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Importe Recibido</span>',
+                                          allowBlank: true,
+                                          width : 450,
+                                          maxLength:20,
+                                          allowNegative:false,
+                                          value:0
+
+                                  }),
+                  ]
+
+              });
+              this.variables = simple;
+              this.variables.items.items[1].store.baseParams.regional = this.data.variables_globales.ESTACION_inicio;
+                var win = new Ext.Window({
+                  title: '<center><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;"> AGREGAR MEDIO DE PAGO</span></center>', //the title of the window
+                  width:600,
+                  height:220,
+                  closeAction:'hide',
+                  modal:true,
+                  plain: true,
+                  items:simple,
+                  buttons: [{
+                              text:'<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/aceptar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:15px;">Guardar</span></div>',
+                              id:'botonGuardarFormulario',
+                              scope:this,
+                              handler: function(){
+                                  this.editarFp(win,datosEdit);
+                              }
+                          },{
+                              text: '<div style="font-weight:bold; font-size:12px;"><img src="../../../lib/imagenes/facturacion/cancelar.png" style="width:15px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:13px;">Cancelar</span></div>',
+                              id:'botonCancelarFormulario',
+                              handler: function(){
+                                  win.hide();
+                              }
+                          }]
+
+                });
+                this.ventana_detalle = win;
+                win.show();
+                this.formularioDetFp(datosEdit);
+              },
+
               obtenersuma: function () {
 
                 var total_datos = this.megrid.store.data.items.length;
@@ -747,7 +968,19 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
       this.megrid.topToolbar.items.items[1].container.dom.style.height="35px";
       this.megrid.topToolbar.items.items[1].btnEl.dom.style.height="35px";
 
+      Ext.getCmp('botonEditar').el.dom.onmouseover = function () {
+        Ext.getCmp('botonEditar').btnEl.dom.style.background = 'rgba(241, 241, 0, 0.5)';
+      };
+
+      Ext.getCmp('botonEditar').el.dom.onmouseout = function () {
+        Ext.getCmp('botonEditar').btnEl.dom.style.background = '';
+      };
+
       /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
+
+      this.megrid.topToolbar.items.items[2].container.dom.style.width="80px";
+      this.megrid.topToolbar.items.items[2].container.dom.style.height="35px";
+      this.megrid.topToolbar.items.items[2].btnEl.dom.style.height="35px";
 
       Ext.getCmp('botonEliminar2').el.dom.onmouseover = function () {
         Ext.getCmp('botonEliminar2').btnEl.dom.style.background = 'rgba(255, 0, 0, 0.5)';
@@ -924,8 +1157,142 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.id_formula.setValue(this.data.paquetes);
         this.Cmp.id_venta.setValue(this.data.id_venta);
 
+        if (this.data.asociar_boletos != '') {
+          this.mostrarComponente(this.Cmp.asociar_boletos);
+          this.Cmp.asociar_boletos.setValue(this.data.asociar_boletos);
+        }
+
+
+
 
     },
+
+    formularioDetFp:function(datosEdit){
+
+      /***************************Aqui para poner la moneda base por defecto**************************************/
+      this.variables.items.items[0].store.load({params:{start:0,limit:50},
+             callback : function (r) {
+                      for (var i = 0; i < r.length; i++) {
+                        if (r[i].data.id_moneda == datosEdit.data.id_moneda) {
+                          this.variables.items.items[0].setValue(r[i].data.id_moneda);
+                          this.variables.items.items[0].fireEvent('select', this.variables.items.items[0],r[i]);
+                        }
+                      }
+              }, scope : this
+          });
+
+        this.variables.items.items[1].store.baseParams.id_medio_pago = datosEdit.data.id_medio_pago;
+
+        this.variables.items.items[1].store.load({params:{start:0,limit:50},
+               callback : function (r) {
+                            this.variables.items.items[1].setValue(r[0].data.id_medio_pago_pw);
+                            this.variables.items.items[1].fireEvent('select', this.variables.items.items[1],r[0]);
+                }, scope : this
+            });
+
+        this.variables.items.items[1].store.baseParams.id_medio_pago = '';
+
+        this.variables.items.items[2].store.baseParams.id_medio_pago = datosEdit.data.id_auxiliar;
+        this.variables.items.items[2].store.load({params:{start:0,limit:50},
+               callback : function (r) {
+                            this.variables.items.items[2].setValue(r[0].data.id_auxiliar);
+                            this.variables.items.items[2].fireEvent('select', this.variables.items.items[2],r[0]);
+                }, scope : this
+            });
+        this.variables.items.items[2].store.baseParams.id_medio_pago = '';
+
+
+        this.variables.items.items[3].setValue(datosEdit.data.num_tarjeta);
+        this.variables.items.items[4].setValue(datosEdit.data.codigo_autorizacion);
+        this.variables.items.items[5].setValue(datosEdit.data.mco);
+
+        if (datosEdit.data.monto_total_extranjero == 0) {
+          var monto_totla = datosEdit.data.monto_total_local;
+        } else {
+          var monto_totla = datosEdit.data.monto_total_extranjero;
+        }
+
+        this.variables.items.items[6].setValue(monto_totla);
+
+      /************************************************************************************************************/
+
+      /*Controlamos los medios de pago para ir mostrando campos*/
+      this.variables.items.items[1].on('select',function(c,r,i) {
+
+        if (r.data.fop_code.startsWith("CC")) {
+          this.mostrarComponente(this.variables.items.items[3]);
+          this.mostrarComponente(this.variables.items.items[4]);
+          this.variables.items.items[3].allowBlank = false;
+          this.variables.items.items[4].allowBlank = false;
+
+          this.ocultarComponente(this.variables.items.items[2]);
+          this.ocultarComponente(this.variables.items.items[5]);
+          this.variables.items.items[2].allowBlank = true;
+          this.variables.items.items[5].allowBlank = true;
+          this.variables.items.items[2].reset();
+          this.variables.items.items[5].reset();
+
+          this.ventana_detalle.body.dom.style.height = "250px";
+
+
+        } else if (r.data.fop_code.startsWith("MCO")) {
+
+          this.mostrarComponente(this.variables.items.items[5]);
+          this.variables.items.items[5].allowBlank = false;
+          this.ocultarComponente(this.variables.items.items[2]);
+          this.ocultarComponente(this.variables.items.items[3]);
+          this.ocultarComponente(this.variables.items.items[4]);
+          this.variables.items.items[2].allowBlank = true;
+          this.variables.items.items[3].allowBlank = true;
+          this.variables.items.items[4].allowBlank = true;
+          this.variables.items.items[2].reset();
+          this.variables.items.items[3].reset();
+          this.variables.items.items[4].reset();
+
+          this.ventana_detalle.body.dom.style.height = "240px";
+
+        } else if (r.data.fop_code.startsWith("CU") || r.data.fop_code.startsWith("CT")) {
+
+          this.mostrarComponente(this.variables.items.items[2]);
+          this.variables.items.items[2].allowBlank = false;
+
+          this.ocultarComponente(this.variables.items.items[3]);
+          this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[5]);
+          this.variables.items.items[3].allowBlank = true;
+          this.variables.items.items[4].allowBlank = true;
+          this.variables.items.items[5].allowBlank = true;
+          this.variables.items.items[3].reset();
+          this.variables.items.items[4].reset();
+          this.variables.items.items[5].reset();
+
+          this.ventana_detalle.body.dom.style.height = "240px";
+
+        } else if (r.data.fop_code.startsWith("CA")) {
+
+          this.ocultarComponente(this.variables.items.items[2]);
+          this.ocultarComponente(this.variables.items.items[3]);
+          this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[5]);
+          this.variables.items.items[2].allowBlank = true;
+          this.variables.items.items[3].allowBlank = true;
+          this.variables.items.items[4].allowBlank = true;
+          this.variables.items.items[5].allowBlank = true;
+          this.variables.items.items[2].reset();
+          this.variables.items.items[3].reset();
+          this.variables.items.items[4].reset();
+          this.variables.items.items[5].reset();
+
+          this.ventana_detalle.body.dom.style.height = "170px";
+
+        }
+
+      },this);
+      /**********************************************************/
+
+    },
+
+
 
     formularioDet:function(){
 
@@ -1071,6 +1438,56 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
     }
 
     },
+
+    editarFp : function (win,datosEdit) {
+
+      this.mestore.remove(datosEdit);
+
+      var grillaRecord =  Ext.data.Record.create([
+          {name:'id_moneda', type: 'numeric'},
+          {name:'desc_moneda', type: 'varchar'},
+          {name:'id_medio_pago', type: 'numeric'},
+          {name:'desc_medio_pago', type: 'varchar'},
+          {name:'id_auxiliar', type: 'numeric'},
+          {name:'desc_auxiliar', type: 'varchar'},
+          {name:'num_tarjeta', type: 'varchar'},
+          {name:'codigo_autorizacion', type: 'varchar'},
+          {name:'mco', type: 'varchar'},
+          {name:'monto_total_local', type: 'numeric'},
+          {name:'monto_total_extranjero', type: 'numeric'}
+    ]);
+
+    if (this.variables.items.items[0].lastSelectionText == 'USD') {
+      var monto_local = 0;
+      var monto_extranjero = this.variables.items.items[6].getValue();
+    } else {
+      var monto_local = this.variables.items.items[6].getValue();
+      var monto_extranjero = 0;
+    }
+
+
+    var myNewRecord = new grillaRecord({
+          id_moneda: this.variables.items.items[0].getValue(),
+          desc_moneda: this.variables.items.items[0].lastSelectionText,
+          id_medio_pago: this.variables.items.items[1].getValue(),
+          desc_medio_pago: this.variables.items.items[1].lastSelectionText,
+          id_auxiliar: this.variables.items.items[2].getValue(),
+          desc_auxiliar: this.variables.items.items[2].lastSelectionText,
+          num_tarjeta: this.variables.items.items[3].getValue(),
+          codigo_autorizacion: this.variables.items.items[4].getValue(),
+          mco: this.variables.items.items[5].getValue(),
+          monto_total_local: monto_local,
+          monto_total_extranjero: monto_extranjero
+      });
+      this.mestore.add(myNewRecord);
+      this.guardarDetalles();
+      win.hide();
+
+
+    },
+
+
+
 
     guardarDetalles : function(){
       this.mestore.commitChanges();
@@ -1561,6 +1978,21 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         			//valorInicial:'0'
         		},
             {
+        			config:{
+        				name: 'asociar_boletos',
+        				fieldLabel: '<img src="../../../lib/imagenes/facturacion/ticket.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Boleto Asociado</span>',
+        				allowBlank: true,
+        				width:200,
+        				maxLength:20,
+                disabled:true,
+                hidden:true,
+        			},
+        			type:'NumberField',
+        			id_grupo:2,
+        			form:true,
+        			//valorInicial:'0'
+        		},
+            {
               config: {
                   name: 'id_dosificacion',
                   fieldLabel: '<img src="../../../lib/imagenes/facturacion/dosifica.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Dosificación</span>',
@@ -1757,7 +2189,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
       					scope:this
       			});
           } else {
-            if (this.data.tipo_punto_venta != 'ato') {            
+            if (this.data.tipo_punto_venta != 'ato') {
               Ext.Ajax.request({
         					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
         					params:{id_estado_wf_act:d.id_estado_wf,

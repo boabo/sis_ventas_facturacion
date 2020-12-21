@@ -12,6 +12,15 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
 
 Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
+	tabsouth:[
+		{
+			url:'../../../sis_ventas_facturacion/vista/servicios/ServiciosDosificaciones.php',
+			title:'Detalle Facturacion',
+			width:'100%',
+			height:'50%',
+			cls:'ServiciosDosificaciones'
+		}
+	],
 	constructor:function(config){
 		this.maestro=config.maestro;
 		//this.tipoInterfaz = 'InterfazExterna';
@@ -124,6 +133,59 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             bottom_filter:true
         },
+				{
+            config : {
+                name : 'id_activida_economica',
+                fieldLabel : 'Actividad Economica',
+                allowBlank : false,
+                emptyText : 'Actividad...',
+                store : new Ext.data.JsonStore({
+                    url : '../../sis_ventas_facturacion/control/ActividadEconomica/listarActividadEconomica',
+                    id : 'id_actividad_economica',
+                    root : 'datos',
+                    sortInfo : {
+                        field : 'codigo',
+                        direction : 'ASC'
+                    },
+                    totalProperty : 'total',
+                    fields : ['id_actividad_economica', 'nombre', 'codigo', 'descripcion'],
+                    remoteSort : true,
+                    baseParams : {
+                        par_filtro : 'acteco.codigo#acteco.nombre'
+                    }
+                }),
+                valueField : 'id_actividad_economica',
+                displayField : 'nombre',
+                //gdisplayField : 'desc_actividad_economica',
+                hiddenName : 'id_actividad_economica',
+                forceSelection : true,
+                typeAhead : false,
+              //  tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>{nombre}</p><p>{descripcion}</p> </div></tpl>',
+                tpl: new Ext.XTemplate([
+                    '<tpl for=".">',
+                    '<div class="x-combo-list-item">',
+                    '<div class="awesomecombo-item {checked}">',
+                    '<p>({codigo}) {nombre}</p>',
+                    '</div>',
+                    '</div></tpl>'
+                ]),
+                triggerAction : 'all',
+                lazyRender : true,
+                mode : 'remote',
+                pageSize : 10,
+                queryDelay : 1000,
+                gwidth : 500,
+								listWidth:'800',
+                minChars : 2,
+								resizable: true,
+                enableMultiSelect:true,
+                renderer:function(value, p, record){return String.format('{0}', record.data['desc_actividad_economica']);}
+            },
+            type : 'ComboBox',
+            id_grupo : 0,
+            form : true,
+            grid:true
+        },
         {
             config:{
                 name: 'estacion',
@@ -213,9 +275,10 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
                 allowNegative:false
             },
             type:'NumberField',
-            filters:{pfiltro:'dos.nro_tramite',type:'numeric'},
+            filters:{pfiltro:'dos.nro_tramite',type:'string'},
             id_grupo:0,
             grid:true,
+						bottom_filter:true,
             form:true
         },
         {
@@ -308,59 +371,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             grid : true,
             form : true
         },
-        {
-            config : {
-                name : 'id_activida_economica',
-                fieldLabel : 'Actividad Economica',
-                allowBlank : false,
-                emptyText : 'Actividad...',
-                store : new Ext.data.JsonStore({
-                    url : '../../sis_ventas_facturacion/control/ActividadEconomica/listarActividadEconomica',
-                    id : 'id_actividad_economica',
-                    root : 'datos',
-                    sortInfo : {
-                        field : 'codigo',
-                        direction : 'ASC'
-                    },
-                    totalProperty : 'total',
-                    fields : ['id_actividad_economica', 'nombre', 'codigo', 'descripcion'],
-                    remoteSort : true,
-                    baseParams : {
-                        par_filtro : 'acteco.codigo#acteco.nombre'
-                    }
-                }),
-                valueField : 'id_actividad_economica',
-                displayField : 'nombre',
-                //gdisplayField : 'desc_actividad_economica',
-                hiddenName : 'id_actividad_economica',
-                forceSelection : true,
-                typeAhead : false,
-              //  tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>{nombre}</p><p>{descripcion}</p> </div></tpl>',
-                tpl: new Ext.XTemplate([
-                    '<tpl for=".">',
-                    '<div class="x-combo-list-item">',
-                    '<div class="awesomecombo-item {checked}">',
-                    '<p>({codigo}) {nombre}</p>',
-                    '</div>',
-                    '</div></tpl>'
-                ]),
-                triggerAction : 'all',
-                lazyRender : true,
-                mode : 'remote',
-                pageSize : 10,
-                queryDelay : 1000,
-                gwidth : 170,
-								listWidth:'800',
-                minChars : 2,
-								resizable: true,
-                enableMultiSelect:true,
-                renderer:function(value, p, record){return String.format('{0}', record.data['desc_actividad_economica']);}
-            },
-            type : 'ComboBox',
-            id_grupo : 0,
-            form : true,
-            grid:true
-        },
+
         {
             config:{
                 name:'tipo_generacion',
