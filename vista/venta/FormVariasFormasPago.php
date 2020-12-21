@@ -627,7 +627,6 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                           width : 450,
                                           maxLength:20,
                                           allowNegative:false,
-                                          value:0
 
                                   }),
                   ]
@@ -835,8 +834,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                           allowBlank: true,
                                           width : 450,
                                           maxLength:20,
-                                          allowNegative:false,
-                                          value:0
+                                          allowNegative:false,                                        
 
                                   }),
                   ]
