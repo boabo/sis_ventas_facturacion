@@ -1591,7 +1591,12 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
       if (requiere_excento.includes('si')) {
         this.mostrarComponente(this.Cmp.excento);
-        this.Cmp.excento.setDisabled(false);
+        if (this.accionFormulario == 'EDIT') {
+          this.Cmp.excento.setDisabled(true);
+        } else {
+          this.Cmp.excento.setDisabled(false);
+        }
+
       } else {
         this.ocultarComponente(this.Cmp.excento);
       }
@@ -1914,7 +1919,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                         {name:'id_usuario_reg', type: 'numeric'},
                         {name:'id_usuario_mod', type: 'numeric'},
                         {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-
+                        {name:'asociar_boletos', type: 'string'},
+                        {name:'requiere_excento', type: 'string'},
                     ],
                     remoteSort: true,
                     baseParams: {dir:'ASC',sort:'id_venta_detalle',limit:'50',start:'0'}

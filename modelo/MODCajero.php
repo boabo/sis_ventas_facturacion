@@ -249,7 +249,8 @@ class MODCajero extends MODbase{
 		$this->captura('id_usuario_reg','int4');
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('fecha_mod','timestamp');
-		$this->captura('boleto_asociado','varchar');
+		$this->captura('asociar_boletos','varchar');
+		$this->captura('requiere_excento','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

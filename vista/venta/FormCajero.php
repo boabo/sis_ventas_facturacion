@@ -1446,11 +1446,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 	    	if (opcion) {
 	    		this.detCmp.descripcion.setDisabled(false);
 	    		this.detCmp.descripcion.allowBlank = false;
-          console.log("llega descripcion 5",this);
 	    	} else {
 	    		this.detCmp.descripcion.setDisabled(true);
 	    		this.detCmp.descripcion.allowBlank = true;
-          console.log("llega descripcion 6",this);
 	    		this.detCmp.descripcion.reset();
 	    	}
     	}
@@ -1664,9 +1662,15 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       }
 
 
+
       if (requiere_excento.includes('si')) {
         this.mostrarComponente(this.Cmp.excento);
-        this.Cmp.excento.setDisabled(false);
+        if (this.accionFormulario == 'EDIT') {
+          this.Cmp.excento.setDisabled(true);
+        } else {
+          this.Cmp.excento.setDisabled(false);
+        }
+
       } else {
         this.ocultarComponente(this.Cmp.excento);
       }
@@ -1674,7 +1678,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
       if (this.megrid.store.data.items.length>0) {
         for (var i = 0; i < this.megrid.store.data.items.length; i++) {
-          console.log("aqui asociar3333",this.megrid.store.data.items[i].data.asociar_boletos);
+
           if (!requiere_asociar.includes(this.megrid.store.data.items[i].data.asociar_boletos)) {
               requiere_asociar.push(this.megrid.store.data.items[i].data.asociar_boletos);
           }
@@ -1682,11 +1686,10 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       } else {
         requiere_asociar = [];
       }
-      console.log("aqui excento",requiere_excento);
-      console.log("aqui asociar",requiere_asociar);
+
       if (requiere_asociar.includes('si')) {
         this.mostrarComponente(this.Cmp.boleto_asociado);
-        this.Cmp.excento.setDisabled(false);
+        //this.Cmp.boleto_asociado.setDisabled(false);
         this.Cmp.boleto_asociado.allowBlank = false;
       } else {
         this.ocultarComponente(this.Cmp.boleto_asociado);
@@ -2002,7 +2005,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         {name:'id_usuario_reg', type: 'numeric'},
                         {name:'id_usuario_mod', type: 'numeric'},
                         {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-                        {name:'boleto_asociado', type: 'string'},
+                        {name:'asociar_boletos', type: 'string'},
+                        {name:'requiere_excento', type: 'string'},
 
                     ],
                     remoteSort: true,
@@ -2631,9 +2635,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     precio_unitario : precio_base,
                     precio_total: precio_base*1,
                     asociar_boletos: this.boletos_asociados_recup[i],
-                                  //boletos_asociados_recup
-                  });
 
+                  });
                    this.mestore.add(myNewRecord);
               }
 

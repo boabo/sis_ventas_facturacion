@@ -1287,7 +1287,7 @@ class MODVentaFacturacion extends MODbase{
 								$this->setParametro('informe','informe','varchar');
 								$this->setParametro('fecha_factura','fecha_factura','varchar');
 								$this->setParametro('id_formula','id_formula','integer');
-								$this->setParametro('asociar_boletos','asociar_boletos','varchar');
+								//$this->setParametro('asociar_boletos','asociar_boletos','varchar');
 								//$this->setParametro('id_venta','id_venta','integer');
 
 		            //Ejecuta la instruccion
@@ -1494,6 +1494,7 @@ class MODVentaFacturacion extends MODbase{
 							$this->transaccion = 'VF_FACFPVALI_MOD';
 							$this->setParametro('id_venta', 'id_venta', 'int4');
 							$this->setParametro('tipo_factura','tipo_factura','varchar');
+							$this->setParametro('asociar_boletos','asociar_boletos','varchar');
 							//Ejecuta la instruccion
 							$this->armarConsulta();
 							$stmt = $link->prepare($this->consulta);
