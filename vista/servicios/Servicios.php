@@ -384,7 +384,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 	 			},
 	 		 }),
 	 		 valueField : 'codigo',
-	 		 displayField : 'codigo',
+	 		 displayField : 'descripcion',
 	 		 gdisplayField : 'agrupador',
 	 		 hiddenName : 'codigo',
 	 		 forceSelection : true,
