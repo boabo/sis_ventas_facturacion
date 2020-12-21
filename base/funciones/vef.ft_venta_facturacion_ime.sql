@@ -3872,7 +3872,7 @@ BEGIN
 		   /*Aumentamos para asociar los boletos registrados*/
         if (pxp.f_existe_parametro(p_tabla,'boleto_asociado')) then
 
-
+		IF (v_parametros.boleto_asociado != '' ) then
         	select substring(v_parametros.boleto_asociado from 1 for 3) into v_inicial_boleto;
 
 			if (v_inicial_boleto <> '930') then
@@ -3929,6 +3929,7 @@ BEGIN
              else
              	--raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
              end if;
+            end if;
         end if;
         /*************************************************/
 
