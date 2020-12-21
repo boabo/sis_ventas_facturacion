@@ -449,7 +449,7 @@ end if;
                         <strong>Tipo de Generación: </strong>'||v_registros.tipo_generacion||'<br />
                         <strong>Tipo Dosificacion: </strong>'||v_registros.tipo_dosifiacion::varchar||'<br />
                         <strong>Fecha Límite de Emisión: </strong>'||v_registros.fecha_limite::varchar||'<br />
-                        <br />Favor registrar con anticipación la nueva dosificación en el siguiente menu: Sistema de Ventas -> Catalogos -> Dosificación.<br />
+                        <br />Favor registrar con anticipación la nueva dosificación en el siguiente menu: Sistema de Ventas -> Dosificaciones -> Dosificaciones.<br />
                         <br />-------------------------------------<br />* Sistema ERP BOA</p>';
 
          v_titulo = 'Vencimiento de Dosificación '||v_registros.sucursal::varchar;
@@ -457,11 +457,11 @@ end if;
          v_clase = '';
          v_parametros_ad = '{}';
 
-       	v_id_alarma[1]:=param.f_inserta_alarma(		1062,
+       	v_id_alarma[1]:=param.f_inserta_alarma(		NULL,
                                                     v_template ,    --descripcion alarmce
                                                     COALESCE(v_acceso_directo,''),--acceso directo
                                                     now()::date,
-                                                    'felicitacion',
+                                                    'notificacion',
                                                     '',   -->
                                                     p_id_usuario,
                                                     v_clase,
@@ -469,7 +469,7 @@ end if;
                                                     COALESCE(v_parametros_ad,''),
                                                     null,  --destino de la alarma
                                                     v_asunto,
-                                                    'xzambrana@boa.bo,mcaballero@boa.bo,gvelasquez@boa.bo,ismael.valdivia@boa.bo'
+                                                    'shirley.mercado@boa.bo,[xzambrana@boa.bo;mcaballero@boa.bo;gvelasquez@boa.bo;ismael.valdivia@boa.bo]'
                                                     );
 
       end loop;
