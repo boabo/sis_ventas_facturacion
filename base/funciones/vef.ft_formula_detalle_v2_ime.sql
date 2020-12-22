@@ -111,8 +111,8 @@ BEGIN
 		begin
 			--Sentencia de la modificacion
 			update vef.tformula_detalle set
-			cantidad = v_parametros.cantidad,
-			id_item = v_parametros.id_item,
+			/*cantidad = v_parametros.cantidad, -- breydi vasquez 22/12/2020 comentando para editar
+			id_item = v_parametros.id_item,  -- breydi vasquez 22/12/2020*/
 			id_formula = v_parametros.id_formula,
 			id_concepto_ingas = v_parametros.id_concepto_ingas,
 			id_usuario_mod = p_id_usuario,

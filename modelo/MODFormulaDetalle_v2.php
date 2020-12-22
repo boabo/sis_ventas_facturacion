@@ -35,7 +35,7 @@ class MODFormulaDetalle_v2 extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('desc_ingas','varchar');
-		$this->captura('precio','numeric');		
+		$this->captura('precio','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -74,8 +74,8 @@ class MODFormulaDetalle_v2 extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('id_formula_detalle','id_formula_detalle','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('cantidad','cantidad','numeric');
-		$this->setParametro('id_item','id_item','int4');
+		// $this->setParametro('cantidad','cantidad','numeric');
+		// $this->setParametro('id_item','id_item','int4');
 		$this->setParametro('id_formula','id_formula','int4');
 		$this->setParametro('id_concepto_ingas','id_concepto_ingas','int4');
 
