@@ -44,6 +44,7 @@ Phx.vista.NitsNoConsiderados=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'nitncons.nit_ci',type:'string'},
 				id_grupo:1,
+                bottom_filtro: true,
 				grid:true,
 				form:true
 		},
@@ -59,6 +60,7 @@ Phx.vista.NitsNoConsiderados=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'nitncons.razon_social',type:'string'},
 				id_grupo:1,
+                bottom_filtro: true,
 				grid:true,
 				form:true
 		},
@@ -106,7 +108,7 @@ Phx.vista.NitsNoConsiderados=Ext.extend(Phx.gridInterfaz,{
         },
 
 
-        {
+        /*{
             config: {
                 name: 'incl_rep',
                 fieldLabel: 'Incl-Rep. S/N',
@@ -126,6 +128,46 @@ Phx.vista.NitsNoConsiderados=Ext.extend(Phx.gridInterfaz,{
                 type: 'string'
             },
             //valorInicial: 'no',
+            id_grupo: 1,
+            grid: true,
+            form: true
+        },*/
+        {
+            config: {
+                name: 'incl_rep',
+                fieldLabel: 'Incl-Rep. S/N',
+                allowBlank: true,
+                emptyText: '...',
+                store: new Ext.data.ArrayStore({
+                        fields: ['valor', 'desc'],
+                        data: [
+                            ['N', 'No'],
+                            ['S', 'Si']
+                        ]
+                    }
+                ),
+                tpl: new Ext.XTemplate([
+                    '<tpl for=".">',
+                    '<div class="x-combo-list-item">',
+                    '<div class="awesomecombo-item {checked}">',
+                    '<p><b style="color: green;"> {valor} - {desc}</b></p>',
+                    '</div>',
+                    '</div></tpl>'
+                ]),
+                valueField: 'valor',
+                displayField: 'desc',
+                typeAhead: true,
+                triggerAction: 'all',
+                listWidth: '220',
+                resizable: true,
+                mode: 'local',
+                selectOnFocus: true,
+                anchor: '80%',
+                msgTarget: 'side',
+                editable: false
+            },
+
+            type: 'AwesomeCombo',
             id_grupo: 1,
             grid: true,
             form: true
