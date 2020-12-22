@@ -1400,3 +1400,34 @@ ALTER TABLE vef.tformula
 ALTER TABLE vef.tventa
   ADD COLUMN excento_verificado VARCHAR(2);
 /***********************************F-SCP-IRVA-VEF-0-21/12/2020****************************************/
+
+/***********************************I-SCP-MAY-VEF-0-22/12/2020****************************************/
+CREATE TABLE vef.tnits_no_considerados (
+  id_nits_no_considerados SERIAL,
+  nit_ci VARCHAR(800),
+  razon_social VARCHAR(800),
+  t_contr VARCHAR(500),
+  incl_rep VARCHAR(500),
+  observaciones VARCHAR(800),
+  CONSTRAINT tnits_no_considerados_pkey PRIMARY KEY(id_nits_no_considerados)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN vef.tnits_no_considerados.id_nits_no_considerados
+IS 'identificador tabla';
+
+COMMENT ON COLUMN vef.tnits_no_considerados.nit_ci
+IS 'NIT/CI/CUIT';
+
+COMMENT ON COLUMN vef.tnits_no_considerados.razon_social
+IS 'Nombre/Razon Social';
+
+COMMENT ON COLUMN vef.tnits_no_considerados.t_contr
+IS 'N/S/G';
+
+COMMENT ON COLUMN vef.tnits_no_considerados.incl_rep
+IS 'S/M';
+
+ALTER TABLE vef.tnits_no_considerados
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-VEF-0-22/12/2020****************************************/
