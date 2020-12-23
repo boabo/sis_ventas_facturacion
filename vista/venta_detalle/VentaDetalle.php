@@ -32,7 +32,7 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
         }
 
     },
-			
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -42,9 +42,9 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
 					name: 'id_venta_detalle'
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
-		
+
 		{
             //configuracion del componente
             config:{
@@ -53,9 +53,9 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
                     name: 'id_venta'
             },
             type:'Field',
-            form:true 
+            form:true
         },
-        
+
         {
             config:{
                 name: 'tipo',
@@ -70,9 +70,9 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
                 store:['producto_terminado','formula', 'servicio']
             },
                 type:'ComboBox',
-                filters:{   
+                filters:{
                          type: 'list',
-                         options: ['producto_terminado','formula', 'servicio'], 
+                         options: ['producto_terminado','formula', 'servicio'],
                     },
                 id_grupo:1,
                 grid:true,
@@ -139,7 +139,7 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
             form:true
         },
 
-		
+
 		{
 			config:{
 				name: 'cantidad',
@@ -155,31 +155,31 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		
+
 		{
             config:{
                 name: 'precio',
-                fieldLabel: 'P / Unit',               
+                fieldLabel: 'P / Unit',
                 gwidth: 90
             },
-                type:'NumberField',                              
+                type:'NumberField',
                 grid:true,
                 form:false
         },
 		{
 			config:{
 				name: 'precio_total',
-				fieldLabel: 'Total',				
+				fieldLabel: 'Total',
 				gwidth: 100
 			},
 				type:'NumberField',
-				filters:{pfiltro:'vedet.precio',type:'numeric'},				
+				filters:{pfiltro:'vedet.precio',type:'numeric'},
 				grid:true,
 				form:false
 		}
 
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Detalle de Venta',
 	ActSave:'../../sis_ventas_facturacion/control/VentaDetalle/insertarVentaDetalle',
 	ActDel:'../../sis_ventas_farmacia/control/VentaDetalle/eliminarVentaDetalle',
@@ -210,7 +210,7 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+
 	],
 	sortInfo:{
 		field: 'id_venta_detalle',
@@ -225,10 +225,10 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
         this.Atributos[1].valorInicial = this.maestro.id_venta;
         this.store.baseParams={id_venta:this.maestro.id_venta};
         this.load({params:{start:0, limit:50}});
-            
+
     },
 
-    
+
     preparaMenu:function()
     {
         var rec = this.sm.getSelected();
@@ -240,15 +240,13 @@ Phx.vista.VentaDetalle=Ext.extend(Phx.gridInterfaz,{
         Phx.vista.VentaDetalle.superclass.preparaMenu.call(this);
 
     },
-    
+
     liberaMenu:function()
     {
         Phx.vista.VentaDetalle.superclass.liberaMenu.call(this);
 
     }
-    
+
 	}
 )
 </script>
-		
-		

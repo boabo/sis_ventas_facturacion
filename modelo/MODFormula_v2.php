@@ -34,6 +34,8 @@ class MODFormula_v2 extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('sw_autorizacion','varchar');
 		$this->captura('regionales','varchar');
+		$this->captura('nivel_permiso','varchar');
+
 
 
 		//Ejecuta la instruccion
@@ -112,7 +114,7 @@ class MODFormula_v2 extends MODbase{
 		$this->setParametro('sw_autorizacion','sw_autorizacion','varchar');
 		$this->setParametro('regionales','regionales','varchar');
 		$this->setParametro('nivel_permiso','nivel_permiso','varchar');
-		
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

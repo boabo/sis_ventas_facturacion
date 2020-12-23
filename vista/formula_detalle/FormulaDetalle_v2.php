@@ -299,7 +299,7 @@ Phx.vista.FormulaDetalle_v2=Ext.extend(Phx.gridInterfaz,{
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true,
+	bsave:false,
 
 	onReloadPage: function(m){
 		this.maestro=m;

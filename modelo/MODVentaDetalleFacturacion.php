@@ -58,7 +58,8 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->captura('tiene_excento','varchar');
 		$this->captura('id_moneda','int4');
 		$this->captura('codigo_internacional','varchar');
-
+		$this->captura('id_concepto_ingas','int4');
+		$this->captura('desc_ingas','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

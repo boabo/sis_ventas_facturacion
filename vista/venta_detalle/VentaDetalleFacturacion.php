@@ -630,7 +630,10 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'excento', type: 'numeric'},
 		{name:'tiene_excento', type: 'string'},
 		{name:'id_moneda', type: 'numeric'},
-		{name:'codigo_internacional', type: 'string'},
+		{name:'codigo_internacional', type: 'numeric'},
+		{name:'id_concepto_ingas', type: 'numeric'},
+		{name:'desc_ingas', type: 'string'},
+
 
 	],
 	sortInfo:{
@@ -650,7 +653,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.Cmp.id_producto.store.baseParams.regionales=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.ESTACION_inicio;
 		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
 
-		
+
 
 		if (m.excento_verificado == 'no' &&  m.requiere_excento == 'si') {
 			this.crearFormulatio();

@@ -1928,7 +1928,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	bdel:true,
-	bsave:true,
+	bsave:false,
 
 	cmbPuntoV: new Ext.form.ComboBox({
 			name: 'punto_venta',

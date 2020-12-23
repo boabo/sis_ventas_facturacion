@@ -75,29 +75,31 @@ BEGIN
 						factdet.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-                        ing.desc_ingas as nombre_producto,
-                        (factdet.precio * factdet.cantidad) as total,
-                        /*Aumentando para el excento*/
-                        ven.excento,
-                        (case when
-                        (ing.excento is not null) then
-                        	ing.excento
-                        else
-                        	''no''
-                        end)::varchar as tiene_excento,
-                        ing.id_moneda,
-                        mon.codigo_internacional
-                        /****************************/
+            ing.desc_ingas as nombre_producto,
+            (factdet.precio * factdet.cantidad) as total,
+            /*Aumentando para el excento*/
+            ven.excento,
+            (case when
+            (ing.excento is not null) then
+            	ing.excento
+            else
+            	''no''
+            end)::varchar as tiene_excento,
+            ing.id_moneda,
+            mon.codigo_internacional,
+            ing.id_concepto_ingas,
+						ing.desc_ingas            
+            /****************************/
 						from vef.tventa_detalle factdet
 						inner join segu.tusuario usu1 on usu1.id_usuario = factdet.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = factdet.id_usuario_mod
-                        inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = factdet.id_producto
+            inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = factdet.id_producto
 
-                        /*Aumentando para excento*/
-                        inner join vef.tventa ven on ven.id_venta = factdet.id_venta
-                        --left join vef.tsucursal_producto pro on pro.id_concepto_ingas = factdet.id_producto and pro.id_sucursal = ven.id_sucursal
-            	        left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
-             			/****************************/
+            /*Aumentando para excento*/
+            inner join vef.tventa ven on ven.id_venta = factdet.id_venta
+            --left join vef.tsucursal_producto pro on pro.id_concepto_ingas = factdet.id_producto and pro.id_sucursal = ven.id_sucursal
+	        left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
+ 			      /****************************/
                         where  ';
 
 			--Definicion de la respuesta

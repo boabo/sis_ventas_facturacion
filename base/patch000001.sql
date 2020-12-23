@@ -1431,3 +1431,8 @@ IS 'S/M';
 ALTER TABLE vef.tnits_no_considerados
   OWNER TO postgres;
 /***********************************F-SCP-MAY-VEF-0-22/12/2020****************************************/
+
+/***********************************I-SCP-BVP-VEF-0-23/12/2020****************************************/
+ALTER TABLE vef.tventa
+  ALTER COLUMN excento_verificado SET DEFAULT 'no';
+/***********************************F-SCP-BVP-VEF-0-23/12/2020****************************************/

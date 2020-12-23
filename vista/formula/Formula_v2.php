@@ -469,7 +469,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombres_punto_venta', type: 'string'},
-		'sw_autorizacion','regionales'
+		'sw_autorizacion','regionales','nivel_permiso'
 
 	],
 	sortInfo:{
@@ -477,7 +477,7 @@ Phx.vista.Formula_v2=Ext.extend(Phx.gridInterfaz,{
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true,
+	bsave:false,
 
 	south : {
 					url : '../../../sis_ventas_facturacion/vista/formula_detalle/FormulaDetalle_v2.php',

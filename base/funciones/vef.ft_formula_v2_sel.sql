@@ -56,9 +56,10 @@ BEGIN
 						form.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-                        array_to_string( form.sw_autorizacion, '','',''null'')::varchar,
-                        array_to_string( form.regionales, '','',''null'')::varchar
-                        from vef.tformula form
+            array_to_string( form.sw_autorizacion, '','',''null'')::varchar,
+            array_to_string( form.regionales, '','',''null'')::varchar,
+            array_to_string( form.nivel_permiso, '','',''null'')::varchar
+            from vef.tformula form
 						inner join segu.tusuario usu1 on usu1.id_usuario = form.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = form.id_usuario_mod
 				        where  ';
