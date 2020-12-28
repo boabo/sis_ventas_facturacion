@@ -33,7 +33,7 @@ class RFactura
 					<thead>
 					<tr   >
 							<td colspan="2" style=" text-align: center;" align="center" >
-								' . $datos['nombre_entidad'] . '<br />							
+								' . $datos['nombre_entidad'] . '<br />
 								' . $datos['nombre_sucursal'] . '<br />
 								' . $datos['direccion_sucursal'].'<br />
 								' . $datos['zona'] . '<br />
@@ -121,7 +121,7 @@ class RFactura
 
 					if ($datos['total_venta'] > $datos['sujeto_credito']) {
 						$html .= '<tr>
-								<td colspan="2" align="left"><b>Sujeto a credito fiscal</b> <hr/></td>
+								<td colspan="2" align="left"><b>IMPORTE BASE PARA CRÉDITO FISCAL</b> <hr/></td>
 								<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['sujeto_credito'], 2, '.', ',').'</b><hr/></td>
 							</tr>';
 					}

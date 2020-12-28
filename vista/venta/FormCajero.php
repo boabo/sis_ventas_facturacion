@@ -105,7 +105,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
               allowBlank: false,
               width:200,
-              minLength:12,
+              // minLength:12,
               style:'text-transform:uppercase;'
             },
               type:'TextArea',

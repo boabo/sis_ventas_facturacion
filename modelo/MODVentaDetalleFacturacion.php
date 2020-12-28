@@ -60,7 +60,7 @@ class MODVentaDetalleFacturacion extends MODbase{
 		$this->captura('codigo_internacional','varchar');
 		$this->captura('id_concepto_ingas','int4');
 		$this->captura('desc_ingas','varchar');
-
+		$this->captura('requiere_descripcion','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

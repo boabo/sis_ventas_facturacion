@@ -562,8 +562,8 @@ BEGIN
           id_cliente_destino,
           hora_estimada_entrega,
           tiene_formula,
-          forma_pedido
-
+          forma_pedido,
+          id_formula
 
         ) values(
           v_id_venta,
@@ -608,7 +608,8 @@ BEGIN
           v_id_cliente_destino,
           v_hora_estimada_entrega,
           v_tiene_formula,
-          v_forma_pedido
+          v_forma_pedido,
+          v_parametros.id_formula
 
         ) returning id_venta into v_id_venta;
 

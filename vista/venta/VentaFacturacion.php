@@ -98,7 +98,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			});
 
 			this.addButton('anular_fact',
-					{   grupo:[2],
+					{   grupo:[4],
 							text: 'Anular',
 							iconCls: 'bwrong',
 							disabled: true,
@@ -919,7 +919,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
  		 config:{
  			 name: 'nombre_factura',
  			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
- 			 allowBlank: true,
+ 			 allowBlank: false,
  			 anchor:'100%',
  			 gwidth: 150,
  			 maxLength:100,
@@ -1047,7 +1047,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 anchor:'100%',
 			 gwidth: 200,
 			 style:'text-transform:uppercase;',
-			 minLength:12
+			 // minLength:12
 		 },
 			 type:'TextArea',
 			 filters:{pfiltro:'fact.observaciones',type:'string'},
@@ -1203,7 +1203,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 hiddenName : 'id_formula',
 			 forceSelection : false,
 			 typeAhead : false,
-			 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p><p><b>Descripcion:</b> {descripcion}</p></div></tpl>',
+			 // tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p><p><b>Descripcion:</b> {descripcion}</p></div></tpl>',
+			 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p></div></tpl>',
 			 triggerAction : 'all',
 			 lazyRender : true,
 			 mode : 'remote',
@@ -1920,7 +1921,8 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'nombre_sucursal', type: 'string'},
 		{name:'requiere_excento', type: 'string'},
 		{name:'excento_verificado', type: 'string'},
-
+		{name:'nombre', type: 'string'},
+		{name:'id_formula', type: 'int4'}
 	],
 	sortInfo:{
 		field: 'id_venta',

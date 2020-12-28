@@ -302,7 +302,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 					 '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
 					 '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
 					 '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-					 '<p><b>Tiene Excento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+					 '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
 					 '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
 					 '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
 					 '</div></tpl>'
@@ -653,8 +653,6 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.Cmp.id_producto.store.baseParams.regionales=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.ESTACION_inicio;
 		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
 
-
-
 		if (m.excento_verificado == 'no' &&  m.requiere_excento == 'si') {
 			this.crearFormulatio();
 		}
@@ -693,7 +691,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 							  new Ext.form.NumberField({
 																		name: 'excento',
 																		msgTarget: 'title',
-																		fieldLabel: 'Valor Excento',
+																		fieldLabel: 'Valor Exento',
 																		allowBlank: false,
 																		allowDecimals: true,
 																		decimalPrecision : 2,
@@ -709,7 +707,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				this.excento_formulario = simple;
 
 			var formu_excento = new Ext.Window({
-				title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Excento<p></h1>', //the title of the window
+				title: '<h1 style="height:20px; font-size:15px;"><img src="../../../lib/imagenes/iconos_generales/pagar.png" height="20px" style="float:left;"> <p style="margin-left:30px;">Valor Exento<p></h1>', //the title of the window
 				width:320,
 				height:150,
 				//closeAction:'hide',

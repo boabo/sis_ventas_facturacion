@@ -76,7 +76,8 @@ class MODVentaFacturacion extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('requiere_excento','varchar');
 		$this->captura('excento_verificado','varchar');
-		//$this->captura('id_formula','int4');
+		$this->captura('nombre','varchar');
+		$this->captura('id_formula','int4');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion

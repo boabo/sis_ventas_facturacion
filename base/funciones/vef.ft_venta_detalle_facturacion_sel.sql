@@ -88,7 +88,12 @@ BEGIN
             ing.id_moneda,
             mon.codigo_internacional,
             ing.id_concepto_ingas,
-						ing.desc_ingas            
+						ing.desc_ingas,
+            (case when ing.requiere_descripcion is not null then
+                ing.requiere_descripcion
+            else
+                ''no''
+            end)::varchar as requiere_descripcion
             /****************************/
 						from vef.tventa_detalle factdet
 						inner join segu.tusuario usu1 on usu1.id_usuario = factdet.id_usuario_reg
