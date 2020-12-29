@@ -302,8 +302,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         this.buildGrupos();
 
-        this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
-        this.labelSubmit = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
+        this.labelReset = '<div><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
+        this.labelSubmit = '<div><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
         Phx.vista.FormCajero.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
@@ -1614,7 +1614,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     },
 
 
-    obtenersuma: function () {
+    obtenersuma: function (flag) {
       var total_datos = this.megrid.store.data.items.length;
 
       var verificar_montos = [];
@@ -1626,7 +1626,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         }
           suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
       }
-
+      if(!flag){
       if (verificar_montos.length > 0 ) {
           Ext.Msg.show({
            title:'Información',
@@ -1640,6 +1640,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         verificar_montos = [];
       }
+    }
 
       this.suma_total = suma;
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
@@ -1867,7 +1868,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             }
                             var rec = this.mestore.getAt(index[0]);
                             this.mestore.remove(rec);
-                            this.obtenersuma();
+                            this.obtenersuma(true);
                             /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
                             // if (rec.data.requiere_excento == 'si') {
                             //   this.ocultarComponente(this.Cmp.excento);
@@ -2158,7 +2159,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 });
     },
 
-    guardarDetalles : function(){
+    guardarDetalles : function(flag){
 
       for (var i = 0; i < this.megrid.store.data.items.length; i++) {
         this.megrid.store.data.items[i].data.precio_total=(this.megrid.store.data.items[i].data.precio_unitario * this.megrid.store.data.items[i].data.cantidad);
@@ -2166,7 +2167,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
       this.mestore.commitChanges();
       this.megrid.getView().refresh();
-      this.obtenersuma();
+      // if(!flag){
+        this.obtenersuma(flag);
+      // }
     },
 
 
@@ -2220,22 +2223,28 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                                       tpl: new Ext.XTemplate([
                                                          '<tpl for=".">',
                                                          '<div class="x-combo-list-item">',
-                                                         '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-                                                         '<p><b>Actividad Económica:</b><span style="color: green; font-weight:bold;"> {nombre_actividad}</span></p></p>',
-                                                         '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
-                                                         '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-                                                         '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
-                                                         '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
-                                                         '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
-                                                         '<p><b>Asociar:</b> <span style="color: red; font-weight:bold;">{boleto_asociado}</span></p>',
+                                                         '<p><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
                                                          '</div></tpl>'
                                                        ]),
+                                                      // tpl: new Ext.XTemplate([
+                                                      //    '<tpl for=".">',
+                                                      //    '<div class="x-combo-list-item">',
+                                                      //    '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+                                                      //    '<p><b>Actividad Económica:</b><span style="color: green; font-weight:bold;"> {nombre_actividad}</span></p></p>',
+                                                      //    '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
+                                                      //    '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+                                                      //    '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+                                                      //    '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+                                                      //    '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
+                                                      //    '<p><b>Asociar:</b> <span style="color: red; font-weight:bold;">{boleto_asociado}</span></p>',
+                                                      //    '</div></tpl>'
+                                                      //  ]),
                                                       typeAhead: false,
                                                       triggerAction: 'all',
                                                       lazyRender: true,
                                                       mode: 'remote',
                                                       resizable:true,
-                                                      pageSize: 15,
+                                                      pageSize: 20,
                                                       queryDelay: 1000,
                                                       //anchor: '100%',
                                                       width : 450,
@@ -2632,7 +2641,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                     tipo : 'formula',
                     cantidad : '1',
                     requiere_excento:this.req_excento[i],
-                    precio_unitario : precio_base,
+                    precio_unitario : (precio_base==undefined || precio_base==null || precio_base=='')?0:precio_base,
                     precio_total: precio_base*1,
                     asociar_boletos: this.boletos_asociados_recup[i],
 
@@ -2651,7 +2660,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                   }
 
                   //this.obtenersuma();
-                  this.guardarDetalles();
+                  this.guardarDetalles(true);
 
               },
               failure: this.conexionFailure,
@@ -3244,7 +3253,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
  		 config:{
  			 name: 'nombre_factura',
  			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
- 			 allowBlank: true,
+ 			 allowBlank: false,
  			 width:200,
  			 gwidth: 150,
  			 maxLength:100,
@@ -3350,7 +3359,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				hiddenName : 'id_formula',
 				forceSelection : false,
 				typeAhead : false,
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p><p><b>Descripcion:</b> {descripcion}</p></div></tpl>',
+				// tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p><p><b>Descripcion:</b> {descripcion}</p></div></tpl>',
+        tpl:'<tpl for="."><div class="x-combo-list-item"><p> {nombre}</p></div></tpl>',
 				triggerAction : 'all',
 				lazyRender : true,
 				mode : 'remote',

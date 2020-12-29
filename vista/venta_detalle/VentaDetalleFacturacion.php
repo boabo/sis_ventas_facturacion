@@ -278,7 +278,7 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				triggerAction: 'all',
 				lazyRender: true,
 				mode: 'remote',
-				pageSize: 15,
+				pageSize: 20,
 				queryDelay: 1000,
 				listWidth:'450',
 				gwidth: 300,
@@ -299,14 +299,20 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 				tpl: new Ext.XTemplate([
 					 '<tpl for=".">',
 					 '<div class="x-combo-list-item">',
-					 '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-					 '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
-					 '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
-					 '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
-					 '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
-					 '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
+					 '<p><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
 					 '</div></tpl>'
 				 ]),
+				// tpl: new Ext.XTemplate([
+				// 	 '<tpl for=".">',
+				// 	 '<div class="x-combo-list-item">',
+				// 	 '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+				// 	 '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
+				// 	 '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+				// 	 '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+				// 	 '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+				// 	 '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
+				// 	 '</div></tpl>'
+				//  ]),
 			},
 			type: 'ComboBox',
 			id_grupo: 0,
@@ -652,7 +658,17 @@ Phx.vista.VentaDetalleFacturacion=Ext.extend(Phx.gridInterfaz,{
 		this.Cmp.id_producto.store.baseParams.tipo_pv=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.tipo_pv;
 		this.Cmp.id_producto.store.baseParams.regionales=Phx.CP.getPagina(this.idContenedorPadre).variables_globales.ESTACION_inicio;
 		this.tipo_cambio = Phx.CP.getPagina(this.idContenedorPadre).tipo_cambio;
-
+		if(this.maestro.estado!='borrador'){
+			this.getBoton('new').setVisible(false);
+			this.getBoton('edit').setVisible(false);
+			this.getBoton('del').setVisible(false);
+			this.getBoton('save').setVisible(false);
+		}else{
+			this.getBoton('new').setVisible(true);
+			this.getBoton('edit').setVisible(true);
+			this.getBoton('del').setVisible(true);
+			this.getBoton('save').setVisible(true);
+		}
 		if (m.excento_verificado == 'no' &&  m.requiere_excento == 'si') {
 			this.crearFormulatio();
 		}

@@ -9,9 +9,25 @@
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
+<style>
+.button-anular-red{
+    background-image: url('../../../lib/imagenes/icono_dibu/anulared.png');
+    background-repeat: no-repeat;
+    filter: saturate(250%);
+    background-size: 80%;
+}
+.button-impcarta{
+	background-image: url('../../../lib/imagenes/icono_inc/inc_printer.png');
+	background-repeat: no-repeat;
+	filter: saturate(250%);
+	background-size: 50%;
+}
+
+</style>
 <script>
 Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	mosttar:'',
+	mgs_user: '<p>Estimado Usuario Registros Anteriores a la Fecha Solo Pueden Ser Consultados </p>',
 	solicitarPuntoVenta: true,
 
 	formUrl: '../../../sis_ventas_facturacion/vista/venta/FormCajero.php',
@@ -94,8 +110,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 		this.addButton('btnImprimir',
 				{   grupo:[2,3],
-						text: 'Imprimir Rollo',
-						iconCls: 'bpdf32',
+						text: '<b>Imprimir Rollo</b>',
+						iconCls: 'bprint',
 						disabled: true,
 						handler: this.imprimirNota,
 						tooltip: '<b>Imprimir Recibo</b><br/>Imprime el Recibo de la venta'
@@ -103,9 +119,9 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		);
 		/*Aumentando el boton para imprimir la factura*/
 		this.addButton('btnChequeoDocumentosWf',{
-				text: 'Impresion Carta',
+				text: '<b>Impresion Carta</b>',
 				grupo: [2,3],
-				iconCls: 'bprint',
+				iconCls: 'button-impcarta',
 				disabled: true,
 				handler: this.loadCheckDocumentosRecWf,
 				tooltip: '<b>Documentos </b><br/>Subir los documetos requeridos.'
@@ -113,8 +129,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
     /**********************************************/
 		this.addButton('anular_fact',
 				{   grupo:[2],
-						text: 'Anular',
-						iconCls: 'bwrong',
+						text: '<b>Anular</b>',
+						iconCls: 'button-anular-red',
 						disabled: true,
 						handler: this.anular,
 						tooltip: '<b>Imprimir Recibo</b><br/>Imprime el Recibo de la venta'
@@ -123,7 +139,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 		this.addButton('asociar_boletos',
 				{   grupo:[2],
-						text: 'Asociar Boletos',
+						text: '<b>Asociar Boletos</b>',
 						iconCls: 'bchecklist',
 						disabled: true,
 						handler: this.AsociarBoletos,
@@ -553,8 +569,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 		openForm : function (tipo, record) {
     	var me = this;
-           me.objSolForm = Phx.CP.loadWindows(this.formUrl,
-                                    '<center><img src="../../../lib/imagenes/facturacion/factura.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> FACTURACIÓN COMPUTARIZADA</span></center>',
+           me.objSolForm = Phx.CP.loadWindows(this.formUrl,'',
+                                    // '<center> <span > FACTURACIÓN COMPUTARIZADA</span></center>',
                                     {
                                         modal:true,
                                         width:'100%',
@@ -591,8 +607,20 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 
 		completar_pago : function () {
 				//abrir formulario de solicitud
-				this.openForm('edit', this.sm.getSelected());
-
+				var d = this.sm.getSelected().data;
+				var f = new Date()
+				var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+				if(d.fecha.dateFormat('d/m/Y') != fecha_hoy){
+					Ext.Msg.show({
+							title: 'Alerta',
+							msg: this.mgs_user,
+							buttons: Ext.Msg.OK,
+							width: 512,
+							icon: Ext.Msg.INFO
+					});
+				}else{
+					this.openForm('edit', this.sm.getSelected());
+				}
 				},
 
 		sigEstado:function(){
@@ -615,17 +643,28 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		 regresarCounter:function(){
  			//Phx.CP.loadingShow();
  			var d = this.sm.getSelected().data;
-
- 			Ext.Ajax.request({
- 					url:'../../sis_ventas_facturacion/control/Cajero/regresarCounter',
- 					params:{id_estado_wf_act:d.id_estado_wf,
- 									id_proceso_wf_act:d.id_proceso_wf,
- 								  tipo:'facturacion'},
- 					success:this.successWizard,
- 					failure: this.conexionFailure,
- 					timeout:this.timeout,
- 					scope:this
- 			});
+			var f = new Date()
+			var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+			if(d.fecha.dateFormat('d/m/Y') != fecha_hoy){
+				Ext.Msg.show({
+						title: 'Alerta',
+						msg: this.mgs_user,
+						buttons: Ext.Msg.OK,
+						width: 512,
+						icon: Ext.Msg.INFO
+				});
+			}else{
+				Ext.Ajax.request({
+	 					url:'../../sis_ventas_facturacion/control/Cajero/regresarCounter',
+	 					params:{id_estado_wf_act:d.id_estado_wf,
+	 									id_proceso_wf_act:d.id_proceso_wf,
+	 								  tipo:'facturacion'},
+	 					success:this.successWizard,
+	 					failure: this.conexionFailure,
+	 					timeout:this.timeout,
+	 					scope:this
+	 			});
+			}
 
       },
 
@@ -702,6 +741,17 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			anular : function () {
 				var rec=this.sm.getSelected();
 				var me= this;
+				var f = new Date()
+				var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+				if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+					Ext.Msg.show({
+							title: 'Alerta',
+							msg: this.mgs_user,
+							buttons: Ext.Msg.OK,
+							width: 512,
+							icon: Ext.Msg.INFO
+					});
+				}else{
 				Ext.Msg.confirm(
 						'Mensaje de Confirmación',
 						'Esta Seguro de Anular la Factura',
@@ -720,11 +770,23 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 								        });
 						}}
 				);
+			}
 			},
 
 			AsociarBoletos: function(){
 
 		              var rec = {maestro: this.sm.getSelected().data}
+									var f = new Date()
+									var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+									if(rec.maestro.fecha.dateFormat('d/m/Y') != fecha_hoy){
+										Ext.Msg.show({
+												title: 'Alerta',
+												msg: this.mgs_user,
+												buttons: Ext.Msg.OK,
+												width: 512,
+												icon: Ext.Msg.INFO
+										});
+									}else{
 		              console.log('VALOR',	rec);
 		              Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/venta/AsociarBoletos.php',
 		                  '<center><h1 style="font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"> <img src="../../../lib/imagenes/icono_dibu/dibu_zoom.png" style="float:center; vertical-align: middle;"> Asociar Boletos</h1></center>',
@@ -735,7 +797,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		                  rec,
 		                  this.idContenedor,
 		                  'AsociarBoletos');
-
+										}
 		          },
 
 		/*Comentando esta parte para que se imprima directamente desde WF*/
@@ -759,6 +821,17 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
    				// 		scope : this
    				// 	});
 					// } else {
+					var f = new Date()
+					var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+						Ext.Msg.show({
+								title: 'Alerta',
+								msg: this.mgs_user,
+								buttons: Ext.Msg.OK,
+								width: 512,
+								icon: Ext.Msg.INFO
+						});
+					}else{
 						Ext.Ajax.request({
 	   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
 	   						params : {
@@ -773,6 +846,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	   						timeout : this.timeout,
 	   						scope : this
 	   					});
+					}
 					// }
 
    	},
@@ -786,6 +860,18 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		/**************************************************************************************/
 		loadCheckDocumentosRecWf:function() {
 					var rec=this.sm.getSelected();
+
+					var f = new Date()
+					var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+						Ext.Msg.show({
+								title: 'Alerta',
+								msg: this.mgs_user,
+								buttons: Ext.Msg.OK,
+								width: 512,
+								icon: Ext.Msg.INFO
+						});
+					}else{
 					rec.data.nombreVista = this.nombreVista;
 					Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
 							'Chequear documento del WF',
@@ -797,6 +883,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 							this.idContenedor,
 							'DocumentoWf'
 					)
+				}
 			},
 
 
