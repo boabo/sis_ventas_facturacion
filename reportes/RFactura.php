@@ -85,16 +85,26 @@ class RFactura
 							SEÑOR(ES):'.trim($datos['cliente']).'
 					</td>
 				</tr>
-
-
 					<table style="width: 295px;">
 					<thead>
-						<tr><th style="width: 11px;">Cant <hr color="#ccc" size=1 width="40"> </th><th style="width:150px;">Concepto <hr color="#ccc" size=1 width="80"></th><th align="center">PU<hr color="#ccc" size=1 width="30"></th><th>SubTotal <hr color="#ccc" size=1 width="80"></th></tr>
+						<tr>
+						<th style="width: 11px;">Cant </th>
+						<th style="width:150px;">Concepto </th>
+						<th align="center">PU</th>
+						<th>SubTotal </th>
+						</tr>
+						<tr >
+							<td colspan="4">
+							<hr tyle="width: 295px;"/>
+							</td>
+						</tr>
 					</thead>
-					<tbody>';
-
+					<tbody>
+					';
+					//bvp
 					foreach ($datos['detalle'] as $item_detalle) {
-							$html .= '<tr>
+							$html .= '
+							<tr>
 
 							<td style="width: 11px;">'.number_format($item_detalle['cantidad'], 2, '.', '').'</td>
 							<td style="width:150px;"> '.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
@@ -112,19 +122,19 @@ class RFactura
 								<td colspan="2" align="right"><hr/><b>' .$datos['moneda_sucursal'].' '.number_format($datos['total_venta'], 2, '.', ',').'</b><hr/></td>
 							</tr>';
 
-					if ($datos['excento'] > 0) {
+					// if ($datos['excento'] > 0) {
 						$html .= '<tr>
 												<td colspan="2" align="left"><b>EXENTO</b> <hr/></td>
-												<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['excento'], 2, '.', ',').'</b><hr/></td>
+												<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format(($datos['excento'] ==null || $datos['excento'] == undefined || $datos['excento']=='')?0:$datos['excento'], 2, '.', ',').'</b><hr/></td>
 											</tr>';
-					}
-
-					if ($datos['total_venta'] > $datos['sujeto_credito']) {
+					// }
+					//bvp
+					// if ($datos['total_venta'] > $datos['sujeto_credito']) {
 						$html .= '<tr>
 								<td colspan="2" align="left"><b>IMPORTE BASE PARA CRÉDITO FISCAL</b> <hr/></td>
-								<td colspan="2" align="right"> <b>' .$datos['moneda_sucursal'].' '.number_format($datos['sujeto_credito'], 2, '.', ',').'</b><hr/></td>
+								<td colspan="2" align="right"> <br><br><b>' .$datos['moneda_sucursal'].' '.number_format($datos['sujeto_credito'], 2, '.', ',').'</b><hr/></td>
 							</tr>';
-					}
+					// }
 
 
 					$html .=' <tr>
