@@ -518,7 +518,20 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     iniciarEventos : function () {
+      this.ocultarComponente(this.Cmp.codigo_tarjeta);
+      this.ocultarComponente(this.Cmp.tipo_tarjeta);
+      this.ocultarComponente(this.Cmp.numero_tarjeta);
+      this.ocultarComponente(this.Cmp.id_auxiliar);
+      this.ocultarComponente(this.Cmp.mco);
 
+      this.ocultarComponente(this.Cmp.mco_2);
+      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+      this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+      this.ocultarComponente(this.Cmp.id_auxiliar_2);
+      this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+
+      this.form.body.dom[43].style.display='none'
+      this.form.body.dom[31].style.display='none'
         /**********************************************************************************/
         /*Aumentando para poner Condiciones en Regionales (Ismael Valdivia 14/10/2020)*/
         this.condicionesRegionales();
@@ -686,11 +699,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             },this);
         }
 
-        this.ocultarComponente(this.Cmp.mco_2);
-        this.ocultarComponente(this.Cmp.numero_tarjeta_2);
-        this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
-        this.ocultarComponente(this.Cmp.id_auxiliar_2);
-        this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 
         /*Comentado para agregar instancia de pago*/
       /*  this.Cmp.id_forma_pago.on('select',function(c,r,i) {
@@ -772,18 +780,20 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         /****************************Aumnetando la instancia de pago********************************/
         this.Cmp.id_medio_pago.on('select',function(c,r,i) {
 
-          if(r){
-            if (r.data) {
+          // if(r){
+            // if (r.data) {
               var codigo_forma_pago = r.data.fop_code;
               this.Cmp.tipo_tarjeta.setValue(r.data.name);
-            }
-          }
+            // }
+          // }
 
           //var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
 
           //this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
           if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
+
           if (codigo_forma_pago.startsWith("CC")) {
+            this.form.body.dom[31].style.display='block'
             this.mostrarComponente(this.Cmp.codigo_tarjeta);
             //this.mostrarComponente(this.Cmp.tipo_tarjeta);
           	this.mostrarComponente(this.Cmp.numero_tarjeta);
@@ -794,6 +804,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta.allowBlank = false;
           	this.Cmp.mco.allowBlank = true;
           } else if (codigo_forma_pago.startsWith("MCO")) {
+            this.form.body.dom[31].style.display='block'
             this.mostrarComponente(this.Cmp.mco);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -807,6 +818,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar.reset();
             this.Cmp.numero_tarjeta.reset();
           } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
+            this.form.body.dom[31].style.display='block'
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -822,6 +834,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
           }else if (codigo_forma_pago.startsWith("CA")) {
+            this.form.body.dom[31].style.display='none'
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -854,6 +867,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           var codigo_forma_pago = r.data.fop_code;
           this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
           if (codigo_forma_pago.startsWith("CC")) {
+            this.form.body.dom[43].style.display='block'
             this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
             //this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
           	this.mostrarComponente(this.Cmp.numero_tarjeta_2);
@@ -864,6 +878,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta_2.allowBlank = false;
           	this.Cmp.mco_2.allowBlank = true;
           } else if (codigo_forma_pago.startsWith("MCO")) {
+            this.form.body.dom[43].style.display='block'
             this.mostrarComponente(this.Cmp.mco_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -877,6 +892,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
           } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
+            this.form.body.dom[43].style.display='block'
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -892,6 +908,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
           }else if (codigo_forma_pago.startsWith("CA")) {
+            this.form.body.dom[43].style.display='none'
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -2836,7 +2853,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                               collapseFirst : false,
                               collapsible: true,
                               style: {
-                                       height:'250px',
+                                       // height:'250px',
+                                       height:'160px',
                                        background:'#5FB0A8',
                                       // border:'2px solid blue'
                                      },
@@ -2859,7 +2877,25 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                        id_grupo: 2,
                                        items: [],
                         }]
-                      },{
+                      },
+                      //bvp
+                      {
+                       bodyStyle: 'padding-right:5px;',
+                       border: false,
+                       autoHeight: true,
+                       items: [{
+                             xtype: 'fieldset',
+                             frame: true,
+                             layout: 'form',
+                             title: ' <br> <br>',
+                             border: false,
+                             width: 280,
+                             id_grupo: 6,
+                             items: [],
+                      }]
+                    },
+                      //bvp
+                      {
                        bodyStyle: 'padding-right:5px;',
 
                        border: false,
@@ -2878,6 +2914,23 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                              items: [],
                            }]
                       },
+                      //bvp
+                      {
+                       bodyStyle: 'padding-right:5px;',
+                       border: false,
+                       autoHeight: true,
+                       items: [{
+                             xtype: 'fieldset',
+                             frame: true,
+                             layout: 'form',
+                             title: ' <br> <br>',
+                             border: false,
+                             width: 280,
+                             id_grupo: 8,
+                             items: [],
+                      }]
+                    },
+                      //bvp
                       {
                        bodyStyle: 'padding-right:5px;',
 
@@ -3676,7 +3729,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         },
             type:'TextField',
-            id_grupo:2,
+            id_grupo:6,
             form:true
     },
     {
@@ -3690,7 +3743,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             maxLength:20
         },
         type:'TextField',
-        id_grupo:2,
+        id_grupo:6,
         grid:true,
         form:true
     },
@@ -3708,7 +3761,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         },
             type:'TextField',
-            id_grupo:2,
+            id_grupo:6,
             form:true
     },
     {
@@ -3752,7 +3805,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				}
 			},
 			type: 'ComboBox',
-			id_grupo: 2,
+			id_grupo: 6,
 			grid: true,
 			form: true
 		},
@@ -4016,7 +4069,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     				}
     			},
     			type: 'ComboBox',
-    			id_grupo: 10,
+    			id_grupo: 8,
     			grid: true,
     			form: true
     		},
@@ -4032,7 +4085,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 minLength:15
             },
             type:'TextField',
-            id_grupo:10,
+            id_grupo:8,
             grid:false,
             form:true
         },
@@ -4049,7 +4102,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 maxLength:20
             },
             type:'TextField',
-            id_grupo:10,
+            id_grupo:8,
             grid:true,
             form:true
         },
@@ -4068,7 +4121,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
             },
             type:'TextField',
-            id_grupo:10,
+            id_grupo:8,
             grid:false,
             form:true
         },
@@ -4102,7 +4155,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 //value:0
             },
                 type:'TextField',
-                id_grupo:10,
+                id_grupo:8,
                 form:true,
                 //valorInicial:'0'
         },
