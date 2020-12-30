@@ -1208,7 +1208,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 triggerAction : 'all',
 			 lazyRender : true,
 			 mode : 'remote',
-			 pageSize : 10,
+			 pageSize : 20,
 			 queryDelay : 1000,
 			 turl:'../../../sis_ventas_facturacion/vista/formula/Formula.php',
 			 ttitle:'Formula',

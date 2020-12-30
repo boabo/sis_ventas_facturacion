@@ -3422,7 +3422,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				triggerAction : 'all',
 				lazyRender : true,
 				mode : 'remote',
-				pageSize : 10,
+				pageSize : 20,
 				queryDelay : 1000,
 				cls:'uppercase',
 				gwidth : 500,
