@@ -1204,7 +1204,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 			 forceSelection : false,
 			 typeAhead : false,
 			 // tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p><p><b>Descripcion:</b> {descripcion}</p></div></tpl>',
-			 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p></div></tpl>',
+			 tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color: green; font-weight:bold;">{nombre}</p></div></tpl>',
 			 triggerAction : 'all',
 			 lazyRender : true,
 			 mode : 'remote',

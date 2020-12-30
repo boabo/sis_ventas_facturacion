@@ -518,6 +518,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     iniciarEventos : function () {
+      this.mostrarComponente(this.Cmp.monto_forma_pago);
       this.ocultarComponente(this.Cmp.codigo_tarjeta);
       this.ocultarComponente(this.Cmp.tipo_tarjeta);
       this.ocultarComponente(this.Cmp.numero_tarjeta);
@@ -3413,7 +3414,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				forceSelection : false,
 				typeAhead : false,
 				// tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Nombre:</b> {nombre}</p><p><b>Descripcion:</b> {descripcion}</p></div></tpl>',
-        tpl:'<tpl for="."><div class="x-combo-list-item"><p> {nombre}</p></div></tpl>',
+        tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color: green; font-weight:bold;"> {nombre}</p></div></tpl>',
 				triggerAction : 'all',
 				lazyRender : true,
 				mode : 'remote',
