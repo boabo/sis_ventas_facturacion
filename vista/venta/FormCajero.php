@@ -814,6 +814,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.codigo_tarjeta);
           	this.ocultarComponente(this.Cmp.tipo_tarjeta);
 			      this.ocultarComponente(this.Cmp.id_auxiliar);
+            this.ocultarComponente(this.Cmp.numero_tarjeta);
             this.Cmp.codigo_tarjeta.reset();
             this.Cmp.tipo_tarjeta.reset();
             this.Cmp.id_auxiliar.reset();
@@ -829,6 +830,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.codigo_tarjeta);
           	this.ocultarComponente(this.Cmp.tipo_tarjeta);
 			      this.ocultarComponente(this.Cmp.numero_tarjeta);
+            this.ocultarComponente(this.Cmp.mco);
             this.Cmp.codigo_tarjeta.reset();
             this.Cmp.tipo_tarjeta.reset();
             this.Cmp.id_auxiliar.reset();
@@ -888,6 +890,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
           	this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 			      this.ocultarComponente(this.Cmp.id_auxiliar_2);
+            this.ocultarComponente(this.Cmp.numero_tarjeta_2);
             this.Cmp.codigo_tarjeta_2.reset();
             this.Cmp.tipo_tarjeta_2.reset();
             this.Cmp.id_auxiliar_2.reset();
@@ -903,6 +906,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
           	this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 			      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+            this.ocultarComponente(this.Cmp.mco_2);
             this.Cmp.codigo_tarjeta_2.reset();
             this.Cmp.tipo_tarjeta_2.reset();
             this.Cmp.id_auxiliar_2.reset();
