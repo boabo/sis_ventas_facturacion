@@ -60,6 +60,7 @@ DECLARE
     v_tiene_excento				varchar;
     v_cantidad					integer;
     v_cantidad_exe				integer;
+    v_cantidad_ace				integer;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_detalle_facturacion_ime';
@@ -107,14 +108,19 @@ BEGIN
             /*Verificamos si el concepto es contabilizable para no mezclar*/
 
        	select count(distinct inga.contabilizable),
-          count(distinct inga.excento)
-         into v_cantidad,v_cantidad_exe
+          count(distinct inga.excento),
+          count(distinct inga.id_actividad_economica)
+         into v_cantidad,v_cantidad_exe, v_cantidad_ace
         from vef.tventa_detalle det
         inner join param.tconcepto_ingas inga on inga.id_concepto_ingas = det.id_producto
         where det.id_venta = v_parametros.id_venta;
 
         if (v_cantidad_exe > 1) then
           raise exception 'No puede utilizar conceptos con exentos si y exentos no, en la misma venta';
+        end if;
+
+        if(v_cantidad_ace > 1)then
+          raise exception 'No puede utilizar conceptos de diferente actividad economica en la misma venta';
         end if;
 
         if (v_cantidad > 1) then
@@ -387,14 +393,18 @@ BEGIN
 
             --end if;
             select count(distinct inga.contabilizable),
-                   count(distinct inga.excento)
-             into v_cantidad, v_cantidad_exe
+                   count(distinct inga.excento),
+                   count(distinct inga.id_actividad_economica)
+             into v_cantidad, v_cantidad_exe, v_cantidad_ace
             from vef.tventa_detalle det
             inner join param.tconcepto_ingas inga on inga.id_concepto_ingas = det.id_producto
             where det.id_venta = v_parametros.id_venta;
 
             if (v_cantidad_exe > 1) then
               raise exception 'No puede utilizar conceptos con exentos si y exentos no, en la misma venta';
+            end if;
+            if(v_cantidad_ace > 1)then
+              raise exception 'No puede utilizar conceptos de diferente actividad economica en la misma venta';
             end if;
             if (v_cantidad > 1) then
               raise exception 'No puede utilizar conceptos contabilizables y no contabilizables en la misma venta';

@@ -540,7 +540,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 										}
 
 										/******AQUI PONER CONDICION PARA LOS TIPOS ATO y CTO*************/
-										if (this.tipo_punto_venta == 'ato') {
+										if (this.tipo_punto_venta == 'ato' || this.tipo_punto_venta == 'carga') {
 												 this.getBoton('completar_pago').setVisible(false);
 												 this.getBoton('ant_estado').setVisible(false);
 
