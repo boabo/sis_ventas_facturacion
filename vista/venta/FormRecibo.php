@@ -4133,7 +4133,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             this.mostrarComponente(this.Cmp.cuenta_bancaria);
             this.Cmp.nro_deposito.allowBlank = false;
             this.Cmp.fecha_deposito.allowBlank = false;
-            this.Cmp.fecha_deposito.setValue(this.fecha_actual_RO);
+            var fehca_ro = new Date();
+            this.Cmp.fecha_deposito.setValue(fehca_ro);
+            // this.Cmp.fecha_deposito.setValue(this.fecha_actual_RO);
             this.Cmp.monto_deposito.allowBlank = false;
             this.Cmp.cuenta_bancaria.allowBlank = false;
             this.Cmp.cuenta_bancaria.setDisabled(true);
@@ -4194,61 +4196,62 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
        					scope:this
        			});
 
-            if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
-                    Ext.Ajax.request({
-            						url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
-            						params:{
-                         nro_deposito:this.Cmp.nro_deposito.getValue(),
-                         id_moneda:this.Cmp.id_moneda.getValue(),
-            						 fecha:this.Cmp.fecha_deposito.getValue(),
-            						},
-            						success: function(resp){
-            								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-                              if (reg.ROOT.datos.cantidad_deposito > 0) {
-                                /*Bloqueamos el boton para que no genere si el deposito*/
-                                 this.arrayBotones[0].scope.form.buttons[1].setDisabled(true);
-                                 Ext.Msg.show({
-                                     title: 'Alerta',
-                                     msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
-                                     buttons: Ext.Msg.OK,
-                                     width: 512,
-                                     icon: Ext.Msg.INFO
-                                 });
-                                 this.Cmp.nro_deposito.reset();
-                               /********************************************************/
-                                 // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
-                                 // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
-                                 // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
-                                 // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
-                                 // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
-                                 //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
-                              }else {
-                                this.arrayBotones[0].scope.form.buttons[1].setDisabled(false);
-                                //this.Cmp.fecha_deposito.reset();
-                                //this.Cmp.nro_deposito.reset();
-                                //this.Cmp.monto_deposito.setValue(0);
-                                //this.Cmp.monto_forma_pago.setValue(0);
-                              }
-                              /*Aqui ponemos estas condiciones para que se actualice el cambio*/
-                              this.obtenersuma();
-
-
-
-            						},
-            						failure: this.conexionFailure,
-            						timeout:this.timeout,
-            						scope:this
-            				});
-                  }
+            // if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+            //         Ext.Ajax.request({
+            // 						url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
+            // 						params:{
+            //              nro_deposito:this.Cmp.nro_deposito.getValue(),
+            //              id_moneda:this.Cmp.id_moneda.getValue(),
+            // 						 fecha:this.Cmp.fecha_deposito.getValue(),
+            // 						},
+            // 						success: function(resp){
+            // 								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+            //                   if (reg.ROOT.datos.cantidad_deposito > 0) {
+            //                     /*Bloqueamos el boton para que no genere si el deposito*/
+            //                      this.arrayBotones[0].scope.form.buttons[1].setDisabled(true);
+            //                      Ext.Msg.show({
+            //                          title: 'Alerta',
+            //                          msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
+            //                          buttons: Ext.Msg.OK,
+            //                          width: 512,
+            //                          icon: Ext.Msg.INFO
+            //                      });
+            //                      this.Cmp.nro_deposito.reset();
+            //                    /********************************************************/
+            //                      // this.Cmp.fecha_deposito.setValue(reg.ROOT.datos.fecha_deposito);
+            //                      // this.Cmp.nro_deposito.setValue(reg.ROOT.datos.nro_deposito);
+            //                      // this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+            //                      // this.Cmp.monto_deposito.setValue(reg.ROOT.datos.monto_deposito);
+            //                      // this.Cmp.monto_forma_pago.setValue(reg.ROOT.datos.monto_deposito);
+            //                      //this.Cmp.id_deposito.setValue(reg.ROOT.datos.id_deposito);
+            //                   }else {
+            //                     this.arrayBotones[0].scope.form.buttons[1].setDisabled(false);
+            //                     //this.Cmp.fecha_deposito.reset();
+            //                     //this.Cmp.nro_deposito.reset();
+            //                     //this.Cmp.monto_deposito.setValue(0);
+            //                     //this.Cmp.monto_forma_pago.setValue(0);
+            //                   }
+            //                   /*Aqui ponemos estas condiciones para que se actualice el cambio*/
+            //                   this.obtenersuma();
+            //
+            //
+            //
+            // 						},
+            // 						failure: this.conexionFailure,
+            // 						timeout:this.timeout,
+            // 						scope:this
+            // 				});
+            //       }
                   this.devolverCambio();
                  },this);
                  /*Aqui verificaremos si el deposito existe o no existe ya registrado*/
                 this.Cmp.nro_deposito.on('change',function(field,newValue,oldValue){
-                  if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+                  // if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
                   Ext.Ajax.request({
            					url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
            					params:{
-                       nro_deposito:this.Cmp.nro_deposito.getValue(),
+                       // nro_deposito:this.Cmp.nro_deposito.getValue(),
+                       nro_deposito: newValue,
                        id_moneda:this.Cmp.id_moneda.getValue(),
            						fecha:this.Cmp.fecha_deposito.getValue(),
            					},
@@ -4290,7 +4293,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
            					timeout:this.timeout,
            					scope:this
            			});
-                 }
+                 // }
                 },this);
             // this.Cmp.tipo_tarjeta.setValue(r.data.nombre);
             // this.Cmp.codigo_tarjeta.allowBlank = false;
@@ -4569,41 +4572,75 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
     onSubmit2: function(o) {
         //  validar formularios
-        console.log("aqui llega data 2222 irva");
-        var arra = [], i, me = this;
-        var formapa = [];
-        for (i = 0; i < me.megrid.store.getCount(); i++) {
-            var record = me.megrid.store.getAt(i);
-            arra[i] = record.data;
-        }
-        if (me.storeFormaPago) {
-	        for (i = 0; i < me.storeFormaPago.getCount(); i++) {
-	            var record = me.storeFormaPago.getAt(i);
-	            formapa[i] = record.data;
-	        }
-	    }
-        me.argumentExtraSubmit = { 'json_new_records': JSON.stringify(arra,
-        				function replacer(key, value) {
-                       		if (typeof value === 'string') {
-                            	return String(value).replace(/&/g, "%26")
-                            }
-                            return value;
-                        }),
-                        'formas_pago' :  JSON.stringify(formapa,
-        				function replacer(key, value) {
-                       		if (typeof value === 'string') {
-                            	return String(value).replace(/&/g, "%26")
-                            }
-                            return value;
-                        }),
-                        'tipo_factura':this.data.objPadre.tipo_factura};
+        var me = this;
+        if(this.Cmp.nro_deposito.getValue() != '' && this.Cmp.nro_deposito.getValue() != null) {
+                Ext.Ajax.request({
+        						url:'../../sis_ventas_facturacion/control/VentaFacturacion/verificarDeposito',
+        						params:{
+                     nro_deposito:me.Cmp.nro_deposito.getValue(),
+                     id_moneda:me.Cmp.id_moneda.getValue(),
+        						 fecha:me.Cmp.fecha_deposito.getValue(),
+        						},
+        						success: function(resp){
+        								var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                          if (reg.ROOT.datos.cantidad_deposito > 0) {
+                            /*Bloqueamos el boton para que no genere si el deposito*/
+                             me.arrayBotones[0].scope.form.buttons[1].setDisabled(true);
+                             Ext.Msg.show({
+                                 title: 'Alerta',
+                                 msg: '<p>El número de depósito <b>'+reg.ROOT.datos.nro_deposito+'</b>. ya se encuentra registrado favor contactarse con personal de ventas para su validación e ingrese nuevamente el nro de depósito</p>',
+                                 buttons: Ext.Msg.OK,
+                                 width: 512,
+                                 icon: Ext.Msg.INFO
+                             });
+                             me.Cmp.nro_deposito.reset();
+                          }else{
+                            me.saverecibo(0)
+                          }
 
-        if( i > 0 &&  !this.editorDetail.isVisible()){
-             Phx.vista.FormRecibo.superclass.onSubmit.call(this,o);
+        						},
+        						failure: this.conexionFailure,
+        						timeout:this.timeout,
+        						scope:this
+        				});
+              }
+    },
+    saverecibo: function(o){
+      console.log("aqui llega data 2222 irva");
+      var arra = [], i, me = this;
+      var formapa = [];
+      for (i = 0; i < me.megrid.store.getCount(); i++) {
+          var record = me.megrid.store.getAt(i);
+          arra[i] = record.data;
+      }
+      if (me.storeFormaPago) {
+        for (i = 0; i < me.storeFormaPago.getCount(); i++) {
+            var record = me.storeFormaPago.getAt(i);
+            formapa[i] = record.data;
         }
-        else{
-            alert('La venta no tiene registrado ningun detalle');
-        }
+    }
+      me.argumentExtraSubmit = { 'json_new_records': JSON.stringify(arra,
+              function replacer(key, value) {
+                        if (typeof value === 'string') {
+                            return String(value).replace(/&/g, "%26")
+                          }
+                          return value;
+                      }),
+                      'formas_pago' :  JSON.stringify(formapa,
+              function replacer(key, value) {
+                        if (typeof value === 'string') {
+                            return String(value).replace(/&/g, "%26")
+                          }
+                          return value;
+                      }),
+                      'tipo_factura':this.data.objPadre.tipo_factura};
+
+      if( i > 0 &&  !this.editorDetail.isVisible()){
+           Phx.vista.FormRecibo.superclass.onSubmit.call(this,o);
+      }
+      else{
+          alert('La venta no tiene registrado ningun detalle');
+      }
     },
 
     successSave:function(resp)
