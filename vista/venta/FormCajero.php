@@ -665,9 +665,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.width="190px";
           this.arrayBotones[1].scope.form.buttons[1].btnEl.dom.style.height="50px";
 
-          this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
-          this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
-          this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="15px";
+          this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.color="#7400FF";
+          this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontWeight="bold";
+          this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontSize="15px";
           /*irva*/
           //this.arrayBotones[0].scope.form.buttons[0].btnEl.dom.style.height="60px";
           //this.megrid.topToolbar.items.items[0].btnEl.dom.style.border="2px solid blue";
@@ -1665,9 +1665,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     }
 
       this.suma_total = suma;
-      this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
-      this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
-      this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="20px";
+      this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.color="#7400FF";
+      this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontWeight="bold";
+      this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontSize="20px";
 
       /*Aqui pára mantener el campo*/
       var requiere_excento = [];
@@ -1948,13 +1948,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         },
                         //editor: this.detCmp.id_producto
                     },
-                    {
-                        header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Descripción</span>',
-                        dataIndex: 'descripcion',
-                        width: 300,
-                        //sortable: false,
-                        editor:this.editarDescripcion
-                    },
+                    // {
+                    //     header: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Descripción</span>',
+                    //     dataIndex: 'descripcion',
+                    //     width: 300,
+                    //     //sortable: false,
+                    //     editor:this.editarDescripcion
+                    // },
                     {
 
                         header: '<img src="../../../lib/imagenes/facturacion/Cantidad.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> Cantidad</span>',
@@ -2356,13 +2356,18 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         this.insertarNuevo(win);
                       } else {
                         var array = new Array();
-                        for (var i = 0; i < this.megrid.store.data.items.length; i++) {
-                          if (!array.includes(this.megrid.store.data.items[i].data.contabilizable)) {
-                            array.push(this.megrid.store.data.items[i].data.contabilizable);
-                          }
-                        }
 
-                        if (array.includes(this.contabilizable)) {
+                        for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+                          if(this.megrid.store.data.items[i].data.contabilizable!=undefined){
+                            if (!array.includes(this.megrid.store.data.items[i].data.contabilizable)) {
+                              array.push(this.megrid.store.data.items[i].data.contabilizable);
+                              }
+                            }
+                        }
+                        array.push(this.contabilizable);
+                        var unicos = Array.from(new Set(array));                        
+                        // if (!array.includes(this.contabilizable)) {
+                        if(unicos.length == 0 || unicos.length == 1){
                           this.insertarNuevo(win);
                         } else {
                           Ext.Msg.show({
@@ -2474,11 +2479,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         this.variables.items.items[2].setVisible(true);
         this.ventana_detalle.body.dom.style.height = "230px";
       }
-
       this.requiere_excento = r.data.excento;
       this.contabilizable = r.data.contabilizable??"no";
       this.asociar_boleto = r.data.boleto_asociado??"no";
-
 
      /***********************************************************/
 
@@ -2815,7 +2818,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                       layout: 'form',
                                       style: {
                                              height:'160px',
-                                             width:'300px',
+                                             width:'280px',
                                           },
                                       padding: '0 0 0 10',
                                       bodyStyle: 'padding-left:5px;',
@@ -2857,13 +2860,15 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                               autoScroll: true,
                               collapseFirst : false,
                               collapsible: true,
+                              width: '100%',
+                              autoHeight: true,
                               style: {
-                                       // height:'250px',
-                                       height:'160px',
+                              //          // height:'250px',
+                              //          height:'160px',
                                        background:'#5FB0A8',
-                                      // border:'2px solid blue'
+                              //         // border:'2px solid blue'
                                      },
-                              padding: '0 0 0 10',
+                              padding: '0 0 0 0',
                               items:[
                                 {
                                  bodyStyle: 'padding-right:5px;',
@@ -2957,7 +2962,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                           }]
                       },{
                        bodyStyle: 'padding-right:5px;',
-
                        border: false,
                        autoHeight: true,
                        items: [{
@@ -3177,9 +3181,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
              this.imprimirNota();
          }
          Phx.CP.loadingHide();
-         resp.argument.wizard.panel.destroy();
-         //this.panel.destroy();
-         this.reload();
+         // resp.argument.wizard.panel.destroy();
+         this.panel.destroy();
+         // this.reload();
       },
 
       imprimirNota: function(){

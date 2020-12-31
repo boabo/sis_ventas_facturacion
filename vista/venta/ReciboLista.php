@@ -696,7 +696,8 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 			if (this.variables_globales.codigo_moneda_base=='USD') {
 				this.titulo_recibo_oficial = '<center><img src="../../../lib/imagenes/facturacion/ReciboIcon.png" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> OFFICIAL RECEIPT</span></center>';
 			} else {
-				this.titulo_recibo_oficial = '<center><img src="../../../lib/imagenes/facturacion/ReciboIcon.png" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> RECIBO OFICIAL</span></center>';
+				// this.titulo_recibo_oficial = '<center><img src="../../../lib/imagenes/facturacion/ReciboIcon.png" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> RECIBO OFICIAL</span></center>';
+				this.titulo_recibo_oficial = '';
 			}
            me.objSolForm = Phx.CP.loadWindows(this.formUrl,this.titulo_recibo_oficial,
                                     {

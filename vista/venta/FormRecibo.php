@@ -81,7 +81,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           fieldLabel: 'Observaciones',
           allowBlank: false,
           width:200,
-          minLength:12,
+          // minLength:12,
           style:'text-transform:uppercase;'
         },
           type:'TextArea',
@@ -120,9 +120,10 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.template = new Ext.XTemplate([
              '<tpl for=".">',
              '<div class="x-combo-list-item">',
-             '<p><b>Name:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-             '<p><b>Code:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
-             '<p><b>Price:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+             // '<p><b>Name:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+             // '<p><b>Code:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
+             // '<p><b>Price:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+             '<p><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
              '</div></tpl>'
            ]);
           /*********************************/
@@ -157,8 +158,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           this.template = new Ext.XTemplate([
              '<tpl for=".">',
              '<div class="x-combo-list-item">',
-             '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-             '<p><b>COD:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
+             // '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+             // '<p><b>COD:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
+             '<p><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
              '</div></tpl>'
            ]);
       }
@@ -260,11 +262,15 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         this.buildGrupos();
 
         if (this.data.objPadre.variables_globales.codigo_moneda_base=='USD') {
-          this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERATE</span></div>';
-          this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">MANY FP</span></div>';
+          // this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERATE</span></div>';
+          // this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">MANY FP</span></div>';
+          this.labelReset = '<div> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERATE</span></div>';
+          this.labelReset = '<div> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">MANY FP</span></div>';
         } else {
-          this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
-          this.labelSubmit = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
+          // this.labelReset = '<div><img src="../../../lib/imagenes/facturacion/imprimir.png" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
+          // this.labelSubmit = '<div><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:45px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
+          this.labelReset = '<div> <span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
+          this.labelSubmit = '<div> <span style="vertical-align: middle; font-size:23px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
         }
 
         Phx.vista.FormRecibo.superclass.constructor.call(this,config);
@@ -713,21 +719,21 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
 
 
-        this.Cmp.id_cliente.on('select',function(c,r,i) {
-            if (r.data) {
-                this.Cmp.nit.setValue(r.data.nit);
-                /*Aumentando para poner en la regional el correo*/
-                if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
-                  this.Cmp.correo_electronico.setValue(r.data.correo);
-                }
-            } else {
-                this.Cmp.nit.setValue(r.nit);
-                /*Aumentando para poner en la regional el correo*/
-                if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
-                  this.Cmp.correo_electronico.setValue(r.correo);
-                }
-            }
-        },this);
+        // this.Cmp.id_cliente.on('select',function(c,r,i) {
+        //     if (r.data) {
+        //         this.Cmp.nit.setValue(r.data.nit);
+        //         /*Aumentando para poner en la regional el correo*/
+        //         if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
+        //           this.Cmp.correo_electronico.setValue(r.data.correo);
+        //         }
+        //     } else {
+        //         this.Cmp.nit.setValue(r.nit);
+        //         /*Aumentando para poner en la regional el correo*/
+        //         if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
+        //           this.Cmp.correo_electronico.setValue(r.correo);
+        //         }
+        //     }
+        // },this);
 
 
         this.Cmp.nit.on('blur',function(c) {
@@ -1273,7 +1279,8 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                 //this.Atributos[this.getIndAtributo('id_punto_venta')].config.fieldLabel='Point of sale';
     },
 
-    guardarDetalles : function(){
+    guardarDetalles : function(bol){
+
       for (var i = 0; i < this.megrid.store.data.items.length; i++) {
         this.megrid.store.data.items[i].data.precio_total=(this.megrid.store.data.items[i].data.precio_unitario * this.megrid.store.data.items[i].data.cantidad);
       }
@@ -1301,18 +1308,20 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       this.Cmp.id_moneda_venta_recibo.setValue(this.id_moneda_recibo_cambio);
       /*******************************************************/
       /*Si la moneda es dolar y la moneda a pagar es Bs el monto convertimos a bs*/
-      if (this.id_moneda_recibo_cambio == 2 && this.Cmp.id_moneda.getValue() != 2) {
-        this.Cmp.monto_forma_pago.setValue(this.suma_total*this.tipo_cambio);
-      }
-      /*Si la moneda es en Bs y la moneda a pagar es a Bs*/
-      else if (this.id_moneda_recibo_cambio != 2 && this.Cmp.id_moneda.getValue() != 2) {
-        this.Cmp.monto_forma_pago.setValue(this.suma_total);
-      }
-      else if (this.id_moneda_recibo_cambio != 2 && this.Cmp.id_moneda.getValue() == 2) {
-        this.Cmp.monto_forma_pago.setValue(this.suma_total/this.tipo_cambio);
-      }
-      else if (this.id_moneda_recibo_cambio == 2 && this.Cmp.id_moneda.getValue() == 2) {
-        this.Cmp.monto_forma_pago.setValue(this.suma_total);
+      if(bol!='no'){
+        if (this.id_moneda_recibo_cambio == 2 && this.Cmp.id_moneda.getValue() != 2) {
+          this.Cmp.monto_forma_pago.setValue(this.suma_total*this.tipo_cambio);
+        }
+        /*Si la moneda es en Bs y la moneda a pagar es a Bs*/
+        else if (this.id_moneda_recibo_cambio != 2 && this.Cmp.id_moneda.getValue() != 2) {
+          this.Cmp.monto_forma_pago.setValue(this.suma_total);
+        }
+        else if (this.id_moneda_recibo_cambio != 2 && this.Cmp.id_moneda.getValue() == 2) {
+          this.Cmp.monto_forma_pago.setValue(this.suma_total/this.tipo_cambio);
+        }
+        else if (this.id_moneda_recibo_cambio == 2 && this.Cmp.id_moneda.getValue() == 2) {
+          this.Cmp.monto_forma_pago.setValue(this.suma_total);
+        }
       }
       /**************************************/
       if (this.data.objPadre.variables_globales.id_moneda_base != '2') {
@@ -1662,7 +1671,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       this.mestore.add(myNewRecord);
     //  this.mestore.commitChanges();
       this.obtenersuma();
-      this.guardarDetalles();
+      this.guardarDetalles('no');
       win.hide();
     }
 
@@ -1843,8 +1852,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                             collapsible: true,
                             width: '100%',
                             autoScroll:false,
+                            autoHeight: true,
                             style: {
-                                   height:'110px',
+                                   height:'80px',
                                    background: '#6ABCDF',
                                    //border:'2px solid green'
                                 },
@@ -1926,8 +1936,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                               autoScroll: true,
                               collapseFirst : false,
                               collapsible: true,
+                              width: '100%',
                               style: {
-                                       height:'220px',
+                                       height:'190px',
                                        background:'#6ABCDF',
                                       // border:'2px solid blue'
                                      },
@@ -1950,6 +1961,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                        items: [],
                         }]
                       },
+
                       {
                        bodyStyle: 'padding-right:5px;',
                        border: false,
@@ -2133,19 +2145,20 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
      onSubmit:function(o){
 
-          if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
-            Ext.Msg.show({
-                title:'Información',
-                msg: 'Favor Complete datos en la Cabecera.',
-                maxWidth : 550,
-                width: 550,
-                buttons: Ext.Msg.OK,
-                 icon: Ext.MessageBox.QUESTION,
-                scope:this
-             });
-          }
+          // if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+          //   Ext.Msg.show({
+          //       title:'Información',
+          //       msg: 'Favor Complete datos en la Cabecera.',
+          //       maxWidth : 550,
+          //       width: 550,
+          //       buttons: Ext.Msg.OK,
+          //        icon: Ext.MessageBox.QUESTION,
+          //       scope:this
+          //    });
+          // }
 
-          else if (this.mestore.data.items.length == 0) {
+          // else if (this.mestore.data.items.length == 0) {
+          if (this.mestore.data.items.length == 0) {
             Ext.Msg.show({
                 title:'Información',
                 msg: 'Favor Complete datos en el detalle de Conceptos.',
@@ -2435,8 +2448,25 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 			},
 			type : 'TrigguerCombo',
 			id_grupo : 0,
-			form : true
+			form : false
 		},
+    {
+ 		 config:{
+ 			 name: 'nombre_factura',
+ 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+ 			 allowBlank: false,
+ 			 width:200,
+ 			 gwidth: 150,
+ 			 maxLength:100,
+			 style:'text-transform:uppercase'
+ 		 },
+ 			 type:'TextField',
+ 			 filters:{pfiltro:'fact.nombre_factura',type:'string'},
+ 			 id_grupo:0,
+ 			 grid:true,
+ 			 bottom_filter:true,
+ 			 form:true
+ 	 },
     /*Aumentando para poner condicion en MIAMI (Ismael Valdivia 14/10/2020)*/
     {
       config:{
@@ -4430,7 +4460,8 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     registrarVariasFormasPago: function(){
 
       /*Datos a enviar al siguiente Formulario*/
-      var cliente = this.Cmp.id_cliente.getValue();
+      // var cliente = this.Cmp.id_cliente.getValue();
+      var cliente = this.Cmp.nombre_factura.getValue();
       var nit = this.Cmp.nit.getValue();
       var observaciones = this.Cmp.observaciones.getValue();
       var paquetes = this.Cmp.id_formula.getValue();

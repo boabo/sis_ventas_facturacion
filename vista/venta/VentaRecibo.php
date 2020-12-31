@@ -8,6 +8,20 @@
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
+<style>
+.button-impcarta{
+	background-image: url('../../../lib/imagenes/icono_inc/inc_printer.png');
+	background-repeat: no-repeat;
+	filter: saturate(250%);
+	background-size: 50%;
+}
+.button-anular-red{
+    background-image: url('../../../lib/imagenes/icono_dibu/anulared.png');
+    background-repeat: no-repeat;
+    filter: saturate(250%);
+    background-size: 80%;
+}
+</style>
 <script>
 Phx.vista.VentaRecibo = {
     bsave:false,
@@ -31,13 +45,13 @@ Phx.vista.VentaRecibo = {
   		this.store.baseParams.pes_estado = 'borrador';
 
 
-        this.addButton('anular',{grupo:[1],text:'Anular',iconCls: 'bdel',disabled:true,handler:this.anular,tooltip: '<b>Anular la venta</b>',hidden:true});
+        this.addButton('anular',{grupo:[1],text:'Anular',iconCls: 'button-anular-red',disabled:true,handler:this.anular,tooltip: '<b>Anular la venta</b>',hidden:true});
         this.addButton('sig_estado',{grupo:[0],text:'Siguiente',iconCls: 'badelante',disabled:true,handler:this.sigEstado,tooltip: '<b>Pasar al Siguiente Estado</b>'});
         this.addButton('diagrama_gantt',{grupo:[0,1,2],text:'Gant',iconCls: 'bgantt',disabled:true,handler:this.diagramGantt,tooltip: '<b>Diagrama Gantt de la venta</b>'});
         this.addButton('btnImprimir',
             {   grupo:[0,1,2],
                 text: 'Imprimir Rollo',
-                iconCls: 'bpdf32',
+                iconCls: 'bprint',
                 disabled: true,
                 handler: this.imprimirNota,
                 tooltip: '<b>Imprimir Recibo</b><br/>Imprime el Recibo de la venta'
@@ -48,7 +62,7 @@ Phx.vista.VentaRecibo = {
     		this.addButton('btnChequeoDocumentosWf',{
     				text: 'Impresion Carta',
     				grupo: [1],
-    				iconCls: 'bprint',
+    				iconCls: 'button-impcarta',
     				disabled: true,
     				handler: this.loadCheckDocumentosRecWf,
     				tooltip: '<b>Documentos </b><br/>Subir los documetos requeridos.'

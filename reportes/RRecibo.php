@@ -193,11 +193,11 @@ class RRecibo
 				<tr >
             <td colspan="2" style=" text-align: center;" align="center" >
               ' . $datos['nombre_entidad'] . '<br />
-						  SUCURSAL' . $datos['codigo_sucursal'] . '<br />
+						  SUCURSAL' . $datos['codigo_sucursal'] . '
 							' . $datos['nombre_sucursal'] . '<br />
 							' . $datos['direccion_sucursal'].'<br />
-							' . $datos['zona'] . '<br />
-							TELF: ' . $datos['telefono_sucursal'].'<br />
+							' . $datos['zona'] . '
+							TELF: ' . $datos['telefono_sucursal'].'
 							' . $datos['lugar_sucursal'].'<br />
 						<hr/>
 						</td>
@@ -230,7 +230,17 @@ class RRecibo
 
 					<table style="width: 295px;">
 					<thead>
-						<tr><th style="width: 11px;">Cant <hr color="#ccc" size=1 width="40"> </th><th style="width:150px;">Concepto <hr color="#ccc" size=1 width="80"></th><th align="center">PU<hr color="#ccc" size=1 width="30"></th><th>SubTotal <hr color="#ccc" size=1 width="80"></th></tr>
+						<tr>
+						<th style="width: 11px;">Cant</th>
+						<th style="width:150px;">Concepto</th>
+						<th align="center">PU</th>
+						<th>SubTotal</th>
+						</tr>
+						<tr >
+							<td colspan="4">
+							<hr tyle="width: 295px;"/>
+							</td>
+						</tr>
 					</thead>
 					<tbody>';
 

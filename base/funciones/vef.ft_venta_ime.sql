@@ -134,6 +134,7 @@ $body$
     v_id_medio_pago			integer;
     v_boleto_asociado		varchar;
     v_boletos_asociados		varchar;
+    v_existencia			numeric;
 
   BEGIN
 
@@ -459,17 +460,39 @@ $body$
         end if;
 
 
-        if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
-          v_id_cliente = v_parametros.id_cliente::integer;
+        if (pxp.f_existe_parametro(p_tabla,'id_cliente')) THEN
+        	if(pxp.f_is_positive_integer(v_parametros.id_cliente))then
+              v_id_cliente = v_parametros.id_cliente::integer;
 
-          update vef.tcliente
-          set nit = v_parametros.nit,
-          correo = v_parametros.correo_electronico
-          where id_cliente = v_id_cliente;
+              update vef.tcliente
+              set nit = v_parametros.nit,
+              correo = v_parametros.correo_electronico
+              where id_cliente = v_id_cliente;
 
-          select c.nombre_factura into v_nombre_factura
-          from vef.tcliente c
-          where c.id_cliente = v_id_cliente;
+              select c.nombre_factura into v_nombre_factura
+              from vef.tcliente c
+              where c.id_cliente = v_id_cliente;
+            end if;
+        -- bvp
+        elsif(v_tipo_base = 'recibo')then
+
+        INSERT INTO
+            vef.tcliente
+            (
+              id_usuario_reg,
+              fecha_reg,
+              estado_reg,
+              nombre_factura
+            )
+          VALUES (
+            p_id_usuario,
+            now(),
+            'activo',
+            upper(v_parametros.nombre_factura)
+          ) returning id_cliente into v_id_cliente;
+
+          v_nombre_factura = UPPER(v_parametros.nombre_factura);
+        -- bvp
         else
           INSERT INTO
             vef.tcliente
@@ -2456,20 +2479,32 @@ $body$
         from vef.tventa v
         where v.id_venta = v_parametros.id_venta;
 
-        v_tipo_usuario = 'vendedor';
+        v_tipo_usuario = 'cajero';
 
         if (v_venta.id_punto_venta is null) then
           select  su.tipo_usuario into v_tipo_usuario
           from vef.tsucursal_usuario su
-          where id_sucursal = v_venta.id_sucursal;
+          where id_sucursal = v_venta.id_sucursal and su.id_usuario = p_id_usuario;
         else
           select  su.tipo_usuario into v_tipo_usuario
           from vef.tsucursal_usuario su
-          where su.id_punto_venta = v_venta.id_punto_venta;
+          where su.id_punto_venta = v_venta.id_punto_venta and su.id_usuario = p_id_usuario;
         end if;
 
-        if ((v_tipo_usuario = 'vendedor' and v_venta.fecha != now()::date) or p_administrador != 1) then
-          raise exception 'La venta solo puede ser anulada el mismo dia o por un administrador';
+        if (p_administrador != 1) then
+
+        		select  count (permiso.id_autorizacion) into v_existencia
+              from vef.tpermiso_sucursales permiso
+              where permiso.id_funcionario = (select fun.id_funcionario
+                                              from segu.tusuario usu
+                                              inner join orga.vfuncionario funcio on funcio.id_persona = usu.id_persona
+                                              inner join orga.vfuncionario_ultimo_cargo fun on fun.id_funcionario = funcio.id_funcionario
+                                              where usu.id_usuario = p_id_usuario);
+              if (v_existencia = 0) then
+                if (v_tipo_usuario = 'cajero' and v_venta.fecha != now()::date) then
+                  raise exception 'El recibo solo puede ser anulado el mismo dia de emision o por un administrador.';
+                end if;
+          	end if;
         end if;
 
         --obtenemos datos basicos

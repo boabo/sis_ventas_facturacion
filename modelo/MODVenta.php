@@ -97,7 +97,7 @@ class MODVenta extends MODbase{
 		$this->captura('numero_tarjeta','varchar');
 		$this->captura('codigo_tarjeta','varchar');
 		$this->captura('tipo_tarjeta','varchar');
-		
+
     $this->captura('porcentaje_descuento','numeric');
     $this->captura('id_vendedor_medico','varchar');
 		$this->captura('comision','numeric');
@@ -301,6 +301,7 @@ class MODVenta extends MODbase{
 
 						/*Aumentando para registrar correo electronico en MIAMI (Ismael Valdivia 14/10/2020)*/
 						$this->setParametro('correo_electronico', 'correo_electronico', 'varchar');
+						$this->setParametro('nombre_factura', 'nombre_factura', 'varchar');
 						/***********************************************************************************/
 
             //Ejecuta la instruccion
