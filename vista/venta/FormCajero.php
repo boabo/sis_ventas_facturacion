@@ -2771,9 +2771,9 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                           collapsible: true,
                           width: '100%',
                           autoScroll:true,
-                          autoHeight: true,
+                          // autoHeight: true,
                           style: {
-                                 // height:'160px',
+                                 height:'120px',
                                  background: '#5FB0A8',
                                  //border:'2px solid green'
                               },
