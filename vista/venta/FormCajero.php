@@ -2773,7 +2773,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                           autoScroll:true,
                           // autoHeight: true,
                           style: {
-                                 height:'120px',
+                                 height:'100px',
                                  background: '#5FB0A8',
                                  //border:'2px solid green'
                               },
@@ -2874,7 +2874,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             collapseFirst : false,
                             collapsible: true,
                             style: {
-                                     height:'250px',
+                                     height:'230px',
                                      background:'#5FB0A8',
                                     // border:'2px solid blue'
                                    },
@@ -3367,7 +3367,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     {
 			config : {
 				name : 'id_formula',
-				fieldLabel : '<img src="../../../lib/imagenes/facturacion/paquete.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Paquetes / Fórmulas</span>',
+				fieldLabel : '<img src="../../../lib/imagenes/facturacion/paquete.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Paquetes</span>',
 				allowBlank : true,
         width:200,
         listWidth:'450',

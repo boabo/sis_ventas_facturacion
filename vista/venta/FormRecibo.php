@@ -2799,7 +2799,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                 totalProperty: 'total',
                 fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                 remoteSort: true,
-                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'RO'}
             }),
             valueField: 'id_medio_pago_pw',
             displayField: 'name',
@@ -3298,7 +3298,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'RO'}
                 }),
                 valueField: 'id_medio_pago_pw',
                 displayField: 'name',
