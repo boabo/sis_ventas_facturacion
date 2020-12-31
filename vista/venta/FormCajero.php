@@ -96,7 +96,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       				})
                   },
                   type:'ComboBox',
-                  id_grupo:1,
+                  id_grupo: 8,
                   form:true
               },
           {
@@ -124,7 +124,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               //style:'text-transform:uppercase;'
             },
               type:'TextField',
-              id_grupo:22,
+              id_grupo:1,
               form:true
           },
       /*Aumentnado para formato de impresion*/
@@ -217,7 +217,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                //maxLength:30,
              },
                type:'TextField',
-               id_grupo:1,
+               id_grupo: 8,
                form:true
            },);
 
@@ -247,7 +247,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 		                allowBlank: false,
                     disabled:true,
 		                //anchor: '80%',
-                    width:200,
+                    width:150,
                     style:{
                       background:'#FFD1A4'
                     },
@@ -255,7 +255,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 		                value : 0
 		            },
 		                type:'NumberField',
-		                id_grupo:22,
+		                id_grupo: 8,
 		                form:true,
 		                valorInicial:'0'
 		      });
@@ -518,6 +518,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
 
     iniciarEventos : function () {
+
       this.mostrarComponente(this.Cmp.monto_forma_pago);
       this.ocultarComponente(this.Cmp.codigo_tarjeta);
       this.ocultarComponente(this.Cmp.tipo_tarjeta);
@@ -530,9 +531,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
       this.ocultarComponente(this.Cmp.id_auxiliar_2);
       this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
-
-      this.form.body.dom[43].style.display='none'
-      this.form.body.dom[31].style.display='none'
         /**********************************************************************************/
         /*Aumentando para poner Condiciones en Regionales (Ismael Valdivia 14/10/2020)*/
         this.condicionesRegionales();
@@ -699,7 +697,11 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
             },this);
         }
-
+        // this.ocultarComponente(this.Cmp.mco_2);
+        // this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+        // this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+        // this.ocultarComponente(this.Cmp.id_auxiliar_2);
+        // this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 
         /*Comentado para agregar instancia de pago*/
       /*  this.Cmp.id_forma_pago.on('select',function(c,r,i) {
@@ -781,12 +783,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         /****************************Aumnetando la instancia de pago********************************/
         this.Cmp.id_medio_pago.on('select',function(c,r,i) {
 
-          // if(r){
-            // if (r.data) {
+          if(r){
+            if (r.data) {
               var codigo_forma_pago = r.data.fop_code;
               this.Cmp.tipo_tarjeta.setValue(r.data.name);
-            // }
-          // }
+            }
+          }
 
           //var codigo_forma_pago = r.data.codigo_forma_pago.substr(0,2);
 
@@ -794,7 +796,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           if (codigo_forma_pago != undefined && codigo_forma_pago != '' && codigo_forma_pago != null) {
 
           if (codigo_forma_pago.startsWith("CC")) {
-            this.form.body.dom[31].style.display='block'
             this.mostrarComponente(this.Cmp.codigo_tarjeta);
             //this.mostrarComponente(this.Cmp.tipo_tarjeta);
           	this.mostrarComponente(this.Cmp.numero_tarjeta);
@@ -805,7 +806,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta.allowBlank = false;
           	this.Cmp.mco.allowBlank = true;
           } else if (codigo_forma_pago.startsWith("MCO")) {
-            this.form.body.dom[31].style.display='block'
             this.mostrarComponente(this.Cmp.mco);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -820,7 +820,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar.reset();
             this.Cmp.numero_tarjeta.reset();
           } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
-            this.form.body.dom[31].style.display='block'
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -837,7 +836,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
           }else if (codigo_forma_pago.startsWith("CA")) {
-            this.form.body.dom[31].style.display='none'
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
           	this.Cmp.codigo_tarjeta.allowBlank = true;
@@ -870,7 +868,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
           var codigo_forma_pago = r.data.fop_code;
           this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
           if (codigo_forma_pago.startsWith("CC")) {
-            this.form.body.dom[43].style.display='block'
             this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
             //this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
           	this.mostrarComponente(this.Cmp.numero_tarjeta_2);
@@ -881,7 +878,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta_2.allowBlank = false;
           	this.Cmp.mco_2.allowBlank = true;
           } else if (codigo_forma_pago.startsWith("MCO")) {
-            this.form.body.dom[43].style.display='block'
             this.mostrarComponente(this.Cmp.mco_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -896,7 +892,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
           } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
-            this.form.body.dom[43].style.display='block'
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -913,7 +908,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
           }else if (codigo_forma_pago.startsWith("CA")) {
-            this.form.body.dom[43].style.display='none'
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
           	this.Cmp.codigo_tarjeta_2.allowBlank = true;
@@ -2762,53 +2756,32 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         }
     },
     buildGrupos: function(){
-        this.Grupos = [{
-                        layout: 'border',
-                        border: false,
-                         frame:true,
-                        items:[
-                          {
-                            xtype: 'fieldset',
-                            border: false,
-                            split: true,
-                            layout: 'column',
-                            region: 'north',
-                            collapseFirst : false,
-                            collapsible: true,
-                            width: '100%',
-                            autoScroll:true,
-                            style: {
-                                   height:'160px',
-                                   background: '#5FB0A8',
-                                   //border:'2px solid green'
-                                },
-                            padding: '0 0 0 10',
-                            items:[
-                                   {
-                                    bodyStyle: 'padding-right:5px;',
-                                    autoHeight: true,
-                                    border: false,
-                                    items:[
-                                       {
-                                        xtype: 'fieldset',
-                                        frame: true,
-                                        border: false,
-                                        layout: 'form',
-                                        title: 'Datos Venta',
-                                        width: '90%',
-                                        style: {
-                                               height:'160px',
-                                               width:'590px',
-                                            },
-                                        padding: '0 0 0 10',
-                                        bodyStyle: 'padding-left:5px;',
-                                        id_grupo: 0,
-                                        items: [],
-                                     }]
-                                 },
+      this.Grupos = [{
+                      layout: 'border',
+                      border: false,
+                       frame:true,
+                      items:[
+                        {
+                          xtype: 'fieldset',
+                          border: false,
+                          split: true,
+                          layout: 'column',
+                          region: 'north',
+                          collapseFirst : false,
+                          collapsible: true,
+                          width: '100%',
+                          autoScroll:true,
+                          autoHeight: true,
+                          style: {
+                                 // height:'160px',
+                                 background: '#5FB0A8',
+                                 //border:'2px solid green'
+                              },
+                          padding: '0 0 0 10',
+                          items:[
                                  {
                                   bodyStyle: 'padding-right:5px;',
-                                  //autoHeight: true,
+                                  autoHeight: true,
                                   border: false,
                                   items:[
                                      {
@@ -2816,167 +2789,170 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                       frame: true,
                                       border: false,
                                       layout: 'form',
+                                      title: 'Datos Venta',
+                                      width: '90%',
                                       style: {
                                              height:'160px',
-                                             width:'280px',
+                                             width:'590px',
                                           },
                                       padding: '0 0 0 10',
                                       bodyStyle: 'padding-left:5px;',
-                                      id_grupo: 22,
+                                      id_grupo: 0,
                                       items: [],
                                    }]
                                },
-                                 {
-                                  bodyStyle: 'padding-right:5px;',
-                                  border: false,
-                                  autoHeight: true,
-                                  items: [{
-                                        xtype: 'fieldset',
-                                        frame: true,
-                                        layout: 'form',
-                                        style: {
-                                               height:'160px',
-                                               width:'320px'
-                                              },
-                                        border: false,
-                                        padding: '0 0 0 20',
-                                        bodyStyle: 'padding-left:5px;',
-                                        id_grupo: 1,
-                                        items: [],
-                                     }]
-                                 },
+                               {
+                                bodyStyle: 'padding-right:5px;',
+                                //autoHeight: true,
+                                border: false,
+                                items:[
+                                   {
+                                    xtype: 'fieldset',
+                                    frame: true,
+                                    border: false,
+                                    layout: 'form',
+                                    style: {
+                                           height:'160px',
+                                           width:'300px',
+                                        },
+                                    padding: '0 0 0 10',
+                                    bodyStyle: 'padding-left:5px;',
+                                    id_grupo: 22,
+                                    items: [],
+                                 }]
+                             },
+                               {
+                                bodyStyle: 'padding-right:5px;',
+                                border: false,
+                                autoHeight: true,
+                                items: [{
+                                      xtype: 'fieldset',
+                                      frame: true,
+                                      layout: 'form',
+                                      style: {
+                                             height:'160px',
+                                             width:'320px'
+                                            },
+                                      border: false,
+                                      padding: '0 0 0 20',
+                                      bodyStyle: 'padding-left:5px;',
+                                      id_grupo: 1,
+                                      items: [],
+                                   }]
+                               },
+                               {
+                                // bodyStyle: 'padding-right:5px;',
+                                border: false,
+                                autoHeight: true,
+                                items: [{
+                                      xtype: 'fieldset',
+                                      frame: true,
+                                      layout: 'form',
+                                      style: {
+                                             height:'160px',
+                                             // width:'320px'
+                                            },
+                                      border: false,
+                                      // padding: '0 0 0 20',
+                                      // bodyStyle: 'padding-left:5px;',
+                                      id_grupo: 8,
+                                      items: [],
+                                   }]
+                               },
 
+                            ]
+                        },
+                          this.megrid,
 
-                              ]
-                          },
-                            this.megrid,
+                          {
+                            xtype: 'fieldset',
+                            border: false,
+                            split: true,
+                            layout: 'column',
+                            region: 'south',
+                            autoScroll: true,
+                            collapseFirst : false,
+                            collapsible: true,
+                            style: {
+                                     height:'250px',
+                                     background:'#5FB0A8',
+                                    // border:'2px solid blue'
+                                   },
+                            padding: '0 0 0 10',
+                            items:[
+                              {
+                               bodyStyle: 'padding-right:5px;',
+                               border: false,
+                               autoHeight: true,
+                               items: [{
+                                     xtype: 'fieldset',
+                                     frame: true,
+                                     layout: 'form',
+                                     title: ' Forma de Pago <br> <br>',
+                                     border: false,
+                                     // style: {
+                                     //          border:'2px solid red'
+                                     //        },
+                                     width: 280,
+                                     id_grupo: 2,
+                                     items: [],
+                      }]
+                    },{
+                     bodyStyle: 'padding-right:5px;',
 
-                            {
-                              xtype: 'fieldset',
-                              border: false,
-                              split: true,
-                              layout: 'column',
-                              region: 'south',
-                              autoScroll: true,
-                              collapseFirst : false,
-                              collapsible: true,
-                              width: '100%',
-                              autoHeight: true,
-                              style: {
-                              //          // height:'250px',
-                              //          height:'160px',
-                                       background:'#5FB0A8',
-                              //         // border:'2px solid blue'
-                                     },
-                              padding: '0 0 0 0',
-                              items:[
-                                {
-                                 bodyStyle: 'padding-right:5px;',
-                                 border: false,
-                                 autoHeight: true,
-                                 items: [{
-                                       xtype: 'fieldset',
-                                       frame: true,
-                                       layout: 'form',
-                                       title: ' Forma de Pago <br> <br>',
-                                       border: false,
-                                       // style: {
-                                       //          border:'2px solid red'
-                                       //        },
-                                       width: 280,
-                                       id_grupo: 2,
-                                       items: [],
+                     border: false,
+                     autoHeight: true,
+                     items: [{
+                           xtype: 'fieldset',
+                           frame: true,
+                           layout: 'form',
+                           title: ' Forma de Pago <br> <br>',
+                           border: false,
+                           // style: {
+                           //          border:'2px solid red'
+                           //        },
+                           width: 280,
+                           id_grupo: 10,
+                           items: [],
+                         }]
+                    },
+                    {
+                     bodyStyle: 'padding-right:5px;',
+
+                     border: false,
+                     autoHeight: true,
+                     items: [{
+                           xtype: 'fieldset',
+                           frame: true,
+                           layout: 'form',
+                           title: 'Cambio M/L <br><br>',
+                           style: {
+                                   width: '40%',
+                               },
+                           border: false,
+                           padding: '0 0 0 20',
+                           bodyStyle: 'padding-left:5px;',
+                           id_grupo: 11,
+                           items: [],
                         }]
-                      },
-                      //bvp
-                      {
-                       bodyStyle: 'padding-right:5px;',
-                       border: false,
-                       autoHeight: true,
-                       items: [{
-                             xtype: 'fieldset',
-                             frame: true,
-                             layout: 'form',
-                             title: ' <br> <br>',
-                             border: false,
-                             width: 280,
-                             id_grupo: 6,
-                             items: [],
-                      }]
-                    },
-                      //bvp
-                      {
-                       bodyStyle: 'padding-right:5px;',
+                    },{
+                     bodyStyle: 'padding-right:5px;',
 
-                       border: false,
-                       autoHeight: true,
-                       items: [{
-                             xtype: 'fieldset',
-                             frame: true,
-                             layout: 'form',
-                             title: ' Forma de Pago <br> <br>',
-                             border: false,
-                             // style: {
-                             //          border:'2px solid red'
-                             //        },
-                             width: 280,
-                             id_grupo: 10,
-                             items: [],
-                           }]
-                      },
-                      //bvp
-                      {
-                       bodyStyle: 'padding-right:5px;',
-                       border: false,
-                       autoHeight: true,
-                       items: [{
-                             xtype: 'fieldset',
-                             frame: true,
-                             layout: 'form',
-                             title: ' <br> <br>',
-                             border: false,
-                             width: 280,
-                             id_grupo: 8,
-                             items: [],
-                      }]
+                     border: false,
+                     autoHeight: true,
+                     items: [{
+                           xtype: 'fieldset',
+                           frame: true,
+                           layout: 'form',
+                           width: '60%',
+                           title: 'Cambio M/E <br><br>',
+                           border: false,
+                           padding: '0 0 0 20',
+                           bodyStyle: 'padding-left:5px;',
+                           id_grupo: 12,
+                           items: [],
+                        }]
                     },
-                      //bvp
-                      {
-                       bodyStyle: 'padding-right:5px;',
-
-                       border: false,
-                       autoHeight: true,
-                       items: [{
-                             xtype: 'fieldset',
-                             frame: true,
-                             layout: 'form',
-                             title: 'Cambio M/L <br><br>',
-                             style: {
-                                     width: '40%',
-                                 },
-                             border: false,
-                             padding: '0 0 0 20',
-                             bodyStyle: 'padding-left:5px;',
-                             id_grupo: 11,
-                             items: [],
-                          }]
-                      },{
-                       bodyStyle: 'padding-right:5px;',
-                       border: false,
-                       autoHeight: true,
-                       items: [{
-                             xtype: 'fieldset',
-                             frame: true,
-                             layout: 'form',
-                             width: '60%',
-                             title: 'Cambio M/E <br><br>',
-                             border: false,
-                             padding: '0 0 0 20',
-                             bodyStyle: 'padding-left:5px;',
-                             id_grupo: 12,
-                             items: [],
-                          }]
-                      },
                       // {
                       //  bodyStyle: 'padding-right:5px;',
                       //
@@ -3434,7 +3410,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				style:'text-transform:uppercase;'
 			},
 			type : 'ComboBox',
-			id_grupo : 0,
+			id_grupo :22,
 			form : true
 		},
         {
@@ -3738,7 +3714,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         },
             type:'TextField',
-            id_grupo:6,
+            id_grupo:2,
             form:true
     },
     {
@@ -3752,7 +3728,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             maxLength:20
         },
         type:'TextField',
-        id_grupo:6,
+        id_grupo:2,
         grid:true,
         form:true
     },
@@ -3770,7 +3746,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
         },
             type:'TextField',
-            id_grupo:6,
+            id_grupo:2,
             form:true
     },
     {
@@ -3814,7 +3790,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 				}
 			},
 			type: 'ComboBox',
-			id_grupo: 6,
+			id_grupo: 2,
 			grid: true,
 			form: true
 		},
@@ -4078,7 +4054,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
     				}
     			},
     			type: 'ComboBox',
-    			id_grupo: 8,
+    			id_grupo: 10,
     			grid: true,
     			form: true
     		},
@@ -4094,7 +4070,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 minLength:15
             },
             type:'TextField',
-            id_grupo:8,
+            id_grupo:10,
             grid:false,
             form:true
         },
@@ -4111,7 +4087,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 maxLength:20
             },
             type:'TextField',
-            id_grupo:8,
+            id_grupo:10,
             grid:true,
             form:true
         },
@@ -4130,7 +4106,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 
             },
             type:'TextField',
-            id_grupo:8,
+            id_grupo:10,
             grid:false,
             form:true
         },
@@ -4164,7 +4140,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 //value:0
             },
                 type:'TextField',
-                id_grupo:8,
+                id_grupo:10,
                 form:true,
                 //valorInicial:'0'
         },

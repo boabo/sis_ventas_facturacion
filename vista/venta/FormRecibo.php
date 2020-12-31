@@ -64,7 +64,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 	                queryDelay: 1000,
 	                gwidth: 150,
 	                minChars: 2,
-	                disabled:false,
+	                disabled:true,
 	                renderer : function(value, p, record) {
 	                    return String.format('{0}', record.data['nombre_punto_venta']);
 	                }
@@ -2799,7 +2799,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                 totalProperty: 'total',
                 fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                 remoteSort: true,
-                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'RO'}
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
             }),
             valueField: 'id_medio_pago_pw',
             displayField: 'name',
@@ -3298,7 +3298,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'RO'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
                 }),
                 valueField: 'id_medio_pago_pw',
                 displayField: 'name',
@@ -4628,16 +4628,16 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 
 
     	if ('cambio' in datos_respuesta.ROOT.datos) {
-    		Ext.Msg.show({
-			   title:'DEVOLUCION',
-			   msg: 'Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente',
-			   buttons: Ext.Msg.OK,
-			   fn: function () {
+    		// Ext.Msg.show({
+			  //  title:'DEVOLUCION',
+			  //  msg: 'Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente',
+			  //  buttons: Ext.Msg.OK,
+			  //  fn: function () {
 		        Phx.CP.getPagina(this.idContenedorPadre).reload();
 		        this.panel.close();
-			   },
-			   scope:this
-			});
+			   // },
+			   // scope:this
+			// });
     	} else {
     		Phx.CP.getPagina(this.idContenedorPadre).reload();
 		    this.panel.close();
