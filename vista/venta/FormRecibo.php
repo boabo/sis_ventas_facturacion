@@ -17,6 +17,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     tabEnter: true,
     autoScroll: false,
     breset: true,
+    v_tipo_p_e: '',
     bsubmit:true,
     storeFormaPago : false,
     fwidth : '9%',
@@ -590,6 +591,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 	        this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag},
 	           callback : function (r) {
 	                this.Cmp.id_punto_venta.setValue(this.data.objPadre.variables_globales.id_punto_venta);
+                  this.v_tipo_p_e = r[0].json.tipo;
 	           		    this.detCmp.id_producto.store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
 	                this.Cmp.id_punto_venta.fireEvent('select',this.Cmp.id_punto_venta, this.Cmp.id_punto_venta.store.getById(this.data.objPadre.variables_globales.id_punto_venta));
 
@@ -1479,7 +1481,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
    this.variables = simple;
    /*Aumentando para Filtrar los servicios por id_punto_venta y el tipo del PV (ATO CTO)*/
    //this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
-   //this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
+   this.variables.items.items[1].store.baseParams.tipo_pv = this.v_tipo_p_e;
    // /************************************************************************************************/
 
 

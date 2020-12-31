@@ -19,7 +19,7 @@ class ACTServicios extends ACTbase{
 			if ($this->objParam->getParametro('emision') == 'facturacion') {
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales) AND ''".$this->objParam->getParametro('tipo_pv')."''=ANY (ingas.nivel_permiso)");
 			} elseif ($this->objParam->getParametro('emision') == 'recibo') {
-				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales)");
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales) AND ''".$this->objParam->getParametro('tipo_pv')."''=ANY (ingas.nivel_permiso)");
 			}
 			elseif ($this->objParam->getParametro('emision') == 'DEVOLUCIONES') {
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
@@ -46,7 +46,7 @@ class ACTServicios extends ACTbase{
 				$this->objParam->addFiltro("(''RO''=ANY (ingas.sw_autorizacion) OR ''FACTCOMP''=ANY (ingas.sw_autorizacion) OR ''dev''=ANY (ingas.sw_autorizacion))");
 			}
 		}
-	
+
 		if($this->objParam->getParametro('id_actividad_economica')!=''){
 			$this->objParam->addFiltro("ingas.id_actividad_economica = ".$this->objParam->getParametro('id_actividad_economica'));
 		}
