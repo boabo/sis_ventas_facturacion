@@ -2365,7 +2365,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                             }
                         }
                         array.push(this.contabilizable);
-                        var unicos = Array.from(new Set(array));                        
+                        var unicos = Array.from(new Set(array));
                         // if (!array.includes(this.contabilizable)) {
                         if(unicos.length == 0 || unicos.length == 1){
                           this.insertarNuevo(win);
@@ -4284,6 +4284,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       this.suma_total = suma;
 
       var cliente = this.Cmp.id_cliente.getValue();
+      var nombre_factura = this.Cmp.nombre_factura.getValue();
       var nit = this.Cmp.nit.getValue();
       var observaciones = this.Cmp.observaciones.getValue();
       var paquetes = this.Cmp.id_formula.getValue();
@@ -4343,6 +4344,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                  },
                                  {data:
                                    { cliente: cliente,
+                                     nombre_factura: nombre_factura,
                                      nit: nit,
                                      observaciones: observaciones,
                                      paquetes: paquetes,

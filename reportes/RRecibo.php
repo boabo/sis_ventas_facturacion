@@ -196,7 +196,7 @@ class RRecibo
 						  SUCURSAL' . $datos['codigo_sucursal'] . '
 							' . $datos['nombre_sucursal'] . '<br />
 							' . $datos['direccion_sucursal'].'<br />
-							' . $datos['zona'] . '
+							' . $datos['zona'] . '<br />
 							TELF: ' . $datos['telefono_sucursal'].'
 							' . $datos['lugar_sucursal'].'<br />
 						<hr/>

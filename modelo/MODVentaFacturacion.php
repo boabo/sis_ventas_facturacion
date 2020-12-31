@@ -1288,6 +1288,7 @@ class MODVentaFacturacion extends MODbase{
 								$this->setParametro('informe','informe','varchar');
 								$this->setParametro('fecha_factura','fecha_factura','varchar');
 								$this->setParametro('id_formula','id_formula','integer');
+								$this->setParametro('nombre_factura','nombre_factura', 'varchar');
 								//$this->setParametro('asociar_boletos','asociar_boletos','varchar');
 								//$this->setParametro('id_venta','id_venta','integer');
 

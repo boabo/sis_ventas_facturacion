@@ -834,7 +834,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                           allowBlank: true,
                                           width : 450,
                                           maxLength:20,
-                                          allowNegative:false,                                        
+                                          allowNegative:false,
 
                                   }),
                   ]
@@ -1106,20 +1106,27 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.id_dosificacion.reset();
 
       }
+      //bvp
+      var valoresAceptados = /^[0-9]+$/;
+      var bolcontrol = false;
+      if (this.data.cliente.match(valoresAceptados)){
+          bolcontrol = true;
+      }
+      if(bolcontrol){
+        this.Cmp.id_cliente.store.baseParams.id_cliente=this.data.cliente;
+        this.Cmp.id_cliente.store.load({params:{start:0,limit:50},
+               callback : function (r) {
+                 if (r.length == 1 ) {
+                    this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
+                    this.Cmp.id_cliente.fireEvent('select', this.Cmp.id_cliente,r[0]);
+                  }
 
-
-
-      this.Cmp.id_cliente.store.baseParams.id_cliente=this.data.cliente;
-      this.Cmp.id_cliente.store.load({params:{start:0,limit:50},
-             callback : function (r) {
-               if (r.length == 1 ) {
-                 this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
-                  this.Cmp.id_cliente.fireEvent('select', this.Cmp.id_cliente,r[0]);
-                }
-
-              }, scope : this
-          });
-
+                }, scope : this
+            });
+        }else{
+            this.Cmp.nombre_factura.setValue(this.data.nombre_factura);
+            this.Cmp.id_cliente.setValue(this.data.nombre_factura);
+        }
         this.Cmp.id_sucursal.store.baseParams.id_sucursal = this.data.sucursal;
         this.Cmp.id_sucursal.store.load({params:{start:0,limit:50},
                callback : function (r) {
@@ -1805,6 +1812,16 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
 			id_grupo : 0,
 			form : true
 		},
+    //bvp
+    {
+        config:{
+                labelSeparator:'',
+                inputType:'hidden',
+                name: 'nombre_factura'
+        },
+        type:'Field',
+        form:true
+    },
     {
 			config:{
 				name: 'observaciones',

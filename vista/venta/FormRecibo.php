@@ -4462,6 +4462,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       /*Datos a enviar al siguiente Formulario*/
       // var cliente = this.Cmp.id_cliente.getValue();
       var cliente = this.Cmp.nombre_factura.getValue();
+      var nombre_factura = this.Cmp.nombre_factura.getValue();
       var nit = this.Cmp.nit.getValue();
       var observaciones = this.Cmp.observaciones.getValue();
       var paquetes = this.Cmp.id_formula.getValue();
@@ -4515,6 +4516,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                },
                                {data:
                                  { cliente: cliente,
+                                   nombre_factura: nombre_factura,
                                    nit: nit,
                                    observaciones: observaciones,
                                    paquetes: paquetes,
