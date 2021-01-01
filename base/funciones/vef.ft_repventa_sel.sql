@@ -48,7 +48,7 @@ $body$
     v_filtro_id_punto_venta	varchar;
     v_filtro_id_concepto	varchar;
     v_moneda_base			varchar;
-
+v_filtro_cajero_boleto_1 varchar;
   BEGIN
 
     v_nombre_funcion = 'vef.ft_repventa_sel';
@@ -178,12 +178,14 @@ $body$
         end if;
 
         v_filtro_cajero_boleto='';
+        v_filtro_cajero_boleto_1='';
         v_filtro_cajero_factura='';
 
         IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
 
             IF(v_parametros.id_usuario_cajero!=0)THEN
                 v_filtro_cajero_boleto = ' and b.id_usuario_cajero='||v_parametros.id_usuario_cajero;
+                v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero='||v_parametros.id_usuario_cajero;
             END IF;
 
             IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
@@ -463,7 +465,7 @@ $body$
                       group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,
                                 fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
                       )
-            union ALL
+            union ALL --1
                 (WITH ';
         ELSE
         	v_consulta = v_consulta || ' left join forma_pago_mb fpmb on v.id_factucom = fpmb.id_factucom
@@ -481,7 +483,7 @@ $body$
                            fpmb.monto_cte_mb,
                            fpmb.monto_mco_mb,
                            fpmb.monto_otro_mb'|| v_group_by ||')
-                  UNION ALL
+                  UNION ALL --2
                   (WITH ';
         END IF;
 
@@ -896,10 +898,11 @@ $body$
                           on v.id_venta = fpmb.id_venta
                       where v.estado = ''finalizado'' and
                         (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
+                        '|| v_filtro_cajero_boleto_1 ||'
                       group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,
                                 fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
                       )
-            union ALL
+            union ALL --3
                 (WITH ';
         ELSE
         	v_consulta = v_consulta || ' left join forma_pago_mb fpmb on v.id_factucom = fpmb.id_factucom
@@ -917,7 +920,7 @@ $body$
                            fpmb.monto_cte_mb,
                            fpmb.monto_mco_mb,
                            fpmb.monto_otro_mb'|| v_group_by ||')
-                  UNION ALL
+                  UNION ALL --4
                   (WITH ';
         END IF;
 
@@ -1085,7 +1088,7 @@ $body$
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
                       fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar '|| v_group_by || ')
-             order by fecha,boleto,correlativo_venta';
+             order by fecha,tipo_factura DESC,correlativo_venta, boleto';
         end if;
 
 
