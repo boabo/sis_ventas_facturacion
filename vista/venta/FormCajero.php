@@ -3165,7 +3165,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       imprimirNota: function(){
    		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
    				Phx.CP.loadingShow();
-         if (this.data.objPadre.tipo_punto_venta == 'ato') {
+         if (this.data.objPadre.tipo_punto_venta == 'ato' || this.data.objPadre.tipo_punto_venta == 'carga') {
            if (this.data.objPadre.variables_globales.formato_comprobante == 'carta') {
            		Ext.Ajax.request({
            						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
@@ -4419,7 +4419,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       if (this.generar == 'generar') {
         //Phx.CP.loadingShow();
   			var d = datos_respuesta.ROOT.datos;
-        if (this.data.objPadre.tipo_punto_venta == 'ato') {
+        if (this.data.objPadre.tipo_punto_venta == 'ato' || this.data.objPadre.tipo_punto_venta == 'carga') {
   			Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
   					params:{id_estado_wf_act:d.id_estado_wf,

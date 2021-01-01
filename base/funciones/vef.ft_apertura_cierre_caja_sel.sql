@@ -67,6 +67,9 @@ DECLARE
     v_boletos_mco_extranjera				varchar;
     v_boletos_otros_extranjera				varchar;
 
+    v_insertar_facturas_ro					varchar;
+    v_insertar_boletos						varchar;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_apertura_cierre_caja_sel';
@@ -922,9 +925,66 @@ BEGIN
 
                 	END IF;
                 ELSE
-                /*Consulta para recuperar las facturas boletos recibos con las nuevas instancias de pago*/
-                v_consulta:='
-           			  select  u.desc_persona::varchar,
+
+                /*SEPARANDO LAS CONSULTAS PARA OBTENER TOTALES EXACTOS (01/01/2021)*/
+
+
+                /*CONSULTA PARA LOS BOLETOS*/
+                v_insertar_boletos = '
+                insert into temporal_cierre ( desc_persona,
+                                          fecha_apertura_cierre,
+                                          pais,
+                                          estacion,
+                                          punto_venta,
+                                          obs_cierre,
+                                          arqueo_moneda_local,
+                                          arqueo_moneda_extranjera,
+                                          monto_inicial,
+                                          monto_inicial_moneda_extranjera,
+                                          tipo_cambio,
+                                          tiene_dos_monedas,
+                                          moneda_local,
+                                          moneda_extranjera,
+                                          cod_moneda_local,
+                                          cod_moneda_extranjera,
+                                          efectivo_boletos_ml,
+                                          boletos_cash_extranjera, --
+                                          tarjeta_boletos_ml,
+                                          boletos_tarjetas_extranjera, --
+                                          cuenta_corriente_boletos_ml,
+                                          boletos_cuenta_corriente_extranjera, --
+                                          mco_boletos_ml,
+                                          boletos_mco_extranjera, --
+                                          otro_boletos_ml,
+                                          boletos_otros_extranjera, --
+                                          efectivo_ventas_ml,
+                                          cash_extranjera, --
+                                          tarjeta_ventas_ml,
+                                          tarjetas_extranjera, --
+                                          cuenta_corriente_ventas_ml,
+                                          cuenta_corriente_extranjera, --
+                                          mco_ventas_ml,
+                                          ventas_mco_extranjera, --
+                                          otro_ventas_ml,
+                                          ventas_otros_extranjera, --
+                                          efectivo_recibo_ml,
+                                          recibo_cash_extranjera, --
+                                          tarjeta_recibo_ml,
+                                          tarjeta_recibo_extranjera, --
+                                          cuenta_corriente_recibo_ml,
+                                          cuenta_corriente_recibo_extranjera, --
+                                          deposito_recibo_ml,
+                                          deposito_recibo_extranjera, --
+                                          otro_recibo_ml,
+                                          otro_recibo_extranjera, --
+                                          pago_externo_recibo_ml,
+                                          pago_externo_recibo_extranjera, --
+                                          comisiones_ml,
+                                          comisiones_me,
+                                          monto_ca_recibo_ml,
+                                          monto_cc_recibo_ml)
+
+                select  u.desc_persona::varchar,
                               to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
                               coalesce(ppv.codigo,ps.codigo)::varchar as pais,
                               COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
@@ -991,6 +1051,200 @@ BEGIN
 
                               '||v_boletos_otros_extranjera||',
 
+                              /****************************************************/
+
+                              /******************************************************Recuperamos datos para facturas******************************************************/
+                              /*Inicio recuperacion facturas*/
+                              0::numeric as efectivo_ventas_ml,
+
+                              0::numeric as efectivo_ventas_me,
+
+                              0::numeric as tarjeta_ventas_ml,
+
+                              0::numeric as tarjeta_ventas_me,
+
+                              0::numeric as cuenta_corriente_ventas_ml,
+
+                              0::numeric as cuenta_corriente_ventas_me,
+
+                              0::numeric as mco_ml,
+
+                              0::numeric as mco_me,
+
+                              0::numeric as otro_ventas_ml,
+
+                              0::numeric as otro_ventas_me,
+
+                              /*Fin recuperacion facturas*/
+                              /*****************************************************************************************************************************************/
+
+                              /*Recuperamos datos para Recibos*/
+                              /*Inicio recuperacion recibos*/
+
+                              0::numeric as efectivo_recibo_ml,
+
+                             	0::numeric as efectivo_recibo_ml,
+
+                              0::numeric as tarjeta_recibo_ml,
+
+                              0::numeric as tarjeta_recibo_me,
+
+                              0::numeric as cuenta_corriente_recibo_ml,
+
+                              0::numeric as cuenta_corriente_recibo_me,
+
+                              /***********************************************Aqui Recuperamos los depositos asociados al Recibo****************************************************/
+                               0::numeric as deposito_recibo_ml,
+
+                             0::numeric as deposito_recibo_me,
+                      		  /******************************************************************************************************************************************************/
+
+                              0::numeric as otro_recibo_ml,
+
+                              0::numeric as otro_recibo_me,
+
+                              0::numeric as pago_externo_recibo_ml,
+
+                              0::numeric as pago_externo_recibo_me,
+                              /*************************************************************************/
+
+                              /*Fin recuperacion recibos*/
+                              /************************************************************************************************/
+
+
+                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
+                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 1 and
+                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
+                                          and bol.id_usuario_cajero = acc.id_usuario_cajero and
+                                          bol.estado = ''revisado''),0) as comisiones_ml,
+
+
+
+                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
+                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 2 and
+                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
+                                           and bol.id_usuario_cajero = acc.id_usuario_cajero and
+                                          bol.estado = ''revisado''),0)   as comisiones_me,
+
+                              acc.monto_ca_recibo_ml,
+                              acc.monto_cc_recibo_ml
+                      from vef.tapertura_cierre_caja acc
+                      inner join segu.vusuario u on u.id_usuario = acc.id_usuario_cajero
+                      left join vef.tsucursal s on acc.id_sucursal = s.id_sucursal
+                      left join vef.tpunto_venta pv on pv.id_punto_venta = acc.id_punto_venta
+                      left join vef.tsucursal spv on spv.id_sucursal = pv.id_sucursal
+                      left join param.tlugar lpv on lpv.id_lugar = spv.id_lugar
+                      left join param.tlugar ls on ls.id_lugar = s.id_lugar
+                      left join param.tlugar ppv on ppv.id_lugar = param.f_get_id_lugar_pais(lpv.id_lugar)
+                      left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
+
+
+                      /*Recuperamos los Boletos de Amadeus con los nuevos medios de pago (Ismael Valdivia 26/11/2020)*/
+                      left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
+                                                      and b.fecha_emision::date = acc.fecha_apertura_cierre and
+                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
+													  and b.voided=''no''
+
+                      left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
+
+                      left join obingresos.tmedio_pago_pw mpb on mpb.id_medio_pago_pw = bfp.id_medio_pago
+                      left join obingresos.tforma_pago_pw fpb on fpb.id_forma_pago_pw = mpb.forma_pago_id
+                      /***********************************************************************************************/
+
+                      where acc.id_apertura_cierre_caja = ' || v_parametros.id_apertura_cierre_caja  || '
+                      group by u.desc_persona, acc.fecha_apertura_cierre,
+                      ppv.codigo,ps.codigo,lpv.codigo,ls.codigo,
+                      pv.codigo , pv.nombre, s.codigo ,s.nombre,acc.id_punto_venta,
+                      acc.id_usuario_cajero,acc.obs_cierre, acc.arqueo_moneda_local,
+                      acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera,
+                      acc.monto_ca_recibo_ml, acc.monto_cc_recibo_ml';
+
+                /*******************************************************************/
+
+                 v_insertar_facturas_ro = '
+
+                 insert into temporal_cierre ( desc_persona,
+                                          fecha_apertura_cierre,
+                                          pais,
+                                          estacion,
+                                          punto_venta,
+                                          obs_cierre,
+                                          arqueo_moneda_local,
+                                          arqueo_moneda_extranjera,
+                                          monto_inicial,
+                                          monto_inicial_moneda_extranjera,
+                                          tipo_cambio,
+                                          tiene_dos_monedas,
+                                          moneda_local,
+                                          moneda_extranjera,
+                                          cod_moneda_local,
+                                          cod_moneda_extranjera,
+                                          efectivo_boletos_ml,
+                                          boletos_cash_extranjera, --
+                                          tarjeta_boletos_ml,
+                                          boletos_tarjetas_extranjera, --
+                                          cuenta_corriente_boletos_ml,
+                                          boletos_cuenta_corriente_extranjera, --
+                                          mco_boletos_ml,
+                                          boletos_mco_extranjera, --
+                                          otro_boletos_ml,
+                                          boletos_otros_extranjera, --
+                                          efectivo_ventas_ml,
+                                          cash_extranjera, --
+                                          tarjeta_ventas_ml,
+                                          tarjetas_extranjera, --
+                                          cuenta_corriente_ventas_ml,
+                                          cuenta_corriente_extranjera, --
+                                          mco_ventas_ml,
+                                          ventas_mco_extranjera, --
+                                          otro_ventas_ml,
+                                          ventas_otros_extranjera, --
+                                          efectivo_recibo_ml,
+                                          recibo_cash_extranjera, --
+                                          tarjeta_recibo_ml,
+                                          tarjeta_recibo_extranjera, --
+                                          cuenta_corriente_recibo_ml,
+                                          cuenta_corriente_recibo_extranjera, --
+                                          deposito_recibo_ml,
+                                          deposito_recibo_extranjera, --
+                                          otro_recibo_ml,
+                                          otro_recibo_extranjera, --
+                                          pago_externo_recibo_ml,
+                                          pago_externo_recibo_extranjera, --
+                                          comisiones_ml,
+                                          comisiones_me,
+                                          monto_ca_recibo_ml,
+                                          monto_cc_recibo_ml)
+
+                 select  u.desc_persona::varchar,
+                              to_char(acc.fecha_apertura_cierre,''DD/MM/YYYY'')::varchar,
+                              coalesce(ppv.codigo,ps.codigo)::varchar as pais,
+                              COALESCE(lpv.codigo,ls.codigo)::varchar as estacion,
+                              coalesce(pv.codigo, s.codigo)::varchar as punto_venta,
+                              acc.obs_cierre::varchar,
+                              acc.arqueo_moneda_local,
+                              acc.arqueo_moneda_extranjera,
+                              acc.monto_inicial,
+                              acc.monto_inicial_moneda_extranjera,
+                              ' || v_tipo_cambio || '::numeric as tipo_cambio,
+                              ''' || v_tiene_dos_monedas || '''::varchar as tiene_dos_monedas,
+                              ''' || v_moneda_local || '''::varchar as moneda_local,
+                              ''' || v_moneda_extranjera || '''::varchar as moneda_extranjera,
+                               ''' || v_cod_moneda_local || '''::varchar as cod_moneda_local,
+                               ''' || v_cod_moneda_extranjera || '''::varchar as cod_moneda_extranjera,
+
+                              /*Aqui debemos recuperar los boletos queda pendiente*/
+
+                              0::numeric ,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
+                              0::numeric,
                               /****************************************************/
 
                               /******************************************************Recuperamos datos para facturas******************************************************/
@@ -1099,25 +1353,13 @@ BEGIN
                                   where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
                                           ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                           and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                          ven.estado = ''finalizado''),0) +
-
-                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
-                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 1 and
-                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
-                                          and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                          bol.estado = ''revisado''),0) as comisiones_ml,
+                                          ven.estado = ''finalizado''),0) as comisiones_ml,
 
                               COALESCE((	select sum(ven.comision) from vef.tventa ven
                                   where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
                                           ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                           and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                          ven.estado = ''finalizado''),0) +
-
-                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
-                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 2 and
-                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
-                                           and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                          bol.estado = ''revisado''),0)   as comisiones_me,
+                                          ven.estado = ''finalizado''),0) as comisiones_me,
 
                               acc.monto_ca_recibo_ml,
                               acc.monto_cc_recibo_ml
@@ -1141,18 +1383,6 @@ BEGIN
                       left join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
                       /***************************************************************************************************************/
 
-                      /*Recuperamos los Boletos de Amadeus con los nuevos medios de pago (Ismael Valdivia 26/11/2020)*/
-                      left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
-                                                      and b.fecha_emision::date = acc.fecha_apertura_cierre and
-                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
-													  and b.voided=''no''
-
-                      left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
-
-                      left join obingresos.tmedio_pago_pw mpb on mpb.id_medio_pago_pw = bfp.id_medio_pago
-                      left join obingresos.tforma_pago_pw fpb on fpb.id_forma_pago_pw = mpb.forma_pago_id
-                      /***********************************************************************************************/
-
                       where acc.id_apertura_cierre_caja = ' || v_parametros.id_apertura_cierre_caja  || '
                       group by u.desc_persona, acc.fecha_apertura_cierre,
                       ppv.codigo,ps.codigo,lpv.codigo,ls.codigo,
@@ -1160,6 +1390,138 @@ BEGIN
                       acc.id_usuario_cajero,acc.obs_cierre, acc.arqueo_moneda_local,
                       acc.arqueo_moneda_extranjera,acc.monto_inicial,acc.monto_inicial_moneda_extranjera,
                       acc.monto_ca_recibo_ml, acc.monto_cc_recibo_ml';
+
+                 create  temp table temporal_cierre (
+                                                  desc_persona varchar ,
+                                                  fecha_apertura_cierre varchar,
+                                                  pais varchar,
+                                                  estacion varchar,
+                                                  punto_venta varchar,
+                                                  obs_cierre varchar,
+                                                  arqueo_moneda_local numeric,
+                                                  arqueo_moneda_extranjera numeric,
+                                                  monto_inicial numeric,
+                                                  monto_inicial_moneda_extranjera numeric,
+                                                  tipo_cambio numeric,
+                                                  tiene_dos_monedas varchar,
+                                                  moneda_local varchar,
+                                                  moneda_extranjera varchar,
+                                                  cod_moneda_local varchar,
+                                                  cod_moneda_extranjera varchar,
+                                                  efectivo_boletos_ml numeric,
+                                                  boletos_cash_extranjera numeric,
+                                                  tarjeta_boletos_ml numeric,
+                                                  boletos_tarjetas_extranjera numeric,
+                                                  cuenta_corriente_boletos_ml numeric,
+                                                  boletos_cuenta_corriente_extranjera numeric,
+                                                  mco_boletos_ml numeric,
+                                                  boletos_mco_extranjera numeric,
+                                                  otro_boletos_ml numeric,
+                                                  boletos_otros_extranjera numeric,
+                                                  efectivo_ventas_ml numeric,
+                                                  cash_extranjera numeric,
+                                                  tarjeta_ventas_ml numeric,
+                                                  tarjetas_extranjera numeric,
+                                                  cuenta_corriente_ventas_ml numeric,
+                                                  cuenta_corriente_extranjera numeric,
+                                                  mco_ventas_ml numeric,
+                                                  ventas_mco_extranjera numeric,
+                                                  otro_ventas_ml numeric,
+                                                  ventas_otros_extranjera numeric,
+                                                  efectivo_recibo_ml numeric,
+                                                  recibo_cash_extranjera numeric,
+                                                  tarjeta_recibo_ml numeric,
+                                                  tarjeta_recibo_extranjera numeric,
+                                                  cuenta_corriente_recibo_ml numeric,
+                                                  cuenta_corriente_recibo_extranjera numeric,
+                                                  deposito_recibo_ml numeric,
+                                                  deposito_recibo_extranjera numeric,
+                                                  otro_recibo_ml numeric,
+                                                  otro_recibo_extranjera numeric,
+                                                  pago_externo_recibo_ml numeric,
+                                                  pago_externo_recibo_extranjera numeric,
+                                                  comisiones_ml numeric,
+                                                  comisiones_me numeric,
+                                                  monto_ca_recibo_ml numeric,
+                                                  monto_cc_recibo_ml numeric
+                                                      )  on commit drop;
+
+                execute v_insertar_boletos;
+                execute v_insertar_facturas_ro;
+
+
+                /*Consulta para recuperar las facturas boletos recibos con las nuevas instancias de pago*/
+                v_consulta:=' select
+                			  desc_persona,
+                              fecha_apertura_cierre,
+                              pais,
+                              estacion,
+                              punto_venta,
+                              obs_cierre,
+                              arqueo_moneda_local,
+                              arqueo_moneda_extranjera,
+                              monto_inicial,
+                              monto_inicial_moneda_extranjera,
+                              tipo_cambio,
+                              tiene_dos_monedas,
+                              moneda_local,
+                              moneda_extranjera,
+                              cod_moneda_local,
+                              cod_moneda_extranjera,
+                              sum (efectivo_boletos_ml),
+                              sum (boletos_cash_extranjera),
+                              sum (tarjeta_boletos_ml),
+                              sum(boletos_tarjetas_extranjera),
+                              sum(cuenta_corriente_boletos_ml),
+                              sum(boletos_cuenta_corriente_extranjera),
+                              sum(mco_boletos_ml),
+                              sum(boletos_mco_extranjera),
+                              sum(otro_boletos_ml),
+                              sum(boletos_otros_extranjera),
+                              sum(efectivo_ventas_ml),
+                              sum(cash_extranjera),
+                              sum(tarjeta_ventas_ml),
+                              sum(tarjetas_extranjera),
+                              sum(cuenta_corriente_ventas_ml),
+                              sum(cuenta_corriente_extranjera),
+                              sum(mco_ventas_ml),
+                              sum(ventas_mco_extranjera),
+                              sum(otro_ventas_ml),
+                              sum(ventas_otros_extranjera),
+                              sum(efectivo_recibo_ml),
+                              sum(recibo_cash_extranjera),
+                              sum(tarjeta_recibo_ml),
+                              sum(tarjeta_recibo_extranjera),
+                              sum(cuenta_corriente_recibo_ml),
+                              sum(cuenta_corriente_recibo_extranjera),
+                              sum(deposito_recibo_ml),
+                              sum(deposito_recibo_extranjera),
+                              sum(otro_recibo_ml),
+                              sum(otro_recibo_extranjera),
+                              sum(pago_externo_recibo_ml),
+                              sum(pago_externo_recibo_extranjera),
+                              sum(comisiones_ml),
+                              sum(comisiones_me),
+                              sum(monto_ca_recibo_ml),
+                              sum(monto_cc_recibo_ml)
+                              from temporal_cierre
+                              group by desc_persona,
+                              fecha_apertura_cierre,
+                              pais,
+                              estacion,
+                              punto_venta,
+                              obs_cierre,
+                              arqueo_moneda_local,
+                              arqueo_moneda_extranjera,
+                              monto_inicial,
+                              monto_inicial_moneda_extranjera,
+                              tipo_cambio,
+                              tiene_dos_monedas,
+                              moneda_local,
+                              moneda_extranjera,
+                              cod_moneda_local,
+                              cod_moneda_extranjera
+           			  			';
 
 
               	END IF; /*Fin condicion para usar las nuevas instancias de pago tanto boletos como ventas*/

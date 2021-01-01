@@ -1020,16 +1020,34 @@ v_filtro_cajero_boleto_1 varchar;
              ''''::varchar as conceptos,
              ';
         if (v_cod_moneda != 'USD') then
-          v_consulta = v_consulta || ' coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''') as forma_pago,
+          v_consulta = v_consulta || '
+                     /*************************Aumentando*********************/
+                     CASE WHEN b.forma_pago = ''CC'' then
+
+                        (select fp_pw.name
+                        from obingresos.tforma_pago_pw fp_pw
+                        where fp_pw.fop_code = b.forma_pago)
+
+                     else
+                        coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''')
+                     end  as forma_pago,
+                     /********************************************************/
                     		case
                       when b.voided != ''si'' then coalesce(fpusd.monto_cash_usd,
                         0)
                       else 0
                     end as monto_cash_usd,
-                    case
+
+                     /*Aumentando*/
+                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 then
+                        b.total
+                     else
+                        case
                       when b.voided != ''si'' then coalesce(fpusd.monto_cc_usd, 0)
                       else 0
-                    end as monto_cc_usd,
+                    end
+                     end  as monto_cc_usd,
+                    /******************************************************************/
                     case
                       when b.voided != ''si'' then coalesce(fpusd.monto_cte_usd, 0
                         )
@@ -1058,7 +1076,17 @@ v_filtro_cajero_boleto_1 varchar;
         end if;
         v_consulta = v_consulta ||  '
              case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 end as monto_cash_mb,
-             case when b.voided != ''si'' then coalesce(fpmb.monto_cc_mb,0) else 0 end as monto_cc_mb,
+
+             /*Aumentando*/
+             CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 then
+
+             	b.total
+
+             else
+             	case when b.voided != ''si'' then coalesce(fpmb.monto_cc_mb,0) else 0 end
+             end  as monto_cc_mb,
+
+
              case when b.voided != ''si'' then coalesce(fpmb.monto_cte_mb,0) else 0 end as monto_cte_mb,
              case when b.voided != ''si'' then coalesce(fpmb.monto_mco_mb,0) else 0 end as monto_mco_mb,
              case when b.voided != ''si'' then coalesce(fpmb.monto_otro_mb,0) else 0 end as monto_otro_mb,
@@ -1087,7 +1115,7 @@ v_filtro_cajero_boleto_1 varchar;
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar,b.forma_pago, b.id_moneda_boleto '|| v_group_by || ')
              order by fecha,tipo_factura DESC,correlativo_venta, boleto';
         end if;
 
