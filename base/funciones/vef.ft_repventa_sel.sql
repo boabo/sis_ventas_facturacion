@@ -1039,7 +1039,7 @@ v_filtro_cajero_boleto_1 varchar;
                     end as monto_cash_usd,
 
                      /*Aumentando*/
-                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 then
+                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' then
                         b.total
                      else
                         case
@@ -1078,7 +1078,7 @@ v_filtro_cajero_boleto_1 varchar;
              case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 end as monto_cash_mb,
 
              /*Aumentando*/
-             CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 then
+             CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 and b.voided != ''si'' then
 
              	b.total
 
@@ -1090,7 +1090,12 @@ v_filtro_cajero_boleto_1 varchar;
              case when b.voided != ''si'' then coalesce(fpmb.monto_cte_mb,0) else 0 end as monto_cte_mb,
              case when b.voided != ''si'' then coalesce(fpmb.monto_mco_mb,0) else 0 end as monto_mco_mb,
              case when b.voided != ''si'' then coalesce(fpmb.monto_otro_mb,0) else 0 end as monto_otro_mb,
-             b.total,
+
+
+             case when b.voided != ''si'' then coalesce(b.total,0) else 0 end as total,
+
+
+             --b.total,
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error,
              b.comision
