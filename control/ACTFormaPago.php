@@ -17,7 +17,7 @@ class ACTFormaPago extends ACTbase{
         }
 
 		if($this->objParam->getParametro('sw_tipo_venta') != '') {
-			$this->objParam->addFiltro("''".$this->objParam->getParametro('sw_tipo_venta')."''=any(forpa.sw_tipo_venta)");
+			$this->objParam->addFiltro("''".$this->objParam->getParametro('sw_tipo_venta')."''=any(forpa.sw_autorizacion)");
 		}
 
 		if($this->objParam->getParametro('defecto') == 'si') {
@@ -30,26 +30,33 @@ class ACTFormaPago extends ACTbase{
 
         }
 
-		if($this->objParam->getParametro('id_sucursal') != '') {
-                $this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda
-                												from vef.tsucursal_moneda
-                												where id_sucursal = " . $this->objParam->getParametro('id_sucursal') ." $filtro_adicional)");
-				$this->objParam->addFiltro(" forpa.id_entidad in (select id_entidad
-                												from vef.tsucursal
-                												where id_sucursal = " . $this->objParam->getParametro('id_sucursal') ." )");
-        }
+		if ($this->objParam->getParametro('instancias_nuevas') != '') {
 
-		if($this->objParam->getParametro('id_punto_venta') != '') {
-                $this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda
-                												from vef.tsucursal_moneda sm
-                												inner join vef.tpunto_venta pv on pv.id_sucursal = sm.id_sucursal
-                												where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." $filtro_adicional)");
+			if ($this->objParam->getParametro('instancias_nuevas') == 'no') {
+				if($this->objParam->getParametro('id_sucursal') != '') {
+										$this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda
+																						from vef.tsucursal_moneda
+																						where id_sucursal = " . $this->objParam->getParametro('id_sucursal') ." $filtro_adicional)");
+						$this->objParam->addFiltro(" forpa.id_entidad in (select id_entidad
+																						from vef.tsucursal
+																						where id_sucursal = " . $this->objParam->getParametro('id_sucursal') ." )");
+						}
 
-                $this->objParam->addFiltro(" forpa.id_entidad in (select id_entidad
-                												from vef.tpunto_venta pv
-                												inner join vef.tsucursal s on s.id_sucursal = pv.id_sucursal
-                												where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." )");
-        }
+				if($this->objParam->getParametro('id_punto_venta') != '') {
+										$this->objParam->addFiltro(" forpa.id_moneda in (select id_moneda
+																						from vef.tsucursal_moneda sm
+																						inner join vef.tpunto_venta pv on pv.id_sucursal = sm.id_sucursal
+																						where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." $filtro_adicional)");
+
+										$this->objParam->addFiltro(" forpa.id_entidad in (select id_entidad
+																						from vef.tpunto_venta pv
+																						inner join vef.tsucursal s on s.id_sucursal = pv.id_sucursal
+																						where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." )");
+						}
+			}			
+		}
+
+
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

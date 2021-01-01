@@ -52,6 +52,7 @@ class MODFormaPago extends MODbase{
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
+		//var_dump("aqui llega data",$this->respuesta);
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
