@@ -1137,9 +1137,7 @@ BEGIN
                       left join param.tlugar ls on ls.id_lugar = s.id_lugar
                       left join param.tlugar ppv on ppv.id_lugar = param.f_get_id_lugar_pais(lpv.id_lugar)
                       left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
-                      left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
-                                                      and v.fecha = acc.fecha_apertura_cierre and
-                                                      v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
+
 
                       /*Recuperamos los Boletos de Amadeus con los nuevos medios de pago (Ismael Valdivia 26/11/2020)*/
                       left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
