@@ -4595,7 +4595,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                              });
                              me.Cmp.nro_deposito.reset();
                           }else{
-                            me.saverecibo(0)
+                            me.saverecibo(o)
                           }
 
         						},
@@ -4603,6 +4603,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         						timeout:this.timeout,
         						scope:this
         				});
+              }
+              else{
+                me.saverecibo(o)
               }
     },
     saverecibo: function(o){
