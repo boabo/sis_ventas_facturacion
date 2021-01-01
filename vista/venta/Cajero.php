@@ -608,8 +608,22 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		completar_pago : function () {
 				//abrir formulario de solicitud
 				var d = this.sm.getSelected().data;
-				var f = new Date()
-				var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+        var date = new Date()
+
+        var dia = date.getDate();
+        var mes = date.getMonth() + 1;
+        var ano = date.getFullYear();
+
+        if(mes < 10){
+          if(dia < 10){
+            var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+          }else{
+            var fecha_hoy = dia + "/0" + mes + "/" + ano
+          }
+        }else{
+          var fecha_hoy = dia + "/" + mes + "/" + ano
+        }
+
 				if(d.fecha.dateFormat('d/m/Y') != fecha_hoy){
 					Ext.Msg.show({
 							title: 'Alerta',
@@ -643,8 +657,21 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		 regresarCounter:function(){
  			//Phx.CP.loadingShow();
  			var d = this.sm.getSelected().data;
-			var f = new Date()
-			var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+      var date = new Date()
+
+      var dia = date.getDate();
+      var mes = date.getMonth() + 1;
+      var ano = date.getFullYear();
+
+      if(mes < 10){
+        if(dia < 10){
+          var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+        }else{
+          var fecha_hoy = dia + "/0" + mes + "/" + ano
+        }
+      }else{
+        var fecha_hoy = dia + "/" + mes + "/" + ano
+      }
 			if(d.fecha.dateFormat('d/m/Y') != fecha_hoy){
 				Ext.Msg.show({
 						title: 'Alerta',
@@ -741,8 +768,21 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			anular : function () {
 				var rec=this.sm.getSelected();
 				var me= this;
-				var f = new Date()
-				var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+        var date = new Date()
+
+        var dia = date.getDate();
+        var mes = date.getMonth() + 1;
+        var ano = date.getFullYear();
+
+        if(mes < 10){
+          if(dia < 10){
+            var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+          }else{
+            var fecha_hoy = dia + "/0" + mes + "/" + ano
+          }
+        }else{
+          var fecha_hoy = dia + "/" + mes + "/" + ano
+        }
 				if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
 					Ext.Msg.show({
 							title: 'Alerta',
@@ -776,8 +816,21 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			AsociarBoletos: function(){
 
 		              var rec = {maestro: this.sm.getSelected().data}
-									var f = new Date()
-									var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+                  var date = new Date()
+
+                  var dia = date.getDate();
+                  var mes = date.getMonth() + 1;
+                  var ano = date.getFullYear();
+
+                  if(mes < 10){
+                    if(dia < 10){
+                      var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+                    }else{
+                      var fecha_hoy = dia + "/0" + mes + "/" + ano
+                    }
+                  }else{
+                    var fecha_hoy = dia + "/" + mes + "/" + ano
+                  }
 									if(rec.maestro.fecha.dateFormat('d/m/Y') != fecha_hoy){
 										Ext.Msg.show({
 												title: 'Alerta',
@@ -821,8 +874,22 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
    				// 		scope : this
    				// 	});
 					// } else {
-					var f = new Date()
-					var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+          var date = new Date()
+
+          var dia = date.getDate();
+          var mes = date.getMonth() + 1;
+          var ano = date.getFullYear();
+
+          if(mes < 10){
+            if(dia < 10){
+              var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+            }else{
+              var fecha_hoy = dia + "/0" + mes + "/" + ano
+            }
+          }else{
+            var fecha_hoy = dia + "/" + mes + "/" + ano
+          }
+
 					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
 						Ext.Msg.show({
 								title: 'Alerta',
@@ -861,8 +928,21 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		loadCheckDocumentosRecWf:function() {
 					var rec=this.sm.getSelected();
 
-					var f = new Date()
-					var fecha_hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+          var date = new Date()
+
+          var dia = date.getDate();
+          var mes = date.getMonth() + 1;
+          var ano = date.getFullYear();
+
+          if(mes < 10){
+            if(dia < 10){
+              var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+            }else{
+              var fecha_hoy = dia + "/0" + mes + "/" + ano
+            }
+          }else{
+            var fecha_hoy = dia + "/" + mes + "/" + ano
+          }
 					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
 						Ext.Msg.show({
 								title: 'Alerta',
