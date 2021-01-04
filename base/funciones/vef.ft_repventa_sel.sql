@@ -658,21 +658,21 @@ v_filtro_cajero_boleto_1 varchar;
                                                   0
                                               end), 2) as monto_cash_usd,
                                    round(sum(case
-                                               when fp.fop_code = ''CC%'' then
+                                               when fp.fop_code = ''CC'' then
                                                  vfp.monto_transaccion -(vfp.cambio /
                                                  param.f_get_tipo_cambio(vfp.id_moneda,
                                                  v.fecha::date, ''O''))
                                                ELSE 0
                                              end), 2) as monto_cc_usd,
                                    round(sum(case
-                                               when (fp.fop_code = ''CT%'' OR fp.fop_code = ''CU%'') then
+                                               when (fp.fop_code = ''CT'' OR fp.fop_code = ''CU'') then
                                                  vfp.monto_transaccion -(vfp.cambio /
                                                  param.f_get_tipo_cambio(vfp.id_moneda,
                                                  v.fecha::date, ''O''))
                                                ELSE 0
                                              end), 2) as monto_cte_usd,
                                    round(sum(case
-                                               when fp.fop_code = ''MCO%'' then
+                                               when fp.fop_code = ''MCO'' then
                                                  vfp.monto_transaccion -(vfp.cambio /
                                                  param.f_get_tipo_cambio(vfp.id_moneda,
                                                  v.fecha::date, ''O''))
