@@ -239,7 +239,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 					 this.store.baseParams.interfaz = 'vendedor';
 
 					 /**********CONDICION PARA OCULTAR BOTONES***************************/
-					 if (this.tipo_punto_venta == 'ato') {
+					 if (this.tipo_punto_venta == 'ato' || this.tipo_punto_venta == 'carga') {
 						 	this.getBoton('completar_pago').setVisible(false);
 							this.getBoton('ant_estado').setVisible(false);
 								//this.getBoton('completar_pago_2').setVisible(false);
