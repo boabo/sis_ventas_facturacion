@@ -9,6 +9,14 @@
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
+<style>
+.button-anular-red{
+    background-image: url('../../../lib/imagenes/icono_dibu/anulared.png');
+    background-repeat: no-repeat;
+    filter: saturate(250%);
+    background-size: 80%;
+}
+</style>
 <script>
 Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 	mosttar:'',
@@ -76,7 +84,7 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 		this.addButton('btnImprimir',
 				{   grupo:[1,2],
 						text: 'Imprimir',
-						iconCls: 'bpdf32',
+						iconCls: 'bprint',
 						disabled: true,
 						handler: this.imprimirNota,
 						tooltip: '<b>Imprimir Factura</b><br/>Imprime la Factura de la venta'
@@ -86,7 +94,7 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 		this.addButton('anular_fact',
 				{   grupo:[1],
 						text: 'Anular',
-						iconCls: 'bwrong',
+						iconCls: 'button-anular-red',
 						disabled: true,
 						handler: this.anular,
 						tooltip: '<b>Anular Factura</b><br/>Anula la Factura de la venta'
@@ -555,7 +563,7 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
-        //console.log("llega para imprimir",this);
+        // console.log("llega para imprimir",rec);
    				Phx.CP.loadingShow();
    				Ext.Ajax.request({
    						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
@@ -563,7 +571,8 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
                 'id_venta' : rec.data.id_venta ,
    							'id_punto_venta' : rec.data.id_punto_venta,
    							'formato_comprobante' : this.variables_globales.formato_comprobante,
-   							'tipo_factura': this.store.baseParams.tipo_factura
+   							'tipo_factura': this.store.baseParams.tipo_factura,
+								'id_proceso_wf': rec.data.id_proceso_wf
    						},
    						success : this.successExportHtml,
    						failure : this.conexionFailure,

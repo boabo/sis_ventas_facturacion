@@ -79,7 +79,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
           fieldLabel: 'Observaciones',
           allowBlank: false,
           width:200,
-          minLength:12,
+          // minLength:12,
           style:'text-transform:uppercase;'
         },
           type:'TextArea',
