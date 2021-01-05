@@ -20,6 +20,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     bsubmit:true,
     storeFormaPago : false,
     fwidth : '9%',
+    v_tipo_p_e: '',
     //labelSubmit: '<i class="fa fa-check"></i> Guardar',
     cantidadAllowDecimals: false,
     formUrl: '../../../sis_ventas_facturacion/vista/venta/FormVariasFormasPago.php',
@@ -64,7 +65,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 	                queryDelay: 1000,
 	                gwidth: 150,
 	                minChars: 2,
-	                disabled:false,
+	                disabled:true,
 	                renderer : function(value, p, record) {
 	                    return String.format('{0}', record.data['nombre_punto_venta']);
 	                }
@@ -723,7 +724,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 	        this.Cmp.id_punto_venta.store.load({params:{start:0,limit:this.tam_pag},
 	           callback : function (r) {
 	                this.Cmp.id_punto_venta.setValue(this.data.objPadre.variables_globales.id_punto_venta);
-	           		    this.detCmp.id_producto.store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
+                  this.v_tipo_p_e = r[0].json.tipo;
+	           		   this.detCmp.id_producto.store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
 	                this.Cmp.id_punto_venta.fireEvent('select',this.Cmp.id_punto_venta, this.Cmp.id_punto_venta.store.getById(this.data.objPadre.variables_globales.id_punto_venta));
 
 	            }, scope : this
@@ -1435,16 +1437,22 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                                                        tpl: new Ext.XTemplate([
                                                           '<tpl for=".">',
                                                           '<div class="x-combo-list-item">',
-                                                          '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
-                                                          '<p><b>COD:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
+                                                          '<p><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p>',
                                                           '</div></tpl>'
                                                         ]),
+                                                       // tpl: new Ext.XTemplate([
+                                                       //    '<tpl for=".">',
+                                                       //    '<div class="x-combo-list-item">',
+                                                       //    '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+                                                       //    '<p><b>COD:</b> <span style="color: red; font-weight:bold;">{codigo}</span></p>',
+                                                       //    '</div></tpl>'
+                                                       //  ]),
                                                        typeAhead: false,
                                                        triggerAction: 'all',
                                                        lazyRender: true,
                                                        mode: 'remote',
                                                        resizable:true,
-                                                       pageSize: 15,
+                                                       pageSize: 20,
                                                        queryDelay: 1000,
                                                        //anchor: '100%',
                                                        width : 450,
@@ -1540,6 +1548,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
    /*Aumentando para Filtrar los servicios por id_punto_venta y el tipo del PV (ATO CTO)*/
    //this.variables.items.items[1].store.baseParams.id_punto_venta_producto = this.data.objPadre.variables_globales.id_punto_venta;
    //this.variables.items.items[1].store.baseParams.tipo_pv = this.data.objPadre.tipo_punto_venta;
+   this.variables.items.items[1].store.baseParams.tipo_pv = this.v_tipo_p_e;
    // /************************************************************************************************/
 
 
@@ -2277,7 +2286,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 				hiddenName : 'id_cliente',
 				forceSelection : false,
 				typeAhead : false,
-				tpl:'<tpl for="."><div class="x-combo-list-item"><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+        tpl:'<tpl for="."><div class="x-combo-list-item"><b><font color="#000CFF" weight="bold"> {nombre_factura}</font></b></div></tpl>',
+				// tpl:'<tpl for="."><div class="x-combo-list-item"><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
 				triggerAction : 'all',
 				lazyRender : true,
 				mode : 'remote',

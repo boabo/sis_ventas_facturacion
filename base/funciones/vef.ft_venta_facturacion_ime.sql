@@ -1655,7 +1655,8 @@ BEGIN
           v_id_cliente = v_parametros.id_cliente::integer;
 
           update vef.tcliente
-          set nit = v_parametros.nit
+          set nit = v_parametros.nit,
+              nombre_factura = upper(v_parametros.nombre_factura)
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -2228,7 +2229,8 @@ BEGIN
           v_id_cliente = v_parametros.id_cliente::integer;
 
           update vef.tcliente
-          set nit = v_parametros.nit
+          set nit = v_parametros.nit,
+              nombre_factura = upper(v_parametros.nombre_factura)
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -5091,7 +5093,8 @@ BEGIN
                   v_id_cliente = v_parametros.id_cliente::integer;
 
                   update vef.tcliente
-                  set nit = v_parametros.nit
+                  set nit = v_parametros.nit,
+                      nombre_factura = upper(v_parametros.id_cliente)
                   where id_cliente = v_id_cliente;
 
                   select c.nombre_factura into v_nombre_factura
