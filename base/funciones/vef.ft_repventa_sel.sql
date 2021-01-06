@@ -1039,7 +1039,7 @@ v_filtro_cajero_boleto_1 varchar;
                     end as monto_cash_usd,
 
                      /*Aumentando*/
-                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' then
+                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and formpa.id_moneda = 2 then
                         b.total
                      else
                         case
@@ -1064,7 +1064,7 @@ v_filtro_cajero_boleto_1 varchar;
                       else 0
                     end as monto_otro_usd,';
           v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,
-                      fpusd.monto_cte_usd, fpusd.monto_mco_usd,fpusd.monto_otro_usd ';
+                      fpusd.monto_cte_usd, fpusd.monto_mco_usd,fpusd.monto_otro_usd, formpa.id_moneda ';
         else
           v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,
                     					case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 as monto_cash_usd,
