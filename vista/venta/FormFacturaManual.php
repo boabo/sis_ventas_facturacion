@@ -640,11 +640,11 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
             /*Aumentando para el hover Ismael Valdivia (13/11/2020)*/
 
             Ext.getCmp('botonEliminar').el.dom.onmouseover = function () {
-              Ext.getCmp('botonEliminar').btnEl.dom.style.background = 'rgba(255, 0, 0, 0.5)';
+              // Ext.getCmp('botonEliminar').btnEl.dom.style.background = 'rgba(255, 0, 0, 0.5)';
             };
 
             Ext.getCmp('botonEliminar').el.dom.onmouseout = function () {
-              Ext.getCmp('botonEliminar').btnEl.dom.style.background = '';
+              // Ext.getCmp('botonEliminar').btnEl.dom.style.background = '';
             };
 
             /*******************************************************/
