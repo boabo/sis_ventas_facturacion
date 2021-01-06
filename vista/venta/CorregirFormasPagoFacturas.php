@@ -546,19 +546,26 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 	    },
 
 			anular : function () {
-				Phx.CP.loadingShow();
-		        var rec=this.sm.getSelected();
-
-		        Ext.Ajax.request({
-		            url:'../../sis_ventas_facturacion/control/Cajero/anularFactura',
-		            params:{
-		                id_venta:  rec.data.id_venta
-		                },
-		            success:this.successSave,
-		            failure: this.conexionFailure,
-		            timeout:this.timeout,
-		            scope:this
-		        });
+        var rec=this.sm.getSelected();
+        var me = this;
+        Ext.Msg.confirm(
+						'Mensaje de Confirmación',
+						'Esta Seguro de Anular la Factura',
+						function(btn) {
+								if (btn == 'yes'){
+                      Phx.CP.loadingShow();
+          		        Ext.Ajax.request({
+          		            url:'../../sis_ventas_facturacion/control/Cajero/anularFactura',
+          		            params:{
+          		                id_venta:  rec.data.id_venta
+          		                },
+          		            success:me.successSave,
+          		            failure: me.conexionFailure,
+          		            timeout:me.timeout,
+          		            scope:me
+          		        });
+						}}
+				);
 			},
 
 			imprimirNota: function(){

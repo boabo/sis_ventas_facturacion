@@ -3564,14 +3564,33 @@ BEGIN
         if (v_cantidad > 1) then
           raise exception 'No puede utilizar conceptos contabilizables y no contabilizables en la misma venta';
         else
-        	update vef.tventa set contabilizable =
-           (
-                          select distinct(sp.contabilizable)
-                          from vef.tventa_detalle vd
-                            inner join param.tconcepto_ingas sp on sp.id_concepto_ingas = vd.id_producto
-                          where vd.id_venta = v_parametros.id_venta)
+              -- bvp
+              if v_parametros.tipo_factura = 'manual' then
+                      	if v_parametros.anulado = 'ANULADA' then
+                              update vef.tventa set contabilizable = 'no'
+                              where id_venta = v_parametros.id_venta;
+                          else
 
-          where id_venta = v_parametros.id_venta;
+                            update vef.tventa set contabilizable =
+                             (
+                                            select distinct(sp.contabilizable)
+                                            from vef.tventa_detalle vd
+                                              inner join param.tconcepto_ingas sp on sp.id_concepto_ingas = vd.id_producto
+                                            where vd.id_venta = v_parametros.id_venta)
+
+                            where id_venta = v_parametros.id_venta;
+                          end if;
+                      else
+
+                         update vef.tventa set contabilizable =
+                         (
+                                        select distinct(sp.contabilizable)
+                                        from vef.tventa_detalle vd
+                                          inner join param.tconcepto_ingas sp on sp.id_concepto_ingas = vd.id_producto
+                                        where vd.id_venta = v_parametros.id_venta)
+
+                        where id_venta = v_parametros.id_venta;
+              end if;
         end if;
 
 
