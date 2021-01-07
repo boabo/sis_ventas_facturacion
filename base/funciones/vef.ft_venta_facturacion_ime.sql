@@ -4922,7 +4922,7 @@ BEGIN
                         if (exists(	select 1
                                      from vef.tdosificacion_ro dos
                                      where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
-                          raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
+                          -- raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
                         end if;
 
                         --validar que la fecha de factura no sea superior a la fecha limite de emision
@@ -5028,7 +5028,7 @@ BEGIN
                         if (exists(	select 1
                                      from vef.tdosificacion_ro dos
                                      where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
-                          raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
+                          -- raise exception 'El numero de Recibo supera el maximo permitido para esta dosificacion';
                         end if;
 
                         --validar que la fecha de factura no sea superior a la fecha limite de emision
