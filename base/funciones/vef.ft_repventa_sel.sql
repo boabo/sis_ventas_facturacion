@@ -949,6 +949,7 @@ v_filtro_cajero_boleto_1 varchar;
                                  ELSE 0
                                END) as monto_otro_usd,
                     pxp.list(fp.name) as forma_pago
+                    ,bfp.id_moneda
                     from  obingresos.tboleto_amadeus_forma_pago bfp
                     inner join obingresos.tboleto_amadeus b on b.id_boleto_amadeus = bfp.id_boleto_amadeus
 
@@ -959,7 +960,7 @@ v_filtro_cajero_boleto_1 varchar;
 
                     where ' || v_filtro || ' and
              			(b.fecha_emision between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''') and bfp.id_moneda = ' || v_id_moneda_usd || '
-                    group by bfp.id_boleto_amadeus
+                    group by bfp.id_boleto_amadeus, bfp.id_moneda
         			),';
         end if;
 
@@ -1039,7 +1040,7 @@ v_filtro_cajero_boleto_1 varchar;
                     end as monto_cash_usd,
 
                      /*Aumentando*/
-                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and formpa.id_moneda = 2 then
+                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpusd.id_moneda = 2 then
                         b.total
                      else
                         case
@@ -1064,7 +1065,7 @@ v_filtro_cajero_boleto_1 varchar;
                       else 0
                     end as monto_otro_usd,';
           v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,
-                      fpusd.monto_cte_usd, fpusd.monto_mco_usd,fpusd.monto_otro_usd, formpa.id_moneda ';
+                      fpusd.monto_cte_usd, fpusd.monto_mco_usd,fpusd.monto_otro_usd, fpusd.id_moneda ';
         else
           v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,
                     					case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 as monto_cash_usd,

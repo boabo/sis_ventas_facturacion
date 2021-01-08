@@ -474,7 +474,7 @@ $body$
               where c.id_cliente = v_id_cliente;
             end if;
         -- bvp
-        elsif(v_tipo_base = 'recibo')then
+        elsif(v_tipo_base = 'recibo' or v_tipo_base = 'recibo_manual')then
 
         INSERT INTO
             vef.tcliente
