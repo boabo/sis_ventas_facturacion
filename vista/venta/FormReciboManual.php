@@ -82,7 +82,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           fieldLabel: 'Observaciones',
           allowBlank: false,
           width:200,
-          minLength:12,
+          // minLength:12,
           style:'text-transform:uppercase;'
         },
           type:'TextArea',
@@ -2840,7 +2840,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
             fieldLabel: '<img src="../../../lib/imagenes/facturacion/calendario.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Fecha depósito</span>',
             allowBlank: true,
             hidden:true,
-            disabled:true,
+            disabled:false,
             width:150,
             format: 'd/m/Y',
             renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
