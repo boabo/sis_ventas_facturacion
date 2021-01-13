@@ -73,7 +73,8 @@ BEGIN
             regionales,
             nivel_permiso,
             boleto_asociado,
-            agrupador
+            agrupador,
+            comision
 
           	) values(
 			'activo',
@@ -102,7 +103,8 @@ BEGIN
             string_to_array(v_parametros.regionales,',')::varchar[],
             string_to_array(v_parametros.nivel_permiso,',')::varchar[],
 			v_parametros.boleto_asociado,
-            v_parametros.agrupador
+            v_parametros.agrupador,
+            v_parametros.comision
 
 			)RETURNING id_concepto_ingas into v_id_concepto_ingas;
 
@@ -147,7 +149,8 @@ BEGIN
             regionales = string_to_array(v_parametros.regionales,',')::varchar[],
             nivel_permiso = string_to_array(v_parametros.nivel_permiso,',')::varchar[],
             boleto_asociado = v_parametros.boleto_asociado,
-            agrupador = v_parametros.agrupador
+            agrupador = v_parametros.agrupador,
+            comision  = v_parametros.comision
             /********************************************************************************************/
 
 			where id_concepto_ingas=v_parametros.id_concepto_ingas;

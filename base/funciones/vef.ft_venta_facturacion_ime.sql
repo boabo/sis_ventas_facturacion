@@ -2048,6 +2048,23 @@ BEGIN
           );
         end if;
 
+        --ini bvasquez
+            IF v_comision > 0 THEN
+            	-- insercion del primer renglon
+            	INSERT INTO vef.tcomision(
+    			estado_reg, id_usuario_ai, id_usuario_reg, usuario_ai, fecha_reg, id_usuario_mod, fecha_mod, id_venta, renglon, comision, importe, porcomis
+                )values(
+    			'activo', v_parametros._id_usuario_ai, p_id_usuario, v_parametros._nombre_usuario_ai, now(), null, null, v_id_venta, 1, 'COMCGI', v_comision * 0.87, 5
+                );
+            	-- insercion del segundo renglon
+            	INSERT INTO vef.tcomision(
+    			estado_reg, id_usuario_ai, id_usuario_reg, usuario_ai, fecha_reg, id_usuario_mod, fecha_mod, id_venta, renglon, comision, importe, porcomis
+                )values(
+    			'activo', v_parametros._id_usuario_ai, p_id_usuario, v_parametros._nombre_usuario_ai, now(), null, null, v_id_venta, 2, 'ISCCGI', v_comision * 0.13, 13
+                );
+
+            END IF;
+            --fin bvasquez
 
         --Definicion de la respuesta
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Ventas almacenado(a) con exito (id_venta'||v_id_venta||')');
@@ -3677,13 +3694,13 @@ BEGIN
 
             update vef.tventa_forma_pago set
               monto = v_monto_fp,
-              cambio = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
-                (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
+              cambio = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta + v_venta.comision) > 0 then
+                (v_monto_fp + v_acumulado_fp - v_venta.total_venta) + v_venta.comision
                         else
                           0
                         end),
-              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
-                v_monto_fp - (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
+              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta + v_venta.comision) > 0 then
+                (v_monto_fp - (v_monto_fp + v_acumulado_fp - v_venta.total_venta)) - v_venta.comision
                                    else
                                      v_monto_fp
                                    end)
@@ -3704,11 +3721,11 @@ BEGIN
             v_suma_det = COALESCE(v_suma_det,0) + COALESCE(v_venta.transporte_fob ,0)  + COALESCE(v_venta.seguros_fob ,0)+ COALESCE(v_venta.otros_fob ,0) + COALESCE(v_venta.transporte_cif ,0) +  COALESCE(v_venta.seguros_cif ,0) + COALESCE(v_venta.otros_cif ,0);
           END IF;
 
-          if (v_suma_fp < v_venta.total_venta) then
+          if (v_suma_fp < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
             raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
           end if;
 
-          if (v_suma_fp > v_venta.total_venta) then
+          if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
             raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
           end if;
 
@@ -4567,13 +4584,13 @@ BEGIN
               monto = v_monto_fp,
               id_usuario_mod = p_id_usuario,
               fecha_mod = now(),
-              cambio = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
-                (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
+              cambio = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta + v_venta.comision) > 0 then
+                (v_monto_fp + v_acumulado_fp - v_venta.total_venta) + v_venta.comision
                         else
                           0
                         end),
-              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta) > 0 then
-                v_monto_fp - (v_monto_fp + v_acumulado_fp - v_venta.total_venta)
+              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_venta.total_venta + v_venta.comision) > 0 then
+                (v_monto_fp - (v_monto_fp + v_acumulado_fp - v_venta.total_venta)) - v_venta.comision
                                    else
                                      v_monto_fp
                                    end)
@@ -4590,11 +4607,11 @@ BEGIN
           from vef.tventa_detalle
           where id_venta =   v_parametros.id_venta;
 
-          if (v_suma_fp < v_venta.total_venta) then
+          if (v_suma_fp < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
             raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
           end if;
 
-          if (v_suma_fp > v_venta.total_venta) then
+          if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
             raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
           end if;
 

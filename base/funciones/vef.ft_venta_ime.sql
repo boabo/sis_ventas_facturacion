@@ -135,7 +135,8 @@ $body$
     v_boleto_asociado		varchar;
     v_boletos_asociados		varchar;
     v_existencia			numeric;
-
+    v_comision_paquete		varchar;
+    v_comision_req			varchar;
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
@@ -2615,8 +2616,9 @@ $body$
           string_agg (ing.excento::varchar, ','),
           string_agg (ing.id_moneda::varchar, ','),
           string_agg (mon.codigo_internacional::varchar, ','),
-          string_agg (ing.boleto_asociado::varchar, ',')
-          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req, v_id_moneda_paquetes, v_desc_moneda, v_boletos_asociados
+          string_agg (ing.boleto_asociado::varchar, ','),
+          string_agg (ing.comision::varchar, ',')
+          into v_nombre_producto, v_id_formula,v_id_producto, v_precio, v_excento_req, v_id_moneda_paquetes, v_desc_moneda, v_boletos_asociados, v_comision_req
           from vef.tformula_detalle form
           inner join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
           left join param.tmoneda mon on mon.id_moneda = ing.id_moneda
@@ -2659,7 +2661,8 @@ $body$
             v_resp = pxp.f_agrega_clave(v_resp,'v_desc_moneda',v_desc_moneda::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_boleto_asociado',v_boleto_asociado::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_boletos_asociados',v_boletos_asociados::varchar);
-
+            v_resp = pxp.f_agrega_clave(v_resp,'v_comision_paquete',v_comision_paquete::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'v_comision_req',v_comision_req::varchar);
 
           --Returns the answer
             return v_resp;

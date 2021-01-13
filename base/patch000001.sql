@@ -1443,3 +1443,30 @@ ALTER TABLE vef.tventa
 COMMENT ON COLUMN vef.tventa.id_formula
 IS 'Id de Formula de paquete';
 /***********************************F-SCP-BVP-VEF-0-28/12/2020****************************************/
+/***********************************F-SCP-BVP-VEF-0-13/01/2021****************************************/
+CREATE TABLE vef.tcomision (
+  id_venta_comision SERIAL,
+  id_venta INTEGER,
+  comision VARCHAR(10),
+  importe NUMERIC(18,2),
+  porcomis NUMERIC(18,2),
+  renglon INTEGER,
+  CONSTRAINT tcomision_pkey PRIMARY KEY(id_venta_comision)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN vef.tcomision.comision
+IS 'Codigo comision';
+
+COMMENT ON COLUMN vef.tcomision.importe
+IS 'Importe por calculo';
+
+COMMENT ON COLUMN vef.tcomision.porcomis
+IS 'Porcentaje comision';
+
+COMMENT ON COLUMN vef.tcomision.renglon
+IS 'Orden de registro';
+
+ALTER TABLE vef.tcomision
+  OWNER TO postgres;
+/***********************************F-SCP-BVP-VEF-0-13/01/2021****************************************/

@@ -801,6 +801,29 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 	 },
 	 {
 			 config:{
+					 name: 'comision',
+					 fieldLabel: 'Comision',
+					 allowBlank: false,
+					 //anchor: '100%',
+					 width:200,
+					 gwidth: 130,
+					 maxLength:2,
+					 emptyText:'si/no...',
+					 typeAhead: true,
+					 triggerAction: 'all',
+					 lazyRender:true,
+					 mode: 'local',
+					// displayField: 'descestilo',
+					 store:['si','no']
+			 },
+			 type:'ComboBox',
+			 //filters:{pfiltro:'promac.inicio',type:'string'},
+			 id_grupo:2,
+			 grid:true,
+			 form:true
+	 },
+	 {
+			 config:{
 					 name: 'excento',
 					 fieldLabel: 'Tiene Excento',
 					 allowBlank: false,
@@ -1108,7 +1131,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name: 'contabilizable', type: 'string'},
 		{name: 'boleto_asociado', type: 'string'},
 		{name: 'agrupador', type: 'string'},
-		'sw_autorizacion','regionales','nivel_permiso'
+		'sw_autorizacion','regionales','nivel_permiso','comision'
 	],
 	sortInfo:{
 		field: 'id_concepto_ingas',

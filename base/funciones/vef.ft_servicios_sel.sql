@@ -86,7 +86,7 @@ BEGIN
                         ingas.boleto_asociado,
                         ingas.agrupador
                         /************************/
-
+                        ,ingas.comision
 						from param.tconcepto_ingas ingas
 						inner join segu.tusuario usu1 on usu1.id_usuario = ingas.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ingas.id_usuario_mod

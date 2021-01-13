@@ -451,7 +451,7 @@ class MODCajero extends MODbase{
 		$this->captura('fecha_ingles','varchar');
 		$this->captura('forma_pago','varchar');
 		$this->captura('tipo_usuario','varchar');
-		//$this->captura('moneda_base','varchar');//nuevo mvm
+		$this->captura('comision','numeric');//nuevo mvm
 		//$this->captura('codigo_moneda','varchar');//nuevo mvm
 		//$this->captura('fecha_ingles','varchar');//nuevo mvm
 		//$this->captura('forma_pago','varchar');//nuevo mvm
