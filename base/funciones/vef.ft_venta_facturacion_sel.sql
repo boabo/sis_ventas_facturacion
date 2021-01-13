@@ -521,7 +521,7 @@ BEGIN
             '''||v_tipo_usuario||'''::varchar as tipo_usuario
 
             /************************************/
-
+            , comision
             from vef.tventa ven
               inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
               '||v_join_destino||'
