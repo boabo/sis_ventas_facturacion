@@ -836,7 +836,7 @@ v_filtro_cajero_boleto_1 varchar;
                                 coalesce(fpusd.monto_cte_usd, 0) as monto_cte_usd,
                                 coalesce(fpusd.monto_mco_usd, 0) as monto_mco_usd,
                          		coalesce(fpusd.monto_otro_usd, 0) as monto_otro_usd,';
-          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd';
+          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd, v.comision';
         else
           v_group_by = '';
           v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,
@@ -858,7 +858,8 @@ v_filtro_cajero_boleto_1 varchar;
                       0::numeric,
                       string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
                       NULL::varchar as mensaje_error,
-                      0::numeric as comision
+                      -- 0::numeric as comision
+                      coalesce(v.comision, 0)::numeric
                       from vef.tventa v
                       inner join vef.tventa_detalle vd
                           on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''

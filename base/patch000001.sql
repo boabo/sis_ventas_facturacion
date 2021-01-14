@@ -1443,7 +1443,7 @@ ALTER TABLE vef.tventa
 COMMENT ON COLUMN vef.tventa.id_formula
 IS 'Id de Formula de paquete';
 /***********************************F-SCP-BVP-VEF-0-28/12/2020****************************************/
-/***********************************F-SCP-BVP-VEF-0-13/01/2021****************************************/
+/***********************************I-SCP-BVP-VEF-0-13/01/2021****************************************/
 CREATE TABLE vef.tcomision (
   id_venta_comision SERIAL,
   id_venta INTEGER,
