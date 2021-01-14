@@ -167,7 +167,7 @@ class RFactura
 							</tr>
 
 							<tr>
-								<td colspan="4" style=" text-align: center;" align="center">Cajero: ' . $_SESSION["_LOGIN"] . '  Id: ' . $datos['id'] . '  Hora: ' . $datos['hora'] . '
+								<td colspan="4" style=" text-align: center;" align="center">Cajero: ' . $datos['cuenta_cajero'] . '  Id: ' . $datos['id'] . '  Hora: ' . $datos['hora_estimada_entrega'] . '
 								<br/>
 								'.$datos['leyenda'].'
 								<br/>
