@@ -208,7 +208,15 @@ v_filtro_cajero_boleto_1 varchar;
         from param.tmoneda
         where codigo_internacional = 'USD';
 
-        if (pxp.f_get_variable_global('instancias_de_pago_nuevas')='no') then
+
+        IF(EXTRACT(YEAR from v_parametros.fecha_desde) = 2020 and EXTRACT(YEAR from v_parametros.fecha_hasta) = 2021) then
+        	raise Exception 'Estimado Usuario en fecha 01/01/2021 se migro con las nuevos medios de pago, Aclarar que en la gestion 2020 hacia atras se utilizo las formas de pago antiguas.';
+        end if;
+
+		/*Cambiando condicion por fecha*/
+       -- if (pxp.f_get_variable_global('instancias_de_pago_nuevas')='no') then
+       if (v_parametros.fecha_desde <= '31/12/2020') then
+
 
         v_consulta:='
             ( WITH ';
@@ -836,7 +844,7 @@ v_filtro_cajero_boleto_1 varchar;
                                 coalesce(fpusd.monto_cte_usd, 0) as monto_cte_usd,
                                 coalesce(fpusd.monto_mco_usd, 0) as monto_mco_usd,
                          		coalesce(fpusd.monto_otro_usd, 0) as monto_otro_usd,';
-          v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd, v.comision';
+         v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd, v.comision';
         else
           v_group_by = '';
           v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,

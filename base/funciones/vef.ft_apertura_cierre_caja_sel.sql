@@ -445,9 +445,10 @@ BEGIN
             /**************************************************************/
 
     	/*Inicio Condicion para usar las nuevas instancias de pago tanto boletos como ventas*/
-    	IF(pxp.f_get_variable_global('instancias_de_pago_nuevas') = 'no')THEN
 
-
+        /*Cambiando por la fecha de apertura*/
+    	--IF(pxp.f_get_variable_global('instancias_de_pago_nuevas') = 'no')THEN
+        IF(v_fecha <= '31/12/2020')THEN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='with forma_pago as (
                           select fp.id_forma_pago,fp.id_moneda,
@@ -2009,7 +2010,8 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
 
 
 
-      IF(pxp.f_get_variable_global('instancias_de_pago_nuevas') ='no')THEN
+      --IF(pxp.f_get_variable_global('instancias_de_pago_nuevas') ='no')THEN
+      IF(v_fecha <= '31/12/2020')THEN
 
     	if( (select d.modificado
             from vef.tapertura_cierre_caja d

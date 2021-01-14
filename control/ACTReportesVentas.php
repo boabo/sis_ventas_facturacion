@@ -23,6 +23,11 @@ class ACTReportesVentas extends ACTbase{
 		$this->objFunc=$this->create('MODReportesVentas');
 		$this->res2=$this->objFunc->listarReporteDetalle($this->objParam);
 
+//var_dump("aqui llega data",$this->res2);exit;
+		if($this->res2->getTipo() == 'ERROR'){
+		 	throw new \Exception($this->res2->getMensaje());		 	
+		}
+
 		$this->objFunc=$this->create('MODReportesVentas');
 		$this->res3=$this->objFunc->listarMonedaBase($this->objParam);
 
