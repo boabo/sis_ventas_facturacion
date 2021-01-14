@@ -656,7 +656,7 @@ v_filtro_cajero_boleto_1 varchar;
       		v_consulta:='
             ( WITH ';
         if (v_cod_moneda != 'USD') then
-        	IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+        	IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
                 v_consulta = v_consulta || ' forma_pago_usd  AS(
                             select vfp.id_venta,
                             round(sum(	case when fp.fop_code = ''CA'' then
@@ -740,7 +740,7 @@ v_filtro_cajero_boleto_1 varchar;
             END IF;
 
         end if;
-		IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+		IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
             v_consulta = v_consulta || ' forma_pago_mb AS(
                           select vfp.id_venta,
                           sum(CASE when fp.fop_code = ''CA'' then
@@ -855,7 +855,7 @@ v_filtro_cajero_boleto_1 varchar;
                                             coalesce(fpmb.monto_otro_mb, 0) as monto_otro_usd,';
         end if;
 
-        IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+        IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
 
             v_consulta = v_consulta || '
                       coalesce(fpmb.monto_cash_mb, 0) as monto_cash_mb,
@@ -893,7 +893,7 @@ v_filtro_cajero_boleto_1 varchar;
         END IF;
 
         if (v_cod_moneda != 'USD') then
-        	IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+        	IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
                 v_consulta = v_consulta || ' left join forma_pago_usd fpusd
                             on v.id_venta = fpusd.id_venta ';
 			ELSE
@@ -902,7 +902,7 @@ v_filtro_cajero_boleto_1 varchar;
 
         end if;
 
-		IF(pxp.f_get_variable_global('vef_facturacion_endesis')!='true')THEN
+		IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
             v_consulta = v_consulta || ' left join forma_pago_mb fpmb
                           on v.id_venta = fpmb.id_venta
                       where v.estado = ''finalizado'' and
