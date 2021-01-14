@@ -103,18 +103,18 @@ BEGIN
 						fact.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-            (select vef.ft_verificar_excento(fact.id_venta))::varchar requiere_excento,
-            fact.excento_verificado,
-            fo.nombre,
-				    fo.id_formula
-            --sucu.nombre
-            --det.id_formula
+                        (select vef.ft_verificar_excento(fact.id_venta))::varchar requiere_excento,
+                        fact.excento_verificado,
+                    	fo.nombre,
+					    fo.id_formula
+                        --sucu.nombre
+                        --det.id_formula
 						from vef.tventa fact
-            --left join vef.tventa_detalle det on det.id_venta = fact.id_venta
+                        --left join vef.tventa_detalle det on det.id_venta = fact.id_venta
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
-            left  join vef.tformula fo on fo.id_formula = fact.id_formula
-            --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
+                        left  join vef.tformula fo on fo.id_formula = fact.id_formula
+                        --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
 				        where  ';
 
 			--Definicion de la respuesta
@@ -521,7 +521,10 @@ BEGIN
             '''||v_tipo_usuario||'''::varchar as tipo_usuario
 
             /************************************/
-            , comision
+			, comision,
+
+            ven.hora_estimada_entrega
+
             from vef.tventa ven
               inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
               '||v_join_destino||'
@@ -542,7 +545,9 @@ BEGIN
               left join param.tmoneda mon on mon.id_moneda = sucmon.id_moneda
               inner join param.tmoneda mven on mven.id_moneda = ven.id_moneda
               left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-              inner join segu.tusuario usu on usu.id_usuario = ven.id_usuario_reg
+              --inner join segu.tusuario usu on usu.id_usuario = ven.id_usuario_reg
+
+              left join segu.tusuario usu on usu.id_usuario = ven.id_usuario_cajero
 
               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
 			  inner join obingresos.tmedio_pago_pw ip on ip.id_medio_pago_pw = fp.id_medio_pago
