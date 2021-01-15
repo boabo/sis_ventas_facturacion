@@ -3001,7 +3001,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             fieldLabel: 'Fecha Deposito',
             allowBlank: true,
             hidden:true,
-            disabled:true,
+            disabled:false,
             width:150,
             format: 'd/m/Y',
             renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
