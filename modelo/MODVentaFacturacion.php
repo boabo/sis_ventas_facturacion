@@ -787,6 +787,8 @@ class MODVentaFacturacion extends MODbase{
 				$this->setParametro('tipo_factura', 'tipo_factura', 'varchar');
 				$this->setParametro('tipo', 'tipo', 'varchar');
 				$this->setParametro('anulado', 'anulado', 'varchar');
+				$this->setParametro('excento', 'excento', 'varchar');
+				$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 				//Ejecuta la instruccion
 				$this->armarConsulta();
 				$stmt = $link->prepare($this->consulta);

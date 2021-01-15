@@ -63,12 +63,12 @@ BEGIN
             	raise exception 'Los digitos no corresponden a un boleto, verifique.';
             end if;
 
-             select count (bole.id_boleto_amadeus)
+             /*select count (bole.id_boleto_amadeus)
                     into v_existencia
                 from obingresos.tboleto_amadeus bole
                 where bole.nro_boleto = v_parametros.nro_boleto and bole.estado_reg = 'activo';
 
-             if (v_existencia > 0) then
+             if (v_existencia > 0) then*/
 
              	select
                 	bole.nro_boleto,
@@ -100,7 +100,7 @@ BEGIN
                 'activo',
                 v_datos_boletos.id_boleto_amadeus,
                 v_parametros.id_venta,
-                v_datos_boletos.nro_boleto,
+                v_parametros.nro_boleto,
                 v_datos_boletos.fecha_emision,
                 v_datos_boletos.pasajero,
 				--v_datos_boletos.nit,
@@ -111,9 +111,9 @@ BEGIN
                 )RETURNING id_boleto_asociado into v_id_boleto_asociado;
 
 
-             else
+            /* else
              	raise exception 'El número de boleto no se encuentra registrado, por favor verifique el número ingresado';
-             end if;
+             end if;*/
 
 
         /* --Insertar varios Boletos
