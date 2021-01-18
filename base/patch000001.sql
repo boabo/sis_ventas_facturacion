@@ -1470,3 +1470,8 @@ IS 'Orden de registro';
 ALTER TABLE vef.tcomision
   OWNER TO postgres;
 /***********************************F-SCP-BVP-VEF-0-13/01/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-18/01/2021****************************************/
+ALTER TABLE vef.tboletos_asociados_fact
+  ALTER COLUMN id_boleto DROP NOT NULL;
+/***********************************F-SCP-IRVA-VEF-0-18/01/2021****************************************/
