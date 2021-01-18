@@ -85,7 +85,8 @@ BEGIN
                             sistema_origen,
                             id_origen,
                             tipo_factura,
-                            usuario_reg
+                            usuario_reg,
+                            desc_ruta
 
                             )
           				values(
@@ -101,7 +102,8 @@ BEGIN
                             ''CARGA'',
                             '||v_parametros.id_origen::integer||',
                             '''||v_parametros.tipo_factura::varchar||''',
-                            '''||v_parametros.usuario_registro::varchar||'''
+                            '''||v_parametros.usuario_registro::varchar||''',
+                            ''CARGA NACIONAL COMPUTARIZADA''
                             );';
 
               IF(v_conexion!='OK') THEN
@@ -203,7 +205,8 @@ BEGIN
                                 usuario_reg,
                                 tipo_factura,
                                 id_origen,
-                                sistema_origen
+                                sistema_origen,
+                                desc_ruta
                                 )
                                 values(
                                 '||v_id_factura||',
@@ -216,7 +219,8 @@ BEGIN
                                 '''||v_datos_carga.usuario_reg||''',
                                 '''||v_datos_carga.tipo_factura||''',
                                 '||v_datos_carga.id_origen||',
-                                ''CARGA''
+                                ''CARGA'',
+                                ''CARGA NACIONAL COMPUTARIZADA''
                                 );';
 
 

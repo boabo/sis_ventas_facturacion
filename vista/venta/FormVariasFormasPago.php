@@ -2197,6 +2197,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
       					url:'../../sis_ventas_facturacion/control/Cajero/finalizarFacturaManual',
       					params:{id_estado_wf_act:d.id_estado_wf,
       									id_proceso_wf_act:d.id_proceso_wf,
+                        tipo_pv:this.data.tipo_punto_venta,
       								  tipo:'manual'},
       					success:this.successWizard,
       					failure: this.conexionFailure,
@@ -2204,11 +2205,12 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
       					scope:this
       			});
           } else {
-            if (this.data.tipo_punto_venta != 'ato') {
+            if (this.data.tipo_punto_venta != 'ato' && this.data.tipo_punto_venta != 'carga') {
               Ext.Ajax.request({
         					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
         					params:{id_estado_wf_act:d.id_estado_wf,
         									id_proceso_wf_act:d.id_proceso_wf,
+                          tipo_pv:this.data.tipo_punto_venta,
         								  tipo:'recibo'},
         					success:this.successWizard,
         					failure: this.conexionFailure,
@@ -2221,6 +2223,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                 url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
                 params:{id_estado_wf_act:d.id_estado_wf,
                   id_proceso_wf_act:d.id_proceso_wf,
+                  tipo_pv:this.data.tipo_punto_venta,
                   tipo:'recibo'},
                   success:this.successWizard,
                   failure: this.conexionFailure,

@@ -267,6 +267,7 @@ class MODCajero extends MODbase{
 			//Define los parametros para la funcion
 			$this->setParametro('id_estado_wf_act','id_estado_wf_act','int4');
 			$this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
+			$this->setParametro('tipo_pv','tipo_pv','varchar');
 			$this->setParametro('tipo','tipo','varchar');
 
 
@@ -286,6 +287,7 @@ class MODCajero extends MODbase{
 			//Define los parametros para la funcion
 			$this->setParametro('id_estado_wf_act','id_estado_wf_act','int4');
 			$this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
+			$this->setParametro('tipo_pv','tipo_pv','varchar');
 			$this->setParametro('tipo','tipo','varchar');
 
 
@@ -305,6 +307,7 @@ class MODCajero extends MODbase{
 			//Define los parametros para la funcion
 			$this->setParametro('id_estado_wf_act','id_estado_wf_act','int4');
 			$this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
+			$this->setParametro('tipo_pv','tipo_pv','varchar');
 			$this->setParametro('tipo','tipo','varchar');
 
 

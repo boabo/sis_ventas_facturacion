@@ -4117,12 +4117,13 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       var datos_respuesta = JSON.parse(resp.responseText);
     	Phx.CP.loadingHide();
       if (this.generar == 'generar') {
-        //Phx.CP.loadingShow();
+        //Phx.CP.loadingShow();      
   			var d = datos_respuesta.ROOT.datos;
         Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/finalizarFacturaManual',
   					params:{id_estado_wf_act:d.id_estado_wf,
   									id_proceso_wf_act:d.id_proceso_wf,
+                    tipo_pv:this.data.objPadre.tipo_punto_venta,
   								  tipo:'manual'},
   					success:this.successWizard,
   					failure: this.conexionFailure,

@@ -184,6 +184,7 @@ DECLARE
     v_datos_boletos			record;
     v_id_boleto_asociado	integer;
     v_requiere_excento		varchar;
+    v_tipo_pv				varchar;
     /******************************************************************************/
 
 BEGIN
@@ -2839,6 +2840,13 @@ BEGIN
             /******************************************************************/
 
 
+			IF  pxp.f_existe_parametro(p_tabla,'tipo_pv') THEN
+                v_tipo_pv= 'FAC.BOL.COMPUT.CONTABLE '||upper(v_parametros.tipo_pv);
+             ELSE
+              	v_tipo_pv='';
+             END IF;
+
+
                 v_consulta = '
                             INSERT INTO sfe.tfactura(
                             id_factura,
@@ -2853,7 +2861,8 @@ BEGIN
                             usuario_reg,
                             tipo_factura,
                             id_origen,
-                            sistema_origen
+                            sistema_origen,
+                            desc_ruta
                             )
                             values(
                             '||v_id_factura||',
@@ -2873,7 +2882,8 @@ BEGIN
                             '''||v_cajero||''',
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
-                            ''ERP''
+                            ''ERP'',
+                            '''||v_tipo_pv::varchar||'''
                             );';
 
 
@@ -3218,6 +3228,13 @@ BEGIN
             /******************************************************************/
 
 
+            IF  pxp.f_existe_parametro(p_tabla,'tipo_pv') THEN
+                v_tipo_pv= 'FAC.BOL.COMPUT.CONTABLE '||upper(v_parametros.tipo_pv);
+             ELSE
+              	v_tipo_pv='';
+             END IF;
+
+
                 v_consulta = '
                             INSERT INTO sfe.tfactura(
                             id_factura,
@@ -3232,7 +3249,8 @@ BEGIN
                             usuario_reg,
                             tipo_factura,
                             id_origen,
-                            sistema_origen
+                            sistema_origen,
+                            desc_ruta
                             )
                             values(
                             '||v_id_factura||',
@@ -3252,7 +3270,8 @@ BEGIN
                             '''||v_cajero||''',
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
-                            ''ERP''
+                            ''ERP'',
+                            '''||v_tipo_pv::varchar||'''
                             );';
 
 
@@ -3464,6 +3483,12 @@ BEGIN
             where usu.id_usuario = p_id_usuario;
             /******************************************************************/
 
+			IF  pxp.f_existe_parametro(p_tabla,'tipo_pv') THEN
+                v_tipo_pv= 'FAC.BOL.MANUAL.CONTABLE '||upper(v_parametros.tipo_pv);
+             ELSE
+              	v_tipo_pv='';
+             END IF;
+
 
                 v_consulta = '
                             INSERT INTO sfe.tfactura(
@@ -3477,7 +3502,8 @@ BEGIN
                             usuario_reg,
                             tipo_factura,
                             id_origen,
-                            sistema_origen
+                            sistema_origen,
+                            desc_ruta
                             )
                             values(
                             '||v_id_factura||',
@@ -3490,7 +3516,8 @@ BEGIN
                             '''||v_cajero||''',
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
-                            ''ERP''
+                            ''ERP'',
+                            '''||v_tipo_pv::varchar||'''
                             );';
 
 
