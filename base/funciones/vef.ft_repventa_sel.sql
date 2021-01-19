@@ -1032,7 +1032,7 @@ v_filtro_cajero_boleto_1 varchar;
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || '
                      /*************************Aumentando*********************/
-                     CASE WHEN b.forma_pago = ''CC'' then
+                     CASE WHEN b.forma_pago = ''CC'' and fpmb.id_boleto_amadeus is null then
 
                         (select fp_pw.name
                         from obingresos.tforma_pago_pw fp_pw
@@ -1049,7 +1049,7 @@ v_filtro_cajero_boleto_1 varchar;
                     end as monto_cash_usd,
 
                      /*Aumentando*/
-                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpusd.id_moneda = 2 then
+                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpusd.id_moneda = 2 and fpmb.id_boleto_amadeus is null then
                         b.total
                      else
                         case
@@ -1088,7 +1088,7 @@ v_filtro_cajero_boleto_1 varchar;
              case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 end as monto_cash_mb,
 
              /*Aumentando*/
-             CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 and b.voided != ''si'' then
+             CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 and b.voided != ''si'' and fpmb.id_boleto_amadeus is null then
 
              	b.total
 
@@ -1130,7 +1130,7 @@ v_filtro_cajero_boleto_1 varchar;
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar,b.forma_pago, b.id_moneda_boleto '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar,b.forma_pago, b.id_moneda_boleto, fpmb.id_boleto_amadeus '|| v_group_by || ')
              order by fecha,tipo_factura DESC,correlativo_venta, boleto';
         end if;
 
