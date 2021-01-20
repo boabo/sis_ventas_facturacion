@@ -86,7 +86,8 @@ BEGIN
                             id_origen,
                             tipo_factura,
                             usuario_reg,
-                            desc_ruta
+                            desc_ruta,
+                            importe_exento
 
                             )
           				values(
@@ -103,7 +104,8 @@ BEGIN
                             '||v_parametros.id_origen::integer||',
                             '''||v_parametros.tipo_factura::varchar||''',
                             '''||v_parametros.usuario_registro::varchar||''',
-                            ''CARGA NACIONAL COMPUTARIZADA''
+                            ''CARGA NACIONAL COMPUTARIZADA'',
+                            0
                             );';
 
               IF(v_conexion!='OK') THEN

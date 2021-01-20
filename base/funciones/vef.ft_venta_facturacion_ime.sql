@@ -2862,7 +2862,8 @@ BEGIN
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta
+                            desc_ruta,
+                            importe_exento
                             )
                             values(
                             '||v_id_factura||',
@@ -2883,7 +2884,8 @@ BEGIN
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||'''
+                            '''||v_tipo_pv::varchar||''',
+                            '||v_venta.excento||'
                             );';
 
 
@@ -3250,7 +3252,8 @@ BEGIN
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta
+                            desc_ruta,
+                            importe_exento
                             )
                             values(
                             '||v_id_factura||',
@@ -3271,7 +3274,8 @@ BEGIN
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||'''
+                            '''||v_tipo_pv::varchar||''',
+                            '||v_venta.excento||'
                             );';
 
 
@@ -3503,7 +3507,8 @@ BEGIN
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta
+                            desc_ruta,
+                            importe_exento
                             )
                             values(
                             '||v_id_factura||',
@@ -3517,7 +3522,8 @@ BEGIN
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||'''
+                            '''||v_tipo_pv::varchar||''',
+                            '||v_venta.excento||'
                             );';
 
 
@@ -4217,7 +4223,8 @@ BEGIN
                                 usuario_reg,
                                 tipo_factura,
                                 id_origen,
-                                sistema_origen
+                                sistema_origen,
+                                importe_exento
                                 )
                                 values(
                                 '||v_id_factura||',
@@ -4230,7 +4237,8 @@ BEGIN
                                 '''||v_cajero||''',
                                 '''||v_venta.tipo_factura||''',
                                 '||v_venta.id_venta||',
-                                ''ERP''
+                                ''ERP'',
+                                0
                                 );';
 
 
