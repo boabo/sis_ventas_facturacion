@@ -55,11 +55,15 @@ BEGIN
 						sucusu.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-						usu.cuenta		
+						usu.cuenta,
+                        vusu.desc_persona::varchar
+
 						from vef.tsucursal_usuario sucusu
 						inner join segu.tusuario usu1 on usu1.id_usuario = sucusu.id_usuario_reg
 						inner join segu.tusuario usu on usu.id_usuario = sucusu.id_usuario
 						left join segu.tusuario usu2 on usu2.id_usuario = sucusu.id_usuario_mod
+                        join segu.vusuario vusu on vusu.id_usuario = sucusu.id_usuario
+
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -87,6 +91,7 @@ BEGIN
 					    inner join segu.tusuario usu1 on usu1.id_usuario = sucusu.id_usuario_reg
 					    inner join segu.tusuario usu on usu.id_usuario = sucusu.id_usuario
 						left join segu.tusuario usu2 on usu2.id_usuario = sucusu.id_usuario_mod
+                        join segu.vusuario vusu on vusu.id_usuario = sucusu.id_usuario
 					    where ';
 			
 			--Definicion de la respuesta		    
