@@ -309,7 +309,7 @@ class MODCajero extends MODbase{
 			$this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
 			$this->setParametro('tipo_pv','tipo_pv','varchar');
 			$this->setParametro('tipo','tipo','varchar');
-
+			$this->setParametro('liquidaciones','liquidaciones','varchar');
 
 			//Ejecuta la instruccion
 			$this->armarConsulta();

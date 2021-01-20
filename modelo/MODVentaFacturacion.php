@@ -357,6 +357,9 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('correo_electronico','correo_electronico','varchar');
 			$this->setParametro('nombre_factura','nombre_factura','varchar');
 			$this->setParametro('boleto_asociado','boleto_asociado','varchar');
+			$this->setParametro('liquidacion','liquidacion','varchar');
+			$this->setParametro('total_suma','total_suma','numeric');			
+
 			/****************************************************************************************/
 
             //Ejecuta la instruccion

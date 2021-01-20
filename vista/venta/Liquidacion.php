@@ -1,9 +1,9 @@
 <?php
 /**
 *@package pXP
-*@file gen-Cajero.php
-*@author  (ivaldivia)
-*@date 10-05-2019 19:08:47
+*@file Liquidacion.php
+*@author  (bvasquez)
+*@date 06-01-2020
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
 
@@ -25,15 +25,15 @@ header("content-type: text/javascript; charset=UTF-8");
 
 </style>
 <script>
-Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
+Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 	mosttar:'',
 	mgs_user: '<p>Estimado Usuario Registros Anteriores a la Fecha Solo Pueden Ser Consultados </p>',
 	solicitarPuntoVenta: true,
 
-	formUrl: '../../../sis_ventas_facturacion/vista/venta/FormCajero.php',
-	formClass : 'FormCajero',
-    //tipo_factura: 'recibo',
-    nombreVista: 'ReciboLista',
+	formUrl: '../../../sis_ventas_facturacion/vista/venta/FormLiquidacion.php',
+	formClass : 'FormLiquidacion',
+
+  nombreVista: 'LiquidacionLista',
 	solicitarSucursal: true, //para indicar si es forzoso o no indicar la sucrsal al iniciar
 	tipo_usuario : 'cajero',
 
@@ -76,7 +76,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			if(this.solicitarPuntoVenta){
 					this.seleccionarPuntoVentaSucursal();
 			}
-			Phx.vista.Cajero.superclass.constructor.call(this,request.arguments);
+			Phx.vista.Liquidacion.superclass.constructor.call(this,request.arguments);
 			this.store.baseParams.tipo_usuario = this.tipo_usuario;
 			this.store.baseParams.pes_estado = 'caja';
 		//	this.bbar.add(this.cmbPuntoV);
@@ -233,22 +233,22 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 										 ],
 
  actualizarSegunTab: function(name, indice){
+
 			 if(this.finCons){
 					 this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
 					 this.store.baseParams.pes_estado = name;
 					 this.store.baseParams.interfaz = 'vendedor';
 
 					 /**********CONDICION PARA OCULTAR BOTONES***************************/
-					 if (this.tipo_punto_venta == 'ato' || this.tipo_punto_venta == 'carga') {
+					 if (this.tipo_punto_venta == 'cto' || this.tipo_punto_venta=='ato' || this.tipo_punto_venta=='carga' || this.tipo_punto_venta=='devoluciones') {
 						 	this.getBoton('completar_pago').setVisible(false);
 							this.getBoton('ant_estado').setVisible(false);
+              this.getBoton('completar_pago_2').setVisible(false);
               if(name=='borrador' || name == 'finalizado' || name == 'anulado'){
-               this.tbar.items.items[0].setVisible(false);
-               this.getBoton('completar_pago_2').setVisible(false);
-             }else{
-               this.tbar.items.items[0].setVisible(true);
-             }
-								//this.getBoton('completar_pago_2').setVisible(false);
+                this.tbar.items.items[0].setVisible(false);
+              }else{
+                this.tbar.items.items[0].setVisible(true);
+              }
 					 }
 					 else {
 							 this.tbar.items.items[0].setVisible(false);
@@ -282,7 +282,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			}
 
 
-			Phx.vista.Cajero.superclass.preparaMenu.call(this);
+			Phx.vista.Liquidacion.superclass.preparaMenu.call(this);
 		},
 
 		liberaMenu : function(){
@@ -296,7 +296,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 				// this.getBoton('anular_fact').enable();
 				// this.getBoton('completar_pago_2').enable();
 				// this.getBoton('ant_estado').enable();
-				Phx.vista.Cajero.superclass.liberaMenu.call(this);
+				Phx.vista.Liquidacion.superclass.liberaMenu.call(this);
 		},
 
 
@@ -496,12 +496,12 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	iniciarEventos:function(){
 
 		 /***************/
- 		 this.timer_id=Ext.TaskMgr.start({
-				run: Ftimer,
-				interval:3000,
-				scope:this
-		});
-		function Ftimer(){
+ 		//  this.timer_id=Ext.TaskMgr.start({
+		// 		run: Ftimer,
+		// 		interval:3000,
+		// 		scope:this
+		// });
+		// function Ftimer(){
 			//recuperamos si tiene apertura de Caja
 					if (this.store.baseParams.id_punto_venta != '') {
 
@@ -546,12 +546,12 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 										}
 
 										/******AQUI PONER CONDICION PARA LOS TIPOS ATO y CTO*************/
-										if (this.tipo_punto_venta == 'ato' || this.tipo_punto_venta == 'carga') {
+										if (this.tipo_punto_venta == 'cto') {
 												 this.getBoton('completar_pago').setVisible(false);
 												 this.getBoton('ant_estado').setVisible(false);
 
 										} else {
-												this.tbar.items.items[0].setVisible(false);
+												// this.tbar.items.items[0].setVisible(false);
 												this.getBoton('completar_pago_2').setVisible(false);
 										}
 										/*****************************************************************/
@@ -566,7 +566,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 								//console.log("muestra carga");
 						}
 
-			}
+			// }
 
 /************************************************/
 
@@ -733,42 +733,43 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
       },
 
 			onButtonNew : function () {
-	        //abrir formulario de solicitud
-					Ext.Ajax.request({
-							url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
-							params:{
-								id_punto_venta:this.variables_globales.id_punto_venta,
-								id_sucursal:this.variables_globales.id_sucursal
-							},
-							success: function(resp){
-									var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-									// this.aperturaText = reg.ROOT.datos.v_apertura;
-									if (reg.ROOT.datos.v_apertura == 'SIN APERTURA DE CAJA') {
-										Ext.Msg.show({
-												title: 'Alerta',
-												msg: '<p>Estimado Usuario debe aperturar una caja para proceder con las ventas.</p>',
-												buttons: Ext.Msg.OK,
-												width: 512,
-												icon: Ext.Msg.INFO
-										});
-									} else if (reg.ROOT.datos.v_apertura == 'cerrado') {
-										Ext.Msg.show({
-												title: 'Alerta',
-												msg: '<p>Estimado Usuario la apertura de caja esta actualmente cerrada.</p>',
-												buttons: Ext.Msg.OK,
-												width: 512,
-												icon: Ext.Msg.INFO
-										});
-									} else if (reg.ROOT.datos.v_apertura == 'abierto') {
-										  this.openForm('new');
-									}
+        Ext.Ajax.request({
+            url:'../../sis_ventas_facturacion/control/VentaFacturacion/obtenerApertura',
+            params:{
+              id_punto_venta:this.variables_globales.id_punto_venta,
+              id_sucursal:this.variables_globales.id_sucursal
+            },
+            success: function(resp){
+                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                if (reg.ROOT.datos.v_tipo_usu != 'finanzas'){
+                  if (reg.ROOT.datos.v_apertura == 'SIN APERTURA DE CAJA') {
+                    Ext.Msg.show({
+                        title: 'Alerta',
+                        msg: '<p>Estimado Usuario debe aperturar una caja para proceder con las ventas.</p>',
+                        buttons: Ext.Msg.OK,
+                        width: 512,
+                        icon: Ext.Msg.INFO
+                    });
+                  } else if (reg.ROOT.datos.v_apertura == 'cerrado') {
+                    Ext.Msg.show({
+                        title: 'Alerta',
+                        msg: '<p>Estimado Usuario la apertura de caja esta actualmente cerrada.</p>',
+                        buttons: Ext.Msg.OK,
+                        width: 512,
+                        icon: Ext.Msg.INFO
+                    });
+                  } else if (reg.ROOT.datos.v_apertura == 'abierto') {
+                      this.openForm('new');
+                  }
+                }else{
+                  this.openForm('new');
+                }
 
-							},
-							failure: this.conexionFailure,
-							timeout:this.timeout,
-							scope:this
-					});
-	        //this.openForm('new');
+            },
+            failure: this.conexionFailure,
+            timeout:this.timeout,
+            scope:this
+        });
 	    },
 
 			anular : function () {
@@ -862,24 +863,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		/*Comentando esta parte para que se imprima directamente desde WF*/
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
-				// console.log("llega aqui dato",rec);
-				// console.log("llega aqui dato",this.store);
-   				//Phx.CP.loadingShow();
-					// if (this.variables_globales.formato_comprobante == 'Carta' || this.variables_globales.formato_comprobante == 'A4') {
-   				// Ext.Ajax.request({
-   				// 		url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
-   				// 		params : {
-          //       'id_venta' : rec.data.id_venta ,
-   				// 			'id_punto_venta' : rec.data.id_punto_venta,
-   				// 			'formato_comprobante' : this.variables_globales.formato_comprobante,
-   				// 			'tipo_factura': this.store.baseParams.tipo_factura
-   				// 		},
-   				// 		success : this.successExport,
-   				// 		failure : this.conexionFailure,
-   				// 		timeout : this.timeout,
-   				// 		scope : this
-   				// 	});
-					// } else {
+
           var date = new Date()
 
           var dia = date.getDate();
@@ -1366,214 +1350,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			 grid:true,
 			 form:false
 	 },
-		// {
-		// 	config: {
-		// 		name: 'id_usuario_cajero',
-		// 		fieldLabel: 'id_usuario_cajero',
-		// 		allowBlank: true,
-		// 		emptyText: 'Elija una opción...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url: '../../sis_/control/Clase/Metodo',
-		// 			id: 'id_',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields: ['id_', 'nombre', 'codigo'],
-		// 			remoteSort: true,
-		// 			baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-		// 		}),
-		// 		valueField: 'id_',
-		// 		displayField: 'nombre',
-		// 		gdisplayField: 'desc_',
-		// 		hiddenName: 'id_usuario_cajero',
-		// 		forceSelection: true,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		renderer : function(value, p, record) {
-		// 			return String.format('{0}', record.data['desc_']);
-		// 		}
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: true
-		// },
-
-
-		// {
-		// 	config:{
-		// 		name: 'total_venta_msuc',
-		// 		fieldLabel: 'total_venta_msuc',
-		// 		allowBlank: true,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.total_venta_msuc',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'otros_cif',
-		// 		fieldLabel: 'otros_cif',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.otros_cif',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-
-
-		// {
-		// 	config:{
-		// 		name: 'seguros_cif',
-		// 		fieldLabel: 'seguros_cif',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.seguros_cif',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'comision',
-		// 		fieldLabel: 'Comisión',
-		// 		allowBlank: true,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.comision',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:false
-		// },
-		// {
-		// 	config: {
-		// 		name: 'id_moneda',
-		// 		fieldLabel: 'id_moneda',
-		// 		allowBlank: true,
-		// 		emptyText: 'Elija una opción...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url: '../../sis_/control/Clase/Metodo',
-		// 			id: 'id_',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields: ['id_', 'nombre', 'codigo'],
-		// 			remoteSort: true,
-		// 			baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-		// 		}),
-		// 		valueField: 'id_',
-		// 		displayField: 'nombre',
-		// 		gdisplayField: 'desc_',
-		// 		hiddenName: 'id_moneda',
-		// 		forceSelection: true,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		renderer : function(value, p, record) {
-		// 			return String.format('{0}', record.data['desc_']);
-		// 		}
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: true
-		// },
-		// {
-		// 	config: {
-		// 		name: 'id_movimiento',
-		// 		fieldLabel: 'id_movimiento',
-		// 		allowBlank: true,
-		// 		emptyText: 'Elija una opción...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url: '../../sis_/control/Clase/Metodo',
-		// 			id: 'id_',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields: ['id_', 'nombre', 'codigo'],
-		// 			remoteSort: true,
-		// 			baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-		// 		}),
-		// 		valueField: 'id_',
-		// 		displayField: 'nombre',
-		// 		gdisplayField: 'desc_',
-		// 		hiddenName: 'id_movimiento',
-		// 		forceSelection: true,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		renderer : function(value, p, record) {
-		// 			return String.format('{0}', record.data['desc_']);
-		// 		}
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'transporte_cif',
-		// 		fieldLabel: 'transporte_cif',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.transporte_cif',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
 		{
 			config:{
 				name: 'estado_reg',
@@ -1589,171 +1365,17 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-		// {
-		// 	config:{
-		// 		name: 'nro_tramite',
-		// 		fieldLabel: 'nro_tramite',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:-5
-		// 	},
-		// 		type:'TextField',
-		// 		filters:{pfiltro:'fact.nro_tramite',type:'string'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'tipo_cambio_venta',
-		// 		fieldLabel: 'tipo_cambio_venta',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:-5
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.tipo_cambio_venta',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'a_cuenta',
-		// 		fieldLabel: 'a_cuenta',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.a_cuenta',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'contabilizable',
-		// 		fieldLabel: 'contabilizable',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:2
-		// 	},
-		// 		type:'TextField',
-		// 		filters:{pfiltro:'fact.contabilizable',type:'string'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-
-		// {
-		// 	config:{
-		// 		name: 'excento',
-		// 		fieldLabel: 'Excento',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.excento',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:false
-		// },
-		// {
-		// 	config:{
-		// 		name: 'valor_bruto',
-		// 		fieldLabel: 'valor_bruto',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.valor_bruto',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'descripcion_bulto',
-		// 		fieldLabel: 'descripcion_bulto',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1000
-		// 	},
-		// 		type:'TextField',
-		// 		filters:{pfiltro:'fact.descripcion_bulto',type:'string'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config: {
-		// 		name: 'id_grupo_factura',
-		// 		fieldLabel: 'id_grupo_factura',
-		// 		allowBlank: true,
-		// 		emptyText: 'Elija una opción...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url: '../../sis_/control/Clase/Metodo',
-		// 			id: 'id_',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields: ['id_', 'nombre', 'codigo'],
-		// 			remoteSort: true,
-		// 			baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-		// 		}),
-		// 		valueField: 'id_',
-		// 		displayField: 'nombre',
-		// 		gdisplayField: 'desc_',
-		// 		hiddenName: 'id_grupo_factura',
-		// 		forceSelection: true,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		renderer : function(value, p, record) {
-		// 			return String.format('{0}', record.data['desc_']);
-		// 		}
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: true
-		// },
-
-		// {
-		// 	config:{
-		// 		name: 'seguros_fob',
-		// 		fieldLabel: 'seguros_fob',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.seguros_fob',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
+    {
+			//configuracion del componente
+			config:{
+				labelSeparator:'',
+				inputType:'hidden',
+				name: 'liquidacion'
+			},
+			valorInicial:'si',
+			type:'Field',
+			form:true
+		},
 		{
 			//configuracion del componente
 			config:{
@@ -1765,125 +1387,6 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true
 		},
-		// {
-		// 	config:{
-		// 		name: 'forma_pedido',
-		// 		fieldLabel: 'forma_pedido',
-		// 		allowBlank: true,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:200
-		// 	},
-		// 		type:'TextField',
-		// 		filters:{pfiltro:'fact.forma_pedido',type:'string'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'porcentaje_descuento',
-		// 		fieldLabel: 'porcentaje_descuento',
-		// 		allowBlank: true,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:327680
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.porcentaje_descuento',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'hora_estimada_entrega',
-		// 		fieldLabel: 'hora_estimada_entrega',
-		// 		allowBlank: true,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:8
-		// 	},
-		// 		type:'TextField',
-		// 		filters:{pfiltro:'fact.hora_estimada_entrega',type:'string'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config: {
-		// 		name: 'id_vendedor_medico',
-		// 		fieldLabel: 'id_vendedor_medico',
-		// 		allowBlank: true,
-		// 		emptyText: 'Elija una opción...',
-		// 		store: new Ext.data.JsonStore({
-		// 			url: '../../sis_/control/Clase/Metodo',
-		// 			id: 'id_',
-		// 			root: 'datos',
-		// 			sortInfo: {
-		// 				field: 'nombre',
-		// 				direction: 'ASC'
-		// 			},
-		// 			totalProperty: 'total',
-		// 			fields: ['id_', 'nombre', 'codigo'],
-		// 			remoteSort: true,
-		// 			baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-		// 		}),
-		// 		valueField: 'id_',
-		// 		displayField: 'nombre',
-		// 		gdisplayField: 'desc_',
-		// 		hiddenName: 'id_vendedor_medico',
-		// 		forceSelection: true,
-		// 		typeAhead: false,
-		// 		triggerAction: 'all',
-		// 		lazyRender: true,
-		// 		mode: 'remote',
-		// 		pageSize: 15,
-		// 		queryDelay: 1000,
-		// 		anchor: '100%',
-		// 		gwidth: 150,
-		// 		minChars: 2,
-		// 		renderer : function(value, p, record) {
-		// 			return String.format('{0}', record.data['desc_']);
-		// 		}
-		// 	},
-		// 	type: 'ComboBox',
-		// 	id_grupo: 0,
-		// 	filters: {pfiltro: 'movtip.nombre',type: 'string'},
-		// 	grid: true,
-		// 	form: true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'otros_fob',
-		// 		fieldLabel: 'otros_fob',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 		maxLength:1179650
-		// 	},
-		// 		type:'NumberField',
-		// 		filters:{pfiltro:'fact.otros_fob',type:'numeric'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
-		// {
-		// 	config:{
-		// 		name: 'fecha_estimada_entrega',
-		// 		fieldLabel: 'fecha_estimada_entrega',
-		// 		allowBlank: false,
-		// 		anchor: '80%',
-		// 		gwidth: 100,
-		// 					format: 'd/m/Y',
-		// 					renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-		// 	},
-		// 		type:'DateField',
-		// 		filters:{pfiltro:'fact.fecha_estimada_entrega',type:'date'},
-		// 		id_grupo:1,
-		// 		grid:true,
-		// 		form:true
-		// },
 		{
 			config:{
 				name: 'id_usuario_ai',
@@ -2025,6 +1528,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		{name:'seguros_fob', type: 'numeric'},
 		{name:'total_venta', type: 'numeric'},
 		{name:'forma_pedido', type: 'string'},
+    {name:'liquidacion', type: 'string'},
 		{name:'porcentaje_descuento', type: 'numeric'},
 		{name:'hora_estimada_entrega', type: 'string'},
 		{name:'id_vendedor_medico', type: 'string'},
@@ -2041,8 +1545,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		{name:'nombre_sucursal', type: 'string'},
 		{name:'id_formula', type: 'numeric'},
 		{name:'formato_factura_emitida', type: 'string'},
-		{name:'correo_electronico', type: 'string'},
-
+		{name:'correo_electronico', type: 'string'}
 	],
 	sortInfo:{
 		field: 'id_venta',

@@ -187,6 +187,15 @@ DECLARE
     v_tipo_pv				varchar;
     /******************************************************************************/
 
+    /**Aumentado para liquidaciones breydi vasquez 20/01/2021*/
+    v_resp_informix			varchar[];
+
+    v_tipo_usu				varchar;
+    v_liquidacion			varchar=null;
+    v_tipo_interf			varchar=null;
+
+    v_estacion				varchar;
+    /***/
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -960,13 +969,20 @@ BEGIN
 
             end if;
 
+            /*breydi.vasquez 20/01/2021 sin apertura de caja */
+            select tipo_usuario into v_tipo_usu
+            from vef.tsucursal_usuario
+            where id_usuario = p_id_usuario
+            and id_punto_venta = v_parametros.id_punto_venta::integer
+            and tipo_usuario = 'finanzas';
+            /**/
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Factura Computarizada modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'v_apertura',v_apertura::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_tipo_punto_venta',v_tipo_punto_venta::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_id_apertura_cierre', v_id_apertura_cierre::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'v_punto_venta',v_punto_venta::varchar);
-
+            v_resp = pxp.f_agrega_clave(v_resp,'v_tipo_usu',v_tipo_usu::varchar);
             --Devuelve la respuesta
             return v_resp;
 
@@ -1518,6 +1534,18 @@ BEGIN
 
         end if;
 
+        /**breydi.vasquez 20/02/2021*/
+                 	if (pxp.f_existe_parametro(p_tabla, 'liquidacion'))then
+                        select tipo_usuario into v_tipo_usu
+                        from vef.tsucursal_usuario
+                        where id_usuario = p_id_usuario
+                        and id_punto_venta = v_id_punto_venta
+                        and tipo_usuario = 'finanzas';
+
+                        v_tipo_interf = v_parametros.liquidacion;
+                    end if;
+        /**/
+
         if (pxp.f_existe_parametro(p_tabla,'id_punto_venta')) then
           v_id_punto_venta = v_parametros.id_punto_venta;
 
@@ -1535,7 +1563,9 @@ BEGIN
                            where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
                                  acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario)) then
-            raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+              IF v_tipo_usu is null and v_tipo_interf is null THEN
+                raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+              END IF;
           end if;
 
         else
@@ -1555,7 +1585,9 @@ BEGIN
                            where acc.fecha_apertura_cierre = v_fecha and
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
                                  acc.id_sucursal = v_parametros.id_sucursal and acc.id_usuario_cajero = p_id_usuario)) then
-            raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+            IF v_tipo_usu is null and v_tipo_interf is null THEN
+              raise exception 'Antes de registrar una venta el cajero debe realizar una apertura de caja';
+            END IF;
           end if;
 
         end if;
@@ -1800,7 +1832,18 @@ BEGIN
         	v_correo_electronico = null;
         end if;
         /**************************************/
+        /*bvp 15-01-2021*/
+    		IF (pxp.f_existe_parametro(p_tabla,'liquidacion') AND pxp.f_existe_parametro(p_tabla, 'total_suma')) THEN
 
+    	    	v_resp_informix = vef.f_controles_liquidaciones(v_parametros.observaciones, v_parametros.total_suma);
+
+                IF v_resp_informix[0] THEN
+                  raise '%', v_resp_informix[1];
+                END IF;
+
+        END IF;
+
+    		/*bvp 15-01-2021*/
         --Sentencia de la insercion
         insert into vef.tventa(
           id_venta,
@@ -3190,6 +3233,18 @@ BEGIN
             raise exception 'La caja ya fue cerrada, necesita tener la caja abierta para poder finalizar la venta';
           end if;
 
+          /**breydi.vasquez 20/01/2021*/
+                IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
+                  select tipo_usuario into v_tipo_usu
+                    from vef.tsucursal_usuario
+                    where id_usuario = p_id_usuario and
+                    (id_punto_venta = v_venta.id_punto_venta or
+                    id_sucursal = v_venta.id_sucursal)
+                    and tipo_usuario = 'finanzas';
+
+                    v_tipo_interf = 'FCD';
+                END IF;
+            /**/
 
           if (not exists(	select 1
                            from vef.tapertura_cierre_caja acc
@@ -3198,7 +3253,9 @@ BEGIN
                                  acc.estado_reg = 'activo' and acc.estado = 'abierto' and
                                  (acc.id_punto_venta = v_venta.id_punto_venta or
                                   acc.id_sucursal = v_venta.id_sucursal))) then
-            raise exception 'Antes de finalizar una venta debe realizar una apertura de caja';
+            IF v_tipo_usu is null and v_tipo_interf is null THEN
+              raise exception 'Antes de finalizar una venta debe realizar una apertura de caja';
+            END IF;
           end if;
 
           update vef.tventa set id_usuario_cajero = p_id_usuario
@@ -3291,7 +3348,28 @@ BEGIN
 		end if;
               /************************************/
         /*****************************************************************/
+        IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
+            FOREACH v_liquidacion IN ARRAY string_to_array(v_parametros.liquidaciones, ',')
+            LOOP
+              UPDATE informix.liquidevolucion
+              SET
+                nroaut = v_dosificacion.nroaut::numeric,
+                nrofac = v_nro_factura
+              WHERE trim(nroliqui) = trim(v_liquidacion);
 
+              select
+                  l.codigo into v_estacion
+              from vef.tventa v
+              inner join vef.tsucursal s on s.id_sucursal = v.id_sucursal
+              inner join param.tlugar l on l.id_lugar = s.id_lugar
+              where v.id_venta = v_venta.id_venta;
+
+              INSERT INTO informix.tfactucomdoc
+              (pais, estacion, nroaut, nrofac, renglon, documento) VALUES
+              ('BO', v_estacion, v_dosificacion.nroaut::numeric, v_nro_factura, 1, v_liquidacion);
+
+            END LOOP;
+  		  END IF;
 
         /*************************************************/
 
