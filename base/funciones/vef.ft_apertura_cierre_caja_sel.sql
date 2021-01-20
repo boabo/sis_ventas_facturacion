@@ -653,7 +653,7 @@ BEGIN
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_base  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
                                   and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''revisado''),0) as comisiones_ml,
+                                  bol.estado = ''revisado'' and bol.voided != ''si''),0) as comisiones_ml,
 
                       COALESCE((	select sum(ven.comision) from vef.tventa ven
                           where coalesce(ven.comision,0) > 0 and ven.id_moneda = ' || v_id_moneda_tri  || ' and
@@ -665,7 +665,7 @@ BEGIN
                           where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = ' || v_id_moneda_tri  || ' and
                                   bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
                                    and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                  bol.estado = ''revisado''),0)   as comisiones_me,
+                                  bol.estado = ''revisado'' and bol.voided != ''si''),0)   as comisiones_me,
 					  acc.monto_ca_recibo_ml,
                       acc.monto_cc_recibo_ml
                       from vef.tapertura_cierre_caja acc
@@ -1117,7 +1117,7 @@ BEGIN
                                   where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 1 and
                                           bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
                                           and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                          bol.estado = ''revisado''),0) as comisiones_ml,
+                                          bol.estado = ''revisado'' and bol.voided != ''si''),0) as comisiones_ml,
 
 
 
@@ -1125,7 +1125,7 @@ BEGIN
                                   where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 2 and
                                           bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
                                            and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                          bol.estado = ''revisado''),0)   as comisiones_me,
+                                          bol.estado = ''revisado'' and bol.voided != ''si''),0)   as comisiones_me,
 
                               acc.monto_ca_recibo_ml,
                               acc.monto_cc_recibo_ml
