@@ -2514,11 +2514,18 @@ $body$
           ven.id_proceso_wf,
           ven.estado,
           ven.id_venta,
-          ven.nro_tramite
+          ven.nro_tramite,
+          ven.id_deposito
         into
           v_registros
         from vef.tventa ven
         where ven.id_venta = v_parametros.id_venta;
+
+
+         if (v_registros.id_deposito is not null) then
+            delete from obingresos.tdeposito
+                where id_deposito = v_registros.id_deposito;
+        end if;
 
 
         v_res = vef.f_anula_venta(p_administrador,p_id_usuario,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_parametros.id_venta);
