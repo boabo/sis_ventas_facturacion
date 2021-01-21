@@ -77,7 +77,7 @@ Phx.vista.SucursalUsuario_v2=Ext.extend(Phx.gridInterfaz,{
                 lazyRender:true,
                 mode: 'local',
                // displayField: 'descestilo',
-                store:['vendedor','administrador','cajero']
+                store:['vendedor','administrador','cajero', 'cajero_auxiliar', 'finanzas']
             },
             type:'ComboBox',
             //filters:{pfiltro:'promac.inicio',type:'string'},
@@ -85,7 +85,7 @@ Phx.vista.SucursalUsuario_v2=Ext.extend(Phx.gridInterfaz,{
             filters:{
                          type: 'list',
                          pfiltro:'ucusu.tipo_usuario',
-                         options: ['vendedor','administrador','cajero']
+                         options: ['vendedor','administrador','cajero', 'cajero_auxiliar', 'finanzas']
                     },
             grid:true,
             form:true
@@ -95,6 +95,7 @@ Phx.vista.SucursalUsuario_v2=Ext.extend(Phx.gridInterfaz,{
                 name : 'id_usuario',
                 fieldLabel : 'Usuario',
                 allowBlank : false,
+                gwidth: 100,
                 emptyText : 'Usuario...',
                 store : new Ext.data.JsonStore({
                     url : '../../sis_seguridad/control/Usuario/listarUsuario',
@@ -134,9 +135,28 @@ Phx.vista.SucursalUsuario_v2=Ext.extend(Phx.gridInterfaz,{
                 pfiltro : 'usu.cuenta',
                 type : 'string'
             },
+            bottom_filter:true,
             grid : true,
             form : true
         },
+
+        {
+            config:{
+                name: 'desc_persona',
+                fieldLabel: 'Nombre Usuario',
+                allowBlank: true,
+                gwidth: 270,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_persona']);
+                },
+            },
+            type:'TextField',
+            filters:{pfiltro:'vusu.desc_persona',type:'string'},
+            bottom_filter:true,
+            grid:true,
+            form:false
+        },
+
 		{
 			config:{
 				name: 'estado_reg',
@@ -270,6 +290,7 @@ Phx.vista.SucursalUsuario_v2=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
+		{name:'desc_persona', type: 'string'},
 
 	],
 	sortInfo:{

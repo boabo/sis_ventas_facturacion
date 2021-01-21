@@ -35,6 +35,8 @@ class MODSucursalUsuario extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('cuenta','varchar');
+
+		$this->captura('desc_persona','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
