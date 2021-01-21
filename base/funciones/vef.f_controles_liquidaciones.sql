@@ -94,7 +94,7 @@ BEGIN
      IF v_res_liq.importe is null AND v_res_liq.moneda IS NULL THEN
 
             v_resp[0] = true;
-            v_resp[1] = 'El o los numero de liquidacion '||p_liquidaciones||' no cuenta con descuentos que se consideren factura';
+            v_resp[1] = 'El numero de liquidacion '||p_liquidaciones||' no cuenta con descuentos que se consideren factura';
             return v_resp;
 
      ELSE
@@ -121,7 +121,7 @@ BEGIN
 	-- CONTROL DE MONTOS FACTURA Y COMISION
     IF p_venta_total != v_monto THEN
     	v_resp[0] = true;
-        v_resp[1] = 'El monto total del detalle de pago es: '||p_venta_total||' , el cual difiere del monto recuperado de el o los numeros de liquidacion: '||p_liquidaciones||' el cual es: '||v_monto;
+        v_resp[1] = 'El monto total del detalle de pago es: '||p_venta_total||' , el cual difiere del monto recuperado del numero de liquidacion: '||p_liquidaciones||' el cual es: '||v_monto;
         return v_resp;
     END IF;
 

@@ -1835,7 +1835,7 @@ BEGIN
         /*bvp 15-01-2021*/
     		IF (pxp.f_existe_parametro(p_tabla,'liquidacion') AND pxp.f_existe_parametro(p_tabla, 'total_suma')) THEN
 
-    	    	v_resp_informix = vef.f_controles_liquidaciones(v_parametros.observaciones, v_parametros.total_suma);
+    	    	v_resp_informix = vef.f_controles_liquidaciones(upper(v_parametros.observaciones), v_parametros.total_suma);
 
                 IF v_resp_informix[0] THEN
                   raise '%', v_resp_informix[1];
@@ -3349,7 +3349,7 @@ BEGIN
               /************************************/
         /*****************************************************************/
         IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
-            FOREACH v_liquidacion IN ARRAY string_to_array(v_parametros.liquidaciones, ',')
+            FOREACH v_liquidacion IN ARRAY string_to_array(upper(v_parametros.liquidaciones), ',')
             LOOP
               UPDATE informix.liquidevolucion
               SET
