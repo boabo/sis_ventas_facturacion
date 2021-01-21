@@ -557,14 +557,14 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
         /********************************Aumemtando condicios para el id moneda****************************************/
         this.Cmp.id_moneda.on('select',function(c,r,i) {
           if(r.data.id_moneda == 2){
-            this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
-            this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
+            this.Cmp.cambio.setValue(((Math.round(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))-this.suma_total));
+            this.Cmp.cambio_moneda_extranjera.setValue(((Math.round(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))-this.suma_total)/this.tipo_cambio);
           } else {
             this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
             this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
           }
 
-          if (r.data.id_moneda == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
+          if (r.data.id_moneda == 2 && (Math.round(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)) < this.suma_total) {
             /**********************************Cambiamos el Style *****************************************/
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
@@ -715,8 +715,8 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             //this.obtenersuma();
           if(this.Cmp.id_moneda.getValue() == 2){
               //console.log("llega el dolar");
-            this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
-            this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
+            this.Cmp.cambio.setValue(((Math.round(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))-this.suma_total));
+            this.Cmp.cambio_moneda_extranjera.setValue(((Math.round(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))-this.suma_total)/this.tipo_cambio);
           } else {
             //var cambio = parseFloat(this.Cmp.monto_forma_pago.getValue().toString()).toFixed(2);
             //var coversion_monto = parseFloat(this.Cmp.monto_forma_pago.getValue().replace(/,/g, ''));
@@ -728,7 +728,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
           }
 
-          if (this.Cmp.id_moneda.getValue() == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
+          if (this.Cmp.id_moneda.getValue() == 2 && (Math.round(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)) < this.suma_total) {
 
 
             /**********************************Cambiamos el Style *****************************************/

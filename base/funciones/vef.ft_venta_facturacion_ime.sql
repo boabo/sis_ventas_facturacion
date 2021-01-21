@@ -4720,8 +4720,14 @@ BEGIN
           from vef.tventa_detalle
           where id_venta =   v_parametros.id_venta;
 
-          if (v_suma_fp < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
-            raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
+          if v_parametros.id_moneda = 2 then
+            if (round(v_suma_fp,0) < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
+              raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
+            end if;
+          else
+            if (v_suma_fp < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
+              raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
+            end if;          
           end if;
 
           if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
