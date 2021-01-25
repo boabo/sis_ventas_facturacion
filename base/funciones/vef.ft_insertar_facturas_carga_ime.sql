@@ -81,13 +81,13 @@ BEGIN
                             nit_ci_cli,
                             razon_social_cli,
                             importe_total_venta,
+                            importe_otros_no_suj_iva,
                             codigo_control ,
                             sistema_origen,
                             id_origen,
                             tipo_factura,
                             usuario_reg,
-                            desc_ruta,
-                            importe_exento
+                            desc_ruta
 
                             )
           				values(
@@ -99,13 +99,13 @@ BEGIN
                             '''||v_parametros.nit::varchar||''',
                             '''||v_parametros.razon_social::varchar||''',
                             '||v_parametros.importe_total::numeric||',
+                            0,
                             '''||v_parametros.codigo_control::varchar||''',--decomentar
                             ''CARGA'',
                             '||v_parametros.id_origen::integer||',
                             '''||v_parametros.tipo_factura::varchar||''',
                             '''||v_parametros.usuario_registro::varchar||''',
-                            ''CARGA NACIONAL COMPUTARIZADA'',
-                            0
+                            ''CARGA NACIONAL COMPUTARIZADA''
                             );';
 
               IF(v_conexion!='OK') THEN

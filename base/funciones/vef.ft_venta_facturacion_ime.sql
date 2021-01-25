@@ -2900,13 +2900,13 @@ BEGIN
                             nit_ci_cli,
                             razon_social_cli,
                             importe_total_venta,
+                            importe_otros_no_suj_iva,
                             codigo_control,
                             usuario_reg,
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta,
-                            importe_exento
+                            desc_ruta
                             )
                             values(
                             '||v_id_factura||',
@@ -2917,6 +2917,7 @@ BEGIN
                             '''||v_venta.nit::varchar||''',
                             '''||v_venta.nombre_factura::varchar||''',
                             '||v_venta.total_venta::numeric||',
+                            '||v_venta.excento||',
                             '''||pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
@@ -2927,8 +2928,7 @@ BEGIN
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||''',
-                            '||v_venta.excento||'
+                            '''||v_tipo_pv::varchar||'''
                             );';
 
 
@@ -3304,13 +3304,13 @@ BEGIN
                             nit_ci_cli,
                             razon_social_cli,
                             importe_total_venta,
+                            importe_otros_no_suj_iva,
                             codigo_control,
                             usuario_reg,
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta,
-                            importe_exento
+                            desc_ruta
                             )
                             values(
                             '||v_id_factura||',
@@ -3321,6 +3321,7 @@ BEGIN
                             '''||v_venta.nit::varchar||''',
                             '''||v_venta.nombre_factura::varchar||''',
                             '||v_venta.total_venta::numeric||',
+                            '||v_venta.excento||',
                             '''||pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
@@ -3331,8 +3332,7 @@ BEGIN
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||''',
-                            '||v_venta.excento||'
+                            '''||v_tipo_pv::varchar||'''
                             );';
 
 
@@ -3581,12 +3581,12 @@ BEGIN
                             nit_ci_cli,
                             razon_social_cli,
                             importe_total_venta,
+                            importe_otros_no_suj_iva,
                             usuario_reg,
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta,
-                            importe_exento
+                            desc_ruta
                             )
                             values(
                             '||v_id_factura||',
@@ -3596,12 +3596,12 @@ BEGIN
                             '''||v_venta.nit::varchar||''',
                             '''||v_venta.nombre_factura::varchar||''',
                             '||v_venta.total_venta::numeric||',
+                            '||v_venta.excento||'
                             '''||v_cajero||''',
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||''',
-                            '||v_venta.excento||'
+                            '''||v_tipo_pv::varchar||'''
                             );';
 
 
@@ -4298,11 +4298,11 @@ BEGIN
                                 nit_ci_cli,
                                 razon_social_cli,
                                 importe_total_venta,
+                                importe_otros_no_suj_iva,
                                 usuario_reg,
                                 tipo_factura,
                                 id_origen,
-                                sistema_origen,
-                                importe_exento
+                                sistema_origen
                                 )
                                 values(
                                 '||v_id_factura||',
@@ -4312,11 +4312,11 @@ BEGIN
                                 ''0'',
                                 ''ANULADO'',
                                 0,
+                                0,
                                 '''||v_cajero||''',
                                 '''||v_venta.tipo_factura||''',
                                 '||v_venta.id_venta||',
-                                ''ERP'',
-                                0
+                                ''ERP''
                                 );';
 
 
@@ -4727,7 +4727,7 @@ BEGIN
           else
             if (v_suma_fp < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
               raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
-            end if;          
+            end if;
           end if;
 
           if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
