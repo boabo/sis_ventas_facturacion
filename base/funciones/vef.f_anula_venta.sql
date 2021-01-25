@@ -25,77 +25,80 @@ DECLARE
     v_venta 			 record;
     v_id_funcionario_inicio	 integer;
     v_id_estado_actual		 integer;
-    
+
     v_parametros           	record;
     v_id_tipo_compra_venta	integer;
     v_tabla			varchar;
     v_id_doc_compra_venta	integer;
-       
-	
-    
+
+	   /**breydi.vasquez 25/01/2021*/
+     v_liquidacion			varchar;
+     v_dosificacion			record;
+     /**/
+
 BEGIN
 
 	 v_nombre_funcion = 'vef.f_anula_venta';
 	 v_parametros = pxp.f_get_record(p_tabla);
 	 v_resp	= 'exito';
-	 select 
+	 select
       te.id_tipo_estado
      into
       v_id_tipo_estado
-     from wf.tproceso_wf pw 
+     from wf.tproceso_wf pw
      inner join wf.ttipo_proceso tp on pw.id_tipo_proceso = tp.id_tipo_proceso
-     inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'anulado'               
+     inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'anulado'
      where pw.id_proceso_wf = p_id_proceso_wf;
 
      select * into v_venta
      from vef.tventa
      where id_venta = p_id_venta;
-                   
-                  
-     IF v_id_tipo_estado is NULL  THEN             
+
+
+     IF v_id_tipo_estado is NULL  THEN
         raise exception 'No se parametrizo el estado "anulado" para la venta';
      END IF;
-                 
+
        select f.id_funcionario into  v_id_funcionario_inicio
       from segu.tusuario u
       inner join orga.tfuncionario f on f.id_persona = u.id_persona
       where u.id_usuario = p_id_usuario;
-                              
+
        -- pasamos la solicitud  al siguiente anulado
-               
-       v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado, 
-                                                   v_id_funcionario_inicio, 
-                                                   p_id_estado_wf, 
+
+       v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado,
+                                                   v_id_funcionario_inicio,
+                                                   p_id_estado_wf,
                                                    p_id_proceso_wf,
                                                    p_id_usuario,
                                                    NULL,
                                                    NULL,
                                                    NULL,
                                                    'Anulacion de venta');
-                
-                 
+
+
          -- actualiza estado en la solicitud
-                  
-         update vef.tventa  set 
+
+         update vef.tventa  set
            id_estado_wf =  v_id_estado_actual,
            estado = 'anulado',
            id_usuario_mod=p_id_usuario,
            fecha_mod=now()
          where id_venta  = p_id_venta;
-                   
-		
+
+
          if (pxp.f_get_variable_global('vef_integracion_lcv') = 'si') then
-         	
+
          	select dcv.id_doc_compra_venta into v_id_doc_compra_venta
              from conta.tdoc_compra_venta dcv
              where dcv.tabla_origen = 'vef.tventa' and dcv.id_origen = v_venta.id_venta and
                 dcv.estado_reg = 'activo';
-            
-            if (v_id_doc_compra_venta is not null) then    
+
+            if (v_id_doc_compra_venta is not null) then
                 select id_tipo_doc_compra_venta into v_id_tipo_compra_venta
                 from conta.ttipo_doc_compra_venta tcv
                 where tcv.codigo = 'A' and tcv.estado_reg = 'activo';
-				
+
                 if (v_id_tipo_compra_venta is null) then
                     raise exception 'No se encontro el tipo compra venta para anulacion';
                 else
@@ -113,16 +116,39 @@ BEGIN
                                         'integer']
                                     );
                     v_resp = conta.ft_doc_compra_venta_ime(p_administrador,p_id_usuario,v_tabla,'CONTA_DCVBASIC_MOD');
-    			end if;		
+    			end if;
 			end if;
 			--llamar funcion conta.ft_doc_compra_venta_ime transaccion transaccion CONTA_DCVBASIC_MOD id_doc_compra_venta y id_tipo_doc_compra_venta
-			--buscando el tipo_compra_venta con codigo A para insertar el codigo debe ser V			
+			--buscando el tipo_compra_venta con codigo A para insertar el codigo debe ser V
                    end if;
+        /**ini: breydi.vasquez 25/01/2021, update and delete liquidacion**/
+         IF pxp.f_existe_parametro(p_tabla, 'tipo_factura_vista')THEN
+         	IF v_parametros.tipo_factura_vista = 'FCD' THEN
+                 select
+              		*
+            	into  v_dosificacion
+            	from  vef.tdosificacion d where d.id_dosificacion = v_venta.id_dosificacion;
+
+              FOREACH v_liquidacion IN ARRAY string_to_array(v_venta.observaciones, ',')
+                LOOP
+                  UPDATE informix.liquidevolucion
+                  SET
+                    nroaut = null,
+                    nrofac = null
+                  WHERE trim(nroliqui) = trim(v_liquidacion);
+
+                  DELETE FROM informix.tfactucomdoc WHERE trim(pais) = 'BO' AND nroaut = v_dosificacion.nroaut::numeric
+                  AND nrofac = v_venta.nro_factura::numeric  AND trim(documento) = trim(v_liquidacion);
+
+              	END LOOP;
+            END IF;
+         END IF;
+         /**fin*/
 
 	RETURN   v_resp;
 
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

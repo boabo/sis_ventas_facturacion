@@ -118,14 +118,14 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				}
 		);
 		/*Aumentando el boton para imprimir la factura*/
-		this.addButton('btnChequeoDocumentosWf',{
-				text: '<b>Impresion Carta</b>',
-				grupo: [2,3],
-				iconCls: 'button-impcarta',
-				disabled: true,
-				handler: this.loadCheckDocumentosRecWf,
-				tooltip: '<b>Documentos </b><br/>Subir los documetos requeridos.'
-		});
+		// this.addButton('btnChequeoDocumentosWf',{
+		// 		text: '<b>Impresion Carta</b>',
+		// 		grupo: [2,3],
+		// 		iconCls: 'button-impcarta',
+		// 		disabled: true,
+		// 		handler: this.loadCheckDocumentosRecWf,
+		// 		tooltip: '<b>Documentos </b><br/>Subir los documetos requeridos.'
+		// });
     /**********************************************/
 		this.addButton('anular_fact',
 				{   grupo:[2],
@@ -267,17 +267,17 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			// console.log("llega aqui select",rec);
 			this.getBoton('completar_pago').enable();
 			this.getBoton('btnImprimir').enable();
-			this.getBoton('btnChequeoDocumentosWf').enable();
+			// this.getBoton('btnChequeoDocumentosWf').enable();
 			this.getBoton('anular_fact').enable();
 			this.getBoton('completar_pago_2').enable();
 			this.getBoton('ant_estado').enable();
 			this.getBoton('asociar_boletos').enable();
 
 			if (rec.data.formato_factura_emitida == 'Carta') {
-				this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+				// this.getBoton('btnChequeoDocumentosWf').setVisible(true);
 				this.getBoton('btnImprimir').setVisible(false);
 			} else if (rec.data.formato_factura_emitida == 'Rollo') {
-				this.getBoton('btnChequeoDocumentosWf').setVisible(false);
+				// this.getBoton('btnChequeoDocumentosWf').setVisible(false);
 				this.getBoton('btnImprimir').setVisible(true);
 			}
 
@@ -808,7 +808,8 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 								        Ext.Ajax.request({
 								            url:'../../sis_ventas_facturacion/control/Cajero/anularFactura',
 								            params:{
-								                id_venta:  rec.data.id_venta
+								                id_venta:  rec.data.id_venta,
+                                tipo_factura_vista: 'FCD'
 								                },
 								            success:me.successSave,
 								            failure: me.conexionFailure,

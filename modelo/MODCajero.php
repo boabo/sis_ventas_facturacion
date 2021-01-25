@@ -327,6 +327,7 @@ class MODCajero extends MODbase{
 
 			//Define los parametros para la funcion
 			$this->setParametro('id_venta','id_venta','int4');
+			$this->setParametro('tipo_factura_vista','tipo_factura_vista','varchar');
 
 			//Ejecuta la instruccion
 			$this->armarConsulta();
