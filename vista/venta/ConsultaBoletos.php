@@ -46,7 +46,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     height: '100%',
                     autoEl: {
                         tag: 'iframe',
-                        src: 'https://erp.obairlines.bo/boa-kiu/',
+                        src: 'http://erp.obairlines.bo/boa-kiu/',
                     }}]
             });
 
