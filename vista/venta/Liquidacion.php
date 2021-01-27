@@ -775,30 +775,30 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			anular : function () {
 				var rec=this.sm.getSelected();
 				var me= this;
-        var date = new Date()
-
-        var dia = date.getDate();
-        var mes = date.getMonth() + 1;
-        var ano = date.getFullYear();
-
-        if(mes < 10){
-          if(dia < 10){
-            var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
-          }else{
-            var fecha_hoy = dia + "/0" + mes + "/" + ano
-          }
-        }else{
-          var fecha_hoy = dia + "/" + mes + "/" + ano
-        }
-				if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
-					Ext.Msg.show({
-							title: 'Alerta',
-							msg: this.mgs_user,
-							buttons: Ext.Msg.OK,
-							width: 512,
-							icon: Ext.Msg.INFO
-					});
-				}else{
+        // var date = new Date()
+        //
+        // var dia = date.getDate();
+        // var mes = date.getMonth() + 1;
+        // var ano = date.getFullYear();
+        //
+        // if(mes < 10){
+        //   if(dia < 10){
+        //     var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+        //   }else{
+        //     var fecha_hoy = dia + "/0" + mes + "/" + ano
+        //   }
+        // }else{
+        //   var fecha_hoy = dia + "/" + mes + "/" + ano
+        // }
+				// if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+				// 	Ext.Msg.show({
+				// 			title: 'Alerta',
+				// 			msg: this.mgs_user,
+				// 			buttons: Ext.Msg.OK,
+				// 			width: 512,
+				// 			icon: Ext.Msg.INFO
+				// 	});
+				// }else{
 				Ext.Msg.confirm(
 						'Mensaje de Confirmación',
 						'Esta Seguro de Anular la Factura',
@@ -818,36 +818,36 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 								        });
 						}}
 				);
-			}
+			// }
 			},
 
 			AsociarBoletos: function(){
 
 		              var rec = {maestro: this.sm.getSelected().data}
-                  var date = new Date()
-
-                  var dia = date.getDate();
-                  var mes = date.getMonth() + 1;
-                  var ano = date.getFullYear();
-
-                  if(mes < 10){
-                    if(dia < 10){
-                      var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
-                    }else{
-                      var fecha_hoy = dia + "/0" + mes + "/" + ano
-                    }
-                  }else{
-                    var fecha_hoy = dia + "/" + mes + "/" + ano
-                  }
-									if(rec.maestro.fecha.dateFormat('d/m/Y') != fecha_hoy){
-										Ext.Msg.show({
-												title: 'Alerta',
-												msg: this.mgs_user,
-												buttons: Ext.Msg.OK,
-												width: 512,
-												icon: Ext.Msg.INFO
-										});
-									}else{
+                  // var date = new Date()
+                  //
+                  // var dia = date.getDate();
+                  // var mes = date.getMonth() + 1;
+                  // var ano = date.getFullYear();
+                  //
+                  // if(mes < 10){
+                  //   if(dia < 10){
+                  //     var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+                  //   }else{
+                  //     var fecha_hoy = dia + "/0" + mes + "/" + ano
+                  //   }
+                  // }else{
+                  //   var fecha_hoy = dia + "/" + mes + "/" + ano
+                  // }
+									// if(rec.maestro.fecha.dateFormat('d/m/Y') != fecha_hoy){
+									// 	Ext.Msg.show({
+									// 			title: 'Alerta',
+									// 			msg: this.mgs_user,
+									// 			buttons: Ext.Msg.OK,
+									// 			width: 512,
+									// 			icon: Ext.Msg.INFO
+									// 	});
+									// }else{
 		              console.log('VALOR',	rec);
 		              Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/venta/AsociarBoletos.php',
 		                  '<center><h1 style="font-size:25px; color:#0E00B7; text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);"> <img src="../../../lib/imagenes/icono_dibu/dibu_zoom.png" style="float:center; vertical-align: middle;"> Asociar Boletos</h1></center>',
@@ -858,38 +858,38 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		                  rec,
 		                  this.idContenedor,
 		                  'AsociarBoletos');
-										}
+										// }
 		          },
 
 		/*Comentando esta parte para que se imprima directamente desde WF*/
 			imprimirNota: function(){
    			var rec = this.sm.getSelected();
 
-          var date = new Date()
-
-          var dia = date.getDate();
-          var mes = date.getMonth() + 1;
-          var ano = date.getFullYear();
-
-          if(mes < 10){
-            if(dia < 10){
-              var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
-            }else{
-              var fecha_hoy = dia + "/0" + mes + "/" + ano
-            }
-          }else{
-            var fecha_hoy = dia + "/" + mes + "/" + ano
-          }
-
-					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
-						Ext.Msg.show({
-								title: 'Alerta',
-								msg: this.mgs_user,
-								buttons: Ext.Msg.OK,
-								width: 512,
-								icon: Ext.Msg.INFO
-						});
-					}else{
+          // var date = new Date()
+          //
+          // var dia = date.getDate();
+          // var mes = date.getMonth() + 1;
+          // var ano = date.getFullYear();
+          //
+          // if(mes < 10){
+          //   if(dia < 10){
+          //     var fecha_hoy = "0"+dia + "/0" + mes + "/" + ano
+          //   }else{
+          //     var fecha_hoy = dia + "/0" + mes + "/" + ano
+          //   }
+          // }else{
+          //   var fecha_hoy = dia + "/" + mes + "/" + ano
+          // }
+          //
+					// if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+					// 	Ext.Msg.show({
+					// 			title: 'Alerta',
+					// 			msg: this.mgs_user,
+					// 			buttons: Ext.Msg.OK,
+					// 			width: 512,
+					// 			icon: Ext.Msg.INFO
+					// 	});
+					// }else{
 						Ext.Ajax.request({
 	   						url : '../../sis_ventas_facturacion/control/Cajero/reporteFactura',
 	   						params : {
@@ -904,7 +904,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 	   						timeout : this.timeout,
 	   						scope : this
 	   					});
-					}
+					// }
 					// }
 
    	},
