@@ -576,7 +576,7 @@ v_filtro_cajero_boleto_1 varchar;
              b.nro_boleto::varchar as boleto,
              /*Aumentando para el localizador*/
              b.localizador::varchar as localizador,
-             (aux.codigo_auxiliar || ''-'' || aux.nombre_auxiliar)::varchar as codigo_auxiliar,
+             list((aux.codigo_auxiliar || ''-'' || aux.nombre_auxiliar))::varchar as codigo_auxiliar,
              /********************************/
              b.ruta_completa as ruta ,
              ''''::varchar as conceptos,
@@ -650,7 +650,7 @@ v_filtro_cajero_boleto_1 varchar;
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador/*,aux.codigo_auxiliar,aux.nombre_auxiliar*/ '|| v_group_by || ')
              order by fecha,boleto,correlativo_venta';
 
       else --------------------------------------------------------------------------Aqui las nuevas instancias de pago
@@ -1025,7 +1025,7 @@ v_filtro_cajero_boleto_1 varchar;
              b.nro_boleto::varchar as boleto,
              /*Aumentando para el localizador*/
              b.localizador::varchar as localizador,
-             (aux.codigo_auxiliar || ''-'' || aux.nombre_auxiliar)::varchar as codigo_auxiliar,
+             list((aux.codigo_auxiliar || ''-'' || aux.nombre_auxiliar))::varchar as codigo_auxiliar,
              /********************************/
              b.ruta_completa as ruta ,
              ''''::varchar as conceptos,
@@ -1131,7 +1131,7 @@ v_filtro_cajero_boleto_1 varchar;
              '||v_filtro_cajero_boleto||'
              group by b.fecha_emision,b.pasajero, b.voided, b.nro_boleto,b.mensaje_error,b.ruta_completa,b.moneda,b.total,imp.impuesto,
              		imp.monto_impuesto,fpmb.forma_pago,fpmb.monto_cash_mb,fpmb.monto_cc_mb,
-                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,aux.codigo_auxiliar,aux.nombre_auxiliar,b.forma_pago, b.id_moneda_boleto, fpmb.id_boleto_amadeus '|| v_group_by || ')
+                      fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,b.comision, b.localizador,/*aux.codigo_auxiliar,aux.nombre_auxiliar,*/b.forma_pago, b.id_moneda_boleto, fpmb.id_boleto_amadeus '|| v_group_by || ')
              order by fecha,tipo_factura DESC,correlativo_venta, boleto';
         end if;
 
