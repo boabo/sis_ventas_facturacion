@@ -112,7 +112,7 @@ BEGIN
                         apcie.id_entrega_brinks,
                         pv.tipo,
                         initcap(u.desc_persona) as desc_persona,
-                        modificado,
+                        apcie.modificado,
 
                         apcie.id_apertura_cierre_admin,
                         initcap(uadm.desc_persona)::varchar as desc_persona_adm
