@@ -28,6 +28,7 @@ class MODFacturacionExterna extends MODbase
         $this->setParametro('observaciones','observaciones','varchar');
         $this->setParametro('enviar_correo','enviar_correo','varchar');
         $this->setParametro('correo_electronico','correo_electronico','varchar');
+        $this->setParametro('id_liquidacion','id_liquidacion','integer');
         //$this->setParametro('ordeCode','ordeCode','varchar');
 
 
