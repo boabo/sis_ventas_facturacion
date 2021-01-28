@@ -450,6 +450,8 @@ v_filtro_cajero_boleto_1 varchar;
                          ''''::varchar as precios_detalles,
                          NULL::varchar as mensaje_error,
                           0::numeric as ccomision
+                          0::numeric,
+                          0::numeric
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -629,6 +631,8 @@ v_filtro_cajero_boleto_1 varchar;
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error,
              b.comision
+             0::numeric,
+             0::numeric
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then
@@ -660,7 +664,7 @@ v_filtro_cajero_boleto_1 varchar;
         	IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
                 v_consulta = v_consulta || ' forma_pago_usd  AS(
                             select vfp.id_venta,
-                            round(sum(	case when fp.fop_code = ''CA'' then
+                            round(sum(	case when fp.fop_code = ''CA'' and v.id_deposito is null then
                                                 vfp.monto_transaccion -(vfp.cambio /
                                                  param.f_get_tipo_cambio(vfp.id_moneda, v.fecha::date, ''O''))
                                               ELSE
@@ -694,6 +698,19 @@ v_filtro_cajero_boleto_1 varchar;
                                                  v.fecha::date, ''O''))
                                                ELSE 0
                                              end), 2) as monto_otro_usd,
+
+                                   /*Aumentando para incluid depositos en el reporte*/
+                                 	round(sum(CASE when fp.fop_code = ''CA'' and v.id_deposito is not null then
+                                        vfp.monto_transaccion - vfp.cambio
+                                     ELSE
+                                        0
+                                     END),2) as monto_deposito_usd,
+                                   /*************************************************/
+
+
+
+
+
                             pxp.list(fp.name) as forma_pago
                             from  vef.tventa_forma_pago vfp
                             inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vfp.id_medio_pago
@@ -731,6 +748,7 @@ v_filtro_cajero_boleto_1 varchar;
                                            vfp.importe_pago
                                          ELSE 0
                                        end), 2) as monto_otro_usd,
+                             0::numeric,
                              pxp.list(vfp.nombre_forma) as forma_pago
                       from vef.tfactucompag_endesis vfp
                       inner join param.tmoneda mon on mon.codigo_internacional=vfp.moneda
@@ -744,7 +762,7 @@ v_filtro_cajero_boleto_1 varchar;
 		IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
             v_consulta = v_consulta || ' forma_pago_mb AS(
                           select vfp.id_venta,
-                          sum(CASE when fp.fop_code = ''CA'' then
+                          sum(CASE when fp.fop_code = ''CA'' and v.id_deposito is null then
                                         vfp.monto_transaccion - vfp.cambio
                                      ELSE
                                         0
@@ -769,6 +787,15 @@ v_filtro_cajero_boleto_1 varchar;
                                          vfp.monto_transaccion - vfp.cambio
                                        ELSE 0
                                      END) as monto_otro_mb,
+
+                                 /*Aqui aumentando para depositos*/
+                                 sum(CASE when fp.fop_code = ''CA'' and v.id_deposito is not null then
+                                        vfp.monto_transaccion - vfp.cambio
+                                     ELSE
+                                        0
+                                     END) as monto_deposito_mb,
+                                 /********************************/
+
                           pxp.list(fp.name) as forma_pago
                           from  vef.tventa_forma_pago vfp
                           inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vfp.id_medio_pago
@@ -819,6 +846,7 @@ v_filtro_cajero_boleto_1 varchar;
                                                      vfp.importe_pago
                                                    ELSE 0
                                                  end), 2) as monto_otro_mb,
+                                       0::numeric,
                                        pxp.list(vfp.nombre_forma) as forma_pago
                                 from vef.tfactucompag_endesis vfp
                                 inner join param.tmoneda mon on mon.codigo_internacional=vfp.moneda
@@ -839,16 +867,27 @@ v_filtro_cajero_boleto_1 varchar;
         END IF;
 
         if (v_cod_moneda != 'USD') then
-          v_consulta = v_consulta || ' coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''') as forma_pago,
+          v_consulta = v_consulta || ' (CASE when v.id_deposito is not null then
+                                        ''DEPOSITO''
+                                     ELSE
+                                        coalesce(fpusd.forma_pago || '','','''') || coalesce(fpmb.forma_pago,'''')
+                                     END) as forma_pago,
+
+          						--coalesce(fpusd.forma_pago || '','','''')|| coalesce(fpmb.forma_pago,'''') as forma_pago,
                     			coalesce(fpusd.monto_cash_usd, 0) as monto_cash_usd,
                                 coalesce(fpusd.monto_cc_usd, 0) as monto_cc_usd,
                                 coalesce(fpusd.monto_cte_usd, 0) as monto_cte_usd,
                                 coalesce(fpusd.monto_mco_usd, 0) as monto_mco_usd,
                          		coalesce(fpusd.monto_otro_usd, 0) as monto_otro_usd,';
-         v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd, v.comision';
+         v_group_by = ' ,fpusd.forma_pago, fpusd.monto_cash_usd,fpusd.monto_cc_usd,fpusd.monto_cte_usd,fpusd.monto_mco_usd,fpusd.monto_otro_usd,fpusd.monto_deposito_usd,v.id_deposito,v.comision';
         else
           v_group_by = '';
-          v_consulta = v_consulta || ' fpmb.forma_pago as forma_pago,
+          v_consulta = v_consulta || ' 		CASE when v.id_deposito is not null then
+                                                ''DEPOSITO''
+                                             ELSE
+                                                fpmb.forma_pago
+                                             END) as forma_pago
+          									--fpmb.forma_pago as forma_pago,
                     						coalesce(fpmb.monto_cash_mb, 0) as monto_cash_usd,
                                             coalesce(fpmb.monto_cc_mb, 0) as monto_cc_mb,
                          					coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
@@ -868,7 +907,13 @@ v_filtro_cajero_boleto_1 varchar;
                       string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
                       NULL::varchar as mensaje_error,
                       -- 0::numeric as comision
-                      coalesce(v.comision, 0)::numeric
+                      coalesce(v.comision, 0)::numeric,
+
+                      /*Aumentnado para depositos*/
+                      coalesce(fpmb.monto_deposito_mb,0)::numeric,
+                      coalesce(fpusd.monto_deposito_usd,0)::numeric
+                      /***************************/
+
                       from vef.tventa v
                       inner join vef.tventa_detalle vd
                           on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
@@ -888,6 +933,8 @@ v_filtro_cajero_boleto_1 varchar;
                          ''''::varchar as precios_detalles,
                          NULL::varchar as mensaje_error,
                           0::numeric as ccomision
+                          0::numeric depo_mb,
+                          0::numeric depo_ml
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -910,7 +957,7 @@ v_filtro_cajero_boleto_1 varchar;
                         (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                         '|| v_filtro_cajero_boleto_1 ||'
                       group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,
-                                fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc ' || v_group_by || '
+                                fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc,fpmb.monto_deposito_mb ' || v_group_by || '
                       )
             union ALL --3
                 (WITH ';
@@ -1109,7 +1156,9 @@ v_filtro_cajero_boleto_1 varchar;
              --b.total,
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error,
-             b.comision
+             b.comision,
+             0::numeric,
+             0::numeric
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then

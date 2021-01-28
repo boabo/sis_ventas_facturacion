@@ -52,7 +52,10 @@ class MODReportesVentas extends MODbase{
 		$this->captura('neto','numeric');
 		$this->captura('precios_detalles','varchar');
     $this->captura('mensaje_error','varchar');
-    $this->captura('comision','numeric');
+		$this->captura('comision','numeric');
+		
+		$this->captura('monto_deposito_mb','numeric');
+    $this->captura('monto_deposito_usd','numeric');
 
 
 		//Ejecuta la instruccion

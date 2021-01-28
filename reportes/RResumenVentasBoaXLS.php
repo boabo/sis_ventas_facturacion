@@ -187,14 +187,16 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->setCellValue('M5','CC USD');
 		$this->docexcel->getActiveSheet()->setCellValue('N5','CTE USD');
 		$this->docexcel->getActiveSheet()->setCellValue('O5','MCO USD');
-		$this->docexcel->getActiveSheet()->setCellValue('P5','OTRO USD');
-		$this->docexcel->getActiveSheet()->setCellValue('Q5','CASH '.$mone_base[0]['moneda']);
-		$this->docexcel->getActiveSheet()->setCellValue('R5','CC '.$mone_base[0]['moneda']);
-		$this->docexcel->getActiveSheet()->setCellValue('S5','CTE '.$mone_base[0]['moneda']);
-		$this->docexcel->getActiveSheet()->setCellValue('T5','MCO '.$mone_base[0]['moneda']);
-		$this->docexcel->getActiveSheet()->setCellValue('U5','OTRO '.$mone_base[0]['moneda']);
-		$this->docexcel->getActiveSheet()->setCellValue('V5','FORMA PAGO');
-		$this->docexcel->getActiveSheet()->setCellValue('W5','DESC AUX');
+		$this->docexcel->getActiveSheet()->setCellValue('P5','DEPOSITO USD');
+		$this->docexcel->getActiveSheet()->setCellValue('Q5','OTRO USD');
+		$this->docexcel->getActiveSheet()->setCellValue('R5','CASH '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('S5','CC '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('T5','CTE '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('U5','MCO '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('V5','DEPOSITO '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('W5','OTRO '.$mone_base[0]['moneda']);
+		$this->docexcel->getActiveSheet()->setCellValue('X5','FORMA PAGO');
+		$this->docexcel->getActiveSheet()->setCellValue('Y5','DESC AUX');
 
 		$this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(7);
 		$this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(10);
@@ -219,80 +221,14 @@ class RResumenVentasBoaXLS
 		$this->docexcel->getActiveSheet()->getColumnDimension('U')->setWidth(20);
 		$this->docexcel->getActiveSheet()->getColumnDimension('V')->setWidth(30);
 		$this->docexcel->getActiveSheet()->getColumnDimension('W')->setWidth(30);
+		$this->docexcel->getActiveSheet()->getColumnDimension('X')->setWidth(30);
+		$this->docexcel->getActiveSheet()->getColumnDimension('Y')->setWidth(30);
 
 
-		$this->docexcel->getActiveSheet()->getStyle('A5:W5')->applyFromArray($styleTitulosTabla);
-		$this->docexcel->getActiveSheet()->getStyle('A5:W5')->getAlignment()->setWrapText(true);
+		$this->docexcel->getActiveSheet()->getStyle('A5:Y5')->applyFromArray($styleTitulosTabla);
+		$this->docexcel->getActiveSheet()->getStyle('A5:Y5')->getAlignment()->setWrapText(true);
 
-		// $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(7);
-		// $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(7);
-		// $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(25);
-		// $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-		// $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
-		// $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-		// $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(15);
-		// 		$this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
-		//
-		// for ($i = 7;$i < 7 + count($conceptos);$i++) {
-		//
-		// 	$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[$i])->setWidth(12);
-		// }
-		//
-		// $this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[$i])->setWidth(12);
-		// $this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[$i+1])->setWidth(12);
-		// $this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[$i+2])->setWidth(15);
-		// $this->docexcel->getActiveSheet()->getStyle('B1:F1')->applyFromArray($this->styleTitulos0);
-		// $this->docexcel->getActiveSheet()->getStyle('B2:F2')->applyFromArray($this->styleTitulos0);
-		// if ($this->objParam->getParametro('punto_venta') != '') {
-		// 	$this->docexcel->getActiveSheet()->setCellValue('B1','OFICINA ' . $this->objParam->getParametro('punto_venta'));
-		// } else {
-		// 	$this->docexcel->getActiveSheet()->setCellValue('B1','SUCURSAL ' . $this->objParam->getParametro('sucursal'));
-		// }
-		// if ($resumen == 'si'){
-		// 	$this->docexcel->getActiveSheet()->setCellValue('C2','DESDE');
-		// 	$this->docexcel->getActiveSheet()->setCellValue('D2',$this->objParam->getParametro('fecha_desde'));
-		// 	$this->docexcel->getActiveSheet()->setCellValue('E2','HASTA');
-		// 	$this->docexcel->getActiveSheet()->setCellValue('F2',$this->objParam->getParametro('fecha_hasta'));
-		// } else {
-		// 	$this->docexcel->getActiveSheet()->setCellValue('C2','FECHA');
-		// 	$this->docexcel->getActiveSheet()->setCellValue('D2',$objFecha->format('d/m/Y'));
-		// }
-		// $this->docexcel->getActiveSheet()->mergeCells('A3:'.$this->equivalencias[$i+2].'3');
-		// $this->docexcel->getActiveSheet()->getRowDimension('3')->setRowHeight(30);
-		//
-		// $this->docexcel->getActiveSheet()->getStyle('A3')->applyFromArray($this->styleTitulos1);
-		// if ($resumen == 'si'){
-		// 	$this->docexcel->getActiveSheet()->setCellValue('A3','RESUMEN DE VENTAS');
-		// } else {
-		// 	$this->docexcel->getActiveSheet()->setCellValue('A3','REPORTE DIARIO DETALLADO DE VENTAS');
-		// }
-		//
-		//
-		// $this->docexcel->getActiveSheet()->setCellValue('A5','NRO.');
-		// $this->docexcel->getActiveSheet()->setCellValue('B5','FECHA');
-		// $this->docexcel->getActiveSheet()->setCellValue('C5','NOMBRE PAX');
-		// $this->docexcel->getActiveSheet()->setCellValue('D5','No TKT');
-		// $this->docexcel->getActiveSheet()->setCellValue('E5','No FACTURA');
-		// $this->docexcel->getActiveSheet()->setCellValue('F5','RUTA');
-		// $this->docexcel->getActiveSheet()->setCellValue('G5','MONEDA');
-		// 		$this->docexcel->getActiveSheet()->setCellValue('H5','COMISION');
-		//
-		//
-		//
-		// for ($i = 8;$i < 8 + count($config);$i++) {
-		// 	if (substr( $config[$i-8]['tipo'], 0, 8 ) == 'COMISION') {
-		// 		$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].'5', $config[$i-8]['nombre']);
-		// 	} else {
-		// 		$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].'5',$config[$i-8]['nombre']);
-		//
-		// 	}
-		// }
-		//
-		// $this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i] . '5','FORMA PAGO');
-		// $this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[$i])->setWidth(25);
-		// $this->docexcel->getActiveSheet()->getStyle('A5:'.$this->equivalencias[$i].'5')->applyFromArray($this->styleTitulos2);
-		// $this->docexcel->getActiveSheet()->getStyle('A5:'.$this->equivalencias[$i].'5')->getAlignment()->setWrapText(true);
-
+		$this->docexcel->getActiveSheet()->freezePaneByColumnAndRow(0,6);
 
 	}
 
@@ -356,39 +292,7 @@ class RResumenVentasBoaXLS
 
 			//si es distinta creamos una nueva hoja
 			$objFecha = DateTime::createFromFormat('Y-m-d', $value['fecha']);
-			// if ($value['fecha'] != $fecha) {
-			// 	$objFecha = DateTime::createFromFormat('Y-m-d', $value['fecha']);
-			// 	$totales[$objFecha->format('dMy')] = array();
-			//
-			// 	// if ($fila != 5){
-			// 	//
-			// 	// 	//TOTALES
-			// 	// 	$this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila+2))->applyFromArray($this->styleTotal);
-			// 	// 	$this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-			// 	// 	$this->docexcel->getActiveSheet()->getStyle("A". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-			// 	// 	$this->docexcel->getActiveSheet()->mergeCells('A'.($fila + 2) .':D'.($fila+2));
-			// 	// 	$this->docexcel->getActiveSheet()->setCellValue('A'.($fila + 2),'TOTAL');
-			// 	//
-			// 	// 	$this->docexcel->getActiveSheet()->
-			// 	// 	setCellValue($this->equivalencias[count($conceptos) + 5].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila . ')');
-			// 	// 	$this->docexcel->getActiveSheet()->
-			// 	// 	setCellValue($this->equivalencias[count($conceptos) + 6].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila . ')');
-      //   //             $this->docexcel->getActiveSheet()->
-      //   //             setCellValue($this->equivalencias[count($conceptos) + 7].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 7].'6:' . $this->equivalencias[count($conceptos) + 8] . $fila . ')');
-			// 	//
-      //   //             for ($i = 7;$i < 7 + count($conceptos);$i++) {
-			// 	// 		$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].($fila + 2),'=SUM(' . $this->equivalencias[$i]. "6:" . $this->equivalencias[$i].$fila . ')');
-			// 	// 	}
-			// 	//
-			// 	// }
-			// 	$correlativo_hoja = 1;
-			// 	$fila = 5;
-			// 	$fecha = $value['fecha'];
-			//
-			// 	$sheetId++;
-			// 	$this->docexcel->createSheet(NULL, $sheetId);
-			// 	$this->imprimeCabecera($sheetId,'no',$objFecha);
-			// }
+
 
 			$fila++;
 			$fila_general++;
@@ -427,14 +331,20 @@ class RResumenVentasBoaXLS
 			$this->docexcel->getActiveSheet()->setCellValue('M'.$fila,$value['monto_cc_usd']);
 			$this->docexcel->getActiveSheet()->setCellValue('N'.$fila,$value['monto_cte_usd']);
 			$this->docexcel->getActiveSheet()->setCellValue('O'.$fila,$value['monto_mco_usd']);
-			$this->docexcel->getActiveSheet()->setCellValue('P'.$fila,$value['monto_otro_usd']);
-			$this->docexcel->getActiveSheet()->setCellValue('Q'.$fila,$value['monto_cash_mb']);
-			$this->docexcel->getActiveSheet()->setCellValue('R'.$fila,$value['monto_cc_mb']);
-			$this->docexcel->getActiveSheet()->setCellValue('S'.$fila,$value['monto_cte_mb']);
-			$this->docexcel->getActiveSheet()->setCellValue('T'.$fila,$value['monto_mco_mb']);
-			$this->docexcel->getActiveSheet()->setCellValue('U'.$fila,$value['monto_otro_mb']);
-			$this->docexcel->getActiveSheet()->setCellValue('V'.$fila,$value['forma_pago']);
-			$this->docexcel->getActiveSheet()->setCellValue('W'.$fila,$value['codigo_auxiliar']);
+
+			$this->docexcel->getActiveSheet()->setCellValue('P'.$fila,$value['monto_deposito_usd']);
+
+			$this->docexcel->getActiveSheet()->setCellValue('Q'.$fila,$value['monto_otro_usd']);
+			$this->docexcel->getActiveSheet()->setCellValue('R'.$fila,$value['monto_cash_mb']);
+			$this->docexcel->getActiveSheet()->setCellValue('S'.$fila,$value['monto_cc_mb']);
+			$this->docexcel->getActiveSheet()->setCellValue('T'.$fila,$value['monto_cte_mb']);
+			$this->docexcel->getActiveSheet()->setCellValue('U'.$fila,$value['monto_mco_mb']);
+
+			$this->docexcel->getActiveSheet()->setCellValue('V'.$fila,$value['monto_deposito_mb']);
+
+			$this->docexcel->getActiveSheet()->setCellValue('W'.$fila,$value['monto_otro_mb']);
+			$this->docexcel->getActiveSheet()->setCellValue('X'.$fila,$value['forma_pago']);
+			$this->docexcel->getActiveSheet()->setCellValue('Y'.$fila,$value['codigo_auxiliar']);
 
 
 			if ($value['mensaje_error'] != '') {
@@ -457,7 +367,7 @@ class RResumenVentasBoaXLS
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('I'.$fila_general,$value['moneda_emision']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValue('K'.$fila_general,$value['neto']);
       $this->docexcel->setActiveSheetIndex(0)->setCellValue('J'.$fila_general,$value['comision']);
-			$this->docexcel->getActiveSheet()->getStyle("A$fila_general:W$fila_general")->applyFromArray($fondoContenido);
+			$this->docexcel->getActiveSheet()->getStyle("A$fila_general:Y$fila_general")->applyFromArray($fondoContenido);
 
 			//$this->docexcel->setActiveSheetIndex($sheetId);
 
@@ -475,62 +385,7 @@ class RResumenVentasBoaXLS
 					//$this->docexcel->setActiveSheetIndex($sheetId);
 				}
 			}
-			//imprimir totales y ofmr ade pago
 
-			// if ($config[count($config)-10]['nombre'] == 'CASH USD') {
-			//
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('K'.$fila_general,$value['monto_cash_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('L'.$fila_general,$value['monto_cc_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('M'.$fila_general,$value['monto_cte_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('N'.$fila_general,$value['monto_mco_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('O'.$fila_general,$value['monto_otro_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('P'.$fila_general,$value['monto_cash_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('Q'.$fila_general,$value['monto_cc_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('R'.$fila_general,$value['monto_cte_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('S'.$fila_general,$value['monto_mco_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('T'.$fila_general,$value['monto_otro_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('U'.$fila_general,$value['forma_pago']);
-			// 	//$this->docexcel->setActiveSheetIndex($sheetId);
-			//
-			// 	$this->docexcel->getActiveSheet()->setCellValue('K'.$fila,$value['monto_cash_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('L'.$fila,$value['monto_cc_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('M'.$fila,$value['monto_cte_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('N'.$fila,$value['monto_mco_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('O'.$fila,$value['monto_otro_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('P'.$fila,$value['monto_cash_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('Q'.$fila,$value['monto_cc_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('R'.$fila,$value['monto_cte_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('S'.$fila,$value['monto_mco_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('T'.$fila,$value['monto_otro_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('U'.$fila,$value['forma_pago']);
-			//
-			// }
-			// else {
-      //          //var_dump($this->equivalencias[count($config) - 3]);exit;
-			// 	$this->docexcel->getActiveSheet()->setCellValue('K'.$fila,$value['monto_cash_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('L'.$fila,$value['monto_cc_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('M'.$fila,$value['monto_cte_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('N'.$fila,$value['monto_mco_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('O'.$fila,$value['monto_otro_usd']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('P'.$fila,$value['monto_cash_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('Q'.$fila,$value['monto_cc_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('R'.$fila,$value['monto_cte_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('S'.$fila,$value['monto_mco_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('T'.$fila,$value['monto_otro_mb']);
-			// 	$this->docexcel->getActiveSheet()->setCellValue('U'.$fila,$value['forma_pago']);
-			//
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('K'.$fila,$value['monto_cash_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('L'.$fila,$value['monto_cc_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('M'.$fila,$value['monto_cte_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('N'.$fila,$value['monto_mco_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('O'.$fila,$value['monto_otro_usd']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('P'.$fila,$value['monto_cash_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('Q'.$fila,$value['monto_cc_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('R'.$fila,$value['monto_cte_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('S'.$fila,$value['monto_mco_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('T'.$fila,$value['monto_otro_mb']);
-			// 	$this->docexcel->setActiveSheetIndex(0)->setCellValue('U'.$fila,$value['forma_pago']);
-			// 	//$this->docexcel->setActiveSheetIndex($sheetId);
 			// }
 
 			$correlativo_hoja++;
@@ -538,28 +393,11 @@ class RResumenVentasBoaXLS
 
 		}
 
-		// //TOTALES ULTIMA HOJA
-    //     //var_dump('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila+2));exit;
-		// $this->docexcel->getActiveSheet()->getStyle('A'.($fila + 2) .':'.$this->equivalencias[count($conceptos) + 7].($fila+2))->applyFromArray($this->styleTotal);
-		// $this->docexcel->getActiveSheet()->getStyle("E". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-		// $this->docexcel->getActiveSheet()->getStyle("A". ($fila + 2).":" . $this->equivalencias[count($conceptos) + 7] . ($fila+2))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-		// $this->docexcel->getActiveSheet()->mergeCells('A'.($fila + 2) .':D'.($fila+2));
-		// $this->docexcel->getActiveSheet()->setCellValue('A'.($fila + 2),'TOTAL');
-		// $this->docexcel->getActiveSheet()->
-		// setCellValue($this->equivalencias[count($conceptos) + 5].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 5].'6:' . $this->equivalencias[count($conceptos) + 6] . $fila . ')');
-		// $this->docexcel->getActiveSheet()->
-		// setCellValue($this->equivalencias[count($conceptos) + 6].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 6].'6:' . $this->equivalencias[count($conceptos) + 7] . $fila . ')');
-    //     $this->docexcel->getActiveSheet()->
-    //     setCellValue($this->equivalencias[count($conceptos) + 7].($fila+2),'=SUM(' . $this->equivalencias[count($conceptos) + 7].'6:' . $this->equivalencias[count($conceptos) + 8] . $fila . ')');
-		//
-    //     for ($i = 7;$i < 7 + count($conceptos);$i++) {
-		// 	$this->docexcel->getActiveSheet()->setCellValue($this->equivalencias[$i].($fila + 2),'=SUM(' . $this->equivalencias[$i]. "6:" . $this->equivalencias[$i].$fila . ')');
-		// }
 
 		//TOTALES RESUMEN
 		$total = $fila_general + 1;
 		$this->docexcel->setActiveSheetIndex(0)->setCellValue('A'.($fila_general + 1),'TOTALES');
-		$this->docexcel->getActiveSheet()->getStyle("A$total:V$total")->applyFromArray($styleTotal);
+		$this->docexcel->getActiveSheet()->getStyle("A$total:W$total")->applyFromArray($styleTotal);
 		$this->docexcel->getActiveSheet()->mergeCells("A$total:I$total");
 
 		for ($i=6; $i <= $fila_general; $i++) {
@@ -576,6 +414,8 @@ class RResumenVentasBoaXLS
 			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $total, "=SUM((S$inicio:S$i))");
 			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $total, "=SUM((T$inicio:T$i))");
 			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(20, $total, "=SUM((U$inicio:U$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(21, $total, "=SUM((V$inicio:V$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(22, $total, "=SUM((W$inicio:W$i))");
 			$this->docexcel->getActiveSheet()->getStyle("J$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("K$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("L$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
@@ -588,6 +428,8 @@ class RResumenVentasBoaXLS
 			$this->docexcel->getActiveSheet()->getStyle("S$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("T$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("U$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+			$this->docexcel->getActiveSheet()->getStyle("V$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+			$this->docexcel->getActiveSheet()->getStyle("W$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 			$this->docexcel->getActiveSheet()->getStyle("J$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("K$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
@@ -601,6 +443,8 @@ class RResumenVentasBoaXLS
 			$this->docexcel->getActiveSheet()->getStyle("S$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("T$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			$this->docexcel->getActiveSheet()->getStyle("U$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+			$this->docexcel->getActiveSheet()->getStyle("V$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+			$this->docexcel->getActiveSheet()->getStyle("W$total")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 		}
 
