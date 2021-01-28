@@ -252,7 +252,7 @@ class MODAperturaCierreCaja extends MODbase{
         $this->setParametro('comisiones_ml','comisiones_ml','numeric');
         $this->setParametro('comisiones_me','comisiones_me','numeric');
 
-        $this->setParametro('id_apertura_cierre_admin','id_apertura_cierre_admin','int4');
+        //$this->setParametro('id_apertura_cierre_admin','id_apertura_cierre_admin','int4');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

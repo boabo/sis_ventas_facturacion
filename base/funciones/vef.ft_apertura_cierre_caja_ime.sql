@@ -249,9 +249,9 @@ BEGIN
                       	'abierto'
                       end),
             arqueo_moneda_local = v_parametros.arqueo_moneda_local,
-            arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera,
+            arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera--,
             --18-01-2021 (may)
-            id_apertura_cierre_admin = v_parametros.id_apertura_cierre_admin
+            --id_apertura_cierre_admin = v_parametros.id_apertura_cierre_admin
 
 			where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
 
