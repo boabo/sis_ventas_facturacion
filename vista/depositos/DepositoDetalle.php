@@ -35,7 +35,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             this.finCons = true;
-            this.store.baseParams.tipo = 'venta_propia';
+            //this.store.baseParams.tipo = 'venta_propia';
 
             /*Recuperar moneda base*/
             /******************************OBTENEMOS LA MONEDA BASE*******************************************/
@@ -99,7 +99,7 @@ header("content-type: text/javascript; charset=UTF-8");
                   timeout:this.timeout,
                   scope:this
           });
-          console.log("llega el punto de venta",this);
+
         },
 
         successSincronizar:function(resp){
@@ -462,7 +462,10 @@ header("content-type: text/javascript; charset=UTF-8");
             if (this.moneda_base != 'BOB') {
               this.getBoton('sincronizar').setVisible(false);
             }
-            this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja, mone_base: this.moneda_base};
+            //this.store.baseParams.tipo = 'venta_propia';
+            this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja,
+                                    mone_base: this.moneda_base,
+                                    tipo:'venta_propia'};
             this.load({params: {start: 0, limit: 50}});
         },
         onButtonSave:function(){
