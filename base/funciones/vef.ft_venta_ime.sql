@@ -748,7 +748,7 @@ $body$
                               v_parametros.nro_deposito,
                               v_parametros.monto_deposito,
                               v_parametros.fecha_deposito::date,
-                              'venta_propia',
+                              'cuenta_corriente',
                               v_parametros.monto_deposito,
                               'borrador',
                               v_parametros.id_moneda,
