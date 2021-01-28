@@ -122,7 +122,7 @@ BEGIN
                      end if;
               		 /**************************************************************/
 
-                      select
+             /*bvp         select
                           count(*) into v_existencia_registro
                       from vef.tventa ven
                       inner join vef.tventa_detalle det on det.id_venta = ven.id_venta
@@ -144,7 +144,7 @@ BEGIN
                           raise exception 'El concepto <b>%</b> ya ha tiene una factura emitida en fecha <b>%</b> en la sucursal <b>%</b> Nro. Factura: <b>%</b>',v_registros.descripcion,to_char(now()::date,'dd/mm/YYYY'),v_recuperados_factura.nombre,v_recuperados_factura.nro_factura;
 
 
-                      end if;
+                      end if;*/
 
 
 
@@ -244,11 +244,13 @@ BEGIN
             /***RECUPERAMOS LA ENTIDAD PARA VERIFICAR SUS PUNTOS DE VENTA***/
             select ent.id_entidad into v_id_entidad
             from param.tentidad ent
-            where ent.nit = REPLACE(v_parametros.nit_entidad,' ','');
+            where ent.nit = '154422029'; -- bvp
+/*            where ent.nit = REPLACE(v_parametros.nit_entidad,' ',''); */
             /***************************************************************/
 
             IF (v_id_entidad is null) then
-                Raise exception 'No se encuentra registrada la entidad con NIT: %',v_parametros.nit_entidad;
+/*                Raise exception 'No se encuentra registrada la entidad con NIT: %',v_parametros.nit_entidad;*/
+                Raise exception 'No se encuentra registrada la entidad con NIT: ';
 
             else
             /*Aqui recuperamos el id de la sucursal*/
@@ -260,15 +262,15 @@ BEGIN
                 inner join vef.tsucursal su on su.id_sucursal = pt.id_sucursal
                 where pt.nombre = upper(v_parametros.punto_venta) and su.id_entidad = v_id_entidad;
 
-          if (v_id_punto_venta IS NOT NULL) then
-            	select pv.codigo into v_codigo_tabla
-            	from vef.tpunto_venta pv
-            	where id_punto_venta = v_id_punto_venta;
-          else
-            	select pv.codigo into v_codigo_tabla
-            	from vef.tsucursal pv
-            	where id_sucursal = v_id_sucursal;
-          end if;
+                if (v_id_punto_venta IS NOT NULL) then
+                      select pv.codigo into v_codigo_tabla
+                      from vef.tpunto_venta pv
+                      where id_punto_venta = v_id_punto_venta;
+                else
+                      select pv.codigo into v_codigo_tabla
+                      from vef.tsucursal pv
+                      where id_sucursal = v_id_sucursal;
+              end if;
 
 		/*Aqui ponemos controles para verficar si existe el punto de venta y la sucursal*/
             if (v_id_punto_venta is null and v_id_sucursal is null) then
@@ -385,8 +387,8 @@ BEGIN
                       id_cliente_destino,
                       hora_estimada_entrega,
                       tiene_formula,
-                      forma_pedido,
-                      correo_electronico
+                      forma_pedido
+/*                      correo_electronico*/
 
 
                     ) values(
@@ -432,8 +434,8 @@ BEGIN
                       NULL,
                       v_hora_estimada,
                       'no',
-                      'externa',
-                      v_parametros.correo_electronico
+                      'externa'
+/*                      v_parametros.correo_electronico*/
 
                     );
 
@@ -481,13 +483,14 @@ BEGIN
                   porcentaje_descuento,
                   precio_sin_descuento,
                   obs,
-                  monto_descuento,
-                  llave_unica
+                  monto_descuento
+/*                  ,llave_unica*/
 
                   ) values(
                   v_id_venta,
                   upper(v_registros.descripcion),
-                  (v_registros.cantidad/100),
+/*                  (v_registros.cantidad/100),*/
+				   v_registros.cantidad,
                   'servicio',
                   'activo',
                   v_registros.id_concepto,
@@ -499,8 +502,8 @@ BEGIN
                   (v_registros.porcentaje_descuento/100),
                   v_precio_original,
                   upper(v_registros.aplica_descuento),
-                  v_total_descuento,
-                  v_registros.llave_unica
+                  v_total_descuento
+/*                  ,v_registros.llave_unica*/
 
                   )RETURNING id_venta_detalle into v_id_venta_detalle;
 
@@ -642,14 +645,19 @@ BEGIN
                               inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = vd.id_producto
                             where vd.id_venta = v_venta.id_venta and vd.estado_reg = 'activo';
 
+                                  if -1 = ANY(v_id_actividad_economica) is null then
+
+                                      v_id_actividad_economica = array_agg(1);
+                                  end if;
                                   /*Aumentando esta parte*/
                                   if (v_id_actividad_economica is null)then
+
                                       v_id_actividad_economica = array_agg(1);
                                   end if;
 
 
                                  IF v_venta.tipo_factura not in ('computarizadaexpo','computarizadaexpomin','computarizadamin') THEN
-
+/*							 raise 'fecha_venta : % , id_sucursal: %, id_actividad_economica: %',v_venta.fecha,v_venta.id_sucursal, v_id_actividad_economica; */
                                     select d.* into v_dosificacion
                                     from vef.tdosificacion d
                                     where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
@@ -726,6 +734,53 @@ BEGIN
                       from vef.tventa ven
                       where ven.id_venta = v_venta.id_venta;
 
+
+                      insert into vef.tventa_forma_pago(
+                                                        usuario_ai,
+                                                        fecha_reg,
+                                                        id_usuario_reg,
+                                                        id_usuario_ai,
+                                                        estado_reg,
+                                                        --id_forma_pago,
+                                                        id_venta,
+                                                        monto_transaccion,
+                                                        monto,
+                                                        cambio,
+                                                        monto_mb_efectivo,
+                                                        numero_tarjeta,
+                                                        codigo_tarjeta,
+                                                        id_auxiliar,
+                                                        tipo_tarjeta,
+                                                        /*Aumentamos el id_instancia*/
+                                                        id_medio_pago,
+                                                        id_moneda
+                                                        /****************************/
+                                                      )
+                                                      values(
+                                                        v_parametros._nombre_usuario_ai,
+                                                        now(),
+                                                        p_id_usuario,
+                                                        v_parametros._id_usuario_ai,
+                                                        'activo',
+                                                        --v_parametros.id_forma_pago,
+                                                        v_venta.id_venta,
+                                                        v_total_venta,
+                                                        0,
+                                                        0,
+                                                        v_total_venta,
+                                                        NULL,
+                                                        NULL,
+                                                        NULL,
+                                                        NULL,
+                                                        /*Aumentamos el id_instancia y el id_moneda*/
+                                                        20,
+                                                        1
+                                                        /****************************/
+                                                      );
+
+
+
+
                 /*Aqui insertamos en la alarma para que nos salga la notificacion*/
                 /*if(v_parametros.enviar_correo = 'si') then
                     v_mensaje_correo = '<p>Estimado usuario su factura se encuentra adjuntada</p>';
@@ -772,23 +827,22 @@ BEGIN
 
 
             end if;
-				/*Aumentando este select para recuperar el codigo de la dosificacion*/
-                select dos.cod_dosificacion
-                       INTO
-                       v_cod_dosificacion
-                from vef.tpunto_venta pt
-                inner join vef.tsucursal su on su.id_sucursal = pt.id_sucursal
-                inner join vef.tdosificacion dos on dos.id_sucursal = su.id_sucursal
-                where pt.nombre = upper(v_parametros.punto_venta);
-				/********************************************************************/
-				/*(Descomentar la parte v_resp v_cod_dosificacion)*/
+
+            if (pxp.f_existe_parametro(p_tabla,'id_liquidacion')) then
+            	if (v_parametros.id_liquidacion is not null) then
+                    update decr.tliquidacion
+                    set id_proceso_wf_factura = v_id_proceso_wf
+                    where id_liquidacion = v_parametros.id_liquidacion::integer;
+                end if;
+            end if;
+
 
             	--Definicion de la respuesta
                 v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Venta registrada correctamente');
                 v_resp = pxp.f_agrega_clave(v_resp,'id_proceso_wf',v_id_proceso_wf::varchar);
                 v_resp = pxp.f_agrega_clave(v_resp,'cod_control',v_codigo_control::varchar);
 				v_resp = pxp.f_agrega_clave(v_resp,'num_factura',v_numero_factura::varchar);
-				v_resp = pxp.f_agrega_clave(v_resp,'cod_dosificacion',v_cod_dosificacion::varchar);
+/*				v_resp = pxp.f_agrega_clave(v_resp,'cod_dosificacion',v_cod_dosificacion::varchar);*/
 
 
             --Devuelve la respuesta
