@@ -22,6 +22,16 @@ class ACTAperturaCierreCaja extends ACTbase{
         /* if($this->objParam->getParametro('id_entrega_brinks') != '') {
              $this->objParam->addFiltro(" apcie.id_entrega_brinks = " . $this->objParam->getParametro('id_entrega_brinks'));
          }*/
+
+        //(may)
+        if ($this->objParam->getParametro('id_punto_venta') != '') {
+            $this->objParam->addFiltro(" apcie.id_punto_venta = ''" .  $this->objParam->getParametro('id_punto_venta') . "''");
+        }
+        if ($this->objParam->getParametro('fecha_apertura_cierre') != '') {
+            $this->objParam->addFiltro(" apcie.fecha_apertura_cierre = ''" .  $this->objParam->getParametro('fecha_apertura_cierre') . "''");
+        }
+
+
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
             $this->objReporte = new Reporte($this->objParam,$this);
             $this->res = $this->objReporte->generarReporteListado('MODAperturaCierreCaja','listarAperturaCierreCaja');
@@ -187,6 +197,38 @@ class ACTAperturaCierreCaja extends ACTbase{
       $this->res->imprimirRespuesta($this->res->generarJson());
   }
 
+    //28-01-2021 (may)
+    function comboAperturaCierreCaja(){
+        $this->objParam->defecto('ordenacion','id_apertura_cierre_caja');
+
+        $this->objParam->defecto('dir_ordenacion','asc');
+
+        if ($this->objParam->getParametro('pes_estado') != '') {
+            $this->objParam->addFiltro(" apcie.estado = ''" .  $this->objParam->getParametro('pes_estado') . "''");
+        }
+        /* if($this->objParam->getParametro('id_entrega_brinks') != '') {
+             $this->objParam->addFiltro(" apcie.id_entrega_brinks = " . $this->objParam->getParametro('id_entrega_brinks'));
+         }*/
+
+        //(may)
+        if ($this->objParam->getParametro('id_punto_venta') != '') {
+            $this->objParam->addFiltro(" apcie.id_punto_venta = ''" .  $this->objParam->getParametro('id_punto_venta') . "''");
+        }
+        if ($this->objParam->getParametro('fecha_apertura_cierre') != '') {
+            $this->objParam->addFiltro(" apcie.fecha_apertura_cierre = ''" .  $this->objParam->getParametro('fecha_apertura_cierre') . "''");
+        }
+
+
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODAperturaCierreCaja','comboAperturaCierreCaja');
+        } else{
+            $this->objFunc=$this->create('MODAperturaCierreCaja');
+
+            $this->res=$this->objFunc->comboAperturaCierreCaja($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
 
 }

@@ -70,6 +70,10 @@ DECLARE
     v_insertar_facturas_ro					varchar;
     v_insertar_boletos						varchar;
 
+    v_tsucursal_usuario						record;
+    v_tipo_usuario							varchar;
+    v_id_punto_venta						integer;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_apertura_cierre_caja_sel';
@@ -108,13 +112,21 @@ BEGIN
                         apcie.id_entrega_brinks,
                         pv.tipo,
                         initcap(u.desc_persona) as desc_persona,
-                        modificado
+                        modificado,
+
+                        apcie.id_apertura_cierre_admin,
+                        initcap(uadm.desc_persona)::varchar as desc_persona_adm
+
 						from vef.tapertura_cierre_caja apcie
 						inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
                         inner join segu.vusuario u on u.id_usuario = apcie.id_usuario_cajero
 						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
 				        left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
                         left join vef.tsucursal suc on suc.id_sucursal = apcie.id_sucursal
+
+                        left join vef.tapertura_cierre_caja accadm on accadm.id_apertura_cierre_caja = apcie.id_apertura_cierre_admin
+                        left join segu.vusuario uadm on uadm.id_usuario = accadm.id_usuario_cajero
+
                         where  ';
 
 
@@ -160,13 +172,16 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_apertura_cierre_caja)
+			v_consulta:='select count(apcie.id_apertura_cierre_caja)
 					    from vef.tapertura_cierre_caja apcie
 					    inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
 						inner join segu.vusuario u on u.id_usuario = apcie.id_usuario_cajero
 						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
 					    left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
                         left join vef.tsucursal suc on suc.id_sucursal = apcie.id_sucursal
+
+                        left join vef.tapertura_cierre_caja accadm on accadm.id_apertura_cierre_caja = apcie.id_apertura_cierre_admin
+                        left join segu.vusuario uadm on uadm.id_usuario = accadm.id_usuario_cajero
 
                         where ';
 
@@ -3028,6 +3043,170 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
 			return v_consulta;
 
    	 end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_COMAPCC_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		maylee.perez
+ 	#FECHA:		19-01-2021 14:16:20
+	***********************************/
+
+	elsif(p_transaccion='VF_COMAPCC_SEL')then
+
+    	begin
+
+            SELECT pv.id_punto_venta
+            INTO v_id_punto_venta
+            FROM vef.tsucursal s
+            inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+            inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+            and su.tipo_usuario = 'cajero_auxiliar'
+            WHERE su.id_usuario = p_id_usuario;
+
+            SELECT su.tipo_usuario
+            INTO v_tipo_usuario
+            FROM vef.tsucursal_usuario su
+            WHERE su.id_usuario =p_id_usuario
+            and su.id_punto_venta = v_id_punto_venta;
+
+            -- raise exception 'llega %',v_tipo_usuario;
+
+            IF (v_tipo_usuario = 'cajero_auxiliar') THEN
+
+            	--Sentencia de la consulta
+			v_consulta:='select
+						apcie.id_apertura_cierre_caja,
+						apcie.id_sucursal,
+						apcie.id_punto_venta,
+						apcie.id_usuario_cajero,
+						apcie.id_moneda,
+						apcie.obs_cierre,
+						apcie.monto_inicial,
+						apcie.obs_apertura,
+						apcie.monto_inicial_moneda_extranjera,
+						usu1.cuenta as usr_reg,
+						usu2.cuenta as usr_mod,
+                        apcie.estado,
+                        apcie.fecha_apertura_cierre,
+                        apcie.fecha_hora_cierre,
+                        pv.nombre as nombre_punto_venta,
+                        suc.nombre as nombre_sucursal,
+                        apcie.arqueo_moneda_local,
+                        apcie.arqueo_moneda_extranjera,
+                        apcie.id_entrega_brinks,
+                        pv.tipo,
+                        initcap(u.desc_persona) as desc_persona,
+                        apcie.modificado,
+
+                        apcie.id_apertura_cierre_admin,
+                        initcap(uadm.desc_persona)::varchar as desc_persona_adm
+
+
+						from vef.tapertura_cierre_caja apcie
+						inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
+                        inner join segu.vusuario u on u.id_usuario = apcie.id_usuario_cajero
+						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
+				        left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
+                        left join vef.tsucursal suc on suc.id_sucursal = apcie.id_sucursal
+
+                        left join vef.tapertura_cierre_caja accadm on accadm.id_apertura_cierre_caja = apcie.id_apertura_cierre_admin
+                        left join segu.vusuario uadm on uadm.id_usuario = accadm.id_usuario_cajero
+
+                        where  ';
+
+            ELSE
+
+            	SELECT su.tipo_usuario
+                INTO v_tipo_usuario
+                FROM vef.tsucursal s
+                inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+                inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+                WHERE su.id_usuario = p_id_usuario;
+
+            	raise exception 'Usted es del Tipo de Usuario % y no corresponde para Apertura y Cierre de Caja (Administrativo).', upper(v_tipo_usuario);
+
+            END IF;
+
+
+
+
+            --v_filtro = ' ';
+
+            --v_consulta :=v_consulta||v_filtro;
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'VF_COMAPCC_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		maylee.perez
+ 	#FECHA:		19-01-2021 14:16:20
+	***********************************/
+
+	elsif(p_transaccion='VF_COMAPCC_CONT')then
+
+		begin
+
+         	SELECT pv.id_punto_venta
+            INTO v_id_punto_venta
+            FROM vef.tsucursal s
+            inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+            inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+            and su.tipo_usuario = 'cajero_auxiliar'
+            WHERE su.id_usuario = p_id_usuario;
+
+            SELECT su.tipo_usuario
+            INTO v_tipo_usuario
+            FROM vef.tsucursal_usuario su
+            WHERE su.id_usuario =p_id_usuario
+            and su.id_punto_venta = v_id_punto_venta;
+
+            -- raise exception 'llega %',v_tipo_usuario;
+
+            IF (v_tipo_usuario = 'cajero_auxiliar') THEN
+
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='select count(apcie.id_apertura_cierre_caja)
+					    from vef.tapertura_cierre_caja apcie
+					    inner join segu.tusuario usu1 on usu1.id_usuario = apcie.id_usuario_reg
+						inner join segu.vusuario u on u.id_usuario = apcie.id_usuario_cajero
+						left join segu.tusuario usu2 on usu2.id_usuario = apcie.id_usuario_mod
+					    left join vef.tpunto_venta pv on pv.id_punto_venta = apcie.id_punto_venta
+                        left join vef.tsucursal suc on suc.id_sucursal = apcie.id_sucursal
+
+                        left join vef.tapertura_cierre_caja accadm on accadm.id_apertura_cierre_caja = apcie.id_apertura_cierre_admin
+                        left join segu.vusuario uadm on uadm.id_usuario = accadm.id_usuario_cajero
+
+                        where ';
+
+            ELSE
+
+            	SELECT su.tipo_usuario
+                INTO v_tipo_usuario
+                FROM vef.tsucursal s
+                inner join vef.tpunto_venta pv on pv.id_sucursal = s.id_sucursal
+                inner join vef.tsucursal_usuario su on su.id_punto_venta = pv.id_punto_venta
+                WHERE su.id_usuario = p_id_usuario;
+
+            	raise exception 'Usted es del Tipo de Usuario % no corresponde para el combo de Apertura y Cierre de Caja (Administrativo).', upper(v_tipo_usuario);
+
+            END IF;
+
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+
     else
 
 		raise exception 'Transaccion inexistente';

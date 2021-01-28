@@ -18,6 +18,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.vista.AperturaCierreCaja.superclass.constructor.call(this,config);
                 this.init();
                 this.recuperarBase();
+
+                this.iniciarEventos();
+
                 this.addButton('cerrar',{grupo:[0],text:'Cerrar Caja',iconCls: 'block',disabled:true,handler:this.preparaCerrarCaja,tooltip: '<b>Cerrar la Caja seleccionada</b>'});
                 this.addButton('abrir',{grupo:[1],text:'Abrir Caja',iconCls: 'bunlock',disabled:true,handler:this.abrirCaja,tooltip: '<b>Abrir la Caja seleccionada</b>'});
                 this.addButton('boletos',{grupo:[0],text: 'Validar Boletos Amadeus - ERP',	iconCls: 'breload2',disabled: true,handler: this.onActualizarBoletos,tooltip: 'Actualizar boletos vendidos para cierre de caja'});
@@ -26,6 +29,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.store.baseParams.pes_estado = 'abierto';
                 this.getBoton('reporte').setVisible(false);
                 this.load({params:{start:0, limit:this.tam_pag}});
+
+
             },
             bactGroups:  [0,1],
             bexcelGroups: [0,1],
@@ -66,6 +71,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     config:{
                         name: 'fecha_apertura_cierre',
                         fieldLabel: 'Fecha ',
+                        allowBlank: false,
+                        width:300,
                         gwidth: 110,
                         format: 'd/m/Y',
                         renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
@@ -144,10 +151,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'id_punto_venta',
                         fieldLabel: 'Punto de Venta',
-                        allowBlank: true,
+                        allowBlank: false,
                         emptyText: 'Elija un Pun...',
                         store: new Ext.data.JsonStore({
-                            url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
+                            url: '../../sis_ventas_facturacion/control/PuntoVenta/comboPuntoVentaUsuario',
                             id: 'id_punto_venta',
                             root: 'datos',
                             sortInfo: {
@@ -155,9 +162,11 @@ header("content-type: text/javascript; charset=UTF-8");
                                 direction: 'ASC'
                             },
                             totalProperty: 'total',
-                            fields: ['id_punto_venta', 'nombre', 'codigo'],
+                            fields: ['id_punto_venta', 'nombre', 'codigo','tipo_suc_usuario'],
                             remoteSort: true,
-                            baseParams: {tipo_usuario: 'cajero',par_filtro: 'puve.nombre#puve.codigo'}
+                            //19-01-2021 (may) se quita control filtro solo de cajero
+                            //baseParams: {tipo_usuario: 'cajero',par_filtro: 'puve.nombre#puve.codigo'}
+                            baseParams: {tipo_usuario: 'cajero_auxiliar',par_filtro: 'puve.nombre#puve.codigo'}
                         }),
                         valueField: 'id_punto_venta',
                         displayField: 'nombre',
@@ -176,7 +185,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         renderer : function(value, p, record) {
                             return String.format('{0}', record.data['nombre_punto_venta']);
                         },
-                        width:250,
+                        width:300,
                         resizable:true
                     },
                     type: 'ComboBox',
@@ -184,7 +193,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'pv.nombre',type: 'string'},
                     grid: true,
                     form: true,
-                    grid:true,
+                    //grid:true,
                     bottom_filter:true
                 },
                 {
@@ -223,7 +232,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'monto_inicial',
                         fieldLabel: 'Monto Inicial',
                         allowBlank: false,
-                        anchor: '80%',
+                        width:300,
                         gwidth: 100,
                         maxLength:10,
                         allowDecimals: true,
@@ -241,7 +250,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'monto_inicial_moneda_extranjera',
                         fieldLabel: 'Monto Inicial Moneda Extranjera',
                         allowBlank: false,
-                        anchor: '80%',
+                        width:300,
                         gwidth: 100,
                         maxLength:10,
                         allowDecimals: true,
@@ -254,12 +263,60 @@ header("content-type: text/javascript; charset=UTF-8");
                     form:true,
                     valorInicial :0.00
                 },
+
+                {
+                    config: {
+                        name: 'id_apertura_cierre_admin',
+                        fieldLabel: 'Apertura y Cierre de Caja (Administrativo)',
+                        allowBlank: true,
+                        emptyText: 'Elija una Apertura...',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_ventas_facturacion/control/AperturaCierreCaja/comboAperturaCierreCaja',
+                            id: 'id_apertura_cierre_caja',
+                            root: 'datos',
+                            sortInfo: {
+                                field: 'desc_persona',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_apertura_cierre_caja', 'desc_persona', 'id_punto_venta', 'id_usuario_cajero','fecha_apertura_cierre','nombre_punto_venta'],
+                            remoteSort: true,
+                            baseParams: {par_filtro: 'u.desc_persona'}
+                        }),
+                        valueField: 'id_apertura_cierre_caja',
+                        displayField: 'desc_persona',
+                        gdisplayField: 'desc_persona',
+                        hiddenName: 'id_apertura_cierre_caja',
+                        tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{desc_persona}</b></p><p>PV: {nombre_punto_venta}</p></div></tpl>',
+                        forceSelection: true,
+                        typeAhead: false,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        mode: 'remote',
+                        pageSize: 15,
+                        queryDelay: 1000,
+                        gwidth: 200,
+                        minChars: 2,
+                        renderer : function(value, p, record) {
+                            return String.format('{0}', record.data['desc_persona_adm']);
+                        },
+                        width:300,
+                        resizable:true
+                    },
+                    type: 'ComboBox',
+                    id_grupo: 1,
+                    filters: {pfiltro: 'uadm.desc_persona_adm',type: 'string'},
+                    grid: true,
+                    form: true
+                },
+
+
                 {
                     config:{
                         name: 'obs_apertura',
                         fieldLabel: 'Obs. Apertura',
                         allowBlank: true,
-                        anchor: '100%',
+                        width:300,
                         gwidth: 200
                     },
                     type:'TextArea',
@@ -379,8 +436,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'tipo', type: 'string'},
                 {name:'desc_persona', type: 'string'},
                 {name:'tipo', type: 'string'},
-                {name:'modificado', type: 'string'}
-
+                {name:'modificado', type: 'string'},
+                {name:'id_apertura_cierre_admin', type: 'numeric'},
+                {name:'desc_persona_adm', type: 'string'},
 
 
             ],
@@ -432,6 +490,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.mostrarComponente(this.Cmp.id_punto_venta);
                 this.mostrarComponente(this.Cmp.monto_inicial);
 
+                this.mostrarComponente(this.Cmp.id_apertura_cierre_admin);
+
                 this.mostrarComponente(this.Cmp.obs_apertura);
                 this.Cmp.id_punto_venta.setDisabled(false);
                 this.Cmp.id_sucursal.setDisabled(false);
@@ -449,6 +509,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 }              
                 /*************************************************************/
 
+                console.log('lleganewthis',this);
+                //this.getComponente('fecha_apertura_cierre').on('select', function (cmp, rec, indice) {
+
+                //18-01-2021(may) para Apertura y Cierre de Caja (Administrativo)
+                this.Cmp.id_apertura_cierre_admin.reset();
+                this.Cmp.id_apertura_cierre_admin.store.baseParams.fecha_apertura_cierre = new Date();
+                this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+
             },
 
             onButtonEdit: function() {
@@ -461,10 +530,43 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.mostrarComponente(this.Cmp.monto_inicial);
                 this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
                 this.mostrarComponente(this.Cmp.obs_apertura);
+
+                this.ocultarComponente(this.Cmp.id_apertura_cierre_admin);
+
                 this.Cmp.id_punto_venta.setDisabled(true);
                 this.Cmp.id_sucursal.setDisabled(true);
                 this.argumentExtraSubmit = {'accion' :'nada'};
+
+                //18-01-2021(may) para Apertura y Cierre de Caja (Administrativo)
+                datos = this.sm.getSelected().data;
+
                 Phx.vista.AperturaCierreCaja.superclass.onButtonEdit.call(this);
+
+                //18-01-2021(may) para Apertura y Cierre de Caja (Administrativo)
+                this.Cmp.id_apertura_cierre_admin.reset();
+                this.Cmp.id_apertura_cierre_admin.store.baseParams.id_punto_venta = datos.id_punto_venta;
+                this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+                this.Cmp.id_apertura_cierre_admin.reset();
+                this.Cmp.id_apertura_cierre_admin.store.baseParams.fecha_apertura_cierre = datos.fecha_apertura_cierre;
+                this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+                this.getComponente('fecha_apertura_cierre').on('select', function (cmp, rec, indice) {
+
+                    this.Cmp.id_apertura_cierre_admin.reset();
+                    this.Cmp.id_apertura_cierre_admin.store.baseParams.fecha_apertura_cierre = cmp.value;
+                    this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+                }, this);
+
+                this.getComponente('id_punto_venta').on('select', function (cmp, rec, indice) {
+
+                    this.Cmp.id_apertura_cierre_admin.reset();
+                    this.Cmp.id_apertura_cierre_admin.store.baseParams.id_punto_venta = rec.data.id_punto_venta;
+                    this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+                }, this);
+
 
             },
 
@@ -678,6 +780,37 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Phx.vista.AperturaCierreCaja.superclass.preparaMenu.call(this);
             },
+
+            iniciarEventos: function () {
+                Phx.vista.AperturaCierreCaja.superclass.iniciarEventos.call()
+
+                //18-01-2021(may) para Apertura y Cierre de Caja (Administrativo)
+                this.getComponente('fecha_apertura_cierre').on('select', function (cmp, rec, indice) {
+
+                    this.Cmp.id_apertura_cierre_admin.reset();
+                    this.Cmp.id_apertura_cierre_admin.store.baseParams.fecha_apertura_cierre = cmp.value;
+                    this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+                }, this);
+
+                this.getComponente('id_punto_venta').on('select', function (cmp, rec, indice) {
+                    //console.log('llegamrec',rec);
+                    console.log('llegamtipo_suc_usuario',rec.data.tipo_suc_usuario);
+
+                    if (rec.data.tipo_suc_usuario == 'cajero_auxiliar') {
+                        this.mostrarComponente(this.Cmp.id_apertura_cierre_admin);
+                    }else{
+                        this.ocultarComponente(this.Cmp.id_apertura_cierre_admin);
+                    }
+
+                    this.Cmp.id_apertura_cierre_admin.reset();
+                    this.Cmp.id_apertura_cierre_admin.store.baseParams.id_punto_venta = rec.data.id_punto_venta;
+                    this.Cmp.id_apertura_cierre_admin.modificado = true;
+
+                }, this);
+
+            },
+
             liberaMenu:function()
             {
                 this.getBoton('cerrar').disable();

@@ -43,6 +43,10 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('tipo','varchar');
         $this->captura('desc_persona','text');
         $this->captura('modificado','varchar');
+
+        $this->captura('id_apertura_cierre_admin','int4');
+        $this->captura('desc_persona_adm','varchar');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -185,6 +189,8 @@ class MODAperturaCierreCaja extends MODbase{
         $this->setParametro('monto_inicial_moneda_extranjera','monto_inicial_moneda_extranjera','int4');
         $this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
 
+        $this->setParametro('id_apertura_cierre_admin','id_apertura_cierre_admin','int4');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -214,6 +220,7 @@ class MODAperturaCierreCaja extends MODbase{
         $this->setParametro('accion','accion','varchar');
         $this->setParametro('arqueo_moneda_local','arqueo_moneda_local','numeric');
         $this->setParametro('arqueo_moneda_extranjera','arqueo_moneda_extranjera','numeric');
+
         $this->setParametro('fecha_apertura_cierre','fecha_apertura_cierre','date');
         //$this->setParametro('monto_billete_100_ml','monto_billete_100_ml','numeric');
         $this->setParametro('tipo','tipo','varchar');
@@ -244,6 +251,9 @@ class MODAperturaCierreCaja extends MODbase{
 
         $this->setParametro('comisiones_ml','comisiones_ml','numeric');
         $this->setParametro('comisiones_me','comisiones_me','numeric');
+
+        $this->setParametro('id_apertura_cierre_admin','id_apertura_cierre_admin','int4');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -532,6 +542,49 @@ class MODAperturaCierreCaja extends MODbase{
         $this->tipo_procedimiento='IME';//tipo de transaccion
 
         $this->setParametro('fecha_cambio','fecha_cambio','timestamp');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    //28-01-2021 (may)
+    function comboAperturaCierreCaja(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='vef.ft_apertura_cierre_caja_sel';
+        $this->transaccion='VF_COMAPCC_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_apertura_cierre_caja','int4');
+        $this->captura('id_sucursal','int4');
+        $this->captura('id_punto_venta','int4');
+        $this->captura('id_usuario_cajero','int4');
+        $this->captura('id_moneda','int4');
+        $this->captura('obs_cierre','text');
+        $this->captura('monto_inicial','numeric');
+        $this->captura('obs_apertura','text');
+        $this->captura('monto_inicial_moneda_extranjera','numeric');
+        $this->captura('usr_reg','varchar');
+        $this->captura('usr_mod','varchar');
+
+        $this->captura('estado','varchar');
+        $this->captura('fecha_apertura_cierre','date');
+        $this->captura('fecha_hora_cierre','timestamp');
+        $this->captura('nombre_punto_venta','varchar');
+        $this->captura('nombre_sucursal','varchar');
+        $this->captura('arqueo_moneda_local','numeric');
+        $this->captura('arqueo_moneda_extranjera','numeric');
+        $this->captura('id_entrega_brinks','int4');
+        $this->captura('tipo','varchar');
+        $this->captura('desc_persona','text');
+        $this->captura('modificado','varchar');
+
+        $this->captura('id_apertura_cierre_admin','int4');
+        $this->captura('desc_persona_adm','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

@@ -173,7 +173,10 @@ BEGIN
 			monto_inicial_moneda_extranjera,
             id_usuario_reg,
             fecha_apertura_cierre,
-            estado
+            estado,
+            --18-01-2021 (may)
+            id_apertura_cierre_admin
+
           	) values(
 			v_parametros.id_sucursal,
 			v_parametros.id_punto_venta,
@@ -184,7 +187,9 @@ BEGIN
 			v_parametros.monto_inicial_moneda_extranjera,
             p_id_usuario,
             v_parametros.fecha_apertura_cierre,
-            'abierto'
+            'abierto',
+			--18-01-2021 (may)
+            v_parametros.id_apertura_cierre_admin
 
 			)RETURNING id_apertura_cierre_caja into v_id_apertura_cierre_caja;
 
@@ -244,7 +249,10 @@ BEGIN
                       	'abierto'
                       end),
             arqueo_moneda_local = v_parametros.arqueo_moneda_local,
-            arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera
+            arqueo_moneda_extranjera = v_parametros.arqueo_moneda_extranjera,
+            --18-01-2021 (may)
+            id_apertura_cierre_admin = v_parametros.id_apertura_cierre_admin
+
 			where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
 
 

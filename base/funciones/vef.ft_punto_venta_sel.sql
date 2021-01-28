@@ -144,6 +144,88 @@ $body$
 
       end;
 
+     /*********************************
+     #TRANSACCION:  'VF_PVUSU_SEL'
+     #DESCRIPCION:	Consulta de datos
+     #AUTOR:		maylee.perez
+     #FECHA:		28-01-2020 21:02:00
+     ***********************************/
+
+    elsif(p_transaccion='VF_PVUSU_SEL')then
+
+      begin
+
+        v_consulta:='select
+                        puve.id_punto_venta,
+                        puve.estado_reg,
+                        puve.id_sucursal,
+                        puve.nombre,
+                        puve.descripcion,
+                        puve.id_usuario_reg,
+                        puve.fecha_reg,
+                        puve.id_usuario_ai,
+                        puve.usuario_ai,
+                        puve.id_usuario_mod,
+                        puve.fecha_mod,
+                        usu1.cuenta as usr_reg,
+                        usu2.cuenta as usr_mod,
+                        puve.codigo,
+                        puve.habilitar_comisiones,
+                        suc.formato_comprobante,
+                        puve.tipo,
+                        suc.enviar_correo,
+
+                        sucusu.tipo_usuario as tipo_suc_usuario
+
+                        from vef.tpunto_venta puve
+                        inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
+                        left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
+                        inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
+
+                        left join vef.tsucursal_usuario sucusu on puve.id_punto_venta = sucusu.id_punto_venta  and sucusu.id_usuario = '||p_id_usuario||'
+
+                        where  ';
+
+        --Definicion de la respuesta
+          v_consulta:=v_consulta||v_parametros.filtro;
+        v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+        raise notice '%',v_consulta;
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+
+      /*********************************
+      #TRANSACCION:  'VF_PVUSU_CONT'
+      #DESCRIPCION:	Conteo de registros
+      #AUTOR:		maylee.perez
+      #FECHA:		28-01-2020 21:02:00
+      ***********************************/
+
+    elsif(p_transaccion='VF_PVUSU_CONT')then
+
+      begin
+
+        --Sentencia de la consulta de conteo de registros
+        v_consulta:='select count(puve.id_punto_venta)
+                        from vef.tpunto_venta puve
+                        inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
+                        left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
+                        inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
+
+                        left join vef.tsucursal_usuario sucusu on puve.id_punto_venta = sucusu.id_punto_venta  and sucusu.id_usuario = '||p_id_usuario||'
+
+                        where ';
+
+        --Definicion de la respuesta
+        v_consulta:=v_consulta||v_parametros.filtro;
+
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+
+
     else
 
       raise exception 'Transaccion inexistente';

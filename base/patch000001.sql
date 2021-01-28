@@ -1475,3 +1475,13 @@ ALTER TABLE vef.tcomision
 ALTER TABLE vef.tboletos_asociados_fact
   ALTER COLUMN id_boleto DROP NOT NULL;
 /***********************************F-SCP-IRVA-VEF-0-18/01/2021****************************************/
+
+/***********************************I-SCP-MAY-VEF-0-28/01/2021****************************************/
+ALTER TABLE vef.tapertura_cierre_caja
+  ADD COLUMN id_apertura_cierre_admin INTEGER;
+
+COMMENT ON COLUMN vef.tapertura_cierre_caja.id_apertura_cierre_admin
+IS 'registra el id_apertura_cierre_admin (administrativo)';
+
+
+/***********************************F-SCP-MAY-VEF-0-28/01/2021****************************************/
