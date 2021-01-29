@@ -75,6 +75,28 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 	            form: true
 	        },
           {
+                  config:{
+                      name: 'habilitar_edicion',
+                      fieldLabel: '<img src="../../../lib/imagenes/facturacion/LapizPapel.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Editar?</span>',
+                      allowBlank: true,
+                      width:200,
+                      emptyText:'Editar...',
+                      triggerAction: 'all',
+                      lazyRender:true,
+                      mode: 'local',
+                      displayField: 'text',
+                      valueField: 'value',
+                      store:new Ext.data.SimpleStore({
+      					data : [['SI', 'SI'], ['NO', 'NO']],
+      					id : 'value',
+      					fields : ['value', 'text']
+      				})
+                  },
+                  type:'ComboBox',
+                  id_grupo: 8,
+                  form:true
+              },
+          {
         config:{
           name: 'observaciones',
           fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
@@ -493,7 +515,15 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
         /*Condicion cuando el estado de la factura sea anulado*/
           this.Cmp.anulado.on('select',function(c,r,i) {
-              if (r.data.field1 == 'ANULADA') {
+            console.log("aqui llega data",r);
+            if (r != '') {
+              var estado = r;
+            } else {
+              var estado = r.data.field1;
+            }
+
+
+              if (estado == 'ANULADA') {
                  this.Cmp.nit.setValue(0);
                  this.Cmp.monto_forma_pago.setValue(0);
                  this.Cmp.monto_forma_pago.setDisabled(true);
@@ -537,7 +567,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                  this.Cmp.nit.reset();
                  this.Cmp.id_cliente.reset();
                  this.Cmp.monto_forma_pago.setDisabled(false);
-                 this.megrid.topToolbar.items.items[1].setDisabled(false);
+                 //this.megrid.topToolbar.items.items[1].setDisabled(false);
                  this.mostrarComponente(this.Cmp.id_formula);
                  this.mostrarComponente(this.megrid.topToolbar.items.items[0]);
                  this.mostrarComponente(this.megrid.topToolbar.items.items[1]);
@@ -593,7 +623,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
 
           /*******************cambiaremos el estilo del boton guardar *********************/
-          if (this.data.tipo_form == 'new'){
+          if (this.data.tipo_form == 'new' || this.data.tipo_form == 'edit'){
             this.megrid.topToolbar.items.items[0].container.dom.style.width="75px";
             this.megrid.topToolbar.items.items[0].container.dom.style.height="35px";
             this.megrid.topToolbar.items.items[0].btnEl.dom.style.height="35px";
@@ -1380,7 +1410,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         //         this.Cmp.nit.setValue(r.nit);
         //     }
         // },this);
-
+        this.Cmp.habilitar_edicion.setValue('SI');
 
         this.Cmp.nit.on('blur',function(c) {
         if (this.accionFormulario != 'EDIT') {
@@ -1411,12 +1441,11 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
   					Ext.Ajax.request({
   							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
   							params : {
-  								'nit' : this.Cmp.nit.getValue(),
-  								'razon_social' : this.Cmp.nombre_factura.getValue(),
+  								'nit' : this.data.datos_originales.data.nit,
+  								'razon_social' : this.data.datos_originales.data.nombre_factura,
   							},
   							success: function(resp){
   	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-                    //this.Cmp.nombre_factura.reset();
                     this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
   	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
   	            },
@@ -1439,6 +1468,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                 }
             }
         },this);
+
+        this.ocultarComponente(this.Cmp.habilitar_edicion);
 
         this.iniciarEventosProducto();
         this.obtenersuma();
@@ -1592,6 +1623,10 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       if (requiere_excento.includes('si')) {
         this.mostrarComponente(this.Cmp.excento);
         if (this.accionFormulario == 'EDIT') {
+
+          this.mostrarComponente(this.Cmp.habilitar_edicion);
+
+
           this.Cmp.excento.setDisabled(true);
         } else {
           this.Cmp.excento.setDisabled(false);
@@ -1884,129 +1919,186 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
     buildDetailGridEdit: function(){
 
-        //cantidad,detalle,peso,totalo
-        var Items = Ext.data.Record.create([{
-                        name: 'cantidad',
-                        type: 'int'
-                    }, {
-                        name: 'id_producto',
-                        type: 'int'
-                    },{
-                        name: 'tipo',
-                        type: 'string'
-                    }
-                    ]);
+      //cantidad,detalle,peso,totalo
+      var Items = Ext.data.Record.create([{
+                      name: 'cantidad',
+                      type: 'int'
+                  }, {
+                      name: 'id_producto',
+                      type: 'int'
+                  },{
+                      name: 'tipo',
+                      type: 'string'
+                  }
+                  ]);
 
-        this.mestore = new Ext.data.JsonStore({
-                    url: '../../sis_ventas_facturacion/control/Cajero/listarVentaDetalle',
-                    id: 'id_venta_detalle',
-                    root: 'datos',
-                    totalProperty: 'total',
-                    fields: [
-                        {name:'id_venta_detalle', type: 'numeric'},
-                        {name:'id_venta', type: 'numeric'},
-                        {name:'id_producto', type: 'numeric'},
-                        {name:'nombre_producto', type: 'string'},
-                        {name:'precio_unitario', type: 'numeric'},
-                        {name:'cantidad', type: 'numeric'},
-                        {name:'precio_total', type: 'numeric'},
-                        {name:'descripcion', type: 'string'},
-                        {name:'tipo', type: 'string'},
-                        {name:'estado_reg', type: 'string'},
-                        {name:'id_usuario_ai', type: 'numeric'},
-                        {name:'usuario_ai', type: 'string'},
-                        {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-                        {name:'id_usuario_reg', type: 'numeric'},
-                        {name:'id_usuario_mod', type: 'numeric'},
-                        {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-                        {name:'asociar_boletos', type: 'string'},
-                        {name:'requiere_excento', type: 'string'},
-                    ],
-                    remoteSort: true,
-                    baseParams: {dir:'ASC',sort:'id_venta_detalle',limit:'50',start:'0'}
-                });
+      this.mestore = new Ext.data.JsonStore({
+                  url: '../../sis_ventas_facturacion/control/Cajero/listarVentaDetalle',
+                  id: 'id_venta_detalle',
+                  root: 'datos',
+                  totalProperty: 'total',
+                  fields: [
+                      {name:'id_venta_detalle', type: 'numeric'},
+                      {name:'id_venta', type: 'numeric'},
+                      {name:'id_producto', type: 'numeric'},
+                      {name:'nombre_producto', type: 'string'},
+                      {name:'precio_unitario', type: 'numeric'},
+                      {name:'cantidad', type: 'numeric'},
+                      {name:'precio_total', type: 'numeric'},
+                      {name:'descripcion', type: 'string'},
+                      {name:'tipo', type: 'string'},
+                      {name:'estado_reg', type: 'string'},
+                      {name:'id_usuario_ai', type: 'numeric'},
+                      {name:'usuario_ai', type: 'string'},
+                      {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+                      {name:'id_usuario_reg', type: 'numeric'},
+                      {name:'id_usuario_mod', type: 'numeric'},
+                      {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 
-            this.editorDetail = new Ext.ux.grid.RowEditor({
+                  ],
+                  remoteSort: true,
+                  baseParams: {dir:'ASC',sort:'id_venta_detalle',limit:'50',start:'0'}
+              });
 
-                });
+          this.editorDetail = new Ext.ux.grid.RowEditor({
 
+              });
 
-        this.summary = new Ext.ux.grid.GridSummary();
+          this.editarDescripcion = new Ext.form.TextField({});
 
-        /*megrid irva condicion*/
-        this.megrid = new Ext.grid.EditorGridPanel({
-                    layout: 'fit',
-                    store:  this.mestore,
-                    region: 'center',
-                    split: true,
-                    border: false,
-                    loadMask : true,
-                    clicksToEdit: 2,
-                    plain: true,
-                    plugins: [this.summary],
-                    stripeRows: true,
+          this.summary = new Ext.ux.grid.GridSummary();
 
-                    columns: [
-                    new Ext.grid.RowNumberer(),
+      /*megrid irva condicion*/
+      this.megrid = new Ext.grid.EditorGridPanel({
+                  layout: 'fit',
+                  store:  this.mestore,
+                  region: 'center',
+                  split: true,
+                  border: false,
+                  loadMask : true,
+                  clicksToEdit: 2,
+                  plain: true,
+                  plugins: [this.summary],
+                  stripeRows: true,
+                  tbar: [
                     {
-                        header: 'Tipo',
-                        dataIndex: 'tipo',
-                        width: 90,
-                        sortable: false,
-                        //editor: this.detCmp.tipo
+                      text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
+                      scope: this,
+                      id:'botonGuardar',
+                      handler: function(btn) {
+                        this.guardarDetalles();
+                      }
                     },
                     {
-                        header: 'Producto/Servicio',
-                        dataIndex: 'id_producto',
-                        width: 350,
-                        editable: true,
-                        sortable: false,
-                        renderer:function(value, p, record){
-                          return String.format('{0}', record.data['nombre_producto']);
-                        },
-                        //editor: this.detCmp.id_producto
+                    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
+                    scope: this,
+                    id:'botonAgregar',
+                      handler : function(){
+                        this.formularioAgregar();
+                        }
                     },
                     {
-                        header: 'Descripción',
-                        dataIndex: 'descripcion',
-                        width: 300,
-                        //sortable: false,
-                        //editor: this.detCmp.descripcion
-                    },
-                    {
+                      text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
+                      scope: this,
+                      id:'botonEliminar',
+                        handler : function(){
+                          var index = this.megrid.getSelectionModel().getSelectedCell();
+                          if (!index) {
+                              return false;
+                          }
+                          var rec = this.mestore.getAt(index[0]);
+                          this.mestore.remove(rec);
+                          this.obtenersuma();
 
-                        header: 'Cantidad',
-                        dataIndex: 'cantidad',
-                        align: 'right',
-                        width: 75,
-                        summaryType: 'sum',
-                        //editor: this.detCmp.cantidad
-                    },
-                    {
-                        header: 'P / Unit',
-                        dataIndex: 'precio_unitario',
-                        align: 'right',
-                        selectOnFocus: true,
-                        width: 85,
-                        decimalPrecision : 2,
-                        summaryType: 'sum',
-                        renderer : function(value, p, record) {
-                            return parseFloat(record.data['precio_unitario']);
-                        },
-                        //editor: this.detCmp.precio_unitario
-                    },
-                    {
-                        xtype: 'numbercolumn',
-                        header: 'Total',
-                        dataIndex: 'precio_total',
-                        align: 'right',
-                        width: 150,/*irva222*/
-                        format: '0,0.00',
-                        summaryType: 'sum',
-                        //editor: this.detCmp.precio_total
-                    }
-                  ]
-                });
+                          /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
+                          // if (rec.data.requiere_excento == 'si') {
+                          //   this.ocultarComponente(this.Cmp.excento);
+                          //   this.Cmp.excento.reset();
+                          // }
+                          /***********************************************************************************/
+
+                      }
+
+
+                      },
+                  // {
+                  //         text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/duplicar.svg" style="width:30px; vertical-align: middle;"> Duplicar Registro</div>',
+                  //         scope:this,
+                  //         handler: function(){
+                  //             var index = this.megrid.getSelectionModel().getSelectedCell();
+                  //             if (!index) {
+                  //                 return false;
+                  //             }
+                  //             var rec = this.mestore.getAt(index[0]);
+                  //             this.onDuplicateDetail(rec);
+                  //             this.evaluaGrilla();
+                  //             this.obtenersuma();
+                  //
+                  //         }
+                  // }
+                ],
+
+                  columns: [
+                  new Ext.grid.RowNumberer(),
+                  {
+                      header: 'Tipo',
+                      dataIndex: 'tipo',
+                      width: 90,
+                      sortable: false,
+                      //editor: this.detCmp.tipo
+                  },
+                  {
+                      header: 'Producto/Servicio',
+                      dataIndex: 'id_producto',
+                      width: 350,
+                      editable: true,
+                      sortable: false,
+                      renderer:function(value, p, record){
+                        return String.format('{0}', record.data['nombre_producto']);
+                      },
+                      //editor: this.detCmp.id_producto
+                  },
+                  {
+                      header: 'Descripción',
+                      dataIndex: 'descripcion',
+                      width: 300,
+                      //sortable: false,
+                      editor: this.editarDescripcion
+                  },
+                  {
+
+                      header: 'Cantidad',
+                      dataIndex: 'cantidad',
+                      align: 'right',
+                      width: 75,
+                      summaryType: 'sum',
+                      editor: this.detCmp.cantidad
+                  },
+                  {
+                      header: 'P / Unit',
+                      dataIndex: 'precio_unitario',
+                      align: 'right',
+                      selectOnFocus: true,
+                      width: 85,
+                      decimalPrecision : 2,
+                      summaryType: 'sum',
+                      renderer : function(value, p, record) {
+                          return parseFloat(record.data['precio_unitario']);
+                      },
+                      editor: this.detCmp.precio_unitario
+                  },
+                  {
+                      xtype: 'numbercolumn',
+                      header: 'Total',
+                      dataIndex: 'precio_total',
+                      align: 'right',
+                      width: 150,/*irva222*/
+                      format: '0,0.00',
+                      summaryType: 'sum',
+                      //editor: this.detCmp.precio_total
+                  }
+                ]
+              });
     },
 
     guardarDetalles : function(){
@@ -3931,9 +4023,9 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     	this.accionFormulario = 'EDIT';
     	this.loadForm(this.data.datos_originales);
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
-        this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
+        //this.Cmp.id_forma_pago.store.baseParams.defecto = 'si';
         this.mestore.load();
-        this.Cmp.id_forma_pago.reset();
+        //this.Cmp.id_forma_pago.reset();
         this.iniciarEventos();
 
     },
@@ -4117,7 +4209,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
       var datos_respuesta = JSON.parse(resp.responseText);
     	Phx.CP.loadingHide();
       if (this.generar == 'generar') {
-        //Phx.CP.loadingShow();      
+        //Phx.CP.loadingShow();
   			var d = datos_respuesta.ROOT.datos;
         Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/finalizarFacturaManual',
