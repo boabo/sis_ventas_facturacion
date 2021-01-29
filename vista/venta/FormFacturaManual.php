@@ -1438,6 +1438,10 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
           if (this.Cmp.nit.getValue() == '' || this.Cmp.habilitar_edicion.getValue() == 'SI') {
             this.Cmp.nombre_factura.reset();
             this.Cmp.id_cliente.reset();
+
+            this.Cmp.nit.setValue(this.data.datos_originales.data.nit);
+            this.Cmp.nombre_factura.setValue(this.data.datos_originales.data.nombre_factura);
+
   					Ext.Ajax.request({
   							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
   							params : {
