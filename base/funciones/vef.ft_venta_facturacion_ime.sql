@@ -3596,7 +3596,7 @@ BEGIN
                             '''||v_venta.nit::varchar||''',
                             '''||v_venta.nombre_factura::varchar||''',
                             '||v_venta.total_venta::numeric||',
-                            '||v_venta.excento||'
+                            '||v_venta.excento||',
                             '''||v_cajero||''',
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
