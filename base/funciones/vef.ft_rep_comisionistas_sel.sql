@@ -254,9 +254,9 @@ BEGIN
             	raise exception 'Solo se puede recuperar información de la misma Gestión favor verifique los datos.';
             end if;
 
-            --if (v_gestion_ini < 2021) then
-            --	raise exception 'No se puede generar el reporte debido a que la información en el Sistema ERP es desde la gestión 2021, Favor verifique los datos.';
-            --end if;
+            if (v_gestion_ini < 2021) then
+            	raise exception 'No se puede generar el reporte debido a que la información en el Sistema ERP es desde la gestión 2021, Favor verifique los datos.';
+            end if;
 
             /****************Crearemos la Tabla temporal almacenable**********************/
             create temp table temporal_comisionistas (
@@ -284,12 +284,41 @@ BEGIN
             CREATE INDEX ttemporal_comisionistas_sistema_origen ON temporal_comisionistas
             USING btree (sistema_origen);
 
+
+
+            create temp table temporal_data_comisionistas (
+                                                        fecha_factura date,
+                                                        desc_ruta varchar ,
+                                                        sistema_origen varchar,
+                                                        nit_ci_cli numeric,
+                                                        razon_social_cli varchar,
+                                                        cantidad numeric,
+                                                        total_venta NUMERIC,
+                                                        importe_exento NUMERIC,
+                                                        nro_factura numeric
+                                                      ) on commit drop;
+            CREATE INDEX ttemporal_data_comisionistas_fecha_factura ON temporal_data_comisionistas
+            USING btree (fecha_factura);
+
+            CREATE INDEX ttemporal_data_comisionistas_natural_nit ON temporal_data_comisionistas
+            USING btree (nit_ci_cli);
+
+            CREATE INDEX ttemporal_data_comisionistas_nro_factura ON temporal_data_comisionistas
+            USING btree (nro_factura);
+
             /*****************************************************************************/
-
-
-            /*Recupera la información de todas las facturas y boletos emitidos*/
-           	for v_datos in (  SELECT *
-                FROM dblink('dbname=db_facturas_'||v_gestion||' options=-csearch_path=',
+             insert into temporal_data_comisionistas (
+                                                        fecha_factura,
+                                                        desc_ruta,
+                                                        sistema_origen,
+                                                        nit_ci_cli,
+                                                        razon_social_cli,
+                                                        cantidad,
+                                                        total_venta,
+                                                        importe_exento,
+                                                        nro_factura)
+                SELECT *
+                FROM dblink('hostaddr=172.17.110.7 port=5432 dbname=db_facturas_'||v_gestion_ini||' user=user_facturacion_erp password=user_facturacion_erp@2019 options=-csearch_path=',
                             'select
                             		fecha_factura,
                                     desc_ruta,
@@ -301,8 +330,25 @@ BEGIN
                                     importe_otros_no_suj_iva,
                                     nro_factura
                              from sfe.tfactura where estado_reg = ''activo''
-                             and nit_ci_cli::numeric != 1 and nit_ci_cli::numeric != 0 and
-                             nit_ci_cli::numeric IN ('||(select LIST (distinct(comi.nit))
+                             and ((case when
+                                          nit_ci_cli = '''' then
+                                          0::numeric
+                                          else
+                                              trim (nit_ci_cli)::numeric
+                                          end)) != 1 and
+
+                                 ((case when
+                                          nit_ci_cli = '''' then
+                                          0::numeric
+                                          else
+                                              trim (nit_ci_cli)::numeric
+                                          end)) != 0 and
+                             ((case when
+                                          nit_ci_cli = '''' then
+                                          0::numeric
+                                          else
+                                              trim (nit_ci_cli)::numeric
+                                          end)) IN ('||(select LIST (distinct(comi.nit))
                                                                                                                       from vef.tacumulacion_comisionistas comi
                                                                                                                       where comi.total_acumulado >= v_monto_impuestos and comi.id_periodo between v_parametros.id_periodo_inicio and v_parametros.id_periodo_final
                                                                                                                       and comi.natural_simplificado = ''||v_filtro_totales||'')||')
@@ -312,15 +358,20 @@ BEGIN
                 AS tdatos(fecha_factura date,
                           desc_ruta varchar,
                           sistema_origen varchar,
-                          nit_ci_cli varchar,
+                          nit_ci_cli numeric,
                           razon_social_cli varchar,
                           cantidad integer,
                           total_venta numeric,
                           importe_exento numeric,
-                          nro_factura numeric)) LOOP
+                          nro_factura numeric);
+
+
+            /*Recupera la información de todas las facturas y boletos emitidos*/
+           	for v_datos in ( select *
+            			     from temporal_data_comisionistas ) LOOP
 
               	/*Obtenemos la cantidad de caracteres del NIT para identificar natural o simplificado*/
-                SELECT length(ltrim(rtrim(v_datos.nit_ci_cli))) into v_cantidad_nit;
+                SELECT length(v_datos.nit_ci_cli::varchar) into v_cantidad_nit;
                           if (v_cantidad_nit > 8) then
                               v_natural_sumpli = 'S';
                           else
@@ -489,9 +540,9 @@ BEGIN
                 /****************************************************/
 
                 /*Aqui para obtener datos de la misma gestion*/
-                ----if (v_gestion < 2021) then
-                	--raise exception 'No se puede generar el reporte debido a que la información en el Sistema ERP es desde la gestión 2021, Favor verifique los datos.';
-               -- end if;
+                if (v_gestion < 2021) then
+                	raise exception 'No se puede generar el reporte debido a que la información en el Sistema ERP es desde la gestión 2021, Favor verifique los datos.';
+                end if;
                 /*********************************************/
 
 

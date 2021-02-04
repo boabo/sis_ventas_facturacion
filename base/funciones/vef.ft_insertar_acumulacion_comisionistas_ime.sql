@@ -99,11 +99,43 @@ BEGIN
         CREATE INDEX ttemporal_acumulativo_id_gestion ON temporal_acumulativo
         USING btree (id_gestion);
 
+            create temp table temporal_comisionistas_acumulado (
+                                                        id_factura varchar,
+                                                        fecha_factura date,
+                                                        nro_factura varchar,
+                                                        estado varchar,
+                                                        desc_ruta varchar,
+                                                        sistema_origen varchar,
+                                                        nit_ci_cli numeric,
+                                                        razon_social_cli varchar,
+                                                        cantidad integer,
+                                                        total_venta numeric,
+                                                        importe_exento numeric
+                                                      )on commit drop;
+            CREATE INDEX ttemporal_comisionistas_acumulado_fecha_factura ON temporal_comisionistas_acumulado
+            USING btree (fecha_factura);
+
+            CREATE INDEX ttemporal_comisionistas_acumulado_nit ON temporal_comisionistas_acumulado
+            USING btree (nit_ci_cli);
+
+            CREATE INDEX ttemporal_comisionistas_acumulado_sistema_origen ON temporal_comisionistas_acumulado
+            USING btree (sistema_origen);
 
 
-        for v_datos in (
-                SELECT *
-                FROM dblink('dbname=db_facturas_'||v_anio||' options=-csearch_path=',
+            insert into temporal_comisionistas_acumulado (
+                                                        id_factura,
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        estado,
+                                                        desc_ruta,
+                                                        sistema_origen,
+                                                        nit_ci_cli,
+                                                        razon_social_cli,
+                                                        cantidad,
+                                                        total_venta,
+                                                        importe_exento)
+            SELECT *
+                FROM dblink('hostaddr=172.17.110.7 port=5432 dbname=db_facturas_'||v_anio||' user=user_facturacion_erp password=user_facturacion_erp@2019 options=-csearch_path=',
                             'select id_factura,
                                     fecha_factura,
                                     nro_factura,
@@ -116,8 +148,20 @@ BEGIN
                                     importe_total_venta,
                                     importe_otros_no_suj_iva
                              from sfe.tfactura where estado_reg = ''activo''
-                             and nit_ci_cli::numeric != 1 and nit_ci_cli::numeric != 0
-                             and fecha_factura >= '''||v_fecha_ini_periodo||'''
+                             and
+                             ((case when
+                                          nit_ci_cli = '''' then
+                                          0::numeric
+                                          else
+                                              trim (nit_ci_cli)::numeric
+                                          end)) != 1 and
+
+                                 ((case when
+                                          nit_ci_cli = '''' then
+                                          0::numeric
+                                          else
+                                              trim (nit_ci_cli)::numeric
+                                          end)) != 0 and fecha_factura >= '''||v_fecha_ini_periodo||'''
                              order by fecha_factura ASC, nro_factura ASC
                              ')
                 AS t1(id_factura varchar,
@@ -126,11 +170,19 @@ BEGIN
                       estado varchar,
                       desc_ruta varchar,
                       sistema_origen varchar,
-                      nit_ci_cli varchar,
+                      nit_ci_cli numeric,
                       razon_social_cli varchar,
                       cantidad integer,
                       total_venta numeric,
-                      importe_exento numeric)) LOOP
+                      importe_exento numeric);
+
+
+
+
+        for v_datos in (
+                        SELECT *
+                        from temporal_comisionistas_acumulado
+                        ) LOOP
 
 
                 select per.id_periodo,
@@ -141,7 +193,7 @@ BEGIN
                 where v_datos.fecha_factura between per.fecha_ini and per.fecha_fin;
 
 
-                SELECT length(ltrim(rtrim(v_datos.nit_ci_cli))) into v_cantidad_nit;
+                SELECT length(v_datos.nit_ci_cli::varchar) into v_cantidad_nit;
 
                 if (v_cantidad_nit > 8) then
                 	v_natural_sumpli = 'S';
