@@ -1485,3 +1485,53 @@ IS 'registra el id_apertura_cierre_admin (administrativo)';
 
 
 /***********************************F-SCP-MAY-VEF-0-28/01/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-04/02/2021****************************************/
+CREATE TABLE vef.tacumulacion_comisionistas (
+  nit VARCHAR(100),
+  razon_social TEXT,
+  id_periodo INTEGER,
+  fecha_ini DATE,
+  fecha_fin DATE,
+  total_acumulado NUMERIC(18,2),
+  natural_simplificado VARCHAR(2),
+  id_gestion INTEGER,
+  estado VARCHAR(100)
+)
+WITH (oids = false);
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.nit
+IS 'Almacenamos el nit del Cliente';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.razon_social
+IS 'Razon Social del Cliente';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.id_periodo
+IS 'id del periodo al que corresponde la venta';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.fecha_ini
+IS 'Fecha Inicio del periodo';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.fecha_fin
+IS 'fecha fin del periodo';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.total_acumulado
+IS 'Total acumulado por nit desde inicio del periodo hasta la fecha';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.natural_simplificado
+IS 'N Natural, S simplificado';
+
+COMMENT ON COLUMN vef.tacumulacion_comisionistas.estado
+IS 'Estado abierto, cerrado';
+
+CREATE INDEX tacumulacion_comisionistas_id_periodo ON vef.tacumulacion_comisionistas
+  USING btree (id_periodo);
+
+CREATE INDEX tacumulacion_comisionistas_idx ON vef.tacumulacion_comisionistas
+  USING btree (id_gestion);
+
+CREATE INDEX tacumulacion_comisionistas_nit ON vef.tacumulacion_comisionistas
+  USING btree (nit COLLATE pg_catalog."default");
+
+ALTER TABLE vef.tacumulacion_comisionistas
+  OWNER TO postgres;
+/***********************************F-SCP-IRVA-VEF-0-04/02/2021****************************************/
