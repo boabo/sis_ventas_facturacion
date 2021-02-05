@@ -100,9 +100,9 @@ class MODComisionistas extends MODbase
         //Definicion de variables para ejecucion del procedimientp
         $this->procedimiento = 'vef.ft_traer_acumulados_ime';
         $this->transaccion = 'VF_TRAER_ACUMUL_IME';
-        $this->tipo_procedimiento = 'IME';//tipo de transaccion       
+        $this->tipo_procedimiento = 'IME';//tipo de transaccion
 
-        $this->setParametro('comisionistas_traer', 'comisionistas_traer', 'varchar');      
+        $this->setParametro('comisionistas_traer', 'comisionistas_traer', 'varchar');
 
 
         //Ejecuta la instruccion

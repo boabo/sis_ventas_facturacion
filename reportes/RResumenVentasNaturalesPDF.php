@@ -63,12 +63,12 @@ class RResumenVentasNaturalesPDF extends  ReportePDF {
         // $this->MultiCell(220, 0, '(DEPTO. DE FINANZAS)             REGIMEN TRIBUTARIO PERSONAS NATURALES           FECHA: '.$fecha_actual.'   HORA: '.$hora_actual,0,'L',0,0,'60','');
 
         // $this->Line(15,32,270,32);
-        $this->Line(15,42,285,42);
+        $this->Line(15,38,285,38);
         // $this->Line(15,38,15,32);
 
 
         $this->SetFont('', 'B', 9);
-        $this->Cell(0, 3, "", 0, 1, 'C');
+        //$this->Cell(0, 3, "", 0, 1, 'C');
 
 
         $this->SetFont('', 'B', 7);
@@ -78,10 +78,17 @@ class RResumenVentasNaturalesPDF extends  ReportePDF {
            //$array = array(15,16,14,55,30,40,20,28,25);
         $this->ln(1);
         //$this->Cell($cabecera[0],3,'Nro','',0,'R');
-        $this->MultiCell($cabecera[0], 6, 'Nro.',0,'R',0,0,'80','');
-        $this->MultiCell($cabecera[1], 6, 'Nro. de doc. de Identificación',0,'R',0,0,'100','');
-        $this->MultiCell($cabecera[2], 6, 'Importe Acumulado Bs.',0,'R',0,0,'150','');
-        $this->MultiCell($cabecera[3], 6, 'Mes de Envio al SIN.',0,'R',0,0,'200','');
+        $this->MultiCell($cabecera[0], 40, 'Nro.',0,'R',0,0,'80','');
+        $this->MultiCell($cabecera[1], 40, 'Nro. de doc. de Identificación',0,'R',0,0,'100','');
+        $this->MultiCell($cabecera[2], 40, 'Importe Acumulado Bs.',0,'R',0,0,'150','');
+        $this->MultiCell($cabecera[3], 40, 'Mes de Envio al SIN.',0,'R',0,0,'200','');
+        $this->ln(1);
+        // $this->ln(6);
+        // $this->Cell($cabecera[0],3,'Nro.','',0,'R');
+        // $this->Cell($cabecera[1],3,'Nro. de doc. de Identificación.','',0,'R');
+        // $this->Cell($cabecera[2],3,'Importe Acumulado Bs.','',0,'C');
+        // $this->Cell($cabecera[3],3,'Mes de Envio al SIN.','',0,'C');
+        // $this->Ln();
         // $this->Cell($cabecera[1],3,'NRO DE BOL. O FACT.','',0,'R');
         // $this->Cell($cabecera[2],3,'CODIGO CLIENTE','',0,'R');
         // $this->Cell($cabecera[3],3,'TIPO DE DOC.','',0,'R');
@@ -94,14 +101,16 @@ class RResumenVentasNaturalesPDF extends  ReportePDF {
         // $this->Cell($cabecera[10],3,'TOTAL.','',0,'R');
         // $this->Cell($cabecera[9],3,'CANT. DEL PRODUCTO','',0,'C');
         // $this->Cell($cabecera[10],3,'P/U','',0,'C');
-        $this->Ln();
+
     }
 
     function generarReporte(){
 
+        //$this->Ln(10);
 
-        $this->SetMargins(15, 40, 2);
         $this->AddPage();
+        $this->SetMargins(15, 40, 2);
+        $this->Ln(15);
 
         $this->SetFont('', '', 7);
         $array = array(75,40,50,50,19,27,45,35,15,15,15);
@@ -113,7 +122,7 @@ class RResumenVentasNaturalesPDF extends  ReportePDF {
         $totales = 0;
 
         $numero = 1;
-        $this->Ln(4);
+
 
 
 
@@ -124,10 +133,10 @@ class RResumenVentasNaturalesPDF extends  ReportePDF {
                     // $this->MultiCell($array[2], 4, $value2['total_acumulado'],0,'R',0,0,'150','');
                     // $this->MultiCell($array[3], 4, $value2['mes_envio'],0,'R',0,0,'200','');
 
-                    $this->Cell($array[0],3,$numero,'',0,'R');
-                    $this->Cell($array[1],3,$value2['nit'],'',0,'R');
-                    $this->Cell($array[2],3,number_format($value2['total_acumulado'], 2, ',', '.'),'',0,'R');
-                    $this->Cell($array[3],3,$value2['mes_envio'],'',0,'R');
+                    $this->Cell($array[0],4,$numero,'',0,'R');
+                    $this->Cell($array[1],4,$value2['nit'],'',0,'R');
+                    $this->Cell($array[2],4,number_format($value2['total_acumulado'], 2, ',', '.'),'',0,'R');
+                    $this->Cell($array[3],4,$value2['mes_envio'],'',0,'R');
 
 
                     $this->Ln();
@@ -148,7 +157,7 @@ class RResumenVentasNaturalesPDF extends  ReportePDF {
                     // $this->Cell($array[10],6,$value2['precio_total'],'',0,'R');
             }
 
-
+              $this->Ln(10);
 
 
 

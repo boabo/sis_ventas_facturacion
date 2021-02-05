@@ -100,53 +100,103 @@ class RDetalleVentasRtsPDF extends  ReportePDF {
         $nit_cliente=array();
         $totales = 0;
 
-        foreach($this->datos as $value){
-                $valor=$value['nit'];
-              if(!in_array($valor, $nit_cliente)){
-                 $nit_cliente[]=$valor;
-              }
+        foreach ($this->datos as $key => $value2) {
+
+          if ($value2['razon_social'] == 'cabecera') {
+            $this->SetFont('', 'B', 8);
+            $this->Cell($array[0],3,'NIT: '.$value2['nit'],'',1,'C');
+            $this->SetFont('', '', 7);
+          } elseif ($value2['razon_social'] != 'cabecera' && $value2['razon_social'] != 'total') {
+            $this->Cell($array[0],6,date("d/m/Y", strtotime($value2['fecha_factura'])),'',0,'R');
+            $this->Cell($array[1],6,$value2['nro_factura'],'',0,'R');
+            $this->Cell($array[2],6,$value2['nit'],'',0,'R');
+            //$this->Cell($array[3],6,$value2['carnet_ide'],'',0,'R');
+            $this->Cell($array[3],6,$value2['nit'],'',0,'R');
+            //$this->MultiCell($array[5], 6, $value2['razon_social'],0,'C',0,0,'130','');
+            $this->MultiCell($array[5], 6, $value2['sistema_origen'],0,'C',0,0,'120','');
+            $this->MultiCell($array[6], 6, $value2['desc_ruta'],0,'C',0,0,'165','');
+            $this->Cell($array[7],6,$value2['cantidad'],'',0,'R');
+            $this->Cell($array[8],6,$value2['precio_unitario'],'',0,'R');
+            $this->Cell($array[9],6,$value2['precio_total'],'',0,'R');
+            $this->Ln();
+          } elseif ($value2['razon_social'] == 'total') {
+            $this->SetFont('', 'B', 7);
+            $this->SetTextColor(0, 66, 66, 0);
+            $this->Cell('246',3,'TOTALES','',0,'R');
+            $this->SetTextColor(100, 35, 0, 31);
+            $this->Cell('17',3,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
+            $this->SetTextColor();
+            $this->Ln();
+
+            // $this->SetFont('', 'B', 7);
+            // $this->SetTextColor(0, 66, 66, 0);
+            // $this->Cell('246',3,'TOTALES','B',0,'R');
+            // $this->SetTextColor(100, 35, 0, 31);
+            // $this->Cell('17',3,number_format($totales, 2, ',', '.'),'B',0,'R');
+            // $this->SetTextColor();
+            // $totales = 0;
+            // $this->Ln();
+          }
+
+
+
+          //$this->Cell($array[5],3,$value2['razon_social'],'',0,'R');
+          // $this->Cell($array[6],3,$value2['cantidad'],'',0,'R');
+          // $this->Cell($array[7],3,$value2['precio_unitario'],'',0,'R');
+          // $this->Cell($array[8],3,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
+
+          //$totales += $value2['precio_total'];
+
+
         }
+
+        // foreach($this->datos as $value){
+        //         $valor=$value['nit'];
+        //       if(!in_array($valor, $nit_cliente)){
+        //          $nit_cliente[]=$valor;
+        //       }
+        // }
         /************************************************/
 
 
 
-        foreach($nit_cliente as $value ){
-          $this->SetFont('', 'B', 8);
-          $this->Cell($array[0],3,'NIT: '.$value,'',1,'C');
-          $this->SetFont('', '', 7);
-          foreach ($this->datos as $key => $value2) {
-            if ($value2['nit'] == $value) {
-                  $this->Cell($array[0],6,date("d/m/Y", strtotime($value2['fecha_factura'])),'',0,'R');
-                  $this->Cell($array[1],6,$value2['nro_factura'],'',0,'R');
-                  $this->Cell($array[2],6,$value2['nit'],'',0,'R');
-                  //$this->Cell($array[3],6,$value2['carnet_ide'],'',0,'R');
-                  $this->Cell($array[3],6,$value2['nit'],'',0,'R');
-                  //$this->MultiCell($array[5], 6, $value2['razon_social'],0,'C',0,0,'130','');
-                  $this->MultiCell($array[5], 6, $value2['sistema_origen'],0,'C',0,0,'120','');
-                  $this->MultiCell($array[6], 6, $value2['desc_ruta'],0,'C',0,0,'165','');
-                  $this->Cell($array[7],6,$value2['cantidad'],'',0,'R');
-                  $this->Cell($array[8],6,$value2['precio_unitario'],'',0,'R');
-                  $this->Cell($array[9],6,$value2['precio_total'],'',0,'R');
-
-                  //$this->Cell($array[5],3,$value2['razon_social'],'',0,'R');
-                  // $this->Cell($array[6],3,$value2['cantidad'],'',0,'R');
-                  // $this->Cell($array[7],3,$value2['precio_unitario'],'',0,'R');
-                  // $this->Cell($array[8],3,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
-                  $this->Ln();
-                  $totales += $value2['precio_total'];
-             }
-
-          }
-
-          $this->SetFont('', 'B', 7);
-          $this->SetTextColor(0, 66, 66, 0);
-          $this->Cell('246',3,'TOTALES','B',0,'R');
-          $this->SetTextColor(100, 35, 0, 31);
-          $this->Cell('17',3,number_format($totales, 2, ',', '.'),'B',0,'R');
-          $this->SetTextColor();
-          $totales = 0;
-          $this->Ln();
-      }
+      //   foreach($nit_cliente as $value ){
+      //     $this->SetFont('', 'B', 8);
+      //     $this->Cell($array[0],3,'NIT: '.$value,'',1,'C');
+      //     $this->SetFont('', '', 7);
+      //     foreach ($this->datos as $key => $value2) {
+      //       if ($value2['nit'] == $value) {
+      //             $this->Cell($array[0],6,date("d/m/Y", strtotime($value2['fecha_factura'])),'',0,'R');
+      //             $this->Cell($array[1],6,$value2['nro_factura'],'',0,'R');
+      //             $this->Cell($array[2],6,$value2['nit'],'',0,'R');
+      //             //$this->Cell($array[3],6,$value2['carnet_ide'],'',0,'R');
+      //             $this->Cell($array[3],6,$value2['nit'],'',0,'R');
+      //             //$this->MultiCell($array[5], 6, $value2['razon_social'],0,'C',0,0,'130','');
+      //             $this->MultiCell($array[5], 6, $value2['sistema_origen'],0,'C',0,0,'120','');
+      //             $this->MultiCell($array[6], 6, $value2['desc_ruta'],0,'C',0,0,'165','');
+      //             $this->Cell($array[7],6,$value2['cantidad'],'',0,'R');
+      //             $this->Cell($array[8],6,$value2['precio_unitario'],'',0,'R');
+      //             $this->Cell($array[9],6,$value2['precio_total'],'',0,'R');
+      //
+      //             //$this->Cell($array[5],3,$value2['razon_social'],'',0,'R');
+      //             // $this->Cell($array[6],3,$value2['cantidad'],'',0,'R');
+      //             // $this->Cell($array[7],3,$value2['precio_unitario'],'',0,'R');
+      //             // $this->Cell($array[8],3,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
+      //             $this->Ln();
+      //             $totales += $value2['precio_total'];
+      //        }
+      //
+      //     }
+      //
+      //     $this->SetFont('', 'B', 7);
+      //     $this->SetTextColor(0, 66, 66, 0);
+      //     $this->Cell('246',3,'TOTALES','B',0,'R');
+      //     $this->SetTextColor(100, 35, 0, 31);
+      //     $this->Cell('17',3,number_format($totales, 2, ',', '.'),'B',0,'R');
+      //     $this->SetTextColor();
+      //     $totales = 0;
+      //     $this->Ln();
+      // }
 
     }
   //   function Footer(){

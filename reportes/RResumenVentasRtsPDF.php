@@ -63,12 +63,12 @@ class RResumenVentasRtsPDF extends  ReportePDF {
         // $this->MultiCell(220, 0, '(DEPTO. DE FINANZAS)             REGIMEN TRIBUTARIO PERSONAS NATURALES           FECHA: '.$fecha_actual.'   HORA: '.$hora_actual,0,'L',0,0,'60','');
 
         // $this->Line(15,32,270,32);
-        $this->Line(15,42,285,42);
+        $this->Line(15,38,285,38);
         // $this->Line(15,38,15,32);
 
 
         $this->SetFont('', 'B', 9);
-        $this->Cell(0, 3, "", 0, 1, 'C');
+        //$this->Cell(0, 3, "", 0, 1, 'C');
 
 
         $this->SetFont('', 'B', 7);
@@ -100,8 +100,9 @@ class RResumenVentasRtsPDF extends  ReportePDF {
     function generarReporte(){
 
 
-        $this->SetMargins(15, 40, 2);
         $this->AddPage();
+        $this->SetMargins(15, 40, 2);
+        $this->Ln(10);
 
         $this->SetFont('', '', 7);
         $array = array(75,40,50,50,19,27,45,35,15,15,15);

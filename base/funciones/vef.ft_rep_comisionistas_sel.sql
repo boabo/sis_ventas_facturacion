@@ -63,6 +63,8 @@ DECLARE
     v_filtro_totales	varchar;
     v_datos_acumulado	record;
     v_monto_impuestos	numeric;
+    v_cadena_cnx		varchar;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_comisionistas_sel';
@@ -306,6 +308,8 @@ BEGIN
             CREATE INDEX ttemporal_data_comisionistas_nro_factura ON temporal_data_comisionistas
             USING btree (nro_factura);
 
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+          	--raise exception 'Aqui la cadena %',v_cadena_cnx;
             /*****************************************************************************/
              insert into temporal_data_comisionistas (
                                                         fecha_factura,
@@ -318,7 +322,7 @@ BEGIN
                                                         importe_exento,
                                                         nro_factura)
                 SELECT *
-                FROM dblink('hostaddr=172.17.110.7 port=5432 dbname=db_facturas_'||v_gestion_ini||' user=user_facturacion_erp password=user_facturacion_erp@2019 options=-csearch_path=',
+                FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                             'select
                             		fecha_factura,
                                     desc_ruta,
@@ -365,6 +369,17 @@ BEGIN
                           importe_exento numeric,
                           nro_factura numeric);
 
+
+            /*Recuperamos el nit y la razon social de la empresa*/
+            select tem.nombre, tem.nit
+            into v_registros
+            from param.tempresa tem
+            where tem.codigo = '578';
+            /****************************************************/
+
+            /*Aqui separamos para que saque los reportes sueltos*/
+
+            if (v_parametros.tipo_reporte = 'per_natu' or v_parametros.tipo_reporte = 'regimen_simpli') then
 
             /*Recupera la información de todas las facturas y boletos emitidos*/
            	for v_datos in ( select *
@@ -434,14 +449,7 @@ BEGIN
                /***************************************************/
 
             end loop;
-            /******************************************************************/
 
-            /*Recuperamos el nit y la razon social de la empresa*/
-            select tem.nombre, tem.nit
-            into v_registros
-            from param.tempresa tem
-            where tem.codigo = '578';
-            /****************************************************/
 
             /*Devolvemos la data recuperada*/
 
@@ -472,6 +480,156 @@ BEGIN
 
 
             /*******************************/
+
+
+
+
+            else
+
+            	/*Para comisionistas sirve totales y cabecera*/
+
+                create temp table temporal_comisionistas_detalle (
+                                                            fecha_factura date,
+                                                            desc_ruta varchar ,
+                                                            sistema_origen varchar,
+                                                            nit numeric,
+                                                            razon_social varchar,
+                                                            carnet_ide varchar,
+                                                            cantidad numeric,
+                                                            precio_unitario numeric,
+                                                            precio_total NUMERIC,
+                                                            natural_simplificado varchar,
+                                                            nro_factura numeric
+                                                          )on commit drop;
+                CREATE INDEX ttemporal_comisionistas_detalle_fecha_factura ON temporal_comisionistas_detalle
+                USING btree (fecha_factura);
+
+                CREATE INDEX ttemporal_comisionistas_detalle_natural_simplificado ON temporal_comisionistas_detalle
+                USING btree (natural_simplificado);
+
+                CREATE INDEX ttemporal_comisionistas_detalle_nit ON temporal_comisionistas_detalle
+                USING btree (nit);
+
+                CREATE INDEX ttemporal_comisionistas_detalle_sistema_origen ON temporal_comisionistas_detalle
+                USING btree (sistema_origen);
+
+                for v_datos in ((SELECT  now()::date as fecha_factura,
+                        'cabecera'::varchar as desc_ruta,
+                        'cabecera'::varchar as sistema_origen,
+                        tem.nit_ci_cli as nit_ci_cli,
+                        'cabecera'::varchar as razon_social_cli,
+                        1::numeric as cantidad,
+                        null::numeric as total_venta,
+                        0::numeric as importe_exento,
+                        0::numeric as nro_factura
+                        FROM temporal_data_comisionistas tem
+                        group by tem.nit_ci_cli
+
+                UNION
+                        SELECT *
+                FROM temporal_data_comisionistas
+
+                UNION
+
+                SELECT 	now()::date as fecha_factura,
+                        'total'::varchar as desc_ruta,
+                        'total'::varchar as sistema_origen,
+                        tempo.nit_ci_cli as nit_ci_cli,
+                        'total'::varchar as razon_social_cli,
+                        null::numeric as cantidad,
+                       sum (tempo.total_venta) as total_venta,
+                       0::numeric as importe_exento,
+                        0::numeric as nro_factura
+                FROM temporal_data_comisionistas tempo
+                group by tempo.nit_ci_cli
+
+                )order by nit_ci_cli ASC, total_venta asc NULLS First, cantidad asc NULLS LAST) loop
+
+
+                	/*Obtenemos la cantidad de caracteres del NIT para identificar natural o simplificado*/
+                    SELECT length(v_datos.nit_ci_cli::varchar) into v_cantidad_nit;
+                              if (v_cantidad_nit > 8) then
+                                  v_natural_sumpli = 'S';
+                              else
+                                  v_natural_sumpli = 'N';
+                              end if;
+                    /*************************************************************************************/
+
+
+                    /*Recuperamos el Total de la venta si es boletos solo total, si es facturas restar exento*/
+                    IF (v_datos.sistema_origen = 'ERP') then
+                        v_venta_total = (v_datos.total_venta - COALESCE (v_datos.importe_exento,0));
+                        v_desc_sistema = 'SISTEMA ERP';
+                    elsif (v_datos.sistema_origen = 'CARGA') then
+                        v_venta_total = v_datos.total_venta;
+                        v_desc_sistema = 'SISTEMA DE CARGA';
+                    else
+                        v_venta_total = v_datos.total_venta;
+                        v_desc_sistema = 'SISTEMA AMADEUS';
+                    end if;
+
+                   insert into temporal_comisionistas (
+                                                      fecha_factura,
+                                                      desc_ruta ,
+                                                      sistema_origen,
+                                                      nit,
+                                                      razon_social,
+                                                      carnet_ide,
+                                                      cantidad,
+                                                      precio_unitario,
+                                                      precio_total,
+                                                      natural_simplificado,
+                                                      nro_factura) values
+                                                     ( v_datos.fecha_factura,
+                                                       v_datos.desc_ruta,
+                                                       v_desc_sistema,
+                                                       v_datos.nit_ci_cli::numeric,
+                                                       v_datos.razon_social_cli,
+                                                       'CI',
+                                                       v_datos.cantidad,
+                                                       v_venta_total,
+                                                       v_venta_total,
+                                                       v_natural_sumpli,
+                                                       v_datos.nro_factura::numeric
+                                                     );
+
+
+
+                end loop;
+
+
+                /*Devolvemos la data recuperada*/
+
+                v_consulta := 'select fecha_factura,
+                                      desc_ruta,
+                                      sistema_origen,
+                                      nit,
+                                      razon_social,
+                                      carnet_ide,
+                                      cantidad,
+                                      precio_unitario,
+                                      precio_total,
+                                      natural_simplificado,
+                                      nro_factura,
+                                      '''||v_registros.nombre||'''::varchar as razon_empresa,
+                                      '''||v_registros.nit||'''::varchar as nit_empresa,
+                                      '||v_gestion_ini||'::integer as gestion,
+                                      '''||v_periodo_ini||'''::varchar as periodo_num_ini,
+                                      '''||v_periodo_fin||'''::varchar as periodo_num_fin,
+                                      '''||v_literal_mes_inicio||'''::varchar as periodo_literal_inicio,
+                                      '''||v_literal_mes_final||'''::varchar as periodo_literal_fin
+                               from temporal_comisionistas
+                               where nit::numeric not in (
+                                        select nc.nit_ci::numeric
+                                        from vef.tnits_no_considerados nc
+                                     ) and '||v_filtro_temp||'
+                               order by nit ASC, precio_total asc NULLS First, cantidad asc NULLS LAST, fecha_factura ASC, nro_factura ASC';
+
+
+                /*******************************/
+
+            end if;
+            /******************************************************************/
 
             --Devuelve la respuesta
             return v_consulta;

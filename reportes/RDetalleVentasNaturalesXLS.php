@@ -309,62 +309,101 @@ class RDetalleVentasNaturalesXLS
         $nit_cliente=array();
         $totales = 0;
         $posicion_cabecera = 7;
-        $fila = 8;
+        $fila = 7;
         $numero = 1;
 
 
-        foreach($datos as $value){
-                $valor=$value['nit'];
-              if(!in_array($valor, $nit_cliente)){
-                 $nit_cliente[]=$valor;
-              }
-        }
+        foreach ($datos as $value) {
 
-        foreach($nit_cliente as $value_nit ){
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $posicion_cabecera, 'NIT: '.$value_nit);
-          $this->docexcel->getActiveSheet()->getStyle("A$posicion_cabecera:L$posicion_cabecera")->applyFromArray($styleCabeceraNit);
-          unset($totaleNit);
-            foreach ($datos as $value) {
-                if ($value['nit'] == $value_nit) {
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $numero);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, date("d/m/Y", strtotime($value['fecha_factura'])));
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_factura']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['nit']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['carnet_ide']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['nit']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['razon_social']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['sistema_origen']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_ruta']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['cantidad']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['precio_unitario']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['precio_total']);
-                  $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
-                  $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
-                  $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_datos);
-                  $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->applyFromArray($style_numeros);
-                  $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
-                  $totaleNit[]=$value ['precio_total'];
-                  $fila++;
-                  $numero++;
-                }
-            }
-            $fila_menos = $fila - 1;
-
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'TOTALES NIT: '.$value_nit);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, array_sum($totaleNit));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, array_sum($totaleNit));
+          if ($value['razon_social'] == 'cabecera') {
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'NIT: '.$value['nit']);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:L$fila")->applyFromArray($styleCabeceraNit);
+          } else if ($value['razon_social'] != 'cabecera' && $value['razon_social'] != 'total') {
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $numero);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, date("d/m/Y", strtotime($value['fecha_factura'])));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_factura']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['nit']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['carnet_ide']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['nit']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['razon_social']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['sistema_origen']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_ruta']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['cantidad']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['precio_unitario']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['precio_total']);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_datos);
+            $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->applyFromArray($style_numeros);
+            $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+            $numero++;
+          } elseif ($value['razon_social'] == 'total') {
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'TOTALES NIT: '.$value['nit']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['precio_total']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['precio_total']);
             $this->docexcel->getActiveSheet()->getStyle("K$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
             $this->docexcel->getActiveSheet()->mergeCells("A$fila:J$fila");
             $this->docexcel->getActiveSheet()->getStyle("A$fila:L$fila")->applyFromArray($styleTotales);
-            // $this->docexcel->getActiveSheet()->getStyle("K$fila:K$fila")->applyFromArray($styleTotales1);
-            // $this->docexcel->getActiveSheet()->getStyle("L$fila:L$fila")->applyFromArray($styleTotales2);
+          }
 
-            $posicion_cabecera = ($fila + 1);
-            $fila = $fila + 1;
-            $fila++;
+          $fila++;
 
-      }
+        }
+
+
+        // foreach($datos as $value){
+        //         $valor=$value['nit'];
+        //       if(!in_array($valor, $nit_cliente)){
+        //          $nit_cliente[]=$valor;
+        //       }
+        // }
+
+      //   foreach($nit_cliente as $value_nit ){
+      //     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $posicion_cabecera, 'NIT: '.$value_nit);
+      //     $this->docexcel->getActiveSheet()->getStyle("A$posicion_cabecera:L$posicion_cabecera")->applyFromArray($styleCabeceraNit);
+      //     unset($totaleNit);
+      //       foreach ($datos as $value) {
+      //           if ($value['nit'] == $value_nit) {
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $numero);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, date("d/m/Y", strtotime($value['fecha_factura'])));
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_factura']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['nit']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['carnet_ide']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['nit']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['razon_social']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['sistema_origen']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_ruta']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['cantidad']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['precio_unitario']);
+      //             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['precio_total']);
+      //             $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
+      //             $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
+      //             $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_datos);
+      //             $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->applyFromArray($style_numeros);
+      //             $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+      //             $totaleNit[]=$value ['precio_total'];
+      //             $fila++;
+      //             $numero++;
+      //           }
+      //       }
+      //       $fila_menos = $fila - 1;
+      //
+      //       $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'TOTALES NIT: '.$value_nit);
+      //       $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, array_sum($totaleNit));
+      //       $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, array_sum($totaleNit));
+      //       $this->docexcel->getActiveSheet()->getStyle("K$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+      //
+      //       $this->docexcel->getActiveSheet()->mergeCells("A$fila:J$fila");
+      //       $this->docexcel->getActiveSheet()->getStyle("A$fila:L$fila")->applyFromArray($styleTotales);
+      //       // $this->docexcel->getActiveSheet()->getStyle("K$fila:K$fila")->applyFromArray($styleTotales1);
+      //       // $this->docexcel->getActiveSheet()->getStyle("L$fila:L$fila")->applyFromArray($styleTotales2);
+      //
+      //       $posicion_cabecera = ($fila + 1);
+      //       $fila = $fila + 1;
+      //       $fila++;
+      //
+      // }
 
         // $inicio = 7;
         //

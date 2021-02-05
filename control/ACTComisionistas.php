@@ -470,36 +470,61 @@ class ACTComisionistas extends ACTbase{
 					$numero = 1;
 					$nit_cliente=array();
 
-					foreach($data as $value){
-	            		$valor=$value['nit'];
-	              if(!in_array($valor, $nit_cliente)){
-	                 $nit_cliente[]=$valor;
-	              }
-	        }
-
-					foreach($nit_cliente as $value ){
-							fwrite ($file,'NIT: '.$value."\r\n");
           foreach ($data as $val) {
-									if ($val['nit'] == $value) {
-                  fwrite ($file,
-										  $numero.'|'.
-                      date("d/m/Y", strtotime( $val['fecha_factura'])).'|'.
-                      $val['nro_factura'].'|'.
-                      $val['nit'].'|'.
-                      $val['carnet_ide'].'|'.
-                      $val['nit'].'|'.
-											$val['razon_social'].'|'.
-											$val['sistema_origen'].'|'.
-											$val['desc_ruta'].'|'.
-											$val['cantidad'].'|'.
-                      number_format($val['precio_unitario'], 2, ',', '.').'|'.
-                      number_format($val['precio_total'], 2, ',', '.')."\r\n");
-              				$numero ++;
-									}
+            if ($val['razon_social'] == 'cabecera') {
+              fwrite ($file,'NIT: '.$val['nit']."\r\n");
+            } else if ($val['razon_social'] != 'cabecera' && $val['razon_social'] != 'total') {
+              fwrite ($file,
+                  $numero.'|'.
+                  date("d/m/Y", strtotime( $val['fecha_factura'])).'|'.
+                  $val['nro_factura'].'|'.
+                  $val['nit'].'|'.
+                  $val['carnet_ide'].'|'.
+                  $val['nit'].'|'.
+                  $val['razon_social'].'|'.
+                  $val['sistema_origen'].'|'.
+                  $val['desc_ruta'].'|'.
+                  $val['cantidad'].'|'.
+                  number_format($val['precio_unitario'], 2, ',', '.').'|'.
+                  number_format($val['precio_total'], 2, ',', '.')."\r\n");
+                  $numero ++;
+            } else if ($val['razon_social'] == 'total') {
+              fwrite ($file,'TOTAL NIT: '.number_format($val['precio_total'], 2, ',', '.')."\r\n");
+            }
+
           	}
 						fwrite ($file,''."\r\n");
 
-					}
+					// foreach($data as $value){
+	        //     		$valor=$value['nit'];
+	        //       if(!in_array($valor, $nit_cliente)){
+	        //          $nit_cliente[]=$valor;
+	        //       }
+	        // }
+          //
+					// foreach($nit_cliente as $value ){
+					// 		fwrite ($file,'NIT: '.$value."\r\n");
+          // foreach ($data as $val) {
+					// 				if ($val['nit'] == $value) {
+          //         fwrite ($file,
+					// 					  $numero.'|'.
+          //             date("d/m/Y", strtotime( $val['fecha_factura'])).'|'.
+          //             $val['nro_factura'].'|'.
+          //             $val['nit'].'|'.
+          //             $val['carnet_ide'].'|'.
+          //             $val['nit'].'|'.
+					// 						$val['razon_social'].'|'.
+					// 						$val['sistema_origen'].'|'.
+					// 						$val['desc_ruta'].'|'.
+					// 						$val['cantidad'].'|'.
+          //             number_format($val['precio_unitario'], 2, ',', '.').'|'.
+          //             number_format($val['precio_total'], 2, ',', '.')."\r\n");
+          //     				$numero ++;
+					// 				}
+          // 	}
+					// 	fwrite ($file,''."\r\n");
+          //
+					// }
 
 
         }else if ($this->objParam->getParametro('tipo_reporte')=='res_vent_natu') {
@@ -561,36 +586,62 @@ class ACTComisionistas extends ACTbase{
 					$numero = 1;
 					$nit_cliente=array();
 
-					foreach($data as $value){
-	            		$valor=$value['nit'];
-	              if(!in_array($valor, $nit_cliente)){
-	                 $nit_cliente[]=$valor;
-	              }
-	        }
 
-					foreach($nit_cliente as $value ){
-							fwrite ($file,'NIT: '.$value."\r\n");
           foreach ($data as $val) {
-									if ($val['nit'] == $value) {
-                  fwrite ($file,
-										  $numero.'|'.
-                      date("d/m/Y", strtotime( $val['fecha_factura'])).'|'.
-                      $val['nro_factura'].'|'.
-                      $val['nit'].'|'.
-                      // $val['carnet_ide'].'|'.
-                      $val['nit'].'|'.
-											// $val['razon_social'].'|'.
-											$val['sistema_origen'].'|'.
-											$val['desc_ruta'].'|'.
-											$val['cantidad'].'|'.
-											$val['precio_unitario'].'|'.
-                      $val['precio_total']."\r\n");
-              				$numero ++;
-									}
+            if ($val['razon_social'] == 'cabecera') {
+              fwrite ($file,'NIT: '.$val['nit']."\r\n");
+            } else if ($val['razon_social'] != 'cabecera' && $val['razon_social'] != 'total') {
+              fwrite ($file,
+						  $numero.'|'.
+              date("d/m/Y", strtotime( $val['fecha_factura'])).'|'.
+              $val['nro_factura'].'|'.
+              $val['nit'].'|'.
+              // $val['carnet_ide'].'|'.
+              $val['nit'].'|'.
+							// $val['razon_social'].'|'.
+							$val['sistema_origen'].'|'.
+							$val['desc_ruta'].'|'.
+							$val['cantidad'].'|'.
+							$val['precio_unitario'].'|'.
+              $val['precio_total']."\r\n");
+      				$numero ++;
+            } else if ($val['razon_social'] == 'total') {
+              fwrite ($file,'TOTAL NIT: '.number_format($val['precio_total'], 2, ',', '.')."\r\n");
+            }
+
           	}
 						fwrite ($file,''."\r\n");
 
-					}
+					// foreach($data as $value){
+	        //     		$valor=$value['nit'];
+	        //       if(!in_array($valor, $nit_cliente)){
+	        //          $nit_cliente[]=$valor;
+	        //       }
+	        // }
+
+					// foreach($nit_cliente as $value ){
+					// 		fwrite ($file,'NIT: '.$value."\r\n");
+          // foreach ($data as $val) {
+					// 				if ($val['nit'] == $value) {
+          //         fwrite ($file,
+					// 					  $numero.'|'.
+          //             date("d/m/Y", strtotime( $val['fecha_factura'])).'|'.
+          //             $val['nro_factura'].'|'.
+          //             $val['nit'].'|'.
+          //             // $val['carnet_ide'].'|'.
+          //             $val['nit'].'|'.
+					// 						// $val['razon_social'].'|'.
+					// 						$val['sistema_origen'].'|'.
+					// 						$val['desc_ruta'].'|'.
+					// 						$val['cantidad'].'|'.
+					// 						$val['precio_unitario'].'|'.
+          //             $val['precio_total']."\r\n");
+          //     				$numero ++;
+					// 				}
+          // 	}
+					// 	fwrite ($file,''."\r\n");
+          //
+					// }
 
 
         }else if ($this->objParam->getParametro('tipo_reporte')=='res_vent_rts') {

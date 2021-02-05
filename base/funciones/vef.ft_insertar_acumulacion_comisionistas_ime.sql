@@ -32,6 +32,7 @@ DECLARE
     v_existe_nit		integer;
     v_totales_sumar		numeric;
     v_venta_total		numeric;
+    v_cadena_cnx		varchar;
 
 BEGIN
 	  v_nombre_funcion = 'vef.ft_insertar_acumulacion_comisionistas_ime';
@@ -99,7 +100,7 @@ BEGIN
         CREATE INDEX ttemporal_acumulativo_id_gestion ON temporal_acumulativo
         USING btree (id_gestion);
 
-            create temp table temporal_comisionistas_acumulado (
+            create table temporal_comisionistas_acumulado (
                                                         id_factura varchar,
                                                         fecha_factura date,
                                                         nro_factura varchar,
@@ -111,7 +112,7 @@ BEGIN
                                                         cantidad integer,
                                                         total_venta numeric,
                                                         importe_exento numeric
-                                                      )on commit drop;
+                                                      );
             CREATE INDEX ttemporal_comisionistas_acumulado_fecha_factura ON temporal_comisionistas_acumulado
             USING btree (fecha_factura);
 
@@ -121,6 +122,7 @@ BEGIN
             CREATE INDEX ttemporal_comisionistas_acumulado_sistema_origen ON temporal_comisionistas_acumulado
             USING btree (sistema_origen);
 
+            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
 
             insert into temporal_comisionistas_acumulado (
                                                         id_factura,
@@ -135,7 +137,7 @@ BEGIN
                                                         total_venta,
                                                         importe_exento)
             SELECT *
-                FROM dblink('hostaddr=172.17.110.7 port=5432 dbname=db_facturas_'||v_anio||' user=user_facturacion_erp password=user_facturacion_erp@2019 options=-csearch_path=',
+                FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                             'select id_factura,
                                     fecha_factura,
                                     nro_factura,
