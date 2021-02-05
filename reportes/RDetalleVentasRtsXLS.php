@@ -27,9 +27,10 @@ class RDetalleVentasRtsXLS
     function __construct(CTParametro $objParam){
         $this->objParam = $objParam;
         $this->url_archivo = "../../../reportes_generados/".$this->objParam->getParametro('nombre_archivo');
-        set_time_limit(400);
+        ini_set('memory_limit','2G');
+        set_time_limit(1800);
         $cacheMethod = PHPExcel_CachedObjectStorageFactory:: cache_to_phpTemp;
-        $cacheSettings = array('memoryCacheSize'  => '10MB');
+        $cacheSettings = array('memoryCacheSize'  => '64MB');
         PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 
         $this->docexcel = new PHPExcel();
