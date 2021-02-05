@@ -100,7 +100,7 @@ BEGIN
         CREATE INDEX ttemporal_acumulativo_id_gestion ON temporal_acumulativo
         USING btree (id_gestion);
 
-            create table temporal_comisionistas_acumulado (
+            create temp table temporal_comisionistas_acumulado (
                                                         id_factura varchar,
                                                         fecha_factura date,
                                                         nro_factura varchar,
@@ -112,7 +112,7 @@ BEGIN
                                                         cantidad integer,
                                                         total_venta numeric,
                                                         importe_exento numeric
-                                                      );
+                                                      )on commit drop;
             CREATE INDEX ttemporal_comisionistas_acumulado_fecha_factura ON temporal_comisionistas_acumulado
             USING btree (fecha_factura);
 

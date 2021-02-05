@@ -513,7 +513,7 @@ BEGIN
                 CREATE INDEX ttemporal_comisionistas_detalle_sistema_origen ON temporal_comisionistas_detalle
                 USING btree (sistema_origen);
 
-                for v_datos in ((SELECT  now()::date as fecha_factura,
+                for v_datos in ((SELECT  NULL as fecha_factura,
                         'cabecera'::varchar as desc_ruta,
                         'cabecera'::varchar as sistema_origen,
                         tem.nit_ci_cli as nit_ci_cli,
@@ -623,7 +623,7 @@ BEGIN
                                         select nc.nit_ci::numeric
                                         from vef.tnits_no_considerados nc
                                      ) and '||v_filtro_temp||'
-                               order by nit ASC, precio_total asc NULLS First, cantidad asc NULLS LAST, fecha_factura ASC, nro_factura ASC';
+                               order by nit ASC,fecha_factura ASC NULLS First, cantidad NULLS LAST, nro_factura ASC';
 
 
                 /*******************************/
@@ -649,9 +649,9 @@ BEGIN
                 v_monto_impuestos = pxp.f_get_variable_global('vef_acumulativo_impuestos');
                  if pxp.f_existe_parametro(p_tabla, 'tipo_reporte') then
                     if (v_parametros.tipo_reporte = 'res_vent_natu') then
-                        v_filtro_temp = 'natural_simplificado = ''N''';
+                        v_filtro_temp = 'comi.natural_simplificado = ''N''';
                     elsif (v_parametros.tipo_reporte = 'res_vent_rts') then
-                        v_filtro_temp = 'natural_simplificado = ''S''';
+                        v_filtro_temp = 'comi.natural_simplificado = ''S''';
                     end if;
                  end if;
 
@@ -721,7 +721,7 @@ BEGIN
                                         from vef.tnits_no_considerados nc
                                      ) and '||v_filtro_ges||' and '||v_filtro_per_ini||' and '||v_filtro_temp||'
                                 and comi.total_acumulado >= '||v_monto_impuestos||'
-                               order by comi.nit ASC, comi.id_periodo ASC
+                               order by comi.nit::numeric ASC, comi.id_periodo ASC
                                ';
 
 
