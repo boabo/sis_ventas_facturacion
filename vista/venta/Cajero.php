@@ -630,7 +630,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
           var fecha_hoy = dia + "/" + mes + "/" + ano
         }
 
-				if(d.fecha.dateFormat('d/m/Y') != fecha_hoy){
+				if((d.fecha.dateFormat('d/m/Y') != fecha_hoy) && (this.tipo_usuario != 'administrador_facturacion')){
 					Ext.Msg.show({
 							title: 'Alerta',
 							msg: this.mgs_user,
@@ -678,7 +678,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
       }else{
         var fecha_hoy = dia + "/" + mes + "/" + ano
       }
-			if(d.fecha.dateFormat('d/m/Y') != fecha_hoy){
+			if((d.fecha.dateFormat('d/m/Y') != fecha_hoy) && (this.tipo_usuario != 'administrador_facturacion')){
 				Ext.Msg.show({
 						title: 'Alerta',
 						msg: this.mgs_user,
@@ -789,7 +789,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
         }else{
           var fecha_hoy = dia + "/" + mes + "/" + ano
         }
-				if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+				if((rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy) && (this.tipo_usuario != 'administrador_facturacion')){
 					Ext.Msg.show({
 							title: 'Alerta',
 							msg: this.mgs_user,
@@ -837,7 +837,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
                   }else{
                     var fecha_hoy = dia + "/" + mes + "/" + ano
                   }
-									if(rec.maestro.fecha.dateFormat('d/m/Y') != fecha_hoy){
+									if((rec.maestro.fecha.dateFormat('d/m/Y') != fecha_hoy) && (this.tipo_usuario != 'administrador_facturacion')){
 										Ext.Msg.show({
 												title: 'Alerta',
 												msg: this.mgs_user,
@@ -896,7 +896,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
             var fecha_hoy = dia + "/" + mes + "/" + ano
           }
 
-					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+					if((rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy ) && (this.tipo_usuario != 'administrador_facturacion')){
 						Ext.Msg.show({
 								title: 'Alerta',
 								msg: this.mgs_user,
@@ -949,7 +949,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
           }else{
             var fecha_hoy = dia + "/" + mes + "/" + ano
           }
-					if(rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy){
+					if((rec.data.fecha.dateFormat('d/m/Y') != fecha_hoy ) && (this.tipo_usuario != 'administrador_facturacion')){
 						Ext.Msg.show({
 								title: 'Alerta',
 								msg: this.mgs_user,
