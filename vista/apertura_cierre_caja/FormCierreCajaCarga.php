@@ -2114,6 +2114,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     //recibo nacional
 
                     /*Auemntando */
+                    var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']);
+                    var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']);
+
                     this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
                     this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
                     this.Cmp.monto_deposito_recibo_ml.setValue(reg.datos[0]['deposito_recibo_ml']);
@@ -2157,8 +2160,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.cuenta_corriente_ventas_me = parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']);
                     this.mco_ventas_me =  parseFloat(reg.datos[0]['mco_ventas_me']);
 
-                    this.Cmp.total_efectivo_ml.setValue(parseFloat(total_boletos_ml) + parseFloat(total_ventas_ml) + parseFloat(reg.datos[0]['monto_ca_recibo_ml']));
-                    this.Cmp.total_efectivo_me.setValue(parseFloat(total_boletos_me) + parseFloat(total_ventas_me) + parseFloat(reg.datos[0]['monto_ca_recibo_me']));
+                    this.Cmp.total_efectivo_ml.setValue(parseFloat(total_boletos_ml) + parseFloat(total_ventas_ml) + parseFloat(total_recibos_ml));
+                    this.Cmp.total_efectivo_me.setValue(parseFloat(total_boletos_me) + parseFloat(total_ventas_me) + parseFloat(total_recibos_me));
 
                     this.Cmp.monto_inicial.setValue(this.maestro.data.monto_inicial);
                     this.Cmp.monto_inicial_moneda_extranjera.setValue(this.maestro.data.monto_inicial_moneda_extranjera);
