@@ -2112,11 +2112,25 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['monto_cte_boleto_usd']);
                     this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
                     //recibo nacional
-                    this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['monto_ca_recibo_ml']);
-                    this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['monto_cc_recibo_ml']);
-                    //recibo Internacional
-                    this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['monto_ca_recibo_me']);
-                    this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['monto_cc_recibo_me']);
+
+                    /*Auemntando */
+                    this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
+                    this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
+                    this.Cmp.monto_deposito_recibo_ml.setValue(reg.datos[0]['deposito_recibo_ml']);
+                    this.Cmp.monto_cc_recibo_cta_cte_ml.setValue(reg.datos[0]['cuenta_corriente_recibo_ml']);
+                    this.Cmp.monto_recibo_moneda_base.setValue(total_recibos_ml);
+
+                    this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
+                    this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_me']);
+                    this.Cmp.monto_deposito_recibo_me.setValue(reg.datos[0]['deposito_recibo_me']);
+                    this.Cmp.monto_cc_recibo_cta_cte_me.setValue(reg.datos[0]['cuenta_corriente_recibo_me']);
+                    this.Cmp.monto_recibo_moneda_extranjera.setValue(total_recibos_me);
+                    /*************/
+                    // this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
+                    // this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
+                    // //recibo Internacional
+                    // this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
+                    // this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_ml']);
                     //venta total
                     var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) /*+ parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml'])*/;
                     var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) /*+ parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me'])*/;
