@@ -114,6 +114,22 @@ class MODComisionistas extends MODbase
         return $this->respuesta;
     }
 
+    function recuperarMontoNormativa(){
+  			//Definicion de variables para ejecucion del procedimientp
+  			$this->procedimiento='vef.ft_traer_acumulados_ime';
+  			$this->transaccion='VF_MONNORMA_IME';
+  			$this->tipo_procedimiento='IME';//tipo de transaccion
+
+  			$this->setParametro('monto_normativa','monto_normativa','varchar');  			
+
+  			//Ejecuta la instruccion
+  			$this->armarConsulta();
+  			$this->ejecutarConsulta();
+
+  			//Devuelve la respuesta
+  			return $this->respuesta;
+  	}
+
 }
 
 ?>

@@ -30,6 +30,7 @@ DECLARE
 	v_mensaje_error         text;
 
 	v_data	varchar;
+    v_monto varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_traer_acumulados_ime';
@@ -50,6 +51,28 @@ BEGIN
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Actualizacion Correcta');
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_MONNORMA_IME'
+ 	#DESCRIPCION:	Recuperar el monto de la variable Global
+ 	#AUTOR:		ismael.valdivia
+ 	#FECHA:		08-02-2021 09:32:12
+	***********************************/
+
+	elsif(p_transaccion='VF_MONNORMA_IME')then
+
+		begin
+
+        	v_monto = to_char(pxp.f_get_variable_global('vef_acumulativo_impuestos')::numeric,'999G999G999G999D99');
+
+			--Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Monto Acumulativo');
+            v_resp = pxp.f_agrega_clave(v_resp,'monto_acumulado',v_monto::varchar);
 
             --Devuelve la respuesta
             return v_resp;

@@ -676,6 +676,12 @@ class ACTComisionistas extends ACTbase{
         return $fileName;
     }
 
+    function recuperarMontoNormativa(){
+  		 $this->objFunc=$this->create('MODComisionistas');
+  		 $this->res=$this->objFunc->recuperarMontoNormativa($this->objParam);
+  		 $this->res->imprimirRespuesta($this->res->generarJson());
+   }
+
 }
 
 ?>

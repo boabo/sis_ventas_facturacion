@@ -436,7 +436,7 @@ header("content-type: text/javascript; charset=UTF-8");
         botones : false,
         labelSubmit : 'Generar',
         tooltipSubmit : '<b>Reporte Comisionistas</b>',
-       
+
 
         constructor : function(config) {
             Phx.vista.Comisionistas.superclass.constructor.call(this, config);
@@ -447,16 +447,16 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_gestion);
             this.ocultarComponente(this.Cmp.id_periodo);
 
-            this.iniciarEventos();
 
-            this.addButton('actualizar_data',{				
-				text :'Actualizar Data',
-				iconCls : 'button-actualizar-dibu',
-				disabled: false,
-				handler : this.actualizar_comisionistas,
-				tooltip : '<b>Actualizar la información Manualmente</b>'
-        });
-        
+            this.addButton('actualizar_data',{
+    				text :'Actualizar Data',
+    				iconCls : 'button-actualizar-dibu',
+    				disabled: false,
+    				handler : this.actualizar_comisionistas,
+    				tooltip : '<b>Actualizar la información Manualmente</b>'
+            });
+
+            this.iniciarEventos();
         },
 
         iniciarEventos:function(){
@@ -568,6 +568,48 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
 
             }, this);
+
+            /****************Mostrar el monto de la resolucion******************************/
+            this.monto_resolucion = new Ext.form.Label({
+                name: 'monto_resolucion',
+                fieldLabel: 'Monto Resolucion',
+                readOnly:true,
+                anchor: '150%',
+                gwidth: 150,
+                hidden : false,
+                style: {
+                  fontSize:'30px',
+                  fontWeight:'bold',
+                  color:'#FF6C00',
+                  textShadow: '0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)'
+                }
+            });
+
+            this.tbar.addField(this.monto_resolucion);
+
+            Ext.Ajax.request({
+								url:'../../sis_ventas_facturacion/control/Comisionistas/recuperarMontoNormativa',
+								params:{
+									monto_normativa:'recuperar'
+								},
+								success: function(resp){
+										var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    console.log("la respuesta del dato es",reg);
+
+                      this.monto_resolucion.setText('Monto Normativa: '+reg.ROOT.datos.monto_acumulado);
+										// this.aperturaText = reg.ROOT.datos.monto_acumulado;
+										// this.tipo_punto_venta = reg.ROOT.datos.v_tipo_punto_venta;
+										// this.variables_globales.aperturaEstado = this.aperturaText;
+										/*****************************************************************/
+
+								},
+								failure: this.conexionFailure,
+								timeout:this.timeout,
+								scope:this
+						});
+            /*******************************************************************************/
+
+
         },
 
 
