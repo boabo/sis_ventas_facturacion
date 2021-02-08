@@ -30,7 +30,7 @@ class MODComisionistas extends MODbase
         $this->setParametro('fecha_fin', 'fecha_fin', 'date');
         $this->setParametro('id_periodo_inicio', 'id_periodo_inicio', 'integer');
         $this->setParametro('id_periodo_final', 'id_periodo_final', 'integer');
-
+        $this->setParametro('id_gestion', 'id_gestion', 'integer');
         //Definicion de la lista del resultado del query
         $this->captura('fecha_factura', 'date');
         $this->captura('desc_ruta', 'varchar');
@@ -120,7 +120,7 @@ class MODComisionistas extends MODbase
   			$this->transaccion='VF_MONNORMA_IME';
   			$this->tipo_procedimiento='IME';//tipo de transaccion
 
-  			$this->setParametro('monto_normativa','monto_normativa','varchar');  			
+  			$this->setParametro('monto_normativa','monto_normativa','varchar');
 
   			//Ejecuta la instruccion
   			$this->armarConsulta();

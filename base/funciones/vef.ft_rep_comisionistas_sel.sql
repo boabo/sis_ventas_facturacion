@@ -256,7 +256,7 @@ BEGIN
             	raise exception 'Solo se puede recuperar información de la misma Gestión favor verifique los datos.';
             end if;
 
-            if (v_gestion_ini < 2021) then
+            if (v_gestion < 2021) then
             	raise exception 'No se puede generar el reporte debido a que la información en el Sistema ERP es desde la gestión 2021, Favor verifique los datos.';
             end if;
 
