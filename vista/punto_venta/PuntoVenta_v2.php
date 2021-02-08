@@ -83,6 +83,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
                 type:'TextField',
                 filters:{pfiltro:'puve.codigo',type:'string'},
                 id_grupo:1,
+								bottom_filter:true,
                 grid:true,
                 form:true
         },
@@ -99,6 +100,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'puve.nombre',type:'string'},
 				id_grupo:1,
+				bottom_filter:true,
 				grid:true,
 				form:true
 		},
@@ -169,6 +171,150 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
+				{
+						config: {
+								name: 'id_catalogo_canal',
+								fieldLabel: 'Canal de Venta',
+								allowBlank: true,
+								emptyText: 'Canal venta...',
+								store: new Ext.data.JsonStore(
+										{
+												url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVenta',
+												id: 'id_catalogo',
+												root: 'datos',
+												sortInfo: {
+														field: 'codigo',
+														direction: 'ASC'
+												},
+												totalProperty: 'total',
+												fields: ['id_catalogo', 'codigo', 'descripcion'],
+												remoteSort: true,
+												baseParams: {cod_catalogo: 'canal_venta', par_filtro:'codigo#descripcion'}
+										}),
+								valueField: 'id_catalogo',
+								displayField: 'codigo',
+								gdisplayField: 'cod_canal',
+								hiddenName: 'id_catalogo',
+								tpl:'<tpl for="."><div class="x-combo-list-item"><p style="text-transform: uppercase;"><b>{codigo}</b></p></div></tpl>',
+								triggerAction: 'all',
+								lazyRender: true,
+								mode: 'remote',
+								pageSize: 50,
+								queryDelay: 500,
+								gwidth : 200,
+								anchor : '80%',
+								forceSelection: true,
+								minChars: 2,
+								style:'margin-bottom: 10px;'
+						},
+						type: 'ComboBox',
+						filters: {pfiltro: 'lug.nombre', type: 'string'},
+						id_grupo: 0,
+						grid: true,
+						form: true
+				},
+				{
+					config:{
+						name: 'office_id',
+						fieldLabel: 'OfficeId',
+						allowBlank: false,
+						anchor: '80%',
+						gwidth: 150,
+						maxLength:100
+					},
+						type:'TextField',
+						filters:{pfiltro:'puve.nombre',type:'string'},
+						id_grupo:1,
+						bottom_filter:true,
+						grid:true,
+						form:true
+				},
+				{
+						config: {
+								name: 'id_catalogo',
+								fieldLabel: 'Osd',
+								allowBlank: true,
+								emptyText: 'OSD...',
+								store: new Ext.data.JsonStore(
+										{
+												url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVenta',
+												id: 'id_catalogo',
+												root: 'datos',
+												sortInfo: {
+														field: 'codigo',
+														direction: 'ASC'
+												},
+												totalProperty: 'total',
+												fields: ['id_catalogo', 'codigo', 'descripcion'],
+												remoteSort: true,
+												baseParams: {cod_catalogo: 'osd'}
+										}),
+								valueField: 'id_catalogo',
+								displayField: 'codigo',
+								gdisplayField: 'cod_osd',
+								hiddenName: 'id_catalogo',
+								tpl:'<tpl for="."><div class="x-combo-list-item"><p style="text-transform: uppercase;"><b>{codigo}</b></p></div></tpl>',
+								triggerAction: 'all',
+								lazyRender: true,
+								mode: 'remote',
+								pageSize: 50,
+								queryDelay: 500,
+								gwidth : 100,
+								anchor : '50%',
+								forceSelection: true,
+								minChars: 2,
+								style:'margin-bottom: 10px;'
+						},
+						type: 'ComboBox',
+						id_grupo: 0,
+						form: true,
+						grid:true
+				},
+				{
+        config : {
+            name : 'iata_status',
+            fieldLabel : 'IATA Status',
+            allowBlank : true,
+            triggerAction : 'all',
+            lazyRender : true,
+						gwidth : 100,
+						anchor : '50%',
+            mode : 'local',
+            emptyText:'sistema...',
+            store: new Ext.data.ArrayStore({
+                id: '',
+                fields: [
+                    'key',
+                    'value'
+                ],
+                data: [
+                    // ['todos', 'Todos'],
+                    ['P', 'P'],
+                    ['S', 'S']
+                ]
+            }),
+            valueField: 'key',
+            displayField: 'value'
+        },
+        type : 'ComboBox',
+        id_grupo : 1,
+        form : true,
+        grid : true
+    },
+		{
+			config:{
+				name: 'nombre_amadeus',
+				fieldLabel: 'Nombre Segun Amadeus',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150
+			},
+				type:'TextField',
+				id_grupo:0,
+				bottom_filter:true,
+				grid:true,
+				form:true
+		},
 		{
 			config:{
 				name: 'estado_reg',
@@ -278,7 +424,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 		}
 	],
 	tam_pag:50,
-  fheight:300,
+  fheight:430,
   fwidth:470,
 	title:'Punto de Venta',
 	ActSave:'../../sis_ventas_facturacion/control/PuntoVenta/insertarPuntoVenta',
@@ -302,6 +448,13 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
+		{name:'office_id', type: 'string'},
+		{name:'id_catalogo', type: 'numeric'},
+		{name:'cod_osd', type: 'string'},
+		{name:'iata_status', type: 'string'},
+		{name:'id_catalogo_canal', type: 'numeric'},
+		{name:'cod_canal', type: 'string'},
+		{name:'nombre_amadeus', type:'string'}
 
 	],
 	sortInfo:{
