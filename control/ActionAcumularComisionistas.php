@@ -34,8 +34,9 @@ include_once(dirname(__FILE__).'/../../lib/lib_control/CTincludes.php');
 $pxpRestClient = PxpRestClient::connect('127.0.0.1',substr($_SESSION["_FOLDER"], 1) .'pxp/lib/rest/')
                                                                                                         ->setCredentialsPxp($_GET['user'],$_GET['pw']);
 $fecha = new DateTime();
+$dato = 'traer_data';
 $res = $pxpRestClient->doPost('ventas_facturacion/Comisionistas/TraerAcumulados',
-				    array(	"comisionistas_traer"=>"traer_data")));
+				    array(	"comisionistas_traer"=>"traer_data"));        
 $res_json = json_decode($res);
 
 var_dump($res_json);
