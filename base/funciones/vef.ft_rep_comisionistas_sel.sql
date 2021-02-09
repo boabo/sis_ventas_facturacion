@@ -65,6 +65,7 @@ DECLARE
     v_monto_impuestos	numeric;
     v_cadena_cnx		varchar;
 	v_total_general		varchar;
+    v_lista_nits		integer;
 
 BEGIN
 
@@ -310,6 +311,20 @@ BEGIN
             USING btree (nro_factura);
 
             v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+
+            select count(comi.nit)
+            into
+            v_lista_nits
+            from vef.tacumulacion_comisionistas comi
+            where comi.total_acumulado >= v_monto_impuestos and comi.id_periodo between v_parametros.id_periodo_inicio and v_parametros.id_periodo_final
+            and comi.natural_simplificado = ''||v_filtro_totales||'';
+
+            if (v_lista_nits = 0) then
+            	raise exception 'No se encontraron NITS que superen el monto de: %',to_char(v_monto_impuestos::numeric,'999G999G999G999D99');
+            end if;
+
+
           	--raise exception 'Aqui la cadena %',v_cadena_cnx;
             /*****************************************************************************/
              insert into temporal_data_comisionistas (
@@ -452,7 +467,7 @@ BEGIN
             end loop;
 
             /*Aqui recuperamos el total general*/
-            v_total_general = '';
+            v_total_general = '0';
             /***********************************/
 
             /*Devolvemos la data recuperada*/
@@ -712,6 +727,40 @@ BEGIN
                 end if;
                 /*********************************************/
 
+
+                if (v_parametros.tipo_reporte = 'res_vent_natu') then
+                        select
+                              count (comi.nit)
+                              into
+                              v_lista_nits
+                        from vef.tacumulacion_comisionistas comi
+                        inner join param.tgestion ge on ge.id_gestion = comi.id_gestion
+                        where nit::numeric not in (
+                        select nc.nit_ci::numeric
+                        from vef.tnits_no_considerados nc
+                        ) and comi.id_gestion = v_parametros.id_gestion and comi.id_periodo between v_parametros.id_periodo_inicio and v_parametros.id_periodo_final and comi.natural_simplificado = 'N'
+                        and comi.total_acumulado >= v_monto_impuestos;
+                    elsif (v_parametros.tipo_reporte = 'res_vent_rts') then
+                        select
+                                  count (comi.nit)
+                                  into
+                                  v_lista_nits
+                            from vef.tacumulacion_comisionistas comi
+                            inner join param.tgestion ge on ge.id_gestion = comi.id_gestion
+                            where nit::numeric not in (
+                            select nc.nit_ci::numeric
+                            from vef.tnits_no_considerados nc
+                            ) and comi.id_gestion = v_parametros.id_gestion and comi.id_periodo between v_parametros.id_periodo_inicio and v_parametros.id_periodo_final and comi.natural_simplificado = 'S'
+                            and comi.total_acumulado >= v_monto_impuestos;
+                    end if;
+
+
+
+
+
+                if (v_lista_nits = 0) then
+            	raise exception 'No se encontraron NITS que superen el monto de: %.',to_char(v_monto_impuestos::numeric,'999G999G999G999D99');
+            	end if;
 
 
                 /*Devolvemos la data recuperada*/
