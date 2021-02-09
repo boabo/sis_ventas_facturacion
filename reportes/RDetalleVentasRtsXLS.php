@@ -60,7 +60,7 @@ class RDetalleVentasRtsXLS
     }
     function imprimeCabecera() {
         $this->docexcel->createSheet();
-        $this->docexcel->getActiveSheet()->setTitle('Naturales');
+        $this->docexcel->getActiveSheet()->setTitle('Simplificado');
         $this->docexcel->setActiveSheetIndex(0);
 
         $styleTituloPrincipal = array(
