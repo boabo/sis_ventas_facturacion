@@ -1535,3 +1535,45 @@ CREATE INDEX tacumulacion_comisionistas_nit ON vef.tacumulacion_comisionistas
 ALTER TABLE vef.tacumulacion_comisionistas
   OWNER TO postgres;
 /***********************************F-SCP-IRVA-VEF-0-04/02/2021****************************************/
+/***********************************I-SCP-BVP-VEF-0-08/02/2021****************************************/
+ALTER TABLE vef.tpunto_venta
+  ADD COLUMN nombre_amadeus VARCHAR;
+
+COMMENT ON COLUMN vef.tpunto_venta.nombre_amadeus
+IS 'Nombre punto de venta segun registro Amadeus.';
+
+ALTER TABLE vef.tpunto_venta
+  ADD COLUMN office_id VARCHAR;
+
+COMMENT ON COLUMN vef.tpunto_venta.office_id
+IS 'Codigo Office ID.';
+
+ALTER TABLE vef.tpunto_venta
+  ADD COLUMN iata_status VARCHAR(5);
+
+ALTER TABLE vef.tpunto_venta
+  ADD COLUMN id_catalogo INTEGER;
+
+COMMENT ON COLUMN vef.tpunto_venta.id_catalogo
+IS 'osd agencia';
+
+ALTER TABLE vef.tpunto_venta
+  ADD COLUMN id_catalogo_canal INTEGER;
+
+COMMENT ON COLUMN vef.tpunto_venta.id_catalogo_canal
+IS 'Catalogo canal de venta.';
+
+
+
+CREATE TABLE vef.tfiltro (
+  id_filtro SERIAL NOT NULL,
+  codigo VARCHAR,
+  descripcion VARCHAR,
+  tipo VARCHAR,
+  PRIMARY KEY(id_filtro)
+)
+WITH (oids = false);
+
+ALTER TABLE vef.tfiltro
+  OWNER TO postgres;
+/***********************************F-SCP-BVP-VEF-0-08/02/2021****************************************/

@@ -58,15 +58,24 @@ $body$
 						puve.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-                        puve.codigo,
-                        puve.habilitar_comisiones,
-                        suc.formato_comprobante,
-                        puve.tipo,
-                        suc.enviar_correo
+            puve.codigo,
+            puve.habilitar_comisiones,
+            suc.formato_comprobante,
+            puve.tipo,
+            suc.enviar_correo,
+            puve.office_id,
+            puve.id_catalogo,
+            cat.codigo as cod_osd,
+            puve.iata_status,
+            puve.id_catalogo_canal,
+            cat1.codigo as cod_canal,
+            puve.nombre_amadeus
 						from vef.tpunto_venta puve
 						inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
-				        inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
+				    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
+            left join param.tcatalogo cat on cat.id_catalogo = puve.id_catalogo
+            left join param.tcatalogo cat1 on cat1.id_catalogo = puve.id_catalogo_canal
                         where  ';
 
         --Definicion de la respuesta
@@ -132,9 +141,11 @@ $body$
         v_consulta:='select count(id_punto_venta)
 					    from vef.tpunto_venta puve
 					    inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
+						  left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
 					    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
-                        where ';
+              left join param.tcatalogo cat on cat.id_catalogo = puve.id_catalogo
+              left join param.tcatalogo cat1 on cat1.id_catalogo = puve.id_catalogo_canal
+              where ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;

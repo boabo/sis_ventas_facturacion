@@ -38,9 +38,17 @@ class MODPuntoVenta extends MODbase{
 		$this->captura('formato_comprobante','varchar');
 		$this->captura('tipo','varchar');
 		$this->captura('enviar_correo','varchar');
+		$this->captura('office_id','varchar');
+		$this->captura('id_catalogo','int4');
+		$this->captura('cod_osd','varchar');
+		$this->captura('iata_status','varchar');
+		$this->captura('id_catalogo_canal','int4');
+		$this->captura('cod_canal','varchar');
+		$this->captura('nombre_amadeus','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
+		// echo $this->consulta;exit;
 		$this->ejecutarConsulta();
 
 		//Devuelve la respuesta
@@ -61,7 +69,11 @@ class MODPuntoVenta extends MODbase{
 		$this->setParametro('codigo','codigo','varchar');
 		$this->setParametro('habilitar_comisiones','habilitar_comisiones','varchar');
 		$this->setParametro('tipo','tipo','varchar');
-
+		$this->setParametro('office_id','office_id','varchar');
+		$this->setParametro('id_catalogo','id_catalogo','int4');
+		$this->setParametro('iata_status','iata_status','varchar');
+		$this->setParametro('id_catalogo_canal','id_catalogo_canal','int4');
+		$this->setParametro('nombre_amadeus','nombre_amadeus','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -85,7 +97,11 @@ class MODPuntoVenta extends MODbase{
 		$this->setParametro('codigo','codigo','varchar');
 		$this->setParametro('habilitar_comisiones','habilitar_comisiones','varchar');
 		$this->setParametro('tipo','tipo','varchar');
-
+		$this->setParametro('office_id','office_id','varchar');
+		$this->setParametro('id_catalogo','id_catalogo','int4');
+		$this->setParametro('iata_status','iata_status','varchar');
+		$this->setParametro('id_catalogo_canal','id_catalogo_canal','int4');
+		$this->setParametro('nombre_amadeus','nombre_amadeus','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
