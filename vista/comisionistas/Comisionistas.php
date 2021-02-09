@@ -578,7 +578,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 gwidth: 150,
                 hidden : false,
                 style: {
-                  fontSize:'30px',
+                  //fontSize:'30px',
                   fontWeight:'bold',
                   color:'#FF6C00',
                   textShadow: '0.5px 0.5px 0px #FFFFFF, 1px 0px 0px rgba(0,0,0,0.15)'
