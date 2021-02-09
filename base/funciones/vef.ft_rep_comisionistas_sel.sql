@@ -354,9 +354,9 @@ BEGIN
                                           else
                                               trim (nit_ci_cli)::numeric
                                           end)) IN ('||(select LIST (distinct(comi.nit))
-                                                                                                                      from vef.tacumulacion_comisionistas comi
-                                                                                                                      where comi.total_acumulado >= v_monto_impuestos and comi.id_periodo between v_parametros.id_periodo_inicio and v_parametros.id_periodo_final
-                                                                                                                      and comi.natural_simplificado = ''||v_filtro_totales||'')||')
+                                                        from vef.tacumulacion_comisionistas comi
+                                                        where comi.total_acumulado >= v_monto_impuestos and comi.id_periodo between v_parametros.id_periodo_inicio and v_parametros.id_periodo_final
+                                                        and comi.natural_simplificado = ''||v_filtro_totales||'')||')
 
                              order by fecha_factura ASC, nro_factura ASC
                              ')
@@ -526,11 +526,11 @@ BEGIN
                         FROM temporal_data_comisionistas tem
                         group by tem.nit_ci_cli
 
-                UNION
+                UNION ALL
                         SELECT *
                 FROM temporal_data_comisionistas
 
-                UNION
+                UNION ALL
 
                 SELECT 	now()::date as fecha_factura,
                         'total'::varchar as desc_ruta,
