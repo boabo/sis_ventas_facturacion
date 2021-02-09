@@ -124,7 +124,7 @@ class RDetalleVentasRtsPDF extends  ReportePDF {
             $this->SetTextColor(0, 66, 66, 0);
             $this->Cell('246',3,'TOTALES','',0,'R');
             $this->SetTextColor(100, 35, 0, 31);
-            $this->Cell('17',3,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
+            $this->Cell('17',3,$value2['precio_total'],'',0,'R');
             $this->SetTextColor();
             $this->Ln();
 
@@ -149,6 +149,15 @@ class RDetalleVentasRtsPDF extends  ReportePDF {
 
 
         }
+
+        $this->Ln();
+        $this->SetFont('', 'B', 12);
+        $this->SetTextColor(64, 0, 100, 23);
+        $this->Cell('220',3,'TOTAL GENERAL','',0,'R');
+        $this->SetTextColor(0, 59, 100, 0);
+        $this->Cell('43',3,$value2['total_general'],'',0,'R');
+        $this->SetTextColor();
+        $this->Ln();
 
         // foreach($this->datos as $value){
         //         $valor=$value['nit'];

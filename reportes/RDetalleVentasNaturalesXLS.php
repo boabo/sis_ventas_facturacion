@@ -287,6 +287,29 @@ class RDetalleVentasNaturalesXLS
           )
         );
 
+        $styleTotalesGenerales = array(
+          'fill' => array(
+              'type' => PHPExcel_Style_Fill::FILL_SOLID,
+              'color' => array(
+                  'rgb' => 'F06200'
+              )
+          ),
+          'font'  => array(
+              'bold'  => true,
+              'size'  => 13,
+              'name'  => 'Calibri',
+          ),
+          'alignment' => array(
+              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+              'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+          ),
+          'borders' => array(
+              'allborders' => array(
+                  'style' => PHPExcel_Style_Border::BORDER_THIN
+              )
+          )
+        );
+
         $styleTotales1 = array(
           'fill' => array(
               'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -336,13 +359,13 @@ class RDetalleVentasNaturalesXLS
             $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
             $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_datos);
             $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->applyFromArray($style_numeros);
-            $this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+            //$this->docexcel->getActiveSheet()->getStyle("J$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
             $numero++;
           } elseif ($value['razon_social'] == 'total') {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'TOTALES NIT: '.$value['nit']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['precio_total']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['precio_total']);
-            $this->docexcel->getActiveSheet()->getStyle("K$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+            //$this->docexcel->getActiveSheet()->getStyle("K$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
             $this->docexcel->getActiveSheet()->mergeCells("A$fila:J$fila");
             $this->docexcel->getActiveSheet()->getStyle("A$fila:L$fila")->applyFromArray($styleTotales);
@@ -351,6 +374,14 @@ class RDetalleVentasNaturalesXLS
           $fila++;
 
         }
+
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'TOTALES GENERAL: ');
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['total_general']);
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['total_general']);
+        //$this->docexcel->getActiveSheet()->getStyle("K$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+
+        $this->docexcel->getActiveSheet()->mergeCells("A$fila:J$fila");
+        $this->docexcel->getActiveSheet()->getStyle("A$fila:L$fila")->applyFromArray($styleTotalesGenerales);
 
 
         // foreach($datos as $value){

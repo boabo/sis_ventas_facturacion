@@ -39,8 +39,8 @@ class MODComisionistas extends MODbase
         $this->captura('razon_social', 'varchar');
         $this->captura('carnet_ide', 'varchar');
         $this->captura('cantidad', 'numeric');
-        $this->captura('precio_unitario', 'numeric');
-        $this->captura('precio_total', 'numeric');
+        $this->captura('precio_unitario', 'varchar');
+        $this->captura('precio_total', 'varchar');
         $this->captura('natural_simplificado', 'varchar');
         $this->captura('nro_factura', 'numeric');
         $this->captura('razon_empresa', 'varchar');
@@ -50,6 +50,7 @@ class MODComisionistas extends MODbase
         $this->captura('periodo_num_fin', 'varchar');
         $this->captura('periodo_literal_inicio', 'varchar');
         $this->captura('periodo_literal_fin', 'varchar');
+        $this->captura('total_general', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
