@@ -387,7 +387,7 @@ class RResumenVentasBoaXLS
 
 			// }
 
-			// $correlativo_hoja++;
+			$correlativo_hoja++;
 			// $correlativo_general++;
 
 		}
