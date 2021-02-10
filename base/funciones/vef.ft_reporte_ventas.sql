@@ -92,13 +92,13 @@ BEGIN
 		end;
 
     /*********************************
-     #TRANSACCION:  'VF_OFFID_SEL'
+     #TRANSACCION:  'VF_OFFIDRV_SEL'
      #DESCRIPCION:	Consulta de datos Office ID por nro de codigo Iata
      #AUTOR:		breydi.vasquez
      #FECHA:		28-01-2021
     ***********************************/
 
-    elsif(p_transaccion='VF_OFFID_SEL')then
+    elsif(p_transaccion='VF_OFFIDRV_SEL')then
 
       begin
 
@@ -119,13 +119,13 @@ BEGIN
       end;
 
     /*********************************
-     #TRANSACCION:  'VF_OFFID_CONT'
+     #TRANSACCION:  'VF_OFFIDRV_CONT'
      #DESCRIPCION:	Conteo de registros de datos Office ID por nro de codigo Iata
      #AUTOR:		breydi.vasquez
      #FECHA:		28-01-2021
     ***********************************/
 
-    elsif(p_transaccion='VF_OFFID_CONT')then
+    elsif(p_transaccion='VF_OFFIDRV_CONT')then
 
       begin
 

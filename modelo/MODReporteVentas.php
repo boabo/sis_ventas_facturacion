@@ -59,7 +59,7 @@ class MODReporteVentas extends MODbase {
 	function listarPuntoVentaOfficeId() {
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_reporte_ventas';
-		$this->transaccion='VF_OFFID_SEL';
+		$this->transaccion='VF_OFFIDRV_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		//Definicion de la lista del resultado del query
