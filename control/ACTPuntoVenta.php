@@ -57,7 +57,7 @@ class ACTPuntoVenta extends ACTbase{
             $this->objParam->addFiltro(" (1 in (select id_rol from segu.tusuario_rol ur where ur.id_usuario = " . $_SESSION["ss_id_usuario"] . " and ur.estado_reg = ''activo'') or (
                                                 " . $_SESSION["ss_id_usuario"] .  " in (select id_usuario from
                                                 vef.tsucursal_usuario sucusu where puve.id_punto_venta = sucusu.id_punto_venta and
-                                                    sucusu.tipo_usuario = ''cajero''))) ");
+                                                    sucusu.tipo_usuario in (''cajero'', ''cajero_auxiliar'')))) ");
         }
 
 		//20-01-2021 (may) para tipo usuario cajero y cajero_auxiliar
