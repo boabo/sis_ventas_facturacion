@@ -55,8 +55,9 @@ DECLARE
     v_datos_auxiliar		record;
     v_mensaje_apertura		varchar;
     v_existencia_abiertos	integer;
-
-
+    v_id_apertura_cierre_caja_admin integer;
+    v_estado_cajero_admin	varchar;
+	v_cajero_admin			varchar;
 
 BEGIN
 
@@ -558,6 +559,45 @@ BEGIN
 			from vef.tapertura_cierre_caja ap
           	inner join vef.tsucursal_usuario su on su.id_punto_venta=ap.id_punto_venta
 			where su.id_usuario=p_id_usuario and ap.id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+
+
+            /*Aqui poner control para que el cajero auxiliar no pueda abrir caja si el cajero Admin ya cerro su caja*/
+            select caja.id_apertura_cierre_admin
+            	   into
+                   v_id_apertura_cierre_caja_admin
+            from vef.tapertura_cierre_caja caja
+            where caja.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
+
+            if (v_id_apertura_cierre_caja_admin is not null) then
+            v_mensaje_apertura = '';
+            	select
+                       aper.estado,
+                       u.desc_persona
+                       into
+                       v_estado_cajero_admin,
+                       v_cajero_admin
+                from vef.tapertura_cierre_caja aper
+                inner join segu.vusuario u on u.id_usuario = aper.id_usuario_cajero
+                where aper.id_apertura_cierre_caja = v_id_apertura_cierre_caja_admin;
+
+                /*Aqui verificamos el estado de la caja*/
+                if (v_estado_cajero_admin = 'cerrado') then
+
+                    v_mensaje_apertura = v_mensaje_apertura||'<p><b><font color="#005DFF">Cajero: </font>'||v_cajero_admin||'.</b></p>';
+                    v_mensaje_apertura = v_mensaje_apertura||'<p><b><font color="#005DFF">Estado Caja: </font>'||upper(v_estado_cajero_admin)||'.</b></p>';
+
+                	raise exception 'El cajero % tiene la caja cerrada. Favor coordinar con el mismo para que abra su caja y realizar el cambio correspondiente.',v_mensaje_apertura;
+
+                end if;
+                /***************************************/
+
+            end if;
+
+
+
+            /********************************************************************************************************/
+
+
 
             if (exists (select 1
             			from vef.tapertura_cierre_caja acc
