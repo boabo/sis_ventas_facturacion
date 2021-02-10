@@ -365,9 +365,9 @@
 
           this.Cmp.id_lugar.store.load({params:{start:0, limit:100}, scope:this, callback: function (param,op,suc) {
 
-                  this.Cmp.id_lugar.setValue(param[6].data.id_lugar);
+                  this.Cmp.id_lugar.setValue(param[7].data.id_lugar);
                   this.Cmp.id_lugar_fk.reset();
-                  this.Cmp.id_lugar_fk.store.baseParams.id_lugar_fk = param[6].data.id_lugar;
+                  this.Cmp.id_lugar_fk.store.baseParams.id_lugar_fk = param[7].data.id_lugar;
                   this.Cmp.id_lugar_fk.modificado = true;
                   this.Cmp.id_lugar.collapse();
                   this.Cmp.id_lugar_fk.focus(false,  3);

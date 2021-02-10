@@ -38,8 +38,13 @@ class ACTReporteVentas extends ACTbase{
 
   function listarPuntoVentaOfficeId () {
 
-    $this->objParam->getParametro('id_lugar_fk') != 0 && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
-    $this->objParam->getParametro('canal') != 0 && $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+    if($this->objParam->getParametro('id_lugar_fk') != 0  || $this->objParam->getParametro('id_lugar_fk') !='') {
+      $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
+    }
+    if($this->objParam->getParametro('canal') != 0  || $this->objParam->getParametro('canal') !='') {
+      $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+    }
+
     $this->objParam->getParametro('tipoVenta') != 'Todos' && $this->objParam->addFiltro("p.tipo = ANY (string_to_array(''".$this->objParam->getParametro('tipoVenta')."'','',''))");
     $this->objParam->getParametro('code_iata') != 'TODOS' && $this->objParam->addFiltro("p.codigo = ''".$this->objParam->getParametro('code_iata')."''");
 
@@ -61,10 +66,16 @@ class ACTReporteVentas extends ACTbase{
 
     // $this->objParam->getParametro('offi_id') == 'no' && $this->objParam->addFiltro("puve.office_id is not null ");
 
-    $this->objParam->getParametro('id_lugar_fk') != 0 && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
+    if($this->objParam->getParametro('id_lugar_fk') != 0  || $this->objParam->getParametro('id_lugar_fk') !='') {
+      $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
+    }
+
+    if($this->objParam->getParametro('canal') != 0  || $this->objParam->getParametro('canal') !='') {
+      $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+    }
     // $this->objParam->getParametro('canal') != '' && $this->objParam->addFiltro("c.codigo = ANY (string_to_array(''".$this->objParam->getParametro('canal')."'','',''))");
     $this->objParam->getParametro('tipoVenta') != 'Todos' && $this->objParam->addFiltro("p.tipo = ANY (string_to_array(''".$this->objParam->getParametro('tipoVenta')."'','',''))");
-    $this->objParam->getParametro('canal') != 0 && $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+    // $this->objParam->getParametro('canal') != 0 && $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
 
     $this->objFunc=$this->create('MODReporteVentas');
     $this->res=$this->objFunc->listarPuntoVentaRbol($this->objParam);
@@ -87,10 +98,16 @@ class ACTReporteVentas extends ACTbase{
 
   function listarPuntoVentaTipo () {
 
-    $this->objParam->getParametro('id_lugar_fk') != 0 && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
+    if($this->objParam->getParametro('id_lugar_fk') != 0  || $this->objParam->getParametro('id_lugar_fk') !='') {
+      $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
+    }
+    // $this->objParam->getParametro('id_lugar_fk') != 0 && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
 
     // $this->objParam->getParametro('tipo') != '' && $this->objParam->addFiltro("c.codigo = ANY (string_to_array(''".$this->objParam->getParametro('tipo')."'','',''))");
-    $this->objParam->getParametro('tipo') != 0 && $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('tipo').")");
+
+    if($this->objParam->getParametro('tipo') != 0  || $this->objParam->getParametro('tipo') !='') {
+      $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('tipo').")");
+    }    
 
     $this->objFunc=$this->create('MODReporteVentas');
     $this->res=$this->objFunc->listarPuntoVentaTipo($this->objParam);
