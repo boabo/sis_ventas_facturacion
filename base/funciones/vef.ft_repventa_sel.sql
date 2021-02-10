@@ -1198,7 +1198,7 @@ $body$
              	b.total
 
              else
-             	case when b.voided != ''si'' and fpusd.id_moneda != 2 then coalesce(fpmb.monto_cc_mb,0) else 0 end
+             	case when b.voided != ''si'' then coalesce(fpmb.monto_cc_mb,0) else 0 end
              end  as monto_cc_mb,
 
 
