@@ -51,8 +51,13 @@ DECLARE
     v_tiene_dos_monedas		varchar;
     v_moneda_desc			varchar;
     v_fecha_emision			varchar;
-
-
+    v_id_apertura_cierre_caja_auxiliar	varchar;
+    v_datos_auxiliar		record;
+    v_mensaje_apertura		varchar;
+    v_existencia_abiertos	integer;
+    v_id_apertura_cierre_caja_admin integer;
+    v_estado_cajero_admin	varchar;
+	v_cajero_admin			varchar;
 
 BEGIN
 
@@ -212,7 +217,58 @@ BEGIN
 	elsif(p_transaccion='VF_APCIE_MOD')then
 
 		begin
-       -- raise exception 'llega %',v_parametros.monto_ca_facturacion_usd;
+
+        v_mensaje_apertura = '';
+        /*Aqui verificamos si el cajero tiene un cajero auxiliar*/
+        select list (acc.id_apertura_cierre_caja::varchar)
+        	   into
+               v_id_apertura_cierre_caja_auxiliar
+        from vef.tapertura_cierre_caja acc
+        where acc.id_apertura_cierre_admin = v_parametros.id_apertura_cierre_caja;
+
+
+        if (v_id_apertura_cierre_caja_auxiliar is not null) then
+
+         	select count (aper.id_usuario_cajero)
+               	   into
+                   v_existencia_abiertos
+          from vef.tapertura_cierre_caja aper
+          inner join segu.vusuario u on u.id_usuario = aper.id_usuario_cajero
+          where aper.id_apertura_cierre_caja in (select distinct (acc.id_apertura_cierre_caja)
+                                                  from vef.tapertura_cierre_caja acc
+                                                  where acc.id_apertura_cierre_admin = v_parametros.id_apertura_cierre_caja)
+          and aper.estado = 'abierto';
+
+          if (v_existencia_abiertos > 0) then
+
+
+                FOR v_datos_auxiliar in (select aper.id_usuario_cajero,
+                                                 aper.estado,
+                                                 u.desc_persona
+                                          from vef.tapertura_cierre_caja aper
+                                          inner join segu.vusuario u on u.id_usuario = aper.id_usuario_cajero
+                                          where aper.id_apertura_cierre_caja in (select distinct (acc.id_apertura_cierre_caja)
+                                                                                  from vef.tapertura_cierre_caja acc
+                                                                                  where acc.id_apertura_cierre_admin = v_parametros.id_apertura_cierre_caja)
+                                          and aper.estado = 'abierto') loop
+
+                v_mensaje_apertura = v_mensaje_apertura||'<p><b><font color="#005DFF">Cajero: </font>'||v_datos_auxiliar.desc_persona||'.</b></p>';
+                v_mensaje_apertura = v_mensaje_apertura||'<p><b><font color="#005DFF">Estado Caja: </font>'||upper(v_datos_auxiliar.estado)||'.</b></p>';
+
+
+                end loop;
+
+                 if (v_existencia_abiertos > 1) then
+                	  raise exception 'Los siguientes Cajeros Auxiliares:<br><br> % <br>Aún no cerraron su caja Favor contactarse con los mismos para coordinar cierre de Caja Saludos.',v_mensaje_apertura;
+                 else
+               	     raise exception 'El Cajero <br><br> % <br> Aún tiene su caja abierta Favor contactarse con el mismo para coordinar cierre de Caja Saludos.',v_mensaje_apertura;
+                 end if;
+            end if;
+
+        end if;
+
+
+        /********************************************************/
 
         	if (exists (select 1
             			from vef.tapertura_cierre_caja acc
@@ -503,6 +559,45 @@ BEGIN
 			from vef.tapertura_cierre_caja ap
           	inner join vef.tsucursal_usuario su on su.id_punto_venta=ap.id_punto_venta
 			where su.id_usuario=p_id_usuario and ap.id_apertura_cierre_caja=v_parametros.id_apertura_cierre_caja;
+
+
+            /*Aqui poner control para que el cajero auxiliar no pueda abrir caja si el cajero Admin ya cerro su caja*/
+            select caja.id_apertura_cierre_admin
+            	   into
+                   v_id_apertura_cierre_caja_admin
+            from vef.tapertura_cierre_caja caja
+            where caja.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
+
+            if (v_id_apertura_cierre_caja_admin is not null) then
+            v_mensaje_apertura = '';
+            	select
+                       aper.estado,
+                       u.desc_persona
+                       into
+                       v_estado_cajero_admin,
+                       v_cajero_admin
+                from vef.tapertura_cierre_caja aper
+                inner join segu.vusuario u on u.id_usuario = aper.id_usuario_cajero
+                where aper.id_apertura_cierre_caja = v_id_apertura_cierre_caja_admin;
+
+                /*Aqui verificamos el estado de la caja*/
+                if (v_estado_cajero_admin = 'cerrado') then
+
+                    v_mensaje_apertura = v_mensaje_apertura||'<p><b><font color="#005DFF">Cajero: </font>'||v_cajero_admin||'.</b></p>';
+                    v_mensaje_apertura = v_mensaje_apertura||'<p><b><font color="#005DFF">Estado Caja: </font>'||upper(v_estado_cajero_admin)||'.</b></p>';
+
+                	raise exception 'El cajero % tiene la caja cerrada. Favor coordinar con el mismo para que abra su caja y realizar el cambio correspondiente.',v_mensaje_apertura;
+
+                end if;
+                /***************************************/
+
+            end if;
+
+
+
+            /********************************************************************************************************/
+
+
 
             if (exists (select 1
             			from vef.tapertura_cierre_caja acc

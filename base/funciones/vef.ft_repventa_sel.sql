@@ -48,7 +48,10 @@ $body$
     v_filtro_id_punto_venta	varchar;
     v_filtro_id_concepto	varchar;
     v_moneda_base			varchar;
-v_filtro_cajero_boleto_1 varchar;
+	v_filtro_cajero_boleto_1 varchar;
+	v_id_apertura_cajero_principal	integer;
+    v_id_cajero_auxiliar	varchar;
+    v_nombre_pv			varchar;
   BEGIN
 
     v_nombre_funcion = 'vef.ft_repventa_sel';
@@ -169,23 +172,70 @@ v_filtro_cajero_boleto_1 varchar;
       begin
         IF  pxp.f_existe_parametro(p_tabla,'id_punto_venta') THEN
           v_filtro = ' id_punto_venta = ' || v_parametros.id_punto_venta;
-          select id_sucursal into v_id_sucursal
+          select
+          id_sucursal,
+          nombre
+          into
+          v_id_sucursal,
+          v_nombre_pv
           from vef.tpunto_venta
           where id_punto_venta = v_parametros.id_punto_venta;
         else
           v_filtro = ' id_sucursal = ' || v_parametros.id_sucursal;
+
+          select suc.nombre
+          into
+          v_nombre_pv
+          from vef.tsucursal suc
+          where suc.id_sucursal = v_parametros.id_sucursal;
+
           v_id_sucursal = v_parametros.id_sucursal;
+
         end if;
 
         v_filtro_cajero_boleto='';
         v_filtro_cajero_boleto_1='';
         v_filtro_cajero_factura='';
 
-        IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
 
+        /*Aqui ponemos la condicion para recuperar datos del cajero Auxiliar (Ismael Valdivia 08/02/2021)*/
+          select list(distinct(aper.id_apertura_cierre_caja)::varchar)
+          		 into
+                 v_id_apertura_cajero_principal
+          from vef.tapertura_cierre_caja aper
+          where aper.id_usuario_cajero = v_parametros.id_usuario_cajero and aper.id_punto_venta = v_parametros.id_punto_venta
+          and aper.fecha_apertura_cierre between v_parametros.fecha_desde and v_parametros.fecha_hasta;
+
+          /*Aqui recuperamos el id_usuario cajero auxiliar para listar su informacion en el cajero Principal*/
+            select list (distinct (ap.id_usuario_cajero)::varchar)
+                   into
+                   v_id_cajero_auxiliar
+            from vef.tapertura_cierre_caja ap
+            where ap.id_apertura_cierre_admin in (v_id_apertura_cajero_principal);
+          /**************************************************************************************************/
+
+        /*************************************************************************************************/
+
+
+
+
+
+        IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
             IF(v_parametros.id_usuario_cajero!=0)THEN
-                v_filtro_cajero_boleto = ' and b.id_usuario_cajero='||v_parametros.id_usuario_cajero;
-                v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero='||v_parametros.id_usuario_cajero;
+            	/*Aumentando condicion para listar de cajeros auxiliares (Ismael.Valdivia 08/02/2020)*/
+                IF (v_id_cajero_auxiliar is not null) then
+                  --v_filtro_cajero_boleto = ' and b.id_usuario_cajero in ('||v_parametros.id_usuario_cajero||')';
+                  v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero in ('||v_parametros.id_usuario_cajero||','||v_id_cajero_auxiliar||')';
+                else
+                  v_filtro_cajero_boleto = ' and b.id_usuario_cajero ='||v_parametros.id_usuario_cajero;
+                  v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero ='||v_parametros.id_usuario_cajero;
+                end if;
+                /*************************************************************************************/
+            ELSE
+            	/*Si el Filtro de usuario es 0 entonces tomar solo el punto de venta*/
+                  v_filtro_cajero_boleto = ' and b.id_punto_venta ='||v_parametros.id_punto_venta;
+                  v_filtro_cajero_boleto_1 = ' and v.id_punto_venta ='||v_parametros.id_punto_venta;
+                /********************************************************************/
             END IF;
 
             IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
@@ -430,7 +480,10 @@ v_filtro_cajero_boleto_1 varchar;
                       0::numeric,
                       string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
                       NULL::varchar as mensaje_error,
-                      0::numeric as comision
+                      0::numeric as comision,
+                      0::numeric,
+                      0::numeric,
+                      '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
                       from vef.tventa v
                       inner join vef.tventa_detalle vd
                           on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
@@ -451,7 +504,8 @@ v_filtro_cajero_boleto_1 varchar;
                          NULL::varchar as mensaje_error,
                           0::numeric as ccomision
                           0::numeric,
-                          0::numeric
+                          0::numeric,
+                          '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -630,9 +684,10 @@ v_filtro_cajero_boleto_1 varchar;
              --b.total,
              imp.monto_impuesto as precios_conceptos,
              b.mensaje_error,
-             b.comision
+             b.comision,
              0::numeric,
-             0::numeric
+             0::numeric,
+             '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then
@@ -911,7 +966,8 @@ v_filtro_cajero_boleto_1 varchar;
 
                       /*Aumentnado para depositos*/
                       coalesce(fpmb.monto_deposito_mb,0)::numeric,
-                      coalesce(fpusd.monto_deposito_usd,0)::numeric
+                      coalesce(fpusd.monto_deposito_usd,0)::numeric,
+                      '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
                       /***************************/
 
                       from vef.tventa v
@@ -932,9 +988,10 @@ v_filtro_cajero_boleto_1 varchar;
                          v.monto::numeric,
                          ''''::varchar as precios_detalles,
                          NULL::varchar as mensaje_error,
-                          0::numeric as ccomision
+                          0::numeric as ccomision,
                           0::numeric depo_mb,
-                          0::numeric depo_ml
+                          0::numeric depo_ml,
+                          '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -1097,11 +1154,11 @@ v_filtro_cajero_boleto_1 varchar;
                     end as monto_cash_usd,
 
                      /*Aumentando*/
-                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpusd.id_moneda = 2 and fpmb.id_boleto_amadeus is null then
+                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpmb.id_boleto_amadeus is null then
                         b.total
                      else
                         case
-                      when b.voided != ''si'' then coalesce(fpusd.monto_cc_usd, 0)
+                      when b.voided != ''si'' and fpusd.id_moneda = 2 then coalesce(fpusd.monto_cc_usd, 0)
                       else 0
                     end
                      end  as monto_cc_usd,
@@ -1158,7 +1215,8 @@ v_filtro_cajero_boleto_1 varchar;
              b.mensaje_error,
              b.comision,
              0::numeric,
-             0::numeric
+             0::numeric,
+             '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then
@@ -1780,7 +1838,18 @@ v_filtro_cajero_boleto_1 varchar;
 
       begin
 
-        v_consulta:='select mon.codigo_internacional
+      	select
+          nombre
+          into
+          v_nombre_pv
+        from vef.tpunto_venta
+        where id_punto_venta = v_parametros.id_punto_venta;
+
+
+
+
+        v_consulta:='select mon.codigo_internacional,
+        			'''||COALESCE (v_nombre_pv, '')||'''::varchar as nombre_pv
                     from param.tmoneda mon
                     where mon.tipo_moneda = ''base''';
 

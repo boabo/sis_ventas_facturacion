@@ -53,9 +53,10 @@ class MODReportesVentas extends MODbase{
 		$this->captura('precios_detalles','varchar');
     $this->captura('mensaje_error','varchar');
 		$this->captura('comision','numeric');
-		
+
 		$this->captura('monto_deposito_mb','numeric');
     $this->captura('monto_deposito_usd','numeric');
+		$this->captura('nombre_pv','varchar');
 
 
 		//Ejecuta la instruccion
@@ -292,7 +293,10 @@ class MODReportesVentas extends MODbase{
 		$this->count =false;
 
 		//Definicion de la lista del resultado del query
+		$this->setParametro('id_punto_venta','id_punto_venta','integer');
+		
 		$this->captura('moneda','varchar');
+		$this->captura('nombre_pv','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
