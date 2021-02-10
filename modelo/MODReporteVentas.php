@@ -41,12 +41,12 @@ class MODReporteVentas extends MODbase {
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		//Definicion de la lista del resultado del query
-		$this->captura('id_punto_venta','int4');
-		$this->captura('nombre','varchar');
-		$this->captura('descripcion','text');
+		// $this->captura('id_punto_venta','int4');
+		// $this->captura('nombre','varchar');
+		// $this->captura('descripcion','text');
 		$this->captura('codigo','varchar');
-		$this->captura('tipo','varchar');
-		$this->captura('office_id', 'varchar');
+		// $this->captura('tipo','varchar');
+		// $this->captura('office_id', 'varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;
@@ -56,6 +56,59 @@ class MODReporteVentas extends MODbase {
 		return $this->respuesta;
 	}
 
+	function listarPuntoVentaOfficeId() {
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_OFFID_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		//Definicion de la lista del resultado del query
+		$this->captura('id_punto_venta','int4');
+		$this->captura('office_id','varchar');
+
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarPuntoVentaTipo() {
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_FILTIPO_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->setParametro('tipo','tipo','varchar');
+		//Definicion de la lista del resultado del query
+		$this->captura('tipo','varchar');
+		$this->captura('codigo','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function getCanal() {
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_GETCAN_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+		//Definicion de la lista del resultado del query
+		$this->captura('codigo','text');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 
 }
 ?>

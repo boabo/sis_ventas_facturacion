@@ -260,7 +260,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 								pageSize: 50,
 								queryDelay: 500,
 								gwidth : 100,
-								anchor : '50%',
+								anchor : '80%',
 								forceSelection: true,
 								minChars: 2,
 								style:'margin-bottom: 10px;'
@@ -280,7 +280,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 						gwidth : 100,
 						anchor : '50%',
             mode : 'local',
-            emptyText:'sistema...',
+            emptyText:'...',
             store: new Ext.data.ArrayStore({
                 id: '',
                 fields: [

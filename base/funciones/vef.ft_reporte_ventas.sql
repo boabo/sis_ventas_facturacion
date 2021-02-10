@@ -27,7 +27,7 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-    v_filtro			varchar=' 0=0 ';
+    v_filtro			varchar='0=0 ';
 
 BEGIN
 
@@ -45,14 +45,19 @@ BEGIN
 
     	begin
     		--Sentencia de la consulta
-			v_consulta:='select cat.id_catalogo,
-            					cat.codigo,
-                                cat.descripcion
-            			 from param.tcatalogo cat
-                         where ';
+			v_consulta:='select
+            				c.id_catalogo,
+            				c.codigo,
+                            c.descripcion
+                          from vef.tpunto_venta p
+                          inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                          inner join param.tlugar l on l.id_lugar = s.id_lugar
+                          inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                          where ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' group by  c.codigo, c.id_catalogo, c.descripcion ';
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 			raise notice 'resp %',v_consulta;
 			--Devuelve la respuesta
@@ -71,17 +76,75 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(cat.id_catalogo)
-					    from param.tcatalogo cat
-					    where ';
+			v_consulta:='select count(c.codigo)
+						  from vef.tpunto_venta p
+                          inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                          inner join param.tlugar l on l.id_lugar = s.id_lugar
+                          inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                          where ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-
+            v_consulta:=v_consulta||' group by  c.codigo, c.id_catalogo, c.descripcion ';
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
+
+    /*********************************
+     #TRANSACCION:  'VF_OFFID_SEL'
+     #DESCRIPCION:	Consulta de datos Office ID por nro de codigo Iata
+     #AUTOR:		breydi.vasquez
+     #FECHA:		28-01-2021
+    ***********************************/
+
+    elsif(p_transaccion='VF_OFFID_SEL')then
+
+      begin
+
+		v_consulta:= 'select p.id_punto_venta,p.office_id
+                      from vef.tpunto_venta p
+                      inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                      inner join param.tlugar l on l.id_lugar = s.id_lugar
+                      inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                      where p.office_id is not null and p.office_id !='''' and  ';
+
+        --Definicion de la respuesta
+        v_consulta:=v_consulta||v_parametros.filtro;
+        v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+        raise notice '%',v_consulta;
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
+
+    /*********************************
+     #TRANSACCION:  'VF_OFFID_CONT'
+     #DESCRIPCION:	Conteo de registros de datos Office ID por nro de codigo Iata
+     #AUTOR:		breydi.vasquez
+     #FECHA:		28-01-2021
+    ***********************************/
+
+    elsif(p_transaccion='VF_OFFID_CONT')then
+
+      begin
+
+        --Sentencia de la consulta de conteo de registros
+
+		v_consulta:= 'select count(p.office_id)
+                      from vef.tpunto_venta p
+                      inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                      inner join param.tlugar l on l.id_lugar = s.id_lugar
+                      inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                      where p.office_id is not null and p.office_id !='''' and  ';
+
+        --Definicion de la respuesta
+        v_consulta:=v_consulta||v_parametros.filtro;
+
+        --Devuelve la respuesta
+        return v_consulta;
+
+      end;
 
     /*********************************
      #TRANSACCION:  'VF_PUVERB_SEL'
@@ -95,7 +158,7 @@ BEGIN
       begin
 
 
-      	IF p_administrador != 1 THEN
+ /*     	IF p_administrador != 1 THEN
         	IF (NOT EXISTS (select 1
                       from vef.tpermiso_sucursales
                       where id_funcionario = (
@@ -126,10 +189,18 @@ BEGIN
                         puve.office_id
                         from vef.tpunto_venta puve
                         where  '||v_filtro||'
-                        and ' ;
+                        and ' ;*/
+
+		v_consulta:= 'select p.codigo
+                      from vef.tpunto_venta p
+                      inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                      inner join param.tlugar l on l.id_lugar = s.id_lugar
+                      inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                      where ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
+        v_consulta:=v_consulta||' group by p.codigo';
         v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
         raise notice '%',v_consulta;
         --Devuelve la respuesta
@@ -149,6 +220,7 @@ BEGIN
       begin
 
         --Sentencia de la consulta de conteo de registros
+        /*
       	IF p_administrador != 1 THEN
 
         	IF (NOT EXISTS (select 1
@@ -175,15 +247,101 @@ BEGIN
         v_consulta:='select count(puve.id_punto_venta)
                         from vef.tpunto_venta puve
                         where '||v_filtro||'
-                        and ';
+                        and ';*/
+
+		v_consulta:= 'select count(p.codigo)
+                      from vef.tpunto_venta p
+                      inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                      inner join param.tlugar l on l.id_lugar = s.id_lugar
+                      inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                      where ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
+        v_consulta:=v_consulta||' group by p.codigo';
 
         --Devuelve la respuesta
         return v_consulta;
 
       end;
+	/*********************************
+ 	#TRANSACCION:  'VF_FILTIPO_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		breydi.vasquez
+ 	#FECHA:		29-01-2021
+	***********************************/
+
+	elsif(p_transaccion='VF_FILTIPO_SEL')then
+
+    	begin
+
+    		--Sentencia de la consulta
+			v_consulta:='select p.tipo, c.codigo
+                          from vef.tpunto_venta p
+                          inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                          inner join param.tlugar l on l.id_lugar = s.id_lugar
+                          inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                          where ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' group by  p.tipo, c.codigo ';
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+			raise notice 'resp %',v_consulta;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'VF_FILTIPO_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		breydi.vasquez
+ 	#FECHA:		28-01-2021
+	***********************************/
+
+	elsif(p_transaccion='VF_FILTIPO_CONT')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='select count(p.tipo)
+                          from vef.tpunto_venta p
+                          inner join vef.tsucursal s on s.id_sucursal = p.id_sucursal
+                          inner join param.tlugar l on l.id_lugar = s.id_lugar
+                          inner join param.tcatalogo c on c.id_catalogo = p.id_catalogo_canal
+                          where ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' group by  p.tipo, c.codigo ';
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'VF_GETCAN_SEL'
+ 	#DESCRIPCION:	Consulta de canal de venta
+ 	#AUTOR:		breydi.vasquez
+ 	#FECHA:		28-01-2021
+	***********************************/
+
+	elsif(p_transaccion='VF_GETCAN_SEL')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='select pxp.list(upper(codigo)::text)
+              			 from param.tcatalogo
+                         where ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+
 
 
 	else
