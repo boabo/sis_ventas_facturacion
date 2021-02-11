@@ -467,7 +467,7 @@ BEGIN
             end loop;
 
             /*Aqui recuperamos el total general*/
-            v_total_general = '0';
+            v_total_general = 0;
             /***********************************/
 
             /*Devolvemos la data recuperada*/
@@ -479,8 +479,8 @@ BEGIN
                                   razon_social,
                                   carnet_ide,
                                   cantidad,
-                                  to_char(precio_unitario::numeric,''999G999G999G999D99'')::varchar,
-                                  to_char(precio_total::numeric,''999G999G999G999D99'')::varchar,
+                                  precio_unitario::numeric,
+                                  precio_total::numeric,
                                   natural_simplificado,
                                   nro_factura,
                                   '''||v_registros.nombre||'''::varchar as razon_empresa,
@@ -490,7 +490,7 @@ BEGIN
                                   '''||v_periodo_fin||'''::varchar as periodo_num_fin,
                                   '''||v_literal_mes_inicio||'''::varchar as periodo_literal_inicio,
                                   '''||v_literal_mes_final||'''::varchar as periodo_literal_fin,
-                                  '''||v_total_general||'''::varchar as total_general
+                                  '||v_total_general||'::numeric as total_general
             			   from temporal_comisionistas
                            where nit::numeric not in (
                                 	select nc.nit_ci::numeric
@@ -614,7 +614,7 @@ BEGIN
                 end loop;
 
                 /*Aqui recuperamos el total general de los datos*/
-                select to_char(sum(comi.precio_total)::numeric,'999G999G999G999D99')
+                select sum(comi.precio_total)::numeric
                 		into
                        v_total_general
                 from temporal_comisionistas comi
@@ -630,8 +630,8 @@ BEGIN
                                       razon_social,
                                       carnet_ide,
                                       cantidad,
-                                      to_char(precio_unitario::numeric,''999G999G999G999D99'')::varchar,
-                                      to_char(precio_total::numeric,''999G999G999G999D99'')::varchar,
+                                      precio_unitario::numeric,
+                                      precio_total::numeric,
                                       natural_simplificado,
                                       nro_factura,
                                       '''||v_registros.nombre||'''::varchar as razon_empresa,
@@ -641,7 +641,7 @@ BEGIN
                                       '''||v_periodo_fin||'''::varchar as periodo_num_fin,
                                       '''||v_literal_mes_inicio||'''::varchar as periodo_literal_inicio,
                                       '''||v_literal_mes_final||'''::varchar as periodo_literal_fin,
-                                      '''||v_total_general||'''::varchar as total_general
+                                      '||v_total_general||'::numeric as total_general
                                from temporal_comisionistas
                                where nit::numeric not in (
                                         select nc.nit_ci::numeric
@@ -728,7 +728,7 @@ BEGIN
                 /*********************************************/
 
 
-                if (v_parametros.tipo_reporte = 'res_vent_natu') then
+					if (v_parametros.tipo_reporte = 'res_vent_natu') then
                         select
                               count (comi.nit)
                               into

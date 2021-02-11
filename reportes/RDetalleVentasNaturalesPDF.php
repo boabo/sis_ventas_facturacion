@@ -116,15 +116,15 @@ class RDetalleVentasNaturalesPDF extends  ReportePDF {
             $this->MultiCell($array[6], 6, $value2['sistema_origen'],0,'C',0,0,'170','');
             $this->MultiCell($array[7], 6, $value2['desc_ruta'],0,'J',0,0,'210','');
             $this->Cell($array[8],6,$value2['cantidad'],'',0,'R');
-            $this->Cell($array[9],6,$value2['precio_unitario'],'',0,'R');
-            $this->Cell($array[10],6,$value2['precio_total'],'',0,'R');
+            $this->Cell($array[9],6,number_format($value2['precio_unitario'], 2, ',', '.'),'',0,'R');
+            $this->Cell($array[10],6,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
             $this->Ln();
           } elseif ($value2['razon_social'] == 'total') {
             $this->SetFont('', 'B', 7);
             $this->SetTextColor(0, 66, 66, 0);
             $this->Cell('255',3,'TOTALES','',0,'R');
             $this->SetTextColor(100, 35, 0, 31);
-            $this->Cell('20',3,$value2['precio_total'],'',0,'R');
+            $this->Cell('20',3,number_format($value2['precio_total'], 2, ',', '.'),'',0,'R');
             $this->SetTextColor();
             $this->Ln();
           }
@@ -145,7 +145,7 @@ class RDetalleVentasNaturalesPDF extends  ReportePDF {
         $this->SetTextColor(64, 0, 100, 23);
         $this->Cell('232',3,'TOTAL GENERAL','',0,'R');
         $this->SetTextColor(0, 59, 100, 0);
-        $this->Cell('43',3,$value2['total_general'],'',0,'R');
+        $this->Cell('43',3,number_format($value2['total_general'], 2, ',', '.'),'',0,'R');
         $this->SetTextColor();
         $this->Ln();
         // foreach($this->datos as $value){
