@@ -385,8 +385,8 @@ class ACTComisionistas extends ACTbase{
                         $val['sistema_origen'].$separador.
                         $val['desc_ruta'].$separador.
                         $val['cantidad'].$separador.
-                        number_format($val['precio_unitario'], 2, ',', '.').$separador.
-                        number_format($val['precio_total'], 2, ',', '.')."\r\n");
+                        $val['precio_unitario'].$separador.
+                        $val['precio_total']."\r\n");
 
                 //}
                 /*else{
@@ -485,8 +485,8 @@ class ACTComisionistas extends ACTbase{
                   $val['sistema_origen'].'|'.
                   $val['desc_ruta'].'|'.
                   $val['cantidad'].'|'.
-                  number_format($val['precio_unitario'], 2, ',', '.').'|'.
-                  number_format($val['precio_total'], 2, ',', '.')."\r\n");
+                  $val['precio_unitario'].'|'.
+                  $val['precio_total']."\r\n");
                   $numero ++;
             } else if ($val['razon_social'] == 'total') {
               fwrite ($file,'TOTAL NIT: '.number_format($val['precio_total'], 2, ',', '.')."\r\n");
@@ -548,7 +548,7 @@ class ACTComisionistas extends ACTbase{
 										  '                                            '.
 											$numero.'   '.
                       $val['nit'].'   '.
-                      number_format($val['total_acumulado'], 2, ',', '.').'   '.
+                      $val['total_acumulado'].'   '.
                       $val['mes_envio'].'   '
 											."\r\n");
               				$numero ++;
@@ -665,7 +665,7 @@ class ACTComisionistas extends ACTbase{
 										  '                                            '.
 											$numero.'   '.
                       $val['nit'].'   '.
-                      number_format($val['total_acumulado'], 2, ',', '.').'   '.
+                      $val['total_acumulado'].'   '.
                       $val['mes_envio'].'   '
 											."\r\n");
               				$numero ++;
