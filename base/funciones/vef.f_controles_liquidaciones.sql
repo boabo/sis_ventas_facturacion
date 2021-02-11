@@ -21,10 +21,6 @@ DECLARE
     v_res_count_liq			integer;
     v_res_liq				record;
     v_monto					numeric;
-    v_liquidacion			varchar;
-    v_union					varchar='';
-    v_data					varchar[];
-    v_in					varchar;
     v_nroaut				varchar;
 
 BEGIN
@@ -32,63 +28,97 @@ BEGIN
 
     v_resp[0] =  false;
     v_resp[1] = 'exito';
-    v_data = string_to_array(p_liquidaciones, ',');
+
+    CREATE TEMP TABLE liquidevolucion_temp (
+			            nroliqui varchar(20),
+                  fecha date,
+                  tcambio numeric,
+                  moneda varchar(3),
+                  estpago varchar(1),
+                  estado varchar(1),
+                  nroaut numeric,
+                  nrofac numeric,
+                  docmnt varchar(6)
+                  ) ON COMMIT DROP;
+
+
+    CREATE TEMP TABLE t_liquides_temp (
+                  pais varchar(3),
+                  estacion varchar(3),
+                  docmnt varchar(6),
+                  nroliqui varchar(20),
+                  renglon smallint,
+                  impcom varchar(6),
+                  tipdoc varchar(6),
+                  sobre varchar(1),
+                  importe numeric,
+                  tipreng varchar(1),
+                  idimpcom varchar(1)
+                ) ON COMMIT DROP;
+
+    CREATE TEMP TABLE tipo_cambio_liq_temp (
+                    pais varchar(3),
+                    fecha date,
+                    tcambio numeric(15,7)
+                    ) ON COMMIT DROP;
+
+
+  insert into liquidevolucion_temp
+    SELECT nroliqui, fecha, tcambio, moneda, estpago, estado, nroaut, nrofac, docmnt FROM informix.liquidevolucion;
+
+	insert into t_liquides_temp
+    SELECT * FROM informix.t_liquides;
+
+	insert into tipo_cambio_liq_temp
+    SELECT * FROM informix.tipo_cambio_liq;
+
 	--Sentencia de la consulta
 
-   	FOREACH v_liquidacion IN ARRAY v_data
-
-    LOOP
-
-      v_union = v_union ||''||v_liquidacion||''||' ,';
-
-      IF NOT EXISTS (SELECT 1 FROM informix.liquidevolucion WHERE trim(nroliqui) = trim(v_liquidacion)) THEN
+      IF NOT EXISTS (SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones)) THEN
 
           v_resp[0] = true;
-          v_resp[1] = 'No existe el numero de liquidacion '||v_liquidacion||' en el Sistema de Ingresos';
+          v_resp[1] = 'No existe el numero de liquidacion '||p_liquidaciones||' en el Sistema de Ingresos';
           return v_resp;
 
       END IF;
 
-      IF EXISTS(SELECT 1 FROM informix.liquidevolucion WHERE trim(nroliqui) = trim(v_liquidacion) AND estpago = 'P' AND docmnt != 'DEVWEB') THEN
+      IF EXISTS(SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) AND estpago = 'P' AND docmnt != 'DEVWEB') THEN
 
           v_resp[0] = true;
-          v_resp[1] = 'No se puede generar la factura porque la liquidacion '||v_liquidacion||' ya se encuentra pagada.';
+          v_resp[1] = 'No se puede generar la factura porque la liquidacion '||p_liquidaciones||' ya se encuentra pagada.';
           return v_resp;
 
       END IF;
 
-      IF EXISTS(SELECT 1 FROM informix.liquidevolucion WHERE trim(nroliqui) = trim(v_liquidacion) AND estado = '9') THEN
+      IF EXISTS(SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) AND estado = '9') THEN
 
           v_resp[0] = true;
-          v_resp[1] = 'No se puede generar la factura porque la liquidacion '||v_liquidacion||' se encuentra anulada. ';
+          v_resp[1] = 'No se puede generar la factura porque la liquidacion '||p_liquidaciones||' se encuentra anulada. ';
           return v_resp;
 
       END IF;
 
-      IF EXISTS(SELECT 1 FROM informix.liquidevolucion WHERE trim(nroliqui) = trim(v_liquidacion) AND estpago='P') THEN
+      IF EXISTS(SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) AND estpago='P') THEN
 
           v_resp[0] = true;
-          v_resp[1] = 'No se puede anular la factura porque la liquidacion '||v_liquidacion||' se encuentra pagada.';
+          v_resp[1] = 'No se puede anular la factura porque la liquidacion '||p_liquidaciones||' se encuentra pagada.';
           return v_resp;
 
       END IF;
 
-      IF EXISTS (SELECT 1 FROM informix.liquidevolucion WHERE trim(nroliqui) = trim(v_liquidacion) and nrofac > 0 and nroaut > 0  ) THEN
+      IF EXISTS (SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) and nrofac > 0 and nroaut > 0  ) THEN
          v_resp[0] = true;
-         v_resp[1] = 'EL nro de liquidacion '||v_liquidacion||' ya cuenta con un nro de factura y autorizacion.';
+         v_resp[1] = 'EL nro de liquidacion '||p_liquidaciones||' ya cuenta con un nro de factura y autorizacion.';
          return v_resp;
       END IF;
 
-    END LOOP;
-
-    v_in = substring(v_union, 1, (char_length(v_union) - 1));
 
     SELECT sum(ldes.importe) as importe, ldev.moneda, ldev.tcambio as cambio_moneda, c.tcambio as cambio_dolar
         into v_res_liq
-    FROM informix.t_liquides ldes
-    INNER JOIN informix.liquidevolucion ldev on ldev.nroliqui=ldes.nroliqui
-    INNER JOIN informix.tipo_cambio_liq c on c.fecha=ldev.fecha and trim(c.pais)='BO'
-    WHERE ldes.nroliqui = ANY (string_to_array(v_in,',')) and ldes.idimpcom='F'
+    FROM t_liquides_temp ldes
+    INNER JOIN liquidevolucion_temp ldev on ldev.nroliqui=ldes.nroliqui
+    INNER JOIN tipo_cambio_liq_temp c on c.fecha=ldev.fecha and trim(c.pais)='BO'
+    WHERE trim(ldes.nroliqui) = trim(p_liquidaciones) and ldes.idimpcom='F'
     GROUP BY ldev.moneda, c.tcambio, ldev.tcambio;
 
      IF v_res_liq.importe is null AND v_res_liq.moneda IS NULL THEN

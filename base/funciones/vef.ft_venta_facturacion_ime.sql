@@ -3349,13 +3349,12 @@ BEGIN
               /************************************/
         /*****************************************************************/
         IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
-            FOREACH v_liquidacion IN ARRAY string_to_array(upper(v_parametros.liquidaciones), ',')
-            LOOP
+
               UPDATE informix.liquidevolucion
               SET
                 nroaut = v_dosificacion.nroaut::numeric,
                 nrofac = v_nro_factura
-              WHERE trim(nroliqui) = trim(v_liquidacion);
+              WHERE trim(nroliqui) = upper(trim(v_parametros.liquidaciones));
 
               select
                   l.codigo into v_estacion
@@ -3366,9 +3365,8 @@ BEGIN
 
               INSERT INTO informix.tfactucomdoc
               (pais, estacion, nroaut, nrofac, renglon, documento) VALUES
-              ('BO', v_estacion, v_dosificacion.nroaut::numeric, v_nro_factura, 1, v_liquidacion);
+              ('BO', v_estacion, v_dosificacion.nroaut::numeric, v_nro_factura, 1, upper(trim(v_parametros.liquidaciones)));
 
-            END LOOP;
   		  END IF;
 
         /*************************************************/
