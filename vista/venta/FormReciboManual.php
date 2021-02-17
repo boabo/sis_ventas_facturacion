@@ -840,13 +840,13 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
 
 
-        this.Cmp.id_cliente.on('select',function(c,r,i) {
-            if (r.data) {
-                this.Cmp.nit.setValue(r.data.nit);
-            } else {
-                this.Cmp.nit.setValue(r.nit);
-            }
-        },this);
+        // this.Cmp.id_cliente.on('select',function(c,r,i) {
+        //     if (r.data) {
+        //         this.Cmp.nit.setValue(r.data.nit);
+        //     } else {
+        //         this.Cmp.nit.setValue(r.nit);
+        //     }
+        // },this);
 
 
         this.Cmp.nit.on('blur',function(c) {
@@ -1253,6 +1253,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                             this.Cmp.fecha_deposito.reset();
                             this.Cmp.monto_deposito.reset();
                             this.Cmp.cuenta_bancaria.reset();
+                            this.Cmp.monto_forma_pago.reset();
+                            this.Cmp.monto_forma_pago_2.reset();
                             this.Cmp.nro_deposito.allowBlank=true;
                             this.Cmp.fecha_deposito.allowBlank=true;
                             this.Cmp.monto_deposito.allowBlank=true;
@@ -2249,67 +2251,84 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 			id_grupo:0,
 			form:true,
 		},
-		{
-			config : {
-				name : 'id_cliente',
-				fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
-        style:{
-        //  width:'5000px',
-          textTransform:'uppercase',
-        },
-        width:200,
-				allowBlank : false,
-        listeners: {
-          afterrender: function(field) {
-            field.focus(false);
-          }
-        },
-				emptyText : 'Cliente...',
-				store : new Ext.data.JsonStore({
-					url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
-					id : 'id_cliente',
-					root : 'datos',
-					sortInfo : {
-            field : 'id_cliente',
-						direction : 'DESC'
-					},
-					totalProperty : 'total',
-					fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
-					remoteSort : true,
-					baseParams : {
-						par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
-					}
-				}),
-				valueField : 'id_cliente',
-				displayField : 'nombre_factura',
-				gdisplayField : 'nombre_factura',
-				hiddenName : 'id_cliente',
-				forceSelection : false,
-				typeAhead : false,
-        tpl:'<tpl for="."><div class="x-combo-list-item"><b><font color="#000CFF" weight="bold"> {nombre_factura}</font></b></div></tpl>',
-				// tpl:'<tpl for="."><div class="x-combo-list-item"><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
-				triggerAction : 'all',
-				lazyRender : true,
-				mode : 'remote',
-				pageSize : 10,
-        listWidth:'450',
-        maxHeight : 450,
-				queryDelay : 1000,
-				turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
-				ttitle:'Clientes',
-				tasignacion : true,
-				tname : 'id_cliente',
-				tdata:{},
-				cls:'uppercase',
-				tcls:'Cliente',
-				gwidth : 170,
-				minChars : 2,
-				//style:';'
-			},
-			type : 'TrigguerCombo',
-			id_grupo : 0,
-			form : true
-		},
+    {
+ 		 config:{
+ 			 name: 'nombre_factura',
+ 			 fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+ 			 allowBlank: false,
+ 			 width:200,
+ 			 gwidth: 150,
+ 			 maxLength:100,
+			 style:'text-transform:uppercase'
+ 		 },
+ 			 type:'TextField',
+ 			 filters:{pfiltro:'fact.nombre_factura',type:'string'},
+ 			 id_grupo:0,
+ 			 grid:true,
+ 			 bottom_filter:true,
+ 			 form:true
+ 	 },
+		// {
+		// 	config : {
+		// 		name : 'id_cliente',
+		// 		fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+    //     style:{
+    //     //  width:'5000px',
+    //       textTransform:'uppercase',
+    //     },
+    //     width:200,
+		// 		allowBlank : false,
+    //     listeners: {
+    //       afterrender: function(field) {
+    //         field.focus(false);
+    //       }
+    //     },
+		// 		emptyText : 'Cliente...',
+		// 		store : new Ext.data.JsonStore({
+		// 			url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
+		// 			id : 'id_cliente',
+		// 			root : 'datos',
+		// 			sortInfo : {
+    //         field : 'id_cliente',
+		// 				direction : 'DESC'
+		// 			},
+		// 			totalProperty : 'total',
+		// 			fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
+		// 			remoteSort : true,
+		// 			baseParams : {
+		// 				par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
+		// 			}
+		// 		}),
+		// 		valueField : 'id_cliente',
+		// 		displayField : 'nombre_factura',
+		// 		gdisplayField : 'nombre_factura',
+		// 		hiddenName : 'id_cliente',
+		// 		forceSelection : false,
+		// 		typeAhead : false,
+    //     tpl:'<tpl for="."><div class="x-combo-list-item"><b><font color="#000CFF" weight="bold"> {nombre_factura}</font></b></div></tpl>',
+		// 		// tpl:'<tpl for="."><div class="x-combo-list-item"><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+		// 		triggerAction : 'all',
+		// 		lazyRender : true,
+		// 		mode : 'remote',
+		// 		pageSize : 10,
+    //     listWidth:'450',
+    //     maxHeight : 450,
+		// 		queryDelay : 1000,
+		// 		turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
+		// 		ttitle:'Clientes',
+		// 		tasignacion : true,
+		// 		tname : 'id_cliente',
+		// 		tdata:{},
+		// 		cls:'uppercase',
+		// 		tcls:'Cliente',
+		// 		gwidth : 170,
+		// 		minChars : 2,
+		// 		//style:';'
+		// 	},
+		// 	type : 'TrigguerCombo',
+		// 	id_grupo : 0,
+		// 	form : true
+		// },
     {
       config:{
         name: 'correo_electronico',
@@ -4125,19 +4144,20 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
     onSubmit:function(o){
 
-      if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
-        Ext.Msg.show({
-            title:'Información',
-            msg: 'Favor Complete datos en la Cabecera.',
-            maxWidth : 550,
-            width: 550,
-            buttons: Ext.Msg.OK,
-             icon: Ext.MessageBox.QUESTION,
-            scope:this
-         });
-      }
+      // if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+      //   Ext.Msg.show({
+      //       title:'Información',
+      //       msg: 'Favor Complete datos en la Cabecera.',
+      //       maxWidth : 550,
+      //       width: 550,
+      //       buttons: Ext.Msg.OK,
+      //        icon: Ext.MessageBox.QUESTION,
+      //       scope:this
+      //    });
+      // }
 
-      else if (this.mestore.data.items.length == 0) {
+      // else
+      if (this.mestore.data.items.length == 0) {
         Ext.Msg.show({
             title:'Información',
             msg: 'Favor Complete datos en el detalle de Conceptos.',
@@ -4175,7 +4195,10 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
      registrarVariasFormasPago: function(){
 
        /*Datos a enviar al siguiente Formulario*/
-       var cliente = this.Cmp.id_cliente.getValue();
+       // var cliente = this.Cmp.id_cliente.getValue();
+       var cliente = this.Cmp.nombre_factura.getValue();
+       var nombre_factura = this.Cmp.nombre_factura.getValue();
+
        var nit = this.Cmp.nit.getValue();
        var observaciones = this.Cmp.observaciones.getValue();
        ///var paquetes = this.Cmp.id_formula.getValue();
@@ -4229,6 +4252,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                                 },
                                 {data:
                                   { cliente: cliente,
+                                    nombre_factura: nombre_factura,
                                     nit: nit,
                                     observaciones: observaciones,
                                     sucursal: sucursal,

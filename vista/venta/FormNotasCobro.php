@@ -1,16 +1,16 @@
 <?php
 /**
 *@package pXP
-*@file    FormLiquidacion.php
-*@author  bvasquez
-*@date    06/01/2020
-*@description formulario de registro factura liquidacion
+*@file    FormNotasCobro.php
+*@author  breydi vasquez
+*@date    10/02/2021
+*@description permites subir archivos a la tabla de documento_sol
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 
 <script>
-Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
+Phx.vista.FormNotasCobro=Ext.extend(Phx.frmInterfaz,{
     ActSave:'../../sis_ventas_facturacion/control/VentaFacturacion/insertarVentaCompleta',
     tam_pag: 10,
     layout: 'fit',
@@ -27,6 +27,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
     {
 		Ext.apply(this,config);
     this.data.objPadre.tipo_factura = 'computarizada';
+
         if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
 
 			this.Atributos.push({
@@ -101,8 +102,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
           {
             config:{
               name: 'observaciones',
-              // fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
-              fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> N° Liquidación</span>',
+              fieldLabel: '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Observaciones</span>',
               allowBlank: false,
               width:200,
               // minLength:12,
@@ -127,7 +127,85 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
               id_grupo:1,
               form:true
           },
-
+      /*Aumentnado para formato de impresion*/
+      // {
+      //    config : {
+      //      name : 'formato_factura',
+      //      fieldLabel : 'Formato Factura',
+      //      width:200,
+      //      allowBlank : true,
+      //      emptyText : 'Formato Factura...',
+      //      store : new Ext.data.JsonStore({
+      //        url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+      //        id : 'id_catalogo',
+      //        root : 'datos',
+      //        sortInfo : {
+      //          field : 'codigo',
+      //          direction : 'ASC'
+      //        },
+      //        totalProperty : 'total',
+      //        fields: ['codigo','descripcion'],
+      //        remoteSort : true,
+      //        baseParams:{
+      //          par_filtro: 'cat.descripcion',
+      //         cod_subsistema:'VEF',
+      //         catalogo_tipo:'tventa_formato_factura'
+      //       },
+      //      }),
+      //      valueField : 'descripcion',
+      //      displayField : 'descripcion',
+      //      gdisplayField : 'formato_factura',
+      //      hiddenName : 'formato_factura',
+      //      forceSelection : true,
+      //      typeAhead : false,
+      //      tpl: new Ext.XTemplate([
+      //          '<tpl for=".">',
+      //          '<div class="x-combo-list-item">',
+      //          '<div>',
+      //          '<p><b>Codigo: <span style="color: red;">{codigo}</span></b></p>',
+      //          '</div><p><b>Descripción: <span style="color: blue;">{descripcion}</span></b></p>',
+      //          '</div></tpl>'
+      //      ]),
+      //      triggerAction : 'all',
+      //      lazyRender : true,
+      //      mode : 'remote',
+      //      pageSize : 25,
+      //      listWidth:'450',
+      //      maxHeight : 450,
+      //      queryDelay : 1000,
+      //      gwidth : 170,
+      //      minChars : 2,
+      //      resizable:true,
+      //      enableMultiSelect: false
+      //    },
+      //    type : 'ComboBox',
+      //    id_grupo : 22,
+      //    grid: true,
+      //    form: true
+      //  },
+       /*Aumentando para enviar por correo o no*/
+       // {
+       //         config:{
+       //             name: 'enviar_correo',
+       //             fieldLabel: 'Enviar Correo',
+       //             allowBlank: true,
+       //             width:200,
+       //             emptyText:'Enviar correo...',
+       //             triggerAction: 'all',
+       //             lazyRender:true,
+       //             mode: 'local',
+       //             displayField: 'text',
+       //             valueField: 'value',
+       //             store:new Ext.data.SimpleStore({
+       //       data : [['SI', 'SI'], ['NO', 'NO']],
+       //       id : 'value',
+       //       fields : ['value', 'text']
+       //     })
+       //         },
+       //         type:'ComboBox',
+       //         id_grupo:22,
+       //         form:true
+       //     },
            {
              config:{
                name: 'correo_electronico',
@@ -144,18 +222,22 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
            },);
 
 		}
-		if (this.data.objPadre.variables_globales.habilitar_comisiones == 'si') {
+		// if (this.data.objPadre.variables_globales.habilitar_comisiones == 'si') {
+
+    if (this.data.objPadre.tipo_punto_venta == 'carga') {
 			this.Atributos.push({
 		            config:{
 		                name: 'comision',
 		                fieldLabel: 'Comisión',
 		                allowBlank: true,
-		                anchor: '80%',
+                    enableKeyEvents: true,
+		                // anchor: '80%',
+                    width:150,
 		                maxLength:20,
 		                allowNegative:false
 		            },
 		                type:'NumberField',
-		                id_grupo:0,
+		                id_grupo:8,
 		                form:true,
 		                valorInicial:0
 		      });
@@ -223,9 +305,10 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         }
 
         this.buildGrupos();
+
         this.labelReset = '<div><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">GENERAR</span></div>';
         this.labelSubmit = '<div><span style="vertical-align: middle; font-size:25px; font-weight:bold; color:#1479B8; text-shadow: 3px 0px 0px #000000;">VARIAS FP</span></div>';
-        Phx.vista.FormLiquidacion.superclass.constructor.call(this,config);
+        Phx.vista.FormNotasCobro.superclass.constructor.call(this,config);
         /*Obtenemos el tipo de cambio*/
         this.tipo_cambio = 0;
         var fecha = new Date();
@@ -308,7 +391,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                                                     direction: 'ASC'
                                                 },
                                                 totalProperty: 'total',
-                                                fields: ['id_concepto_ingas', 'tipo','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad'],
+                                                fields: ['id_concepto_ingas', 'tipo','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad','comision'],
                                                 remoteSort: true,
                                                 baseParams: {par_filtro: 'ingas.desc_ingas'}
                                             }),
@@ -410,6 +493,27 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       this.Cmp.id_medio_pago_2.store.baseParams.regional = this.data.objPadre.variables_globales.ESTACION_inicio;
       /****************************************************************************/
 
+
+      // if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
+      //   this.mostrarComponente(this.Cmp.correo_electronico);
+      //   this.mostrarComponente(this.Cmp.id_formula);
+      //   this.ocultarComponente(this.Cmp.cambio_moneda_extranjera);
+      //   this.Cmp.cambio_moneda_extranjera.allowBlank = true;
+      //
+      //   Ext.getCmp('cambioM/E').hide();
+      //   /*Aqui mostramos el boton para el pago electronico*/
+      //   Ext.getCmp('botonPagoElectronico').hide();
+      //   /**************************************************/
+      //
+      // } else {
+      //   this.ocultarComponente(this.Cmp.correo_electronico);
+      //   this.mostrarComponente(this.Cmp.cambio_moneda_extranjera);
+      //   this.Cmp.cambio_moneda_extranjera.allowBlank = true;
+      //   Ext.getCmp('cambioM/E').show();
+      //   /*Aqui ocultamos el boton para el pago electronico*/
+      //   Ext.getCmp('botonPagoElectronico').hide();
+      //   /**************************************************/
+      // }
 
     },
     /******************************************************/
@@ -597,6 +701,88 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
             },this);
         }
+        // this.ocultarComponente(this.Cmp.mco_2);
+        // this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+        // this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+        // this.ocultarComponente(this.Cmp.id_auxiliar_2);
+        // this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+
+        /*Comentado para agregar instancia de pago*/
+      /*  this.Cmp.id_forma_pago.on('select',function(c,r,i) {
+          // console.log("la tarjeta llega aqui",r.data);
+          // console.log("tbar cambiaremos",this.megrid);
+          // console.log("tbar cambiaremos",this.megrid.tbar);
+          //this.megrid.tbar.dom.style.border = "2px solid red";
+            	if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
+              //this.Cmp.cambio_moneda_extranjera.setValue
+            	this.mostrarComponente(this.Cmp.numero_tarjeta);
+            	this.Cmp.numero_tarjeta.allowBlank = false;
+            	if (r.data.registrar_tarjeta == 'si') {
+					      this.mostrarComponente(this.Cmp.numero_tarjeta);
+	            	this.mostrarComponente(this.Cmp.codigo_tarjeta);
+	            	this.mostrarComponente(this.Cmp.tipo_tarjeta);
+					      this.ocultarComponente(this.Cmp.id_auxiliar);
+                this.ocultarComponente(this.Cmp.mco);
+					      this.Cmp.codigo_tarjeta.allowBlank = false;
+                this.Cmp.tipo_tarjeta.allowBlank = false;
+	            	this.Cmp.mco.allowBlank = true;
+	            } else {
+	            	this.Cmp.codigo_tarjeta.allowBlank = true;
+                this.Cmp.mco.allowBlank = true;
+            		this.Cmp.tipo_tarjeta.allowBlank = true;
+                this.ocultarComponente(this.Cmp.numero_tarjeta);
+					      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+            		this.ocultarComponente(this.Cmp.codigo_tarjeta);
+            		this.ocultarComponente(this.Cmp.tipo_tarjeta);
+					      this.mostrarComponente(this.Cmp.id_auxiliar);
+            		this.Cmp.codigo_tarjeta.reset();
+            		this.Cmp.tipo_tarjeta.reset();
+	            }
+            } else {
+            	this.ocultarComponente(this.Cmp.numero_tarjeta);
+            	this.ocultarComponente(this.Cmp.codigo_tarjeta);
+            	this.ocultarComponente(this.Cmp.tipo_tarjeta);
+				      this.ocultarComponente(this.Cmp.id_auxiliar);
+            	this.Cmp.numero_tarjeta.allowBlank = true;
+            	this.Cmp.codigo_tarjeta.allowBlank = true;
+              this.Cmp.mco.allowBlank = true;
+            	this.Cmp.tipo_tarjeta.allowBlank = true;
+            	this.Cmp.numero_tarjeta.reset();
+            	this.Cmp.codigo_tarjeta.reset();
+            	this.Cmp.tipo_tarjeta.reset();
+            }
+            if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
+                this.mostrarComponente(this.Cmp.mco);
+                this.Cmp.numero_tarjeta.allowBlank = true;
+              	this.Cmp.codigo_tarjeta.allowBlank = true;
+              	this.Cmp.tipo_tarjeta.allowBlank = true;
+                this.Cmp.mco.allowBlank = false;
+            } else {
+                this.ocultarComponente(this.Cmp.mco);
+            }
+
+            if (r.data.codigo == 'CCVI') {
+               //console.log("llega aqui el tipo de tarjeta",this);
+               this.Cmp.tipo_tarjeta.setValue('VI');
+               this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'VI',0);
+            } else if (r.data.codigo == 'CCAX') {
+                 //console.log("llega aqui el tipo de tarjeta",this);
+                 this.Cmp.tipo_tarjeta.setValue('AX');
+                 this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'AX',0);
+              } else if (r.data.codigo == 'CCCA') {
+                //   console.log("llega aqui el tipo de tarjeta",this);
+                   this.Cmp.tipo_tarjeta.setValue('CA');
+                   this.Cmp.tipo_tarjeta.fireEvent('select', this.Cmp.tipo_tarjeta,'CA',0);
+                } else {
+                this.Cmp.tipo_tarjeta.reset();
+              }
+
+
+
+            this.moneda = r.data.desc_moneda;
+            this.Cmp.moneda_tarjeta.setValue(this.moneda);
+            //console.log("aqui recuperar codigo moneda",this.moneda);
+        },this);*/
 
         /****************************Aumnetando la instancia de pago********************************/
         this.Cmp.id_medio_pago.on('select',function(c,r,i) {
@@ -766,6 +952,92 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
         },this);
 
+
+        /************************************Fin agregar instancia de pago***************************************/
+
+          /*Comentando para aumentar el id_instancia_pago_2*/
+        /*this.Cmp.id_forma_pago_2.on('select',function(c,r,i) {
+          if (r.data.codigo == 'CCVI') {
+             //console.log("llega aqui el tipo de tarjeta",this);
+             this.Cmp.tipo_tarjeta_2.setValue('VI');
+             this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'VI',0);
+          } else if (r.data.codigo == 'CCAX') {
+              // console.log("llega aqui el tipo de tarjeta",this);
+               this.Cmp.tipo_tarjeta_2.setValue('AX');
+               this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'AX',0);
+            }else if (r.data.codigo == 'CCCA') {
+                // console.log("llega aqui el tipo de tarjeta",this);
+                 this.Cmp.tipo_tarjeta_2.setValue('CA');
+                 this.Cmp.tipo_tarjeta_2.fireEvent('select', this.Cmp.tipo_tarjeta_2,'CA',0);
+              } else {
+              this.Cmp.tipo_tarjeta_2.reset();
+            }
+
+          if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
+          this.mostrarComponente(this.Cmp.numero_tarjeta_2);
+          this.Cmp.numero_tarjeta_2.allowBlank = false;
+          if (r.data.registrar_tarjeta == 'si') {
+            this.mostrarComponente(this.Cmp.numero_tarjeta_2);
+            this.mostrarComponente(this.Cmp.codigo_tarjeta_2);
+            this.mostrarComponente(this.Cmp.tipo_tarjeta_2);
+            this.ocultarComponente(this.Cmp.id_auxiliar_2);
+            this.ocultarComponente(this.Cmp.mco_2);
+            this.Cmp.codigo_tarjeta_2.allowBlank = false;
+            this.Cmp.tipo_tarjeta_2.allowBlank = false;
+            this.Cmp.mco_2.allowBlank = true;
+          } else {
+            this.Cmp.codigo_tarjeta_2.allowBlank = true;
+            this.Cmp.mco_2.allowBlank = true;
+            this.Cmp.tipo_tarjeta_2.allowBlank = true;
+            this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+            this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+            this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+            this.mostrarComponente(this.Cmp.id_auxiliar_2);
+            this.Cmp.codigo_tarjeta_2.reset();
+            this.Cmp.tipo_tarjeta_2.reset();
+          }
+        } else {
+          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.id_auxiliar_2);
+          this.Cmp.numero_tarjeta_2.allowBlank = true;
+          this.Cmp.codigo_tarjeta_2.allowBlank = true;
+          this.Cmp.mco_2.allowBlank = true;
+          this.Cmp.tipo_tarjeta.allowBlank = true;
+          this.Cmp.numero_tarjeta_2.reset();
+          this.Cmp.codigo_tarjeta_2.reset();
+          this.Cmp.tipo_tarjeta.reset();
+        }
+        if (r.data.nombre == 'MISCELANEOUS CHARGER ORDER BOB' || r.data.nombre == 'MISCELANEOUS CHARGER ORDER USD') {
+            this.mostrarComponente(this.Cmp.mco_2);
+            this.Cmp.numero_tarjeta_2.allowBlank = true;
+            this.Cmp.codigo_tarjeta_2.allowBlank = true;
+            this.Cmp.tipo_tarjeta.allowBlank = true;
+            this.Cmp.mco_2.allowBlank = false;
+        } else {
+            this.ocultarComponente(this.Cmp.mco_2);
+        }
+        this.moneda_2 = r.data.desc_moneda;
+        this.Cmp.moneda_tarjeta_2.setValue(this.moneda_2);
+
+        // console.log("llega los parametros aqui",this.Cmp.moneda_tarjeta_2.value);
+        // console.log("llega el tipo de cambio aqui",this.tipo_cambio);
+         if (this.Cmp.moneda_tarjeta.value != 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD' ) {
+            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
+
+         }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD') {
+           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
+
+         }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value != 'USD') {
+           this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
+         }
+         else{
+             this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
+         }
+
+       },this);*/
+        /**************************************************************************************************************/
         /********************************Aumemtando condicios para el id moneda****************************************/
         this.Cmp.id_moneda.on('select',function(c,r,i) {
           if(r.data.id_moneda == 2){
@@ -875,6 +1147,11 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
         },this);
 
+        if(this.data.objPadre.tipo_punto_venta=='carga'){
+          this.Cmp.comision.on('keyup', function(){
+            this.obtenersuma(true);
+          },this)
+        }
 
           this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
           this.obtenersuma();
@@ -1003,6 +1280,69 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
         },this);
 
+
+        /**************************************************************************************************************/
+
+        /*Comentando para aumentar la instancia de pago*/
+        // this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
+        //   this.obtenersuma();
+        //   if(this.moneda == 'USD'){
+        //       //console.log("llega el dolar");
+        //     this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
+        //     this.Cmp.cambio_moneda_extranjera.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total)/this.tipo_cambio);
+        //   } else {
+        //     this.Cmp.cambio.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total));
+        //     this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
+        //   }
+        //
+        //   if (this.moneda == 'USD' && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
+        //
+        //
+        //     /**********************************Cambiamos el Style *****************************************/
+        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+        //     this.Cmp.cambio.label.dom.control.style.color = "red";
+        //     this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+        //     /**********************************Cambiamos el Style *****************************************/
+        //     this.Cmp.id_forma_pago_2.enable();
+        //     this.Cmp.monto_forma_pago_2.enable();
+        //     this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
+        //   }else if (this.moneda != 'USD' && this.Cmp.monto_forma_pago.getValue() < this.suma_total) {
+        //
+        //
+        //     /**********************************Cambiamos el Style *****************************************/
+        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
+        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
+        //     this.Cmp.cambio.label.dom.control.style.color = "red";
+        //     this.Cmp.cambio.label.dom.control.style.background = "#FFE4E4";
+        //     /**********************************Cambiamos el Style *****************************************/
+        //
+        //
+        //     this.Cmp.id_forma_pago_2.enable();
+        //     this.Cmp.monto_forma_pago_2.enable();
+        //     this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()));
+        //   } else{
+        //     this.Cmp.id_forma_pago_2.disable();
+        //     this.Cmp.monto_forma_pago_2.disable();
+        //     this.Cmp.monto_forma_pago_2.reset();
+        //     this.Cmp.id_forma_pago_2.reset();
+        //     this.Cmp.moneda_tarjeta_2.reset();
+        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "blue";
+        //     this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#EFFFD6";
+        //     this.Cmp.cambio.label.dom.control.style.color = "";
+        //     this.Cmp.cambio.label.dom.control.style.background = "#EFFFD6";
+        //     this.ocultarComponente(this.Cmp.mco_2);
+        //     this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+        //     this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+        //     this.ocultarComponente(this.Cmp.id_auxiliar_2);
+        //     this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+        //   }
+        //
+        //
+        //
+        //
+        // },this);
+
         this.Cmp.id_sucursal.on('select',function(c,r,i) {
         	if (this.accionFormulario != 'EDIT') {
               /*Comentando para agregar InstanciaPago*/
@@ -1079,7 +1419,29 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
   			},this);
 
 
+
+        // this.Cmp.nit.on('blur',function(c) {
+        //   if (this.accionFormulario != 'EDIT') {
+        //     	if (this.Cmp.nit.getValue() != '') {
+        //     		this.Cmp.id_cliente.store.baseParams.nit = this.Cmp.nit.getValue();
+        //         	this.Cmp.id_cliente.store.load({params:{start:0,limit:1},
+    		//            callback : function (r) {
+    		//            		this.Cmp.id_cliente.store.baseParams.nit = '';
+    		//            		if (r.length == 1) {
+        //
+    		//            			this.Cmp.id_cliente.setValue(r[0].data.id_cliente);
+    		//            			}
+        //
+    		//             }, scope : this
+    		//         });
+    		//     }
+        //   }
+        // },this);
+
         this.Cmp.id_formula.on('select',function(c,r,i) {
+          if(this.Cmp.comision!=undefined){
+            this.Cmp.comision.reset()
+          }
             if (r.data) {
                 var formu = r.data.id_formula;
                 if (formu != 0) {
@@ -1175,6 +1537,22 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                     }, scope : this
                 });
             /***************/
+
+        /*Comentando para incluir InstanciaPago*/
+        /*this.Cmp.id_forma_pago.store.load({params:{start:0,limit:50},
+		           callback : function (r) {
+		           		//if (this.accionFormulario != 'NEW') {
+		           			if (r.length == 1 ) {
+			                    this.Cmp.id_forma_pago.setValue(r[0].data.id_forma_pago);
+			                    this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,r[0],0);
+			                }
+		           		//} else {
+		           			this.Cmp.id_forma_pago.fireEvent('select', this.Cmp.id_forma_pago,this.Cmp.id_forma_pago.store.getById(this.Cmp.id_forma_pago.getValue()),0);
+		           		//}
+		                this.Cmp.id_forma_pago.store.baseParams.defecto = 'no';
+		                this.Cmp.id_forma_pago.modificado = true;
+		            }, scope : this
+		        });*/
       }
       if (this.accionFormulario == 'EDIT') {
 
@@ -1182,6 +1560,19 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.cambio.setValue(0);
         this.Cmp.cambio_moneda_extranjera.setValue(0);
         /*******************Mostramos si se tiene excento***********************/
+        // if (this.Cmp.excento.getValue() == 0) {
+        //   this.ocultarComponente(this.Cmp.excento);
+        // } else {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }
+
+        // if (this.asociar_boleto == 'si') {
+        //   this.mostrarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank=false;
+        // } else {
+        //   this.ocultarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank=true;
+        // }
         /**********************************************************************/
 
         /*****************Habilitamos los campos si se pone editar***************/
@@ -1206,6 +1597,10 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.observaciones.setDisabled(true);
             //this.Cmp.id_punto_venta.setDisabled(true);
             this.Cmp.excento.setDisabled(true);
+            // this.megrid.topToolbar.items.items[0].setDisabled(true);
+            // this.megrid.topToolbar.items.items[1].setDisabled(true);
+            // this.megrid.topToolbar.items.items[2].setDisabled(true);
+            // this.megrid.topToolbar.items.items[3].setDisabled(true);
             this.megrid.colModel.config[3].editor='';
             this.megrid.colModel.config[4].editor='';
             this.megrid.colModel.config[5].editor='';
@@ -1218,6 +1613,10 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.observaciones.setDisabled(false);
             //this.Cmp.id_punto_venta.setDisabled(false);
             this.Cmp.excento.setDisabled(false);
+            // this.megrid.topToolbar.items.items[0].setDisabled(false);
+            // this.megrid.topToolbar.items.items[1].setDisabled(false);
+            // this.megrid.topToolbar.items.items[2].setDisabled(false);
+            // this.megrid.topToolbar.items.items[3].setDisabled(false);
 
             /*************************Habilitar la grilla para editar*************************/
             this.megrid.colModel.config[3].editor='';
@@ -1276,19 +1675,62 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontWeight="bold";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontSize="20px";
 
+
+      if(this.data.objPadre.tipo_punto_venta == 'carga' && this.Cmp.comision != undefined && (this.req_comision!=undefined || this.requiere_comision=='si')){
+        var boolcomi=false;
+        if(this.req_comision!=undefined){
+          for (var i = 0; i < this.req_comision.length; i++) {
+              if (this.req_comision[i] == 'si') {
+                    boolcomi = true;
+              }
+          }
+        }else{
+          if(this.requiere_comision=='si'){
+            boolcomi=true;
+          }
+        }
+
+        if (boolcomi){
+          if ((this.suma_total > 0) && (this.Cmp.comision.getValue() > this.suma_total)){
+            Ext.Msg.show({
+               title:'Información',
+               maxWidth : 550,
+               width: 550,
+               msg: 'El monto de la comision no puede ser mayor al total de la venta',
+               buttons: Ext.Msg.OK,
+               icon: Ext.MessageBox.WARNING,
+               scope:this
+            });
+          }
+          if( (this.suma_total > 0) && (this.Cmp.comision.getValue() > 0)){
+              // if( parseInt(this.suma_total - this.Cmp.comision.getValue()) > 0 ){
+              this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[2].childNodes[0].style.color="red";
+              this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[2].childNodes[0].style.fontWeight="bold";
+              this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[2].childNodes[0].style.fontSize="20px";
+              this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[2].childNodes[0].innerHTML = 'TOTAL CON COMISION: '+ (parseFloat(this.suma_total) - this.Cmp.comision.getValue())
+              this.suma_total = (parseFloat(this.suma_total - this.Cmp.comision.getValue()) > 0)?parseFloat(this.suma_total - this.Cmp.comision.getValue()):this.suma_total;
+            // }
+          }
+        }
+      }
+
       /*Aqui pára mantener el campo*/
       var requiere_excento = [];
       var requiere_asociar = [];
-
+      var requiere_comision = [];
 
       if (this.megrid.store.data.items.length>0) {
         for (var i = 0; i < this.megrid.store.data.items.length; i++) {
           if (!requiere_excento.includes(this.megrid.store.data.items[i].data.requiere_excento)) {
               requiere_excento.push(this.megrid.store.data.items[i].data.requiere_excento);
           }
+          if (!requiere_comision.includes(this.megrid.store.data.items[i].data.requiere_comision)) {
+              requiere_comision.push(this.megrid.store.data.items[i].data.requiere_comision);
+          }
         }
       } else {
         requiere_excento = [];
+        requiere_comision = [];
       }
 
 
@@ -1303,6 +1745,16 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
       } else {
         this.ocultarComponente(this.Cmp.excento);
+      }
+
+      if(requiere_comision.includes('si')){
+        if(this.Cmp.comision!=undefined){
+          this.mostrarComponente(this.Cmp.comision);
+        }
+      }else{
+        if(this.Cmp.comision!=undefined){
+          this.ocultarComponente(this.Cmp.comision);
+        }
       }
 
 
@@ -1325,6 +1777,68 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         this.ocultarComponente(this.Cmp.boleto_asociado);
         this.Cmp.boleto_asociado.allowBlank = true;
       }
+      //
+      //
+      // if (this.requiere_excento != undefined) {
+      //   if (!requiere_excento.includes(this.requiere_excento)) {
+      //     requiere_excento.push(this.requiere_excento);
+      //     this.Cmp.excento.setDisabled(true);
+      //   }
+      // }
+      //
+      //   if (requiere_excento.includes('si')) {
+      //     this.mostrarComponente(this.Cmp.excento);
+      //     this.Cmp.excento.allowBlank = false;
+      //
+      //     if (this.accionFormulario != 'EDIT') {
+      //       this.Cmp.excento.setDisabled(false);
+      //     }
+      //
+      //
+      //   } else {
+      //     this.ocultarComponente(this.Cmp.excento);
+      //     this.Cmp.boleto_asociado.allowBlank = true;
+      //     this.Cmp.boleto_asociado.reset();
+      //   }
+      //
+      //   if (this.asociar_boleto != undefined) {
+      //     requiere_asociar.push(this.asociar_boleto);
+      //   }
+      //
+      //   if (this.megrid.store.data.items.length>0) {
+      //     for (var i = 0; i < this.megrid.store.data.items.length; i++) {
+      //       if (!requiere_asociar.includes(this.megrid.store.data.items[i].data.asociar_boletos)) {
+      //           requiere_asociar.push(this.megrid.store.data.items[i].data.asociar_boletos);
+      //       }
+      //
+      //
+      //     }
+      //
+      //   } else {
+      //     requiere_asociar = [];
+      //     //this.requiere_asociar_boleto = undefined;
+      //   }
+      //
+      //   console.log("aqui llega datos",requiere_asociar);
+      //   console.log("aqui llega datos22222",requiere_excento);
+      //
+      // if (requiere_asociar.includes('si')) {
+      //   this.mostrarComponente(this.Cmp.boleto_asociado);
+      //   this.Cmp.boleto_asociado.allowBlank = false;
+      // } else {
+      //   this.ocultarComponente(this.Cmp.boleto_asociado);
+      //   this.Cmp.boleto_asociado.allowBlank = true;
+      //   this.Cmp.boleto_asociado.reset();
+      // }
+
+
+        // if (this.requiere_asociar_boleto != undefined) {
+        //   if (this.requiere_asociar_boleto == 'si') {
+        //     this.mostrarComponente(this.Cmp.boleto_asociado);
+        //     this.Cmp.boleto_asociado.allowBlank = false;
+        //   }
+        // }
+
     },
 
 
@@ -1436,10 +1950,41 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                             var rec = this.mestore.getAt(index[0]);
                             this.mestore.remove(rec);
                             this.obtenersuma(true);
+                            /*Cuando eliminamos un servicio que requiere excento reseteamos y ocultamos el campo*/
+                            // if (rec.data.requiere_excento == 'si') {
+                            //   this.ocultarComponente(this.Cmp.excento);
+                            //   this.Cmp.excento.reset();
+                            // }
+                            //
+                            // /*Cuando eliminamos un servicio que requiere boleto reseteamos y ocultamos el campo*/
+                            // if (rec.data.asociar_boleto == 'si') {
+                            //   this.ocultarComponente(this.Cmp.boleto_asociado);
+                            //   this.Cmp.boleto_asociado.reset();
+                            //   this.Cmp.boleto_asociado.allowBlank=true;
+                            // }
+
+
+
+                            /***********************************************************************************/
                         }
 
 
-                        }
+                        },
+                    // {
+                    //         text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
+                    //         scope:this,
+                    //         handler: function(){
+                    //             var index = this.megrid.getSelectionModel().getSelectedCell();
+                    //             if (!index) {
+                    //                 return false;
+                    //             }
+                    //             var rec = this.mestore.getAt(index[0]);
+                    //             this.onDuplicateDetail(rec);
+                    //             this.evaluaGrilla();
+                    //             this.obtenersuma();
+                    //
+                    //         }
+                    // }
                   ],
 
                     columns: [
@@ -1544,6 +2089,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                         {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
                         {name:'asociar_boletos', type: 'string'},
                         {name:'requiere_excento', type: 'string'},
+                        {name:'requiere_comision', type: 'string'}
 
                     ],
                     remoteSort: true,
@@ -1615,7 +2161,22 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                         }
 
 
-                        }
+                        },
+                    // {
+                    //         text: '<i class="fa fa-plus-circle fa-lg"></i> Duplicar registro',
+                    //         scope:this,
+                    //         handler: function(){
+                    //             var index = this.megrid.getSelectionModel().getSelectedCell();
+                    //             if (!index) {
+                    //                 return false;
+                    //             }
+                    //             var rec = this.mestore.getAt(index[0]);
+                    //             this.onDuplicateDetail(rec);
+                    //             this.evaluaGrilla();
+                    //             this.obtenersuma();
+                    //
+                    //         }
+                    // }
                   ],
                     columns: [
                     new Ext.grid.RowNumberer(),
@@ -1732,9 +2293,9 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                                                               direction: 'ASC'
                                                           },
                                                           totalProperty: 'total',
-                                                          fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad'],
+                                                          fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad','comision'],
                                                           remoteSort: true,
-                                                          baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
+                                                          baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'cobro', emision:'notas_de_cobro'}
                                                       }),
                                                       valueField: 'id_concepto_ingas',
                                                       displayField: 'desc_ingas',
@@ -1747,6 +2308,19 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                                                          '<p><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
                                                          '</div></tpl>'
                                                        ]),
+                                                      // tpl: new Ext.XTemplate([
+                                                      //    '<tpl for=".">',
+                                                      //    '<div class="x-combo-list-item">',
+                                                      //    '<p><b>Nombre:</b><span style="color: green; font-weight:bold;"> {desc_ingas}</span></p></p>',
+                                                      //    '<p><b>Actividad Económica:</b><span style="color: green; font-weight:bold;"> {nombre_actividad}</span></p></p>',
+                                                      //    '<p><b>Moneda:</b> <span style="color: blue; font-weight:bold;">{desc_moneda}</span></p>',
+                                                      //    '<p><b>Precio:</b> <span style="color: blue; font-weight:bold;">{precio}</span></p>',
+                                                      //    '<p><b>Tiene Exento:</b> <span style="color: red; font-weight:bold;">{excento}</span></p>',
+                                                      //    '<p><b>Requiere Descripción:</b> <span style="color: red; font-weight:bold;">{requiere_descripcion}</span></p>',
+                                                      //    '<p><b>Contabilizable:</b> <span style="color: red; font-weight:bold;">{contabilizable}</span></p>',
+                                                      //    '<p><b>Asociar:</b> <span style="color: red; font-weight:bold;">{boleto_asociado}</span></p>',
+                                                      //    '</div></tpl>'
+                                                      //  ]),
                                                       typeAhead: false,
                                                       triggerAction: 'all',
                                                       lazyRender: true,
@@ -1892,7 +2466,6 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
     },
 
     ComboIdProducto : function (tipo) {
-
       /*Aqui aumentamos para poner el filtro de los conceptos*/
       this.variables.items.items[1].store.baseParams.regionales = this.data.objPadre.variables_globales.ESTACION_inicio;
       /*******************************************************/
@@ -1903,7 +2476,6 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       //this.variables.items.items[2].setVisible(false)
     	if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
     		this.variables.items.items[1].store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
-
         this.variables.items.items[1].on('select',function(c,r,i) {
           if (r.data.requiere_descripcion == 'si') {
             this.variables.items.items[2].setDisabled(false);
@@ -1921,6 +2493,44 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
 
       /***************Habilitamos el campo Excento****************/
+      if (this.data.datos_originales == undefined) {
+        // if (r.data.excento == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }else{
+        //   this.ocultarComponente(this.Cmp.excento);
+        //   this.Cmp.excento.reset();
+        // }
+
+        // if (r.data.boleto_asociado == 'si' /*|| this.data.datos_originales.data.excento > 0*/) {
+        //   this.mostrarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank = false;
+        // }else{
+        //   this.ocultarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.reset();
+        //   this.Cmp.boleto_asociado.allowBlank = true;
+        // }
+
+
+
+      } else {
+        // if (r.data.excento == 'si' || this.data.datos_originales.data.excento > 0) {
+        //   this.mostrarComponente(this.Cmp.excento);
+        // }else{
+        //   this.ocultarComponente(this.Cmp.excento);
+        //   this.Cmp.excento.reset();
+        // }
+
+        // if (r.data.boleto_asociado == 'si') {
+        //   this.mostrarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.allowBlank = false;
+        // }else{
+        //   this.ocultarComponente(this.Cmp.boleto_asociado);
+        //   this.Cmp.boleto_asociado.reset();
+        //   this.Cmp.boleto_asociado.allowBlank = true;
+        // }
+
+
+      }
 
       if (r.data.requiere_descripcion == 'si') {
         this.variables.items.items[2].setDisabled(false);
@@ -1928,6 +2538,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         this.ventana_detalle.body.dom.style.height = "230px";
       }
       this.requiere_excento = r.data.excento;
+      this.requiere_comision = r.data.comision;
       this.contabilizable = r.data.contabilizable??"no";
       this.asociar_boleto = r.data.boleto_asociado??"no";
 
@@ -2008,6 +2619,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       precio_unitario: this.variables.items.items[4].getValue(),
       precio_total:this.variables.items.items[5].getValue() ,
       requiere_excento:this.requiere_excento,        //
+      requiere_comision:this.requiere_comision,        //
       id_venta:this.Cmp.id_venta.getValue()  ,      //
       contabilizable:this.contabilizable??"no",     //
       asociar_boletos:this.asociar_boleto??"no"        //
@@ -2036,6 +2648,20 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                }
         }
 
+          // for (var i = this.mestore.data.length; i >= 0; i--) {
+          //         var suma_eli = 0;
+          //         suma_eli = suma_eli + i;
+          //         var dato = 0;
+          //         dato = suma_eli - 1;
+          //         if(dato == (-1) ){
+          //           dato = 0;
+          //         }
+          //         if (suma_eli == 0 ) {
+          //             this.successRecuperarDatos();
+          //         } else if (suma_eli >= 0 && this.mestore.data.items[(dato)].data.tipo == 'formula')  {
+          //            this.mestore.remove(this.mestore.getAt(dato));
+          //          }
+          //   }
       },
 
       successRecuperarDatos : function () {
@@ -2049,14 +2675,17 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                   this.id_producto_recu = reg.ROOT.datos.v_id_producto;
                   this.id_formula_recu = reg.ROOT.datos.v_id_formula;
                   this.tiene_excento = reg.ROOT.datos.v_excento_req;
+                  this.tiene_comision = reg.ROOT.datos.v_comision_req;
                   this.boletos_asociados = reg.ROOT.datos.v_boletos_asociados;
                   this.excento_formula = reg.ROOT.datos.v_requiere_excento;
+                  this.comision_paquete = reg.ROOT.datos.v_comision_paquete;
                   this.requiere_asociar_boleto = reg.ROOT.datos.v_boleto_asociado;
                   this.precio_inde = reg.ROOT.datos.v_precio;
                   this.producto_nombre = this.nombre_producto.split(",");
                   this.producto_id = this.id_producto_recu.split(",");
                   this.id_formula = this.id_formula_recu.split(",");
                   this.req_excento = this.tiene_excento.split(",");
+                  this.req_comision = this.tiene_comision.split(",");
                   this.precio_form = this.precio_inde.split(",");
                   this.boletos_asociados_recup = this.boletos_asociados.split(",");
                   this.desc_moneda_recu = reg.ROOT.datos.v_desc_moneda;
@@ -2073,6 +2702,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                       {name:'estado_reg', type: 'string'},
                       {name:'cantidad', type: 'numeric'},
                       {name:'requiere_excento', type: 'string'},
+                      {name:'requiere_comision', type: 'string'},
                       {name:'precio_unitario', type: 'numeric'},
                       {name:'precio_total', type: 'numeric'},
                       {name:'id_usuario_ai', type: 'numeric'},
@@ -2100,6 +2730,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                     tipo : 'formula',
                     cantidad : '1',
                     requiere_excento:this.req_excento[i],
+                    requiere_comision: this.req_comision[i],
                     precio_unitario : (precio_base==undefined || precio_base==null || precio_base=='')?0:precio_base,
                     precio_total: precio_base*1,
                     asociar_boletos: this.boletos_asociados_recup[i],
@@ -2113,6 +2744,12 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                   if (this.excento_formula == 'si') {
                     this.mostrarComponente(this.Cmp.excento);
                   }
+                  // //bvp
+                  // if (this.comision_paquete == 'si') {
+                  //   if(this.Cmp.comision!=undefined){
+                  //     this.mostrarComponente(this.Cmp.comision);
+                  //   }
+                  // }
 
                   if (this.requiere_asociar_boleto == 'si') {
                     this.mostrarComponente(this.Cmp.boleto_asociado);
@@ -2393,7 +3030,34 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                            items: [],
                         }]
                     },
-
+                      // {
+                      //  bodyStyle: 'padding-right:5px;',
+                      //
+                      //  border: false,
+                      //  items: [{
+                      //        xtype: 'fieldset',
+                      //        frame: true,
+                      //        layout: 'form',
+                      //        width: '33%',
+                      //        border: false,
+                      //        id:'botonFormasPago',
+                      //        title: '<br><br>',
+                      //        style: {
+                      //                 width: '40%',
+                      //               },
+                      //        padding: '0 0 0 10',
+                      //        bodyStyle: 'padding-left:5px;',
+                      //        id_grupo: 2,
+                      //        items: [{
+                      //          xtype:'button',
+                      //          id:'dividirFormasPago',
+                      //          text:'<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:50px; vertical-align: middle;"><br><span style="font-weight:bold;"> Varias Formas <br>de Pago</span>',
+                      //          handler: this.registrarVariasFormasPago,
+                      //          scope:this,
+                      //          scale: 'medium'
+                      //        }],
+                      //     }]
+                      // },
 
                       ]
                             }
@@ -2405,10 +3069,39 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
 
     },
+    // crearStoreFormaPago : function () {
+    // 	this.storeFormaPago = new Ext.data.JsonStore({
+    // 	url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
+		// 	id: 'id_forma_pago',
+		// 	root: 'datos',
+		// 	sortInfo: {
+		// 		field: 'id_forma_pago',
+		// 		direction: 'ASC'
+		// 	},
+		// 	totalProperty: 'total',
+		// 	fields: [
+	  //          {name: 'id_forma_pago',type: 'numeric'},
+	  //          {name: 'nombre',      type: 'string'},
+	  //          {name: 'valor',     type: 'numeric'},
+	  //          {name: 'numero_tarjeta',     type: 'string'},
+	  //          {name: 'codigo_tarjeta',     type: 'string'},
+	  //          {name: 'registrar_tarjeta',     type: 'string'},
+    //          {name: 'registrar_tipo_tarjeta',     type: 'string'},
+	  //          {name: 'registrar_cc',     type: 'string'},
+	  //          {name: 'tipo_tarjeta',     type: 'string'}
+	  //       ]
+		// });
+		// if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
+		//   this.storeFormaPago.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
+		// }
+		// this.storeFormaPago.baseParams.id_sucursal = this.Cmp.id_sucursal.getValue();
+		// this.storeFormaPago.baseParams.id_venta = this.Cmp.id_venta.getValue();
+		// this.storeFormaPago.load({params:{start:0,limit:100}});
+    // },
 
     loadValoresIniciales:function()
     {
-       Phx.vista.FormLiquidacion.superclass.loadValoresIniciales.call(this);
+       Phx.vista.FormNotasCobro.superclass.loadValoresIniciales.call(this);
     },
     onReset:function(o){
 			this.generar = 'generar';
@@ -2464,6 +3157,17 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
 
        if (requiere_excento.includes( 'si' )) {
+         // if (this.Cmp.excento.getValue() == 0) {
+         //   Ext.Msg.show({
+         //       title:'Información',
+         //       msg: 'Tiene un concepto que requiere un valor exento y el valor exento no puede ser 0',
+         //       maxWidth : 550,
+         //       width: 550,
+         //       buttons: Ext.Msg.OK,
+         //        icon: Ext.MessageBox.QUESTION,
+         //       scope:this
+         //    });
+         // } else {
            this.registrarVariasFormasPago();
          //}
        } else if (requiere_asociar.includes( 'si' )) {
@@ -2481,6 +3185,17 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
            this.registrarVariasFormasPago();
          }
        }
+       // else if (this.Cmp.id_cliente.getValue() == '' || this.Cmp.id_cliente.getValue() == null) {
+       //      Ext.Msg.show({
+       //          title:'Información',
+       //          msg: 'Favor Complete datos en la Cabecera.',
+       //          maxWidth : 550,
+       //          width: 550,
+       //          buttons: Ext.Msg.OK,
+       //           icon: Ext.MessageBox.QUESTION,
+       //          scope:this
+       //       });
+       //    }
        else if (this.Cmp.nombre_factura.getValue() == '' || this.Cmp.nombre_factura.getValue() == null) {
             Ext.Msg.show({
                 title:'Información',
@@ -2527,7 +3242,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       imprimirNota: function(){
    		//Ext.Msg.confirm('Confirmación','¿Está seguro de Imprimir el Comprobante?',function(btn){
    				Phx.CP.loadingShow();
-         if (this.data.objPadre.tipo_punto_venta == 'cto' || this.data.objPadre.tipo_punto_venta == 'devoluciones') {
+         if (this.data.objPadre.tipo_punto_venta == 'ato' || this.data.objPadre.tipo_punto_venta == 'devoluciones') {
            if (this.data.objPadre.variables_globales.formato_comprobante == 'carta') {
            		Ext.Ajax.request({
            						url : '../../sis_ventas_facturacion/control/Cajero/reporteFacturaCarta',
@@ -2614,22 +3329,11 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         {
     			//configuracion del componente
     			config:{
-    				labelSeparator:'',
-    				inputType:'hidden',
-    				name: 'liquidacion'
-    			},
-    			valorInicial:'FCD',
-    			type:'Field',
-    			form:true
-    		},
-        {
-    			//configuracion del componente
-    			config:{
     					labelSeparator:'',
     					inputType:'hidden',
     					name: 'tipo_interfaz'
     			},
-          valorInicial:'FCD',
+          valorInicial:'notas_x_cobro',
     			type:'Field',
     			form:true
     		},
@@ -2688,6 +3392,66 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
  			 bottom_filter:true,
  			 form:true
  	 },
+		// {
+		// 	config : {
+		// 		name : 'id_cliente',
+		// 		fieldLabel : '<img src="../../../lib/imagenes/facturacion/conversacion.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Razón Social</span>',
+    //     style:{
+    //     //  width:'5000px',
+    //       textTransform:'uppercase',
+    //     },
+    //     width:200,
+		// 		allowBlank : false,
+    //     // listeners: {
+    //     //   afterrender: function(field) {
+    //     //     field.focus(false);
+    //     //   }
+    //     // },
+		// 		emptyText : 'Cliente...',
+		// 		store : new Ext.data.JsonStore({
+		// 			url : '../../sis_ventas_facturacion/control/Cliente/listarCliente',
+		// 			id : 'id_cliente',
+		// 			root : 'datos',
+		// 			sortInfo : {
+		// 				field : 'id_cliente',
+		// 				direction : 'DESC'
+		// 			},
+		// 			totalProperty : 'total',
+		// 			fields : ['id_cliente', 'nombres', 'primer_apellido', 'segundo_apellido','nombre_factura','nit'],
+		// 			remoteSort : true,
+		// 			baseParams : {
+		// 				par_filtro : 'cli.nombres#cli.primer_apellido#cli.segundo_apellido#nombre_factura#nit'
+		// 			}
+		// 		}),
+		// 		valueField : 'id_cliente',
+		// 		displayField : 'nombre_factura',
+		// 		gdisplayField : 'nombre_factura',
+		// 		hiddenName : 'id_cliente',
+		// 		forceSelection : false,
+		// 		typeAhead : false,
+		// 		tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:red;"><b style="color:black;">NIT:</b> <b>{nit}</b></p><b><p>Cliente:<font color="#000CFF" weight="bold"> {nombre_factura}</font></b></p></div></tpl>',
+		// 		triggerAction : 'all',
+		// 		lazyRender : true,
+		// 		mode : 'remote',
+		// 		pageSize : 10,
+    //     listWidth:'450',
+    //     maxHeight : 450,
+		// 		queryDelay : 1000,
+		// 		turl:'../../../sis_ventas_facturacion/vista/cliente/Cliente.php',
+		// 		ttitle:'Clientes',
+		// 		tasignacion : true,
+		// 		tname : 'id_cliente',
+		// 		tdata:{},
+		// 		cls:'uppercase',
+		// 		tcls:'Cliente',
+		// 		gwidth : 170,
+		// 		minChars : 2,
+		// 		//style:';'
+		// 	},
+		// 	type : 'TrigguerCombo',
+		// 	id_grupo : 0,
+		// 	form : true
+		// },
     {
 			config : {
 				name : 'id_formula',
@@ -2785,6 +3549,21 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
             id_grupo : 0,
             form : false
         },
+
+		// {
+	  //           config:{
+	  //               name:'id_moneda',
+	  //               origen:'MONEDA',
+	  //               allowBlank:false,
+	  //               fieldLabel:'Moneda',
+	  //               gdisplayField:'desc_moneda',
+	  //               gwidth:100,
+		// 		    anchor: '80%'
+	  //            },
+	  //           type:'ComboRec',
+	  //           id_grupo:0,
+	  //           //form:false
+	  //   },
         {
             config:{
                 name: 'tipo_cambio_venta',
@@ -2852,6 +3631,25 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 				grid:true,
 				form:false
 		},
+    // {
+    //   config:{
+    //     name: 'moneda_tarjeta',
+    //     fieldLabel: 'Moneda',
+    //     allowBlank: true,
+    //     width:150,
+    //     disabled:false,
+    //     readOnly:true,
+    //     style: {
+    //       background: '#EFFFD6',
+    //       color: 'red',
+    //       fontWeight:'bold'
+    //     },
+    //     gwidth: 100
+    //   },
+    //     type:'TextField',
+    //     id_grupo: 2,
+    //     form:true
+    // },
     {
         config: {
             name: 'id_moneda',
@@ -2898,6 +3696,52 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         id_grupo: 2,
         form: true
     },
+    // {
+    //     config: {
+    //         name: 'id_forma_pago',
+    //         fieldLabel: 'Forma de Pago',
+    //         allowBlank: false,
+    //         width:150,
+    //         emptyText: 'Forma de Pago...',
+    //         store: new Ext.data.JsonStore({
+    //             url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
+    //             id: 'id_forma_pago',
+    //             root: 'datos',
+    //             sortInfo: {
+    //                 field: 'nombre',
+    //                 direction: 'ASC'
+    //             },
+    //             totalProperty: 'total',
+    //             fields: ['id_forma_pago', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc','codigo'],
+    //             remoteSort: true,
+    //             baseParams: {par_filtro: 'forpa.nombre#mon.codigo#forpa.codigo',sw_tipo_venta:'computarizada'}
+    //         }),
+    //         valueField: 'id_forma_pago',
+    //         displayField: 'nombre',
+    //         gdisplayField: 'forma_pago',
+    //         hiddenName: 'id_forma_pago',
+    //         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo}</font></b></p><p><b>Moneda:<font color="red">{desc_moneda}</font></b></p> </div></tpl>',
+    //         forceSelection: true,
+    //         typeAhead: false,
+    //         triggerAction: 'all',
+    //         lazyRender: true,
+    //         mode: 'remote',
+    //         pageSize: 15,
+    //         queryDelay: 1000,
+    //         gwidth: 150,
+    //         listWidth:250,
+    //         resizable:true,
+    //         minChars: 2,
+    //         disabled:false,
+    //         renderer : function(value, p, record) {
+    //             return String.format('{0}', record.data['forma_pago']);
+    //         }
+    //     },
+    //     type: 'ComboBox',
+    //     id_grupo: 2,
+    //     grid: true,
+    //     form: true
+    // },
     /************************Aumentando instancia de pago*****************************************/
     {
         config: {
@@ -2932,6 +3776,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
             mode: 'remote',
             pageSize: 15,
             queryDelay: 1000,
+            // gwidth: 150,
             listWidth:250,
             resizable:true,
             minChars: 2,
@@ -2939,6 +3784,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
         },
         type: 'ComboBox',
         id_grupo: 2,
+        grid: true,
         form: true
     },
     /*********************************************************************************************/
@@ -3064,6 +3910,50 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
             form:true,
             //valorInicial:'0'
     },
+    // {
+    //         config:{
+    //             name: 'tipo_tarjeta',
+    //             fieldLabel: 'Tipo Tarjeta',
+    //             allowBlank: true,
+    //             width:150,
+    //             emptyText:'tipo...',
+    //             triggerAction: 'all',
+    //             lazyRender:true,
+    //             mode: 'local',
+    //             displayField: 'text',
+    //             valueField: 'value',
+    //             store:new Ext.data.SimpleStore({
+		// 			data : [['VI', 'VISA'], ['AX', 'AMERICAN EXPRESS'],
+		// 					['DC', 'DINERS CLUB'],['CA', 'MASTER CARD'],
+		// 					['RE', 'RED ENLACE']],
+		// 			id : 'value',
+		// 			fields : ['value', 'text']
+		// 		})
+    //         },
+    //         type:'ComboBox',
+    //         id_grupo:2,
+    //         form:true
+    //     },
+        // {
+        //   config:{
+        //     name: 'moneda_tarjeta_2',
+        //     fieldLabel: 'Moneda',
+        //     allowBlank: true,
+        //     width:150,
+        //     disabled:false,
+        //     readOnly:true,
+        //     style: {
+        //       background: '#EFFFD6',
+        //       color: 'red',
+        //       fontWeight:'bold',
+        //     //  border:'2px solid blue'
+        //     },
+        //     gwidth: 100
+        //   },
+        //     type:'TextField',
+        //     id_grupo: 10,
+        //     form:true
+        // },
         {
             config: {
                 name: 'id_moneda_2',
@@ -3158,6 +4048,55 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
             grid: true,
             form: true
         },
+
+
+        // {
+        //     config: {
+        //         name: 'id_forma_pago_2',
+        //         fieldLabel: 'Forma de Pago',
+        //         allowBlank: true,
+        //         disabled:true,
+        //         emptyText: 'Forma de Pago...',
+        //         store: new Ext.data.JsonStore({
+        //             url: '../../sis_ventas_facturacion/control/FormaPago/listarFormaPago',
+        //             id: 'id_forma_pago',
+        //             root: 'datos',
+        //             sortInfo: {
+        //                 field: 'nombre',
+        //                 direction: 'ASC'
+        //             },
+        //             totalProperty: 'total',
+        //             fields: ['id_forma_pago', 'nombre', 'desc_moneda','registrar_tarjeta','registrar_cc','codigo'],
+        //             remoteSort: true,
+        //             baseParams: {par_filtro: 'forpa.nombre#forpa.codigo#mon.codigo_internacional',sw_tipo_venta:'computarizada'}
+        //         }),
+        //         valueField: 'id_forma_pago',
+        //         displayField: 'nombre',
+        //         gdisplayField: 'forma_pago',
+        //         hiddenName: 'id_forma_pago',
+        //         width:150,
+        //         tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p><b><p>Codigo:<font color="green">{codigo}</font></b></p><p><b>Moneda:<font color="red">{desc_moneda}</font></b></p> </div></tpl>',
+        //         forceSelection: true,
+        //         typeAhead: false,
+        //         triggerAction: 'all',
+        //         lazyRender: true,
+        //         mode: 'remote',
+        //         pageSize: 15,
+        //         queryDelay: 1000,
+        //         gwidth: 150,
+        //         listWidth:350,
+        //         resizable:true,
+        //         minChars: 2,
+        //         //disabled:false,
+        //         renderer : function(value, p, record) {
+        //             return String.format('{0}', record.data['forma_pago2']);
+        //         }
+        //     },
+        //     type: 'ComboBox',
+        //     id_grupo: 10,
+        //     grid: true,
+        //     form: true
+        // },
 
         {
     			config: {
@@ -3290,6 +4229,31 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                 form:true,
                 //valorInicial:'0'
         },
+        // {
+        //         config:{
+        //             name: 'tipo_tarjeta_2',
+        //             fieldLabel: 'Tipo Tarjeta',
+        //             allowBlank: true,
+        //             width:150,
+        //             emptyText:'tipo...',
+        //             triggerAction: 'all',
+        //             lazyRender:true,
+        //             mode: 'local',
+        //             displayField: 'text',
+        //             valueField: 'value',
+        //             store:new Ext.data.SimpleStore({
+    		// 			data : [['VI', 'VISA'], ['AX', 'AMERICAN EXPRESS'],
+    		// 					['DC', 'DINERS CLUB'],['CA', 'MASTER CARD'],
+    		// 					['RE', 'RED ENLACE']],
+    		// 			id : 'value',
+    		// 			fields : ['value', 'text']
+    		// 		})
+        //         },
+        //         type:'ComboBox',
+        //         id_grupo:10,
+        //         form:true
+        //     },
+        // //modifcado
         {
             config:{
                 name: 'cambio',
@@ -3523,11 +4487,10 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                             }
                             return value;
                         }),
-                        'tipo_factura':this.data.objPadre.tipo_factura,
-                        'total_suma':this.suma_total};
+                        'tipo_factura':this.data.objPadre.tipo_factura};
 
         if( i > 0 &&  !this.editorDetail.isVisible()){
-             Phx.vista.FormLiquidacion.superclass.onSubmit.call(this,o);
+             Phx.vista.FormNotasCobro.superclass.onSubmit.call(this,o);
         }
         else{
             alert('La venta no tiene registrado ningun detalle');
@@ -3541,15 +4504,14 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       if (this.generar == 'generar') {
         //Phx.CP.loadingShow();
   			var d = datos_respuesta.ROOT.datos;
-        if (this.data.objPadre.tipo_punto_venta == 'ato' || this.data.objPadre.tipo_punto_venta == 'cto' || this.data.objPadre.tipo_punto_venta == 'carga'|| this.data.objPadre.tipo_punto_venta == 'devoluciones') {
+        if (this.data.objPadre.tipo_punto_venta == 'ato' || this.data.objPadre.tipo_punto_venta == 'carga'||this.data.objPadre.tipo_punto_venta == 'devoluciones') {
   			Ext.Ajax.request({
   					url:'../../sis_ventas_facturacion/control/Cajero/FinalizarFactura',
   					params:{id_estado_wf_act:d.id_estado_wf,
   									id_proceso_wf_act:d.id_proceso_wf,
+                    tipo_pv:this.data.objPadre.tipo_punto_venta,
   								  tipo:'recibo',
-                    liquidaciones:this.Cmp.observaciones.getValue(),
-                    tipo_pv: this.data.objPadre.tipo_punto_venta,
-                    tipo_interfaz: 'FCD'},
+                    tipo_interfaz: 'notas_x_cobro'},
   					success:this.successWizard,
   					failure: this.conexionFailure,
   					timeout:this.timeout,
@@ -3560,6 +4522,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
   					url:'../../sis_ventas_facturacion/control/Cajero/siguienteEstadoFactura',
   					params:{id_estado_wf_act:d.id_estado_wf,
   									id_proceso_wf_act:d.id_proceso_wf,
+                    tipo_pv:this.data.objPadre.tipo_punto_venta,
   								  tipo:'recibo'},
   					success:this.successWizard,
   					failure: this.conexionFailure,
@@ -3574,6 +4537,17 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       if ('cambio' in datos_respuesta.ROOT.datos) {
         Phx.CP.getPagina(this.idContenedorPadre).reload();
         this.panel.close();
+        //Comentando el mensaje temporalmente
+          //   Ext.Msg.show({
+          //    title:'DEVOLUCION',
+          //    msg: 'Debe devolver ' + datos_respuesta.ROOT.datos.cambio + ' al cliente',
+          //    buttons: Ext.Msg.OK,
+          //    fn: function () {
+          //       Phx.CP.getPagina(this.idContenedorPadre).reload();
+          //       this.panel.close();
+          //    },
+          //    scope:this
+          // });
       } else {
         Phx.CP.getPagina(this.idContenedorPadre).reload();
         this.panel.close();

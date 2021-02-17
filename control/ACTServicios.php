@@ -23,6 +23,8 @@ class ACTServicios extends ACTbase{
 			}
 			elseif ($this->objParam->getParametro('emision') == 'DEVOLUCIONES') {
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
+			}elseif ($this->objParam->getParametro('emision') == 'notas_de_cobro'){
+				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.nivel_permiso)");
 			}
 		}
 

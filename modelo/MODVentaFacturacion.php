@@ -358,8 +358,8 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('nombre_factura','nombre_factura','varchar');
 			$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 			$this->setParametro('liquidacion','liquidacion','varchar');
-			$this->setParametro('total_suma','total_suma','numeric');			
-
+			$this->setParametro('total_suma','total_suma','numeric');
+			$this->setParametro('tipo_interfaz','tipo_interfaz','varchar');
 			/****************************************************************************************/
 
             //Ejecuta la instruccion
@@ -951,6 +951,7 @@ class MODVentaFacturacion extends MODbase{
 
 							/*Aumentando para registrar correo electronico en MIAMI (Ismael Valdivia 14/10/2020)*/
 							$this->setParametro('correo_electronico', 'correo_electronico', 'varchar');
+							$this->setParametro('nombre_factura','nombre_factura', 'varchar');
 							/***********************************************************************************/
 
 

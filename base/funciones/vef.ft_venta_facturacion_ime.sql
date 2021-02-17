@@ -1535,14 +1535,18 @@ BEGIN
         end if;
 
         /**breydi.vasquez 20/02/2021*/
-                 	if (pxp.f_existe_parametro(p_tabla, 'liquidacion'))then
+                 	if (pxp.f_existe_parametro(p_tabla, 'liquidacion') OR pxp.f_existe_parametro(p_tabla, 'tipo_interfaz'))then
                         select tipo_usuario into v_tipo_usu
                         from vef.tsucursal_usuario
                         where id_usuario = p_id_usuario
                         and id_punto_venta = v_id_punto_venta
                         and tipo_usuario = 'finanzas';
 
-                        v_tipo_interf = v_parametros.liquidacion;
+                        if v_parametros.tipo_interfaz in ('notas_x_cobro')then
+                            	v_tipo_interf = v_parametros.tipo_interfaz;
+                        else
+                              v_tipo_interf = v_parametros.liquidacion;
+              			    end if;
                     end if;
         /**/
 
@@ -3234,7 +3238,7 @@ BEGIN
           end if;
 
           /**breydi.vasquez 20/01/2021*/
-                IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
+                IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones') OR pxp.f_existe_parametro(p_tabla, 'tipo_interfaz')) THEN
                   select tipo_usuario into v_tipo_usu
                     from vef.tsucursal_usuario
                     where id_usuario = p_id_usuario and
@@ -3242,7 +3246,11 @@ BEGIN
                     id_sucursal = v_venta.id_sucursal)
                     and tipo_usuario = 'finanzas';
 
-                    v_tipo_interf = 'FCD';
+                    if v_parametros.tipo_interfaz in ('notas_x_cobro')then
+                    	v_tipo_interf = v_parametros.tipo_interfaz;
+                    else
+                      v_tipo_interf = 'FCD';
+                    end if;
                 END IF;
             /**/
 

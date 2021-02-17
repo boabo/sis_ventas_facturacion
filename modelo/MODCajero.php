@@ -310,6 +310,7 @@ class MODCajero extends MODbase{
 			$this->setParametro('tipo_pv','tipo_pv','varchar');
 			$this->setParametro('tipo','tipo','varchar');
 			$this->setParametro('liquidaciones','liquidaciones','varchar');
+			$this->setParametro('tipo_interfaz','tipo_interfaz','varchar');
 
 			//Ejecuta la instruccion
 			$this->armarConsulta();
