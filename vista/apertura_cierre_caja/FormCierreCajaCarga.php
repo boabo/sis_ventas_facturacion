@@ -2058,8 +2058,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
                     this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
                     //Total Arqueo
-                    this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_ventas_ml']) /*+  parseFloat(reg.datos[0]['tarjeta_ventas_ml']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml'] )+  parseFloat( reg.datos[0]['mco_ventas_ml'])*/);
-                    this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_ventas_me'])/* +  parseFloat(reg.datos[0]['tarjeta_ventas_me']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_me'] )+  parseFloat( reg.datos[0]['mco_ventas_me'])*/);
+                    this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['efectivo_recibo_ml']) /*+  parseFloat(reg.datos[0]['tarjeta_ventas_ml']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml'] )+  parseFloat( reg.datos[0]['mco_ventas_ml'])*/);
+                    this.Cmp.total_efectivo_me.setValue(parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['efectivo_recibo_me'])/* +  parseFloat(reg.datos[0]['tarjeta_ventas_me']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_me'] )+  parseFloat( reg.datos[0]['mco_ventas_me'])*/);
                     //Recuperar Monto Nacional
                     this.efectivo_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']);
                     this.tarjeta_ventas_ml =  parseFloat(reg.datos[0]['tarjeta_ventas_ml']);
