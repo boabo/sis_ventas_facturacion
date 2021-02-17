@@ -227,8 +227,8 @@ $body$
                   --v_filtro_cajero_boleto = ' and b.id_usuario_cajero in ('||v_parametros.id_usuario_cajero||')';
                   v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero in ('||v_parametros.id_usuario_cajero||','||v_id_cajero_auxiliar||')';
                 else
-                  v_filtro_cajero_boleto = ' and b.id_usuario_cajero ='||v_parametros.id_usuario_cajero;
-                  v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero ='||v_parametros.id_usuario_cajero;
+                  v_filtro_cajero_boleto = ' and b.id_usuario_cajero ='||v_parametros.id_usuario_cajero||' and b.id_punto_venta ='||v_parametros.id_punto_venta;
+                  v_filtro_cajero_boleto_1 = ' and v.id_usuario_cajero ='||v_parametros.id_usuario_cajero||' and v.id_punto_venta ='||v_parametros.id_punto_venta;
                 end if;
                 /*************************************************************************************/
             ELSE
