@@ -67,7 +67,7 @@ DECLARE
     v_cadena_cnx		varchar;
 	v_total_general		varchar;
     v_id_moneda_base	integer;
-
+    v_codigo			varchar;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_emision_boletos';
@@ -111,6 +111,10 @@ BEGIN
 
                 CREATE INDEX tfacturas_recibos_temporal_tipo_factura ON facturas_recibos_temporal
                 USING btree (tipo_factura);
+
+                v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+
                 /*Si el punto de venta es todos no ponemos ningun filtro*/
                 if(v_parametros.id_punto_venta = 0) then
                 insert into facturas_recibos_temporal (
@@ -247,6 +251,58 @@ BEGIN
                 where bol.estado = 'revisado' and bol.voided = 'no'
                 and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+
+                /*Aqui Recuperamos los datos de Carga*/
+                insert into facturas_recibos_temporal (
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        nro_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura,
+                                                        punto_venta)
+              (SELECT 	tdatos.fecha_factura,
+                        tdatos.nro_factura,
+                        tdatos.nro_documento,
+                        tdatos.desc_ruta,
+                        tdatos.razon_social_cli,
+                        tdatos.importe_total_venta,
+                        0::numeric as haber,
+                        'carga'::varchar as tipo_factura,
+                        pb.nombre
+                FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                'select
+                        fecha_factura,
+                        nro_factura,
+                        nro_factura as nro_documento,
+                        desc_ruta,
+                        razon_social_cli,
+                        importe_total_venta,
+                        codigo_punto_venta
+                  from sfe.tfactura
+                  where estado_reg = ''activo''
+                  and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                  and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                  and sistema_origen = ''CARGA''
+                 order by fecha_factura ASC, nro_factura ASC
+                ')
+                AS tdatos(
+                fecha_factura date,
+                nro_factura varchar,
+                nro_documento varchar,
+                desc_ruta varchar,
+                razon_social_cli varchar,
+                importe_total_venta numeric,
+                codigo_punto_venta varchar)
+                inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                where pb.tipo = 'carga');
+                /*************************************/
+
+
+
+
                 /*Aqui para ir agrupando los puntos de ventas*/
 
                 insert into facturas_recibos_temporal (
@@ -260,7 +316,7 @@ BEGIN
                                                         haber,
                                                         tipo_factura
                                                         )
-                (select
+                ((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
                         NULL::varchar as nro_factura,
@@ -298,7 +354,45 @@ BEGIN
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
-                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date);
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        (SELECT distinct (pb.nombre),
+                                NULL::date as fecha_factura,
+                                null::varchar nro_factura,
+                                null::varchar nro_documento,
+                                null::varchar desc_ruta,
+                                pb.nombre,
+                                null::numeric importe_total_venta,
+                                null::numeric,
+                                NULL::varchar as tipo_factura
+
+                          FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                          'select
+                                  fecha_factura,
+                                  nro_factura,
+                                  nro_factura as nro_documento,
+                                  desc_ruta,
+                                  razon_social_cli,
+                                  importe_total_venta,
+                                  codigo_punto_venta
+                            from sfe.tfactura where estado_reg = ''activo''
+                            and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                            and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                            and sistema_origen = ''CARGA''
+                           order by fecha_factura ASC, nro_factura ASC
+                          ')
+                          AS tdatos(
+                          fecha_factura date,
+                          nro_factura varchar,
+                          nro_documento varchar,
+                          desc_ruta varchar,
+                          razon_social_cli varchar,
+                          importe_total_venta numeric,
+                          codigo_punto_venta varchar)
+                          inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                          where pb.tipo = 'carga'));
 
 
                 /************************************************/
@@ -443,7 +537,67 @@ BEGIN
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
 
+                      /*Aqui recuperamos el id codigo punto de venta para filtrar carga*/
 
+                      select pv.codigo
+                      	     into
+                             v_codigo
+                      from vef.tpunto_venta pv
+                      where pv.id_punto_venta = v_parametros.id_punto_venta and pv.tipo = 'carga';
+                      /*****************************************************************/
+
+                      if (v_codigo != '') then
+
+                       /*Aqui Recuperamos los datos de Carga*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                nro_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta)
+                      (SELECT 	tdatos.fecha_factura,
+                                tdatos.nro_factura,
+                                tdatos.nro_documento,
+                                tdatos.desc_ruta,
+                                tdatos.razon_social_cli,
+                                tdatos.importe_total_venta,
+                                0::numeric as haber,
+                                'carga'::varchar as tipo_factura,
+                                pb.nombre
+                        FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                        'select
+                                fecha_factura,
+                                nro_factura,
+                                nro_factura as nro_documento,
+                                desc_ruta,
+                                razon_social_cli,
+                                importe_total_venta,
+                                codigo_punto_venta
+                          from sfe.tfactura
+                          where estado_reg = ''activo''
+                          and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                          and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''and sistema_origen = ''CARGA''
+                          and codigo_punto_venta = '''||v_codigo||'''
+                         order by fecha_factura ASC, nro_factura ASC
+                        ')
+                        AS tdatos(
+                        fecha_factura date,
+                        nro_factura varchar,
+                        nro_documento varchar,
+                        desc_ruta varchar,
+                        razon_social_cli varchar,
+                        importe_total_venta numeric,
+                        codigo_punto_venta varchar)
+                        inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                        where pb.tipo = 'carga');
+                        /*************************************/
+                      end if;
+
+                      if (v_codigo != '') then
                       insert into facturas_recibos_temporal (
                       									punto_venta,
                                                         fecha_factura,
@@ -455,7 +609,7 @@ BEGIN
                                                         haber,
                                                         tipo_factura
                                                         )
-                (select
+                		((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
                         NULL::varchar as nro_factura,
@@ -495,8 +649,100 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
-                        and bol.id_punto_venta = v_parametros.id_punto_venta);
+                        and bol.id_punto_venta = v_parametros.id_punto_venta)
 
+                        union
+
+                        (SELECT distinct (pb.nombre),
+                                NULL::date as fecha_factura,
+                                null::varchar nro_factura,
+                                null::varchar nro_documento,
+                                null::varchar desc_ruta,
+                                pb.nombre,
+                                null::numeric importe_total_venta,
+                                null::numeric,
+                                NULL::varchar as tipo_factura
+
+                          FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                          'select
+                                  fecha_factura,
+                                  nro_factura,
+                                  nro_factura as nro_documento,
+                                  desc_ruta,
+                                  razon_social_cli,
+                                  importe_total_venta,
+                                  codigo_punto_venta
+                            from sfe.tfactura where estado_reg = ''activo''
+                            and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                            and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                            and codigo_punto_venta = '''||v_codigo||'''
+                            and sistema_origen = ''CARGA''
+                           order by fecha_factura ASC, nro_factura ASC
+                          ')
+                          AS tdatos(
+                          fecha_factura date,
+                          nro_factura varchar,
+                          nro_documento varchar,
+                          desc_ruta varchar,
+                          razon_social_cli varchar,
+                          importe_total_venta numeric,
+                          codigo_punto_venta varchar)
+                          inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                          where pb.tipo = 'carga'));
+                        else
+                        	insert into facturas_recibos_temporal (
+                      									punto_venta,
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        nro_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura
+                                                        )
+                		((select
+                		DISTINCT(pv.nombre),
+                		NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from vef.tventa ven
+                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = fp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
+                        where ven.estado = 'finalizado' and aux.codigo_auxiliar = v_parametros.codigo_auxiliar
+                        and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                        and ven.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
+                        distinct (pv.nombre),
+                        NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from obingresos.tboleto_amadeus bol
+                        inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
+                        where bol.estado = 'revisado' and bol.voided = 'no'
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_punto_venta = v_parametros.id_punto_venta));
+                        end if;
 
                 end if;
 
@@ -519,7 +765,7 @@ BEGIN
                            union all
 
                           (select
-                          null::varchar as fecha_factura,
+                          ''''::varchar as fecha_factura,
                           null::varchar as nro_factura,
                           NULL::varchar as nro_documento,
                           NULL::varchar as ruta,
@@ -531,7 +777,7 @@ BEGIN
                           from facturas_recibos_temporal
                           group by punto_venta)
 
-                          ORDER BY punto_venta DESC,tipo_factura ASC NULLS FIRST, fecha_factura DESC, pasajero asc nulls LAST
+                          ORDER BY punto_venta ASC,tipo_factura ASC NULLS FIRST,fecha_factura ASC NULLS FIRST,pasajero asc nulls LAST
 
 
                            ';
@@ -577,6 +823,10 @@ BEGIN
 
                 CREATE INDEX tfacturas_recibos_temporal_tipo_factura ON facturas_recibos_temporal
                 USING btree (tipo_factura);
+
+                v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+
                 /*Si el punto de venta es todos no ponemos ningun filtro*/
                 if(v_parametros.id_punto_venta = 0) then
                 insert into facturas_recibos_temporal (
@@ -617,7 +867,7 @@ BEGIN
                         END) as ruta,
                         ven.nombre_factura,
 
-                       /* (CASE
+                        /*(CASE
                               WHEN fp.id_moneda = 2
 
                               THEN
@@ -626,7 +876,6 @@ BEGIN
                               	fp.monto_mb_efectivo
 
                         END) as monto_debe,*/
-
                         fp.monto_mb_efectivo as monto_debe,
 
                         0::numeric as monto_haber,
@@ -713,6 +962,151 @@ BEGIN
                 inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                 where bol.estado = 'revisado' and bol.voided = 'no'
                 and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+
+
+                /*Aqui Recuperamos los datos de Carga*/
+                insert into facturas_recibos_temporal (
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        nro_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura,
+                                                        punto_venta)
+              (SELECT 	tdatos.fecha_factura,
+                        tdatos.nro_factura,
+                        tdatos.nro_documento,
+                        tdatos.desc_ruta,
+                        tdatos.razon_social_cli,
+                        tdatos.importe_total_venta,
+                        0::numeric as haber,
+                        'carga'::varchar as tipo_factura,
+                        pb.nombre
+                FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                'select
+                        fecha_factura,
+                        nro_factura,
+                        nro_factura as nro_documento,
+                        desc_ruta,
+                        razon_social_cli,
+                        importe_total_venta,
+                        codigo_punto_venta
+                  from sfe.tfactura
+                  where estado_reg = ''activo''
+                  and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                  and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                  and sistema_origen = ''CARGA''
+                 order by fecha_factura ASC, nro_factura ASC
+                ')
+                AS tdatos(
+                fecha_factura date,
+                nro_factura varchar,
+                nro_documento varchar,
+                desc_ruta varchar,
+                razon_social_cli varchar,
+                importe_total_venta numeric,
+                codigo_punto_venta varchar)
+                inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                where pb.tipo = 'carga');
+                /*************************************/
+
+
+
+
+                /*Aqui para ir agrupando los puntos de ventas*/
+
+                insert into facturas_recibos_temporal (
+                      									punto_venta,
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        nro_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura
+                                                        )
+                ((select
+                		DISTINCT(pv.nombre),
+                		NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from vef.tventa ven
+                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = fp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
+                        where ven.estado = 'finalizado' and aux.codigo_auxiliar = v_parametros.codigo_auxiliar
+                        and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        (select
+                        distinct (pv.nombre),
+                        NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from obingresos.tboleto_amadeus bol
+                        inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
+                        where bol.estado = 'revisado' and bol.voided = 'no'
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        (SELECT distinct (pb.nombre),
+                                null::date as fecha_factura,
+                                null::varchar nro_factura,
+                                null::varchar nro_documento,
+                                null::varchar desc_ruta,
+                                pb.nombre,
+                                null::numeric importe_total_venta,
+                                null::numeric,
+                                NULL::varchar as tipo_factura
+
+                          FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                          'select
+                                  fecha_factura,
+                                  nro_factura,
+                                  nro_factura as nro_documento,
+                                  desc_ruta,
+                                  razon_social_cli,
+                                  importe_total_venta,
+                                  codigo_punto_venta
+                            from sfe.tfactura where estado_reg = ''activo''
+                            and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                            and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                            and sistema_origen = ''CARGA''
+                           order by fecha_factura ASC, nro_factura ASC
+                          ')
+                          AS tdatos(
+                          fecha_factura date,
+                          nro_factura varchar,
+                          nro_documento varchar,
+                          desc_ruta varchar,
+                          razon_social_cli varchar,
+                          importe_total_venta numeric,
+                          codigo_punto_venta varchar)
+                          inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                          where pb.tipo = 'carga'));
+
+
                 /************************************************/
 
                 else
@@ -841,8 +1235,8 @@ BEGIN
                                   bolfp.importe
                               END) as debe,
                               0::numeric as haber,
-                              'boletos'::varchar as tipo_factura ,
-                              pv.nombre
+                              'boletos'::varchar as tipo_factura,
+                      		  pv.nombre
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -854,6 +1248,214 @@ BEGIN
                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
+
+                      /*Aqui recuperamos el id codigo punto de venta para filtrar carga*/
+
+                      select pv.codigo
+                      	     into
+                             v_codigo
+                      from vef.tpunto_venta pv
+                      where pv.id_punto_venta = v_parametros.id_punto_venta and pv.tipo = 'carga';
+                      /*****************************************************************/
+
+                      if (v_codigo != '') then
+
+                       /*Aqui Recuperamos los datos de Carga*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                nro_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta)
+                      (SELECT 	tdatos.fecha_factura,
+                                tdatos.nro_factura,
+                                tdatos.nro_documento,
+                                tdatos.desc_ruta,
+                                tdatos.razon_social_cli,
+                                tdatos.importe_total_venta,
+                                0::numeric as haber,
+                                'carga'::varchar as tipo_factura,
+                                pb.nombre
+                        FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                        'select
+                                fecha_factura,
+                                nro_factura,
+                                nro_factura as nro_documento,
+                                desc_ruta,
+                                razon_social_cli,
+                                importe_total_venta,
+                                codigo_punto_venta
+                          from sfe.tfactura
+                          where estado_reg = ''activo''
+                          and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                          and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''and sistema_origen = ''CARGA''
+                          and codigo_punto_venta = '''||v_codigo||'''
+                         order by fecha_factura ASC, nro_factura ASC
+                        ')
+                        AS tdatos(
+                        fecha_factura date,
+                        nro_factura varchar,
+                        nro_documento varchar,
+                        desc_ruta varchar,
+                        razon_social_cli varchar,
+                        importe_total_venta numeric,
+                        codigo_punto_venta varchar)
+                        inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                        where pb.tipo = 'carga');
+                        /*************************************/
+                      end if;
+
+                      if (v_codigo != '') then
+                      insert into facturas_recibos_temporal (
+                      									punto_venta,
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        nro_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura
+                                                        )
+                		((select
+                		DISTINCT(pv.nombre),
+                		NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from vef.tventa ven
+                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = fp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
+                        where ven.estado = 'finalizado' and aux.codigo_auxiliar = v_parametros.codigo_auxiliar
+                        and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                        and ven.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
+                        distinct (pv.nombre),
+                        NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from obingresos.tboleto_amadeus bol
+                        inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
+                        where bol.estado = 'revisado' and bol.voided = 'no'
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (SELECT distinct (pb.nombre),
+                                null::date as fecha_factura,
+                                null::varchar nro_factura,
+                                null::varchar nro_documento,
+                                null::varchar desc_ruta,
+                                pb.nombre,
+                                null::numeric importe_total_venta,
+                                null::numeric,
+                                NULL::varchar as tipo_factura
+
+                          FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                          'select
+                                  fecha_factura,
+                                  nro_factura,
+                                  nro_factura as nro_documento,
+                                  desc_ruta,
+                                  razon_social_cli,
+                                  importe_total_venta,
+                                  codigo_punto_venta
+                            from sfe.tfactura where estado_reg = ''activo''
+                            and codigo_auxiliar = '''||v_parametros.codigo_auxiliar||'''
+                            and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                            and codigo_punto_venta = '''||v_codigo||'''
+                            and sistema_origen = ''CARGA''
+                           order by fecha_factura ASC, nro_factura ASC
+                          ')
+                          AS tdatos(
+                          fecha_factura date,
+                          nro_factura varchar,
+                          nro_documento varchar,
+                          desc_ruta varchar,
+                          razon_social_cli varchar,
+                          importe_total_venta numeric,
+                          codigo_punto_venta varchar)
+                          inner join vef.tpunto_venta pb on pb.codigo = codigo_punto_venta
+                          where pb.tipo = 'carga'));
+                        else
+                        	insert into facturas_recibos_temporal (
+                      									punto_venta,
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        nro_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura
+                                                        )
+                		((select
+                		DISTINCT(pv.nombre),
+                		NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from vef.tventa ven
+                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = fp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
+                        where ven.estado = 'finalizado' and aux.codigo_auxiliar = v_parametros.codigo_auxiliar
+                        and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                        and ven.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
+                        distinct (pv.nombre),
+                        NULL::date as fecha_factura,
+                        NULL::varchar as nro_factura,
+                        NULL::varchar as nro_documento,
+                        null::varchar as ruta,
+                        pv.nombre as pasajero,
+                        NULL::numeric as debe,
+                        NULL::numeric as haber,
+                        NULL::varchar as tipo_factura
+                        from obingresos.tboleto_amadeus bol
+                        inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
+                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
+                        inner join obingresos.tforma_pago_pw fpp on fpp.id_forma_pago_pw = mp.forma_pago_id
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
+                        where bol.estado = 'revisado' and bol.voided = 'no'
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_punto_venta = v_parametros.id_punto_venta));
+                        end if;
+
                 end if;
 
                     --Sentencia de la consulta de conteo de registros
