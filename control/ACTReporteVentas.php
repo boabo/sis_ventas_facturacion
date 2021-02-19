@@ -105,9 +105,9 @@ class ACTReporteVentas extends ACTbase{
 
     // $this->objParam->getParametro('tipo') != '' && $this->objParam->addFiltro("c.codigo = ANY (string_to_array(''".$this->objParam->getParametro('tipo')."'','',''))");
 
-    if($this->objParam->getParametro('tipo') != 0  || $this->objParam->getParametro('tipo') !='') {
+    if($this->objParam->getParametro('tipo') != 0  && $this->objParam->getParametro('tipo') !='') {
       $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('tipo').")");
-    }    
+    }
 
     $this->objFunc=$this->create('MODReporteVentas');
     $this->res=$this->objFunc->listarPuntoVentaTipo($this->objParam);
