@@ -54,6 +54,11 @@ class ACTSucursal extends ACTbase{
                 $this->objParam->addFiltro(" suc.id_sucursal = " . $this->objParam->getParametro('id_sucursal'));
         }
 
+		//may
+		if($this->objParam->getParametro('id_lugar') != '') {
+                $this->objParam->addFiltro(" suc.id_lugar = " . $this->objParam->getParametro('id_lugar'));
+		}
+		//
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
