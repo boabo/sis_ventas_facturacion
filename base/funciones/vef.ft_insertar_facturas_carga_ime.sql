@@ -188,7 +188,7 @@ BEGIN
 
               v_consulta = 'update sfe.tfactura set
                             estado_reg = ''inactivo''
-                            where id_origen = '''||v_datos_carga.id_origen||''' and sistema_origen = ''CARGA'' and estado <> ''anulado'';';
+                            where id_origen = '''||v_datos_carga.id_origen||''' and sistema_origen = ''CARGA'' and estado <> ''ANULADA'';';
 
 
 
