@@ -70,7 +70,7 @@ class ACTDosificacion extends ACTbase{
         }
         if ($this->objParam->getParametro('controlfecha') == 'si') {
             //$this->objParam->addFiltro(" dos.fecha_limite >= ''" .  $this->objParam->getParametro('fecha')."''");
-            $this->objParam->addFiltro(" dos.fecha_limite <= now() ");
+            $this->objParam->addFiltro(" dos.fecha_limite >= now() ");
         }
         //
 

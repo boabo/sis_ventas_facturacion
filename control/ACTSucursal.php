@@ -68,6 +68,22 @@ class ACTSucursal extends ACTbase{
 
 			$this->res=$this->objFunc->listarSucursal($this->objParam);
 		}
+
+		/*Aqui para poner todos los puntos de ventas*/
+		// 19-02-2021 (may)
+		if($this->objParam->getParametro('_adicionar')!=''){
+
+			$respuesta = $this->res->getDatos();
+
+
+			array_unshift ( $respuesta, array(  'id_sucursal'=>'0',
+				'nombre'=>'Todos',
+				'codigo'=>'Todos') );
+			//var_dump($respuesta);
+			$this->res->setDatos($respuesta);
+		}
+		/********************************************/
+
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
