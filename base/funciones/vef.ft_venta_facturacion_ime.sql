@@ -2145,31 +2145,36 @@ BEGIN
         from vef.tventa v
         where v.id_venta = v_parametros.id_venta;
 
+		if (pxp.f_existe_parametro(p_tabla,'id_dosificacion')) then
+        	v_id_dosificacion = v_parametros.id_dosificacion;
+        end if;
 
-        v_id_dosificacion = v_parametros.id_dosificacion;
-		v_nro_factura = v_parametros.nro_factura;
+        if (pxp.f_existe_parametro(p_tabla,'id_dosificacion')) then
+			v_nro_factura = v_parametros.nro_factura;
+        end if;
 
+        if (pxp.f_existe_parametro(p_tabla,'id_dosificacion')) then
       --validaciones de factura manual
-      if (exists(	select 1
-                   from vef.tventa ven
-                   where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion and (ven.estado = 'finalizado' or ven.estado = 'anulado'))) then
-        raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
-      end if;
+          if (exists(	select 1
+                       from vef.tventa ven
+                       where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion and (ven.estado = 'finalizado' or ven.estado = 'anulado'))) then
+            raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
+          end if;
 
-      --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
-      if (exists(	select 1
-                   from vef.tdosificacion dos
-                   where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion = v_parametros.id_dosificacion )) then
-        raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
-      end if;
+          --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+          if (exists(	select 1
+                       from vef.tdosificacion dos
+                       where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion = v_parametros.id_dosificacion )) then
+            raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
+          end if;
 
-      --validar que la fecha de factura no sea superior a la fecha limite de emision
-      if (exists(	select 1
-                   from vef.tdosificacion dos
-                   where dos.fecha_limite < v_parametros.fecha and dos.id_dosificacion = v_parametros.id_dosificacion)) then
-        raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
-      end if;
-
+          --validar que la fecha de factura no sea superior a la fecha limite de emision
+          if (exists(	select 1
+                       from vef.tdosificacion dos
+                       where dos.fecha_limite < v_parametros.fecha and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+            raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
+          end if;
+		end if;
 
 
 
