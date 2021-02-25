@@ -958,7 +958,7 @@ $body$
                       coalesce(fpmb.monto_cte_mb, 0) as monto_cte_mb,
                       coalesce(fpmb.monto_mco_mb, 0) as monto_mco_mb,
                       coalesce(fpmb.monto_otro_mb, 0) as monto_otro_mb,
-                      0::numeric,
+                      v.total_venta::numeric,
                       string_agg((vd.precio*vd.cantidad)::text,''|'')::varchar as precios_detalles,
                       NULL::varchar as mensaje_error,
                       -- 0::numeric as comision
@@ -1014,7 +1014,7 @@ $body$
                         (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                         '|| v_filtro_cajero_boleto_1 ||'
                       group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,
-                                fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc,fpmb.monto_deposito_mb ' || v_group_by || '
+                                fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc,fpmb.monto_deposito_mb,v.total_venta ' || v_group_by || '
                       )
             union ALL --3
                 (WITH ';
