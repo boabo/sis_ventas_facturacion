@@ -3497,6 +3497,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
     onSubmit2: function(o) {
         //  validar formularios
         console.log("que es esto",this);
+        var import_recib = this.Cmp.monto_forma_pago.getValue();
         var arra = [], i, me = this;
         var formapa = [];
         for (i = 0; i < me.megrid.store.getCount(); i++) {
@@ -3524,7 +3525,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                             return value;
                         }),
                         'tipo_factura':this.data.objPadre.tipo_factura,
-                        'total_suma':this.suma_total};
+                        'total_suma':import_recib};
 
         if( i > 0 &&  !this.editorDetail.isVisible()){
              Phx.vista.FormLiquidacion.superclass.onSubmit.call(this,o);
