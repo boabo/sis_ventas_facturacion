@@ -38,10 +38,10 @@ class ACTReporteVentas extends ACTbase{
 
   function listarPuntoVentaOfficeId () {
 
-    if($this->objParam->getParametro('id_lugar_fk') != 0  || $this->objParam->getParametro('id_lugar_fk') !='') {
+    if($this->objParam->getParametro('id_lugar_fk') != 0  && $this->objParam->getParametro('id_lugar_fk') !='') {
       $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
     }
-    if($this->objParam->getParametro('canal') != 0  || $this->objParam->getParametro('canal') !='') {
+    if($this->objParam->getParametro('canal') != 0  && $this->objParam->getParametro('canal') !='') {
       $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
     }
 
@@ -66,11 +66,11 @@ class ACTReporteVentas extends ACTbase{
 
     // $this->objParam->getParametro('offi_id') == 'no' && $this->objParam->addFiltro("puve.office_id is not null ");
 
-    if($this->objParam->getParametro('id_lugar_fk') != 0  || $this->objParam->getParametro('id_lugar_fk') !='') {
+    if($this->objParam->getParametro('id_lugar_fk') != 0  && $this->objParam->getParametro('id_lugar_fk') !='') {
       $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
     }
 
-    if($this->objParam->getParametro('canal') != 0  || $this->objParam->getParametro('canal') !='') {
+    if($this->objParam->getParametro('canal') != 0  && $this->objParam->getParametro('canal') !='') {
       $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
     }
     // $this->objParam->getParametro('canal') != '' && $this->objParam->addFiltro("c.codigo = ANY (string_to_array(''".$this->objParam->getParametro('canal')."'','',''))");
@@ -98,7 +98,7 @@ class ACTReporteVentas extends ACTbase{
 
   function listarPuntoVentaTipo () {
 
-    if($this->objParam->getParametro('id_lugar_fk') != 0  || $this->objParam->getParametro('id_lugar_fk') !='') {
+    if($this->objParam->getParametro('id_lugar_fk') != 0  && $this->objParam->getParametro('id_lugar_fk') !='') {
       $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
     }
     // $this->objParam->getParametro('id_lugar_fk') != 0 && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
