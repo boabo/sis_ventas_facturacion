@@ -301,7 +301,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         /******************************/
         this.init();
         this.iniciarEventos();
-
+        this.estado_factura = 'VALIDA'
 
         if(this.data.tipo_form == 'new'){
         	this.onNew();
@@ -515,20 +515,20 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
         /*Condicion cuando el estado de la factura sea anulado*/
           this.Cmp.anulado.on('select',function(c,r,i) {
-            console.log("aqui llega data",r);
-            if (r != '') {
-              var estado = r;
+            
+            if (r.data == undefined) {
+              this.estado_factura = r;
             } else {
-              var estado = r.data.field1;
+              this.estado_factura = r.data.field1;
             }
 
-
-              if (estado == 'ANULADA') {
+              if (this.estado_factura == 'ANULADA') {
                  this.Cmp.nit.setValue(0);
                  this.Cmp.monto_forma_pago.setValue(0);
                  this.Cmp.monto_forma_pago.setDisabled(true);
                  this.megrid.topToolbar.items.items[1].setDisabled(true);
                  this.Cmp.id_cliente.setValue('ANULADA');
+                 this.Cmp.nombre_factura.setValue('ANULADA');
                  this.Cmp.cambio.setValue(0);
                  this.Cmp.cambio_moneda_extranjera.setValue(0);
                  this.eliminarDatosDetalle();
@@ -567,7 +567,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                  this.Cmp.nit.reset();
                  this.Cmp.id_cliente.reset();
                  this.Cmp.monto_forma_pago.setDisabled(false);
-                 //this.megrid.topToolbar.items.items[1].setDisabled(false);
+                  this.Cmp.nombre_factura.reset();
+                 this.megrid.topToolbar.items.items[1].setDisabled(false);
                  this.mostrarComponente(this.Cmp.id_formula);
                  this.mostrarComponente(this.megrid.topToolbar.items.items[0]);
                  this.mostrarComponente(this.megrid.topToolbar.items.items[1]);
@@ -1413,53 +1414,88 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         this.Cmp.habilitar_edicion.setValue('SI');
 
         this.Cmp.nit.on('blur',function(c) {
-        if (this.accionFormulario != 'EDIT') {
-  				if (this.Cmp.nit.getValue() != '') {
-            this.Cmp.nombre_factura.reset();
-            this.Cmp.id_cliente.reset();
-  					Ext.Ajax.request({
-  							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
-  							params : {
-  								'nit' : this.Cmp.nit.getValue(),
-  								'razon_social' : this.Cmp.nombre_factura.getValue(),
-  							},
-  							success: function(resp){
-  	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-                    this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
-  	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
-  	            },
-  							failure : this.conexionFailure,
-  							timeout : this.timeout,
-  							scope : this
-  						});
 
-  				}
-        } else {
-          if (this.Cmp.nit.getValue() == '' || this.Cmp.habilitar_edicion.getValue() == 'SI') {
-            this.Cmp.nombre_factura.reset();
-            this.Cmp.id_cliente.reset();
+        if (this.estado_factura != 'ANULADA') {
+          this.Cmp.nombre_factura.reset();
+          if (this.accionFormulario != 'EDIT') {
+    				if (this.Cmp.nit.getValue() != '') {
+              this.Cmp.nombre_factura.reset();
+              this.Cmp.id_cliente.reset();
+              console.log("aqui llega data 222222");
+    					Ext.Ajax.request({
+    							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+    							params : {
+    								'nit' : this.Cmp.nit.getValue(),
+    								'razon_social' : this.Cmp.nombre_factura.getValue(),
+    							},
+    							success: function(resp){
+    	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                      this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+    	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+    	            },
+    							failure : this.conexionFailure,
+    							timeout : this.timeout,
+    							scope : this
+    						});
 
-            this.Cmp.nit.setValue(this.data.datos_originales.data.nit);
-            this.Cmp.nombre_factura.setValue(this.data.datos_originales.data.nombre_factura);
+    				}
 
-  					Ext.Ajax.request({
-  							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
-  							params : {
-  								'nit' : this.data.datos_originales.data.nit,
-  								'razon_social' : this.data.datos_originales.data.nombre_factura,
-  							},
-  							success: function(resp){
-  	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-                    this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
-  	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
-  	            },
-  							failure : this.conexionFailure,
-  							timeout : this.timeout,
-  							scope : this
-  						});
+      				//}
+            }
+            else {
+              //if (this.Cmp.nit.getValue() == '' || this.Cmp.habilitar_edicion.getValue() == 'SI') {
+                this.Cmp.nombre_factura.reset();
+                this.Cmp.id_cliente.reset();
+                console.log("entra para recuperar la informacion");
+                this.Cmp.nit.setValue(this.data.datos_originales.data.nit);
+                this.Cmp.nombre_factura.setValue(this.data.datos_originales.data.nombre_factura);
 
-  				}
+      					Ext.Ajax.request({
+      							url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+      							params : {
+      								'nit' : this.data.datos_originales.data.nit,
+      								'razon_social' : this.data.datos_originales.data.nombre_factura,
+      							},
+      							success: function(resp){
+      	                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                        this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+      	                this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+      	            },
+      							failure : this.conexionFailure,
+      							timeout : this.timeout,
+      							scope : this
+      						});
+          }
+
         }
+
+
+        // else {
+        //   if (this.Cmp.nit.getValue() == '' || this.Cmp.habilitar_edicion.getValue() == 'SI') {
+        //     this.Cmp.nombre_factura.reset();
+        //     this.Cmp.id_cliente.reset();
+        //
+        //     this.Cmp.nit.setValue(this.data.datos_originales.data.nit);
+        //     this.Cmp.nombre_factura.setValue(this.data.datos_originales.data.nombre_factura);
+        //
+  			// 		Ext.Ajax.request({
+  			// 				url : '../../sis_ventas_facturacion/control/VentaFacturacion/RecuperarCliente',
+  			// 				params : {
+  			// 					'nit' : this.data.datos_originales.data.nit,
+  			// 					'razon_social' : this.data.datos_originales.data.nombre_factura,
+  			// 				},
+  			// 				success: function(resp){
+  	    //             var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+        //             this.Cmp.nombre_factura.setValue(reg.ROOT.datos.razon);
+  	    //             this.Cmp.id_cliente.setValue(reg.ROOT.datos.id_cliente);
+  	    //         },
+  			// 				failure : this.conexionFailure,
+  			// 				timeout : this.timeout,
+  			// 				scope : this
+  			// 			});
+        //
+  			// 	}
+        // }
 
   			},this);
 
@@ -2956,9 +2992,9 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
              //this.imprimirNota();
          }
          Phx.CP.loadingHide();
-         resp.argument.wizard.panel.destroy();
+         //resp.argument.wizard.panel.destroy();
          this.panel.destroy();
-         this.reload();
+         //this.reload();
       },
 
     //   imprimirNota: function(){

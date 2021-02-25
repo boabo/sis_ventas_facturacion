@@ -195,6 +195,7 @@ DECLARE
     v_tipo_interf			varchar=null;
 
     v_estacion				varchar;
+    v_nro_autorizacion		varchar;
     /***/
 BEGIN
 
@@ -2135,12 +2136,42 @@ BEGIN
     elsif(p_transaccion='VF_FACTU_MOD')then
 
       begin
+
+
         select
           v.*
         into
           v_registros
         from vef.tventa v
         where v.id_venta = v_parametros.id_venta;
+
+
+        v_id_dosificacion = v_parametros.id_dosificacion;
+		v_nro_factura = v_parametros.nro_factura;
+
+      --validaciones de factura manual
+      if (exists(	select 1
+                   from vef.tventa ven
+                   where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion and (ven.estado = 'finalizado' or ven.estado = 'anulado'))) then
+        raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
+      end if;
+
+      --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
+      if (exists(	select 1
+                   from vef.tdosificacion dos
+                   where v_parametros.nro_factura::integer > dos.final and dos.id_dosificacion = v_parametros.id_dosificacion )) then
+        raise exception 'El numero de factura supera el maximo permitido para esta dosificacion';
+      end if;
+
+      --validar que la fecha de factura no sea superior a la fecha limite de emision
+      if (exists(	select 1
+                   from vef.tdosificacion dos
+                   where dos.fecha_limite < v_parametros.fecha and dos.id_dosificacion = v_parametros.id_dosificacion)) then
+        raise exception 'La fecha de la factura supera la fecha limite de emision de la dosificacion';
+      end if;
+
+
+
 
         v_tiene_formula = 'no';
         /*Verificamos si existe el parametro id_punto_venta*/
@@ -2323,7 +2354,6 @@ BEGIN
         end if;
        /*************************************************************************/
 
-
         --Sentencia de la modificacion
 
         update vef.tventa set
@@ -2363,8 +2393,8 @@ BEGIN
           valor_bruto = COALESCE(v_valor_bruto,0),
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
           nit = v_parametros.nit,
-              nombre_factura = v_nombre_factura ,
-              id_cliente_destino = v_id_cliente_destino
+          nombre_factura = v_nombre_factura ,
+          id_cliente_destino = v_id_cliente_destino
         where id_venta=v_parametros.id_venta;
 
 
@@ -2886,7 +2916,6 @@ BEGIN
             where usu.id_usuario = p_id_usuario;
             /******************************************************************/
 
-
 			IF  pxp.f_existe_parametro(p_tabla,'tipo_pv') THEN
                 v_tipo_pv= 'FAC.BOL.COMPUT.CONTABLE '||upper(v_parametros.tipo_pv);
              ELSE
@@ -3301,7 +3330,6 @@ BEGIN
               	v_tipo_pv='';
              END IF;
 
-
                 v_consulta = '
                             INSERT INTO sfe.tfactura(
                             id_factura,
@@ -3577,7 +3605,13 @@ BEGIN
               	v_tipo_pv='';
              END IF;
 
-
+            /*Aqui recuperamos el nro de autoriazacion para replicar*/
+            select dosi.nroaut
+            	   into
+                   v_nro_autorizacion
+            from vef.tdosificacion dosi
+            where dosi.id_dosificacion = v_venta.id_dosificacion;
+            /********************************************************/
                 v_consulta = '
                             INSERT INTO sfe.tfactura(
                             id_factura,
@@ -3592,7 +3626,10 @@ BEGIN
                             tipo_factura,
                             id_origen,
                             sistema_origen,
-                            desc_ruta
+                            desc_ruta,
+                            /*Aumentando para recuperar el nro de Autorizacion*/
+                            nro_autorizacion
+                            /**************************************************/
                             )
                             values(
                             '||v_id_factura||',
@@ -3607,7 +3644,8 @@ BEGIN
                             '''||v_venta.tipo_factura||''',
                             '||v_venta.id_venta||',
                             ''ERP'',
-                            '''||v_tipo_pv::varchar||'''
+                            '''||v_tipo_pv::varchar||''',
+                            '''||v_nro_autorizacion||'''
                             );';
 
 
@@ -4252,7 +4290,11 @@ BEGIN
         total_venta = 0
         where id_venta = v_parametros.id_venta;
 
-
+		/*AQUI ACTUALIZAR EL ESTADO DE LOS BOLETOS ASOCIADOS*/
+        update vef.tboletos_asociados_fact set
+        estado_reg = 'inactivo'
+        where id_venta = v_parametros.id_venta;
+        /****************************************************/
 
 
 
@@ -4308,7 +4350,8 @@ BEGIN
                                 usuario_reg,
                                 tipo_factura,
                                 id_origen,
-                                sistema_origen
+                                sistema_origen,
+                                nro_autorizacion
                                 )
                                 values(
                                 '||v_id_factura||',
@@ -4316,13 +4359,14 @@ BEGIN
                                 '''||v_venta.nro_factura::varchar||''',
                                 ''ANULADA'',
                                 ''0'',
-                                ''ANULADO'',
+                                ''ANULADA'',
                                 0,
                                 0,
                                 '''||v_cajero||''',
                                 '''||v_venta.tipo_factura||''',
                                 '||v_venta.id_venta||',
-                                ''ERP''
+                                ''ERP'',
+                                '||v_respaldo.nroaut||'
                                 );';
 
 

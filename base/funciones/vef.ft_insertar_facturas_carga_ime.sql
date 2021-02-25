@@ -169,9 +169,10 @@ BEGIN
                                                          f.usuario_reg,
                                                          f.tipo_factura,
                                                          f.id_origen,
-                                                         f.sistema_origen
+                                                         f.sistema_origen,
+                                                         f.nro_autorizacion
                   								  from sfe.tfactura f
-                                                  where f.id_origen = '''||v_parametros.id_origen||''' and f.sistema_origen = ''CARGA''
+                                                  where f.id_origen = '||v_parametros.id_origen||' and f.sistema_origen = ''CARGA''
                                                   ',TRUE) AS datos_carga (
                                                   		id_factura INTEGER,
                                                         fecha_factura date,
@@ -183,12 +184,13 @@ BEGIN
                                                         usuario_reg varchar,
                                                         tipo_factura varchar,
                                                         id_origen INTEGER,
-                                                        sistema_origen varchar )
+                                                        sistema_origen varchar,
+                                                        nro_autorizacion varchar )
                                                   into v_datos_carga;
 
               v_consulta = 'update sfe.tfactura set
                             estado_reg = ''inactivo''
-                            where id_origen = '''||v_datos_carga.id_origen||''' and sistema_origen = ''CARGA'' and estado <> ''ANULADA'';';
+                            where id_origen = '||v_datos_carga.id_origen||' and sistema_origen = ''CARGA'' and estado <> ''ANULADA'';';
 
 
 
@@ -208,7 +210,7 @@ BEGIN
                                 tipo_factura,
                                 id_origen,
                                 sistema_origen,
-                                desc_ruta
+                                nro_autorizacion
                                 )
                                 values(
                                 '||v_id_factura||',
@@ -216,13 +218,13 @@ BEGIN
                                 '''||v_datos_carga.nro_factura::varchar||''',
                                 ''ANULADA'',
                                 ''0'',
-                                ''ANULADO'',
+                                ''ANULADA'',
                                 0,
                                 '''||v_datos_carga.usuario_reg||''',
                                 '''||v_datos_carga.tipo_factura||''',
                                 '||v_datos_carga.id_origen||',
                                 ''CARGA'',
-                                ''CARGA NACIONAL COMPUTARIZADA''
+                                '''||v_datos_carga.nro_autorizacion||'''
                                 );';
 
 
