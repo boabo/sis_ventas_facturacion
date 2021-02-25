@@ -149,9 +149,9 @@ BEGIN
 
 
 	-- CONTROL DE MONTOS FACTURA Y COMISION
-    IF p_venta_total != v_monto THEN
+    IF p_venta_total != round(v_monto,2) THEN
     	v_resp[0] = true;
-        v_resp[1] = 'El monto total del detalle de pago es: '||p_venta_total||' , el cual difiere del monto recuperado del numero de liquidacion: '||p_liquidaciones||' el cual es: '||v_monto;
+        v_resp[1] = 'El monto total del detalle de pago es: '||p_venta_total||' , el cual difiere del monto recuperado del numero de liquidacion: '||p_liquidaciones||' el cual es: '||round(v_monto,2);
         return v_resp;
     END IF;
 
