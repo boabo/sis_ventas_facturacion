@@ -56,7 +56,6 @@
                   style:'margin-bottom: 10px;'
               },
               type: 'ComboBox',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
               id_grupo: 0,
               form: true
           },
@@ -80,7 +79,7 @@
                           remoteSort: true,
                           baseParams: {cod_catalogo: 'canal_venta', par_filtro:'codigo#descripcion', _adicionar:'si'}
                       }),
-                  valueField: 'id_catalogo',
+                  valueField: 'codigo',
                   displayField: 'codigo',
                   gdisplayField: 'codigo',
                   hiddenName: 'id_catalogo',
@@ -94,11 +93,11 @@
                   width:300,
                   forceSelection: true,
                   minChars: 2,
-                  enableMultiSelect: true,
+                  // enableMultiSelect: true,
                   style:'margin-bottom: 10px;'
               },
-              type: 'AwesomeCombo',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
+              type: 'ComboBox',
+              valorInicial: 'Todos' ,
               id_grupo: 0,
               form: true
           },
@@ -158,6 +157,7 @@
 
   	            },
   	            type: 'ComboBox',
+                valorInicial: 'Todos',
   	            id_grupo: 0,
   	            filters: {pfiltro: 'puve.nombre',type: 'string'},
   	            form: true
@@ -202,6 +202,7 @@
                   style:'margin-bottom: 10px;'
               },
               type: 'ComboBox',
+              valorInicial: 'Todos',
               filters: {pfiltro: 'lug.nombre', type: 'string'},
               id_grupo: 1,
               form: true
@@ -239,11 +240,11 @@
                   width:300,
                   forceSelection: true,
                   minChars: 2,
-                  enableMultiSelect: true,
+                  // enableMultiSelect: true,
                   style:'margin-bottom: 10px;'
               },
-              type: 'AwesomeCombo',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
+              type: 'ComboBox',
+              valorInicial: 'Todos',
               id_grupo: 1,
               form: true
           },
@@ -288,6 +289,7 @@
 
   	            },
   	            type: 'ComboBox',
+                valorInicial: 'Todos',
   	            id_grupo: 1,
   	            form: true
   	       },
@@ -327,6 +329,7 @@
                displayField: 'value'
            },
            type : 'ComboBox',
+           valorInicial: 'Todos',
            id_grupo : 0,
            form : true,
            grid : true
@@ -352,7 +355,7 @@
                 success:function(resp){
                     var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                     this.Cmp.fecha_ini.setValue('01/01/'+reg.ROOT.datos.anho);
-                    this.Cmp.fecha_fin.setValue('31/12/'+reg.ROOT.datos.anho);
+                    this.Cmp.fecha_fin.setValue('31/01/'+reg.ROOT.datos.anho);
                 },
                 failure: this.conexionFailure,
                 timeout:this.timeout,
@@ -385,7 +388,8 @@
                         this.city = rec.data.codigo.toUpperCase();
 
                         this.Cmp.id_catalogo.reset();
-                        this.Cmp.id_catalogo.store.baseParams.id_catalogo = rec.data.codigo.toUpperCase();
+                        this.Cmp.tipo.reset();
+                        this.Cmp.id_catalogo.store.baseParams.id_lugar_fk = rec.data.codigo.toUpperCase();
                         this.Cmp.id_catalogo.modificado = true;
           },this);
 
@@ -474,34 +478,6 @@
             ],
 
         // ActSave:'../../sis_ventas_facturacion/control/ReporteVentas/onReporteVentas',
-
-        callReport: function(resp,data){
-          var unicos = '';
-          var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-          unicos = reg.datos[0].codigo;
-
-          data.channel = (unicos == '')?'TODOS':unicos;
-          data.city = (data.city=='')?'TODOS':data.city;
-          // unicos = (this.channel=='')?'TODOS':unicos.substring(1);
-          data.typePOS = (data.typePOS=='')?'TODOS':data.Cmp.tipo.getValue().toUpperCase();
-          data.iataCode = (data.iataCode=='')?'TODOS':data.iataCode;
-          data.officeID = (data.officeID=='')?'TODOS':data.officeID;
-          data.transaction = (data.transaction=='')?'TODOS':data.transaction.toUpperCase();
-
-          var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&from=' + data.Cmp.fecha_ini.getValue().format('Y-m-d');
-              arg = arg + "&to=" + data.Cmp.fecha_fin.getValue().format('Y-m-d');
-              arg = arg + "&country=" + data.country;
-              arg = arg + "&city=" + data.city;
-              arg = arg + "&channel=" + data.channel;
-              arg = arg + "&typePOS=" + data.typePOS;
-              arg = arg + "&iataCode=" + data.iataCode;
-              arg = arg + "&officeID=" + data.officeID;
-              arg = arg + "&transaction=" + data.transaction;
-              arg = arg + "&rs:Format=EXCEL";
-
-              console.log("resp", arg);
-              window.open('http://172.17.110.5:8082/BoAReportServer/Pages/ReportViewer.aspx?'+arg, '_blank');
-        },
         onSubmit: function(){
         	    var me = this;
 
@@ -510,21 +486,7 @@
             if(this.country == ''){
                 this.country = me.Cmp.id_lugar.getStore().getById(me.Cmp.id_lugar.getValue()).data.codigo.toUpperCase();
             }
-
-            if (this.Cmp.id_catalogo.getValue()!=0){
-            Ext.Ajax.request({
-                          url: '../../sis_ventas_facturacion/control/ReporteVentas/getCanal',
-                          params:{id_catalogos: this.Cmp.id_catalogo.getValue()},
-                          success: function(resp){
-                            me.callReport(resp,me)
-                          },
-                          failure: this.conexionFailure,
-                          timeout:this.timeout,
-                          scope:this
-                      });
-            }else{
-
-                this.channel='TODOS';
+                this.channel=this.Cmp.id_catalogo.getValue().toUpperCase();
                 this.city = (this.city=='')?'TODOS':this.city;
                 // unicos = (this.channel=='')?'TODOS':unicos.substring(1);
                 this.typePOS = (this.typePOS=='')?'TODOS':this.Cmp.tipo.getValue().toUpperCase();
@@ -545,9 +507,6 @@
 
                     console.log("resp", arg);
                     window.open('http://172.17.110.5:8082/BoAReportServer/Pages/ReportViewer.aspx?'+arg, '_blank');
-            }
-
-
     			}
     		}
     })

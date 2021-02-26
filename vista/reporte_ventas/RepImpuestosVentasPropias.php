@@ -94,10 +94,10 @@
                   width:300,
                   forceSelection: true,
                   minChars: 2,
-                  enableMultiSelect: true,
+                  // enableMultiSelect: true,
                   style:'margin-bottom: 10px;'
               },
-              type: 'AwesomeCombo',
+              type: 'ComboBox',
               filters: {pfiltro: 'lug.nombre', type: 'string'},
               id_grupo: 0,
               form: true
@@ -239,10 +239,10 @@
                   width:300,
                   forceSelection: true,
                   minChars: 2,
-                  enableMultiSelect: true,
+                  // enableMultiSelect: true,
                   style:'margin-bottom: 10px;'
               },
-              type: 'AwesomeCombo',
+              type: 'ComboBox',
               filters: {pfiltro: 'lug.nombre', type: 'string'},
               id_grupo: 1,
               form: true
@@ -292,19 +292,128 @@
   	            form: true
   	       },
            {
-               config: {
-                   name: 'id_moneda',
-                   origen: 'MONEDA',
-                   allowBlank: true,
-                   fieldLabel: 'Monenda',
-                   gdisplayField: 'desc_moneda',
-                   gwidth: 250,
-                   anchor:'100%'
-               },
-               type: 'ComboRec',
-               id_grupo: 0,
-               form: true
+             config: {
+               name: 'id_moneda',
+               fieldLabel: 'Moneda',
+               allowBlank: false,
+               emptyText: 'Moneda...',
+               store: new Ext.data.JsonStore({
+                   url: '../../sis_parametros/control/Moneda/listarMoneda',
+                   id: 'id_moneda',
+                   root: 'datos',
+                   sortInfo: {
+                       field: 'moneda',
+                       direction: 'ASC'
+                   },
+                   totalProperty: 'total',
+                   fields: ['id_moneda', 'moneda', 'codigo', 'tipo_moneda', 'codigo_internacional'],
+                   remoteSort: true,
+                   baseParams: {_adicionar : 'si', par_filtro: 'moneda#codigo', filtrar: 'si'}
+               }),
+               valueField: 'id_moneda',
+               displayField: 'moneda',
+               tpl: '<tpl for="."><div class="x-combo-list-item"><p><font color="green"><b>{moneda}</b></font></p><p>Codigo:<b>{codigo}</b></p> <p>Codigo Internacional:<b>{codigo_internacional}</b></p></div></tpl>',
+               hiddenName: 'id_moneda',
+               forceSelection: true,
+               typeAhead: false,
+               triggerAction: 'all',
+               lazyRender: true,
+               mode: 'remote',
+               pageSize: 10,
+               queryDelay: 1000,
+               width: 300,
+               listWidth: '280',
+               resizable: true,
+               minChars: 2,
+               style:'margin-bottom: 10px;'
+             },
+             type: 'ComboBox',
+             id_grupo: 0,
+             form: true
+          },
+           // {
+           //     config: {
+           //         name: 'id_moneda',
+           //         origen: 'MONEDA',
+           //         allowBlank: true,
+           //         fieldLabel: 'Monenda',
+           //         gdisplayField: 'desc_moneda',
+           //         gwidth: 250,
+           //         anchor:'100%',
+           //         style:'margin-bottom: 10px;'
+           //     },
+           //     type: 'ComboRec',
+           //     id_grupo: 0,
+           //     form: true
+           // },
+           {
+           config : {
+               name : 'tipo_documento',
+               fieldLabel : 'TIPO DOCUMENTO',
+               allowBlank : true,
+               triggerAction : 'all',
+               lazyRender : true,
+   						gwidth : 100,
+   						anchor : '50%',
+               mode : 'local',
+               emptyText:'...',
+               store: new Ext.data.ArrayStore({
+                   id: '',
+                   fields: [
+                       'key',
+                       'value'
+                   ],
+                   data: [
+                       ['todos', 'Todos'],
+                       ['TKTT', 'TKTT'],
+                       ['RFND', 'RFND'],
+                       ['EMDA', 'EMDA'],
+                       ['EMDS', 'EMDS'],
+                       ['CANN', 'CANN'],
+                       ['CANX', 'CANX'],
+                       ['ADMA', 'ADMA'],
+                       ['ACMA', 'ACMA'],
+                       ['ACMD', 'ACMD'],
+                       ['SPCR', 'SPCR'],
+                       ['SPDR', 'SPDR'],
+                   ]
+               }),
+               valueField: 'key',
+               displayField: 'value'
            },
+           type : 'ComboBox',
+           id_grupo : 1,
+           grid : true
+         },
+         {
+         config : {
+             name : 'tipo_documento',
+             fieldLabel : 'TIPO REPORTE',
+             allowBlank : true,
+             triggerAction : 'all',
+             lazyRender : true,
+             gwidth : 100,
+             anchor : '100%',
+             mode : 'local',
+             emptyText:'...',
+             store: new Ext.data.ArrayStore({
+                 id: '',
+                 fields: [
+                     'key',
+                     'value'
+                 ],
+                 data: [
+                     ['repo_bsp', 'Reporte BSP'],
+                     ['repo_inp', 'Reporte Impuestos Venta Propia']
+                 ]
+             }),
+             valueField: 'key',
+             displayField: 'value'
+         },
+         type : 'ComboBox',
+         id_grupo : 0,
+         grid : true
+       },
         ],
 
 
@@ -408,6 +517,10 @@
                         this.moneda = rec.data.codigo_internacional.toUpperCase();
           },this);
 
+          this.Cmp.tipo_documento.on('select',function(cmp, rec, indice){
+                        this.transaction = rec.data.key.toUpperCase();
+          },this);
+
         },
 
 
@@ -461,16 +574,18 @@
           data.iataCode = (data.iataCode=='')?'TODOS':data.iataCode;
           data.officeID = (data.officeID=='')?'TODOS':data.officeID;
           data.moneda = (data.moneda=='')?'TODOS':data.moneda.toUpperCase();
+          data.transaction = (data.transaction=='')?'TODOS':data.transaction.toUpperCase();
 
-          var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&from=' + data.Cmp.fecha_ini.getValue().format('Y-m-d');
-              arg = arg + "&to=" + data.Cmp.fecha_fin.getValue().format('Y-m-d');
-              arg = arg + "&country=" + data.country;
-              arg = arg + "&city=" + data.city;
-              arg = arg + "&channel=" + data.channel;
-              arg = arg + "&typePOS=" + data.typePOS;
-              arg = arg + "&iataCode=" + data.iataCode;
-              arg = arg + "&officeID=" + data.officeID;
-              arg = arg + "&moneda=" + data.moneda;
+          var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&FechaFin=' + data.Cmp.fecha_ini.getValue().format('Y-m-d');
+              arg = arg + "&FechaFin=" + data.Cmp.fecha_fin.getValue().format('Y-m-d');
+              arg = arg + "&EstacionVenta=" + data.country;
+              arg = arg + "&Ciudad=" + data.city;
+              arg = arg + "&CanalVenta=" + data.channel;
+              arg = arg + "&TipoAgencia=" + data.typePOS;
+              arg = arg + "&CodigoIata=" + data.iataCode;
+              arg = arg + "&OficinaVentas=" + data.officeID;
+              arg = arg + "&Moneda=" + data.moneda;
+              arg = arg + "&Transaccion="+data.transaction;
               arg = arg + "&rs:Format=EXCEL";
 
               console.log("resp", arg);
@@ -506,21 +621,23 @@
                 this.iataCode = (this.iataCode=='')?'TODOS':this.iataCode;
                 this.officeID = (this.officeID=='')?'TODOS':this.officeID;
                 this.moneda = (this.moneda=='')?'TODOS':this.moneda.toUpperCase();
+                this.transaction = (this.transaction=='')?'TODOS':this.transaction.toUpperCase();
 
-                var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&from=' + this.Cmp.fecha_ini.getValue().format('Y-m-d');
-                    arg = arg + "&to=" + this.Cmp.fecha_fin.getValue().format('Y-m-d');
-                    arg = arg + "&country=" + this.country;
-                    arg = arg + "&city=" + this.city;
-                    arg = arg + "&channel=" + this.channel;
-                    arg = arg + "&typePOS=" + this.typePOS;
-                    arg = arg + "&iataCode=" + this.iataCode;
-                    arg = arg + "&officeID=" + this.officeID;
-                    arg = arg + "&moneda=" + this.moneda;
+                var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&FecahIni=' + this.Cmp.fecha_ini.getValue().format('Y-m-d');
+                    arg = arg + "&FechaFin=" + this.Cmp.fecha_fin.getValue().format('Y-m-d');
+                    arg = arg + "&EstacionVenta=" + this.country;
+                    arg = arg + "&Ciudad=" + this.city;
+                    arg = arg + "&CanalVenta=" + this.channel;
+                    arg = arg + "&TipoAgencia=" + this.typePOS;
+                    arg = arg + "&CodigoIata=" + this.iataCode;
+                    arg = arg + "&OficinaVentas=" + this.officeID;
+                    arg = arg + "&Moneda=" + this.moneda;
+                    arg = arg + "&Transaccion="+this.transaction;
                     arg = arg + "&rs:Format=EXCEL";
 
                     console.log("resp", arg);
                     // http://10.150.0.22:8082/Reports/Pages/Report.aspx?ItemPath=%2fBoaDwRepIngresos%2fRepImpuestosVentasPropias
-                    // window.open('http://172.17.110.5:8082/BoAReportServer/Pages/RepImpuestosVentasPropias.aspx?'+arg, '_blank');
+                    // window.open('http://10.150.0.22:8082/BoAReportServer/Pages/RepImpuestosVentasPropias.aspx?'+arg, '_blank');
             }
 
 

@@ -13,12 +13,32 @@ class MODReporteVentas extends MODbase {
 		parent::__construct($pParam);
 	}
 
+ 	function listarCanalVentaPuntoVenta() {
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_CCANVE_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		//Definicion de la lista del resultado del query
+
+		$this->captura('id_catalogo', 'int4');
+		$this->captura('codigo', 'varchar');
+		$this->captura('descripcion', 'varchar');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 	function listarCanalVenta(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_reporte_ventas';
 		$this->transaccion='VF_RREVBOL_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-
+		$this->setCount(false);
 		//Definicion de la lista del resultado del query
 
 		$this->captura('id_catalogo', 'int4');

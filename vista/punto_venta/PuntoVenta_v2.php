@@ -179,7 +179,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 								emptyText: 'Canal venta...',
 								store: new Ext.data.JsonStore(
 										{
-												url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVenta',
+												url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVentaPuntoVenta',
 												id: 'id_catalogo',
 												root: 'datos',
 												sortInfo: {
@@ -237,7 +237,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 								emptyText: 'OSD...',
 								store: new Ext.data.JsonStore(
 										{
-												url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVenta',
+												url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVentaPuntoVenta',
 												id: 'id_catalogo',
 												root: 'datos',
 												sortInfo: {
@@ -247,7 +247,7 @@ Phx.vista.PuntoVenta_v2=Ext.extend(Phx.gridInterfaz,{
 												totalProperty: 'total',
 												fields: ['id_catalogo', 'codigo', 'descripcion'],
 												remoteSort: true,
-												baseParams: {cod_catalogo: 'osd'}
+												baseParams: {cod_catalogo: 'osd', par_filtro:'codigo#descripcion'}
 										}),
 								valueField: 'id_catalogo',
 								displayField: 'codigo',

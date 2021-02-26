@@ -10,13 +10,22 @@
 class ACTReporteVentas extends ACTbase{
 
 
+  function listarCanalVentaPuntoVenta () {
+
+    $this->objParam->getParametro('cod_catalogo') != ''  && $this->objParam->addFiltro("descripcion = ''".$this->objParam->getParametro('cod_catalogo')."''");
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->listarCanalVentaPuntoVenta($this->objParam);
+    $this->res->imprimirRespuesta($this->res->generarJson());
+
+  }
+
   function listarCanalVenta () {
 
-    // $this->objParam->getParametro('cod_catalogo') != '' && $this->objParam->addFiltro("c.descripcion = ''".$this->objParam->getParametro('cod_catalogo')."''");
 
-    $this->objParam->getParametro('id_catalogo') != 'TODOS' && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_catalogo')."''");
+    if ($this->objParam->getParametro('id_lugar_fk') != 'TODOS'  && $this->objParam->getParametro('id_lugar_fk') != '') {
+        $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
+    }
 
-    // var_dump($this->objParam->getParametro('id_catalogo'));exit;
 
     $this->objFunc=$this->create('MODReporteVentas');
     $this->res=$this->objFunc->listarCanalVenta($this->objParam);
@@ -24,7 +33,6 @@ class ACTReporteVentas extends ACTbase{
     if($this->objParam->getParametro('_adicionar')!=''){
 
 			$respuesta = $this->res->getDatos();
-
 	    array_unshift ( $respuesta, array(  'id_catalogo'=>'0',
 								                          'codigo'=>'Todos',
 									                        'descripcion'=>'Todos'
@@ -38,15 +46,20 @@ class ACTReporteVentas extends ACTbase{
 
   function listarPuntoVentaOfficeId () {
 
-    if($this->objParam->getParametro('id_lugar_fk') != 0  && $this->objParam->getParametro('id_lugar_fk') !='') {
+    if($this->objParam->getParametro('id_lugar_fk') != 'TODOS'  && $this->objParam->getParametro('id_lugar_fk') !='') {
       $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
     }
-    if($this->objParam->getParametro('canal') != 0  && $this->objParam->getParametro('canal') !='') {
-      $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+    if($this->objParam->getParametro('canal') != 'Todos'  && $this->objParam->getParametro('canal') !='') {
+      $this->objParam->addFiltro("c.codigo  = ANY (string_to_array(''".$this->objParam->getParametro('canal')."'','',''))");
     }
 
-    $this->objParam->getParametro('tipoVenta') != 'Todos' && $this->objParam->addFiltro("p.tipo = ANY (string_to_array(''".$this->objParam->getParametro('tipoVenta')."'','',''))");
-    $this->objParam->getParametro('code_iata') != 'TODOS' && $this->objParam->addFiltro("p.codigo = ''".$this->objParam->getParametro('code_iata')."''");
+    if($this->objParam->getParametro('tipoVenta') != 'Todos' && $this->objParam->getParametro('tipoVenta') != ''){
+      $this->objParam->addFiltro("p.tipo = ANY (string_to_array(''".$this->objParam->getParametro('tipoVenta')."'','',''))");
+    }
+
+    if($this->objParam->getParametro('code_iata') != 'TODOS' && $this->objParam->getParametro('code_iata') != ''){
+      $this->objParam->addFiltro("p.codigo = ''".$this->objParam->getParametro('code_iata')."''");
+    }
 
     $this->objFunc=$this->create('MODReporteVentas');
     $this->res=$this->objFunc->listarPuntoVentaOfficeId($this->objParam);
@@ -64,18 +77,18 @@ class ACTReporteVentas extends ACTbase{
   }
   function listarPuntoVentaRbol () {
 
-    // $this->objParam->getParametro('offi_id') == 'no' && $this->objParam->addFiltro("puve.office_id is not null ");
-
-    if($this->objParam->getParametro('id_lugar_fk') != 0  && $this->objParam->getParametro('id_lugar_fk') !='') {
+    if($this->objParam->getParametro('id_lugar_fk') != 'TODOS'  && $this->objParam->getParametro('id_lugar_fk') !='') {
       $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
     }
 
-    if($this->objParam->getParametro('canal') != 0  && $this->objParam->getParametro('canal') !='') {
-      $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+    if($this->objParam->getParametro('canal') != 'Todos'  && $this->objParam->getParametro('canal') !='') {
+      $this->objParam->addFiltro("c.codigo  = ANY (string_to_array(''".$this->objParam->getParametro('canal')."'','',''))");
     }
-    // $this->objParam->getParametro('canal') != '' && $this->objParam->addFiltro("c.codigo = ANY (string_to_array(''".$this->objParam->getParametro('canal')."'','',''))");
-    $this->objParam->getParametro('tipoVenta') != 'Todos' && $this->objParam->addFiltro("p.tipo = ANY (string_to_array(''".$this->objParam->getParametro('tipoVenta')."'','',''))");
-    // $this->objParam->getParametro('canal') != 0 && $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('canal').")");
+
+    if($this->objParam->getParametro('tipoVenta') != 'Todos' && $this->objParam->getParametro('tipoVenta') != ''){
+      $this->objParam->addFiltro("p.tipo = ANY (string_to_array(''".$this->objParam->getParametro('tipoVenta')."'','',''))");
+    }
+
 
     $this->objFunc=$this->create('MODReporteVentas');
     $this->res=$this->objFunc->listarPuntoVentaRbol($this->objParam);
@@ -84,12 +97,6 @@ class ACTReporteVentas extends ACTbase{
 
 			$respuesta = $this->res->getDatos();
       array_unshift ( $respuesta, array('codigo'=>'Todos'));
-	    // array_unshift ( $respuesta, array(  'id_punto_venta'=>'0',
-	    //                                     'nombre'=>'Todos',
-			// 					                          'codigo'=>'Todos',
-			// 						                        'codigo'=>'Todos',
-			// 						                        'tipo'=>'Todos',
-      //                                     'office_id'=>'Todos'));
 			$this->res->setDatos($respuesta);
 		}
 
@@ -98,15 +105,12 @@ class ACTReporteVentas extends ACTbase{
 
   function listarPuntoVentaTipo () {
 
-    if($this->objParam->getParametro('id_lugar_fk') != 0  && $this->objParam->getParametro('id_lugar_fk') !='') {
+    if($this->objParam->getParametro('id_lugar_fk') != 'TODOS'  && $this->objParam->getParametro('id_lugar_fk') !='') {
       $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
     }
-    // $this->objParam->getParametro('id_lugar_fk') != 0 && $this->objParam->addFiltro("l.codigo = ''".$this->objParam->getParametro('id_lugar_fk')."''");
 
-    // $this->objParam->getParametro('tipo') != '' && $this->objParam->addFiltro("c.codigo = ANY (string_to_array(''".$this->objParam->getParametro('tipo')."'','',''))");
-
-    if($this->objParam->getParametro('tipo') != 0  && $this->objParam->getParametro('tipo') !='') {
-      $this->objParam->addFiltro("c.id_catalogo in (".$this->objParam->getParametro('tipo').")");
+    if($this->objParam->getParametro('tipo') != 'Todos'  && $this->objParam->getParametro('tipo') !='') {
+      $this->objParam->addFiltro("c.codigo  = ANY (string_to_array(''".$this->objParam->getParametro('tipo')."'','',''))");
     }
 
     $this->objFunc=$this->create('MODReporteVentas');
