@@ -45,7 +45,7 @@ class RResumenVentasRtsPDF extends  ReportePDF {
         $this->SetFont('', '', 10);
 
         $this->Cell(0, 5, 'GESTIÓN: '.$this->datos[0]['gestion'].'          DESDE MES: '.$this->datos[0]['mes_inicio'].'   HASTA MES: '.$this->datos[0]['mes_final'], 0, 1, 'C');
-        $this->Cell(0, 5, 'REGIMEN SIMPLIFICADO', 0, 1, 'C');
+        $this->Cell(0, 5, 'REGIMEN TRIBUTARIO SIMPLIFICADO', 0, 1, 'C');
 
 
         // if ($this->objParam->getParametro('filtro_sql') == 'periodo') {

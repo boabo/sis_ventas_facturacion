@@ -147,7 +147,7 @@ class RDetalleVentasNaturalesXLS
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,2,$gestion);
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,3,$mes_envio);
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,4,'DEPTO. DE FINANZAS');
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,4,'REGIMEN TRIBUTARIO PERSONAS NATURALES');
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,4,'PERSONAS NATURALES');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8,4,'FECHA: '.$fecha_actual.'   HORA: '.$hora_actual);
 
 
@@ -369,7 +369,7 @@ class RDetalleVentasNaturalesXLS
             $this->docexcel->getActiveSheet()->mergeCells("A$fila:J$fila");
             $this->docexcel->getActiveSheet()->getStyle("A$fila:L$fila")->applyFromArray($styleTotales);
             $this->docexcel->getActiveSheet()->getStyle("K$fila:L$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
-          
+
           }
 
           $fila++;

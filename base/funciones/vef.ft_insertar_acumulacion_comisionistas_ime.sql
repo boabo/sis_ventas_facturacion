@@ -176,7 +176,10 @@ BEGIN
                       razon_social_cli varchar,
                       cantidad integer,
                       total_venta numeric,
-                      importe_exento numeric);
+                      importe_exento numeric)
+                where t1.nro_factura not in (select  bol.nro_boleto
+                                             from vef.tboletos_asociados_fact bol
+                                             where bol.estado_reg = 'activo');
 
 
 

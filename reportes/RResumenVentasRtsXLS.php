@@ -139,7 +139,7 @@ class RResumenVentasRtsXLS
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,2,'DEL REGIMEN TRIBUTARIO SIMPLIFICADO A PERSONAS NO INSCRITAS' );
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,3,'EN EL PADRON NACIONAL DE CONTRIBUYENTES' );
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,4,'PERIODO: '.$this->datos_contenido[0]['gestion'].' DESDE MES: '.$this->datos_contenido[0]['mes_inicio'].' HASTA MES: '.$this->datos_contenido[0]['mes_final'] );
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,5,'REGIMEN SIMPLIFICADO');
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,5,'REGIMEN TRIBUTARIO SIMPLIFICADO');
 
         $this->docexcel->getActiveSheet()->mergeCells('C1:D1');
         $this->docexcel->getActiveSheet()->mergeCells('C2:D2');

@@ -52,7 +52,7 @@ class RDetalleVentasNaturalesPDF extends  ReportePDF {
         $this->SetFont('', '', 10);
 
 
-        $this->MultiCell(220, 0, '(DEPTO. DE FINANZAS)             REGIMEN TRIBUTARIO PERSONAS NATURALES           FECHA: '.$fecha_actual.'   HORA: '.$hora_actual,0,'L',0,0,'60','');
+        $this->MultiCell(220, 0, '(DEPTO. DE FINANZAS)                              PERSONAS NATURALES           FECHA: '.$fecha_actual.'   HORA: '.$hora_actual,0,'L',0,0,'60','');
 
         // $this->Line(15,32,270,32);
         $this->Line(15,38,285,38);

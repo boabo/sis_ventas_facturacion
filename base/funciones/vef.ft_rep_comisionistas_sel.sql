@@ -67,6 +67,9 @@ DECLARE
 	v_total_general		varchar;
     v_lista_nits		integer;
 
+    v_fecha_ini_per   date;
+    v_fecha_fin_per   date;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_comisionistas_sel';
@@ -325,6 +328,20 @@ BEGIN
             end if;
 
 
+            SELECT per.fecha_ini
+                   into
+                   v_fecha_ini_per
+            from param.tperiodo per
+            where per.id_periodo = v_parametros.id_periodo_inicio;
+
+             SELECT per.fecha_fin
+                   into
+                   v_fecha_fin_per
+            from param.tperiodo per
+            where per.id_periodo = v_parametros.id_periodo_final;
+
+
+
           	--raise exception 'Aqui la cadena %',v_cadena_cnx;
             /*****************************************************************************/
              insert into temporal_data_comisionistas (
@@ -383,7 +400,11 @@ BEGIN
                           cantidad integer,
                           total_venta numeric,
                           importe_exento numeric,
-                          nro_factura numeric);
+                          nro_factura numeric)
+                where tdatos.nro_factura not in (select  bol.nro_boleto::numeric
+                                             from vef.tboletos_asociados_fact bol
+                                             where bol.estado_reg = 'activo')
+                and tdatos.fecha_factura between v_fecha_ini_per and v_fecha_fin_per;
 
 
             /*Recuperamos el nit y la razon social de la empresa*/
