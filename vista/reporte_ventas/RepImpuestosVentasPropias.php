@@ -47,7 +47,7 @@
                   triggerAction: 'all',
                   lazyRender: true,
                   mode: 'remote',
-                  pageSize: 50,
+                  pageSize: 15,
                   queryDelay: 500,
                   gwidth: 250,
                   width:300,
@@ -56,7 +56,6 @@
                   style:'margin-bottom: 10px;'
               },
               type: 'ComboBox',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
               id_grupo: 0,
               form: true
           },
@@ -80,7 +79,7 @@
                           remoteSort: true,
                           baseParams: {cod_catalogo: 'canal_venta', par_filtro:'codigo#descripcion', _adicionar:'si'}
                       }),
-                  valueField: 'id_catalogo',
+                  valueField: 'codigo',
                   displayField: 'codigo',
                   gdisplayField: 'codigo',
                   hiddenName: 'id_catalogo',
@@ -98,7 +97,7 @@
                   style:'margin-bottom: 10px;'
               },
               type: 'ComboBox',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
+              valorInicial: 'Todos' ,
               id_grupo: 0,
               form: true
           },
@@ -122,7 +121,7 @@
   	                name: 'id_punto_venta',
   	                fieldLabel: 'CODIGO IATA',
   	                allowBlank: true,
-                    disabled: true,
+                    disabled: false,
   	                emptyText: 'Elija la codigo iata...',
   	                store: new Ext.data.JsonStore({
   	                    url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaRbol',
@@ -158,6 +157,7 @@
 
   	            },
   	            type: 'ComboBox',
+                valorInicial: 'Todos' ,
   	            id_grupo: 0,
   	            filters: {pfiltro: 'puve.nombre',type: 'string'},
   	            form: true
@@ -171,7 +171,8 @@
                   qtip: 'Ciudad',
                   store: new Ext.data.JsonStore(
                       {
-                          url: '../../sis_parametros/control/Lugar/listarLugar',
+                          // url: '../../sis_parametros/control/Lugar/listarLugar',
+                          url: '../../sis_ventas_facturacion/control/ReporteVentas/subLugarPais',
                           id: 'id_lugar',
                           root: 'datos',
                           sortInfo: {
@@ -179,11 +180,9 @@
                               direction: 'ASC'
                           },
                           totalProperty: 'total',
-                          fields: ['id_lugar', 'id_lugar_fk', 'codigo', 'nombre', 'tipo', 'sw_municipio', 'sw_impuesto', 'codigo_largo'],
-                          // turn on remote sorting
-                          //baseParams:{tipos:"''departamento'',''pais'',''localidad''",par_filtro:'nombre'}
+                          fields: ['id_lugar', 'id_lugar_fk', 'codigo', 'nombre', 'tipo', 'sw_municipio', 'sw_impuesto'],
                           remoteSort: true,
-                          baseParams: {tipos: "''departamento'', ''provincia''", par_filtro: 'nombre',_adicionar:'si'}
+                          baseParams: { par_filtro: 'nombre#codigo',_adicionar:'si'}
                       }),
                   valueField: 'id_lugar',
                   displayField: 'nombre',
@@ -193,7 +192,7 @@
                   triggerAction: 'all',
                   lazyRender: true,
                   mode: 'remote',
-                  pageSize: 50,
+                  pageSize: 5,
                   queryDelay: 500,
                   gwidth: 250,
                   width:300,
@@ -202,7 +201,7 @@
                   style:'margin-bottom: 10px;'
               },
               type: 'ComboBox',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
+              valorInicial: 'Todos' ,
               id_grupo: 1,
               form: true
           },
@@ -243,7 +242,7 @@
                   style:'margin-bottom: 10px;'
               },
               type: 'ComboBox',
-              filters: {pfiltro: 'lug.nombre', type: 'string'},
+              valorInicial: 'Todos' ,
               id_grupo: 1,
               form: true
           },
@@ -252,7 +251,7 @@
   	                name: 'id_punto_venta_1',
   	                fieldLabel: 'OFICINA DE VENTA',
   	                allowBlank: true,
-                    disabled: true,
+                    disabled: false,
   	                emptyText: 'Elija la Oficina de venta...',
   	                store: new Ext.data.JsonStore({
   	                    url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaOfficeId',
@@ -288,6 +287,7 @@
 
   	            },
   	            type: 'ComboBox',
+                valorInicial: 'Todos' ,
   	            id_grupo: 1,
   	            form: true
   	       },
@@ -328,6 +328,7 @@
                style:'margin-bottom: 10px;'
              },
              type: 'ComboBox',
+             valorInicial: 'Todos' ,
              id_grupo: 0,
              form: true
           },
@@ -382,20 +383,22 @@
                displayField: 'value'
            },
            type : 'ComboBox',
+           valorInicial: 'Todos' ,
            id_grupo : 1,
            grid : true
          },
          {
          config : {
-             name : 'tipo_documento',
-             fieldLabel : 'TIPO REPORTE',
-             allowBlank : true,
+             name : 'tipo_reporte',
+             fieldLabel : 'REPORTE',
+             allowBlank : false,
              triggerAction : 'all',
              lazyRender : true,
              gwidth : 100,
              anchor : '100%',
              mode : 'local',
              emptyText:'...',
+             style:'margin-bottom: 10px;',
              store: new Ext.data.ArrayStore({
                  id: '',
                  fields: [
@@ -403,8 +406,8 @@
                      'value'
                  ],
                  data: [
-                     ['repo_bsp', 'Reporte BSP'],
-                     ['repo_inp', 'Reporte Impuestos Venta Propia']
+                     ['repo_inp', 'Reporte Impuestos Venta Propia'],
+                     ['repo_bsp', 'Reporte BSP']
                  ]
              }),
              valueField: 'key',
@@ -414,6 +417,67 @@
          id_grupo : 0,
          grid : true
        },
+       {
+       config : {
+           name : 'tipo_fecha',
+           fieldLabel : 'TIPO',
+           allowBlank : false,
+           triggerAction : 'all',
+           lazyRender : true,
+           gwidth : 100,
+           anchor : '100%',
+           mode : 'local',
+           emptyText:'...',
+           style:'margin-bottom: 10px;',
+           store: new Ext.data.ArrayStore({
+               id: '',
+               fields: [
+                   'key',
+                   'value'
+               ],
+               data: [
+                   ['tipo_f_e', 'Emision'],
+                   ['tipo_f_p', 'Proceso']
+               ]
+           }),
+           valueField: 'key',
+           displayField: 'value'
+       },
+       type : 'ComboBox',
+       id_grupo : 1,
+       grid : true
+     },
+       {
+           config:{
+               name: 'fecha_i_ep',
+               fieldLabel: 'INICIO PROCESO',
+               width: 177,
+               gwidth: 100,
+               format: 'd/m/Y',
+               allowBlank: false,
+               style:'margin-bottom: 10px;'
+           },
+           type:'DateField',
+           filters:{pfiltro:'fecha_ini',type:'date'},
+           id_grupo:0,
+           form:true
+       },
+       {
+           config:{
+               name: 'fecha_f_ep',
+               fieldLabel: 'FIN PROCESO',
+               allowBlank: false,
+               width: 177,
+               gwidth: 100,
+               format: 'd/m/Y',
+               style:'margin-bottom: 10px;'
+           },
+           type:'DateField',
+           filters:{pfiltro:'fecha_fin',type:'date'},
+           id_grupo:1,
+           form:true
+       },
+
         ],
 
 
@@ -427,7 +491,9 @@
         constructor : function(config) {
             Phx.vista.RepImpuestosVentasPropias.superclass.constructor.call(this, config);
             this.init();
-            this.country='',this.city='',this.channel='',this.typePOS='',this.iataCode='',this.officeID='', this.tipo_canal='', this.code_iata='',this.moneda='';
+            this.Cmp.fecha_i_ep.setVisible(false);
+            this.Cmp.fecha_f_ep.setVisible(false);
+            this.country='',this.city='',this.channel='',this.typePOS='',this.iataCode='',this.officeID='', this.tipo_canal='', this.code_iata='',this.moneda='',this.transaction='';
             var fecha = new Date();
             Ext.Ajax.request({
                 url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
@@ -435,7 +501,7 @@
                 success:function(resp){
                     var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                     this.Cmp.fecha_ini.setValue('01/01/'+reg.ROOT.datos.anho);
-                    this.Cmp.fecha_fin.setValue('31/12/'+reg.ROOT.datos.anho);
+                    this.Cmp.fecha_fin.setValue('31/01/'+reg.ROOT.datos.anho);
                 },
                 failure: this.conexionFailure,
                 timeout:this.timeout,
@@ -468,27 +534,22 @@
                         this.city = rec.data.codigo.toUpperCase();
 
                         this.Cmp.id_catalogo.reset();
-                        this.Cmp.id_catalogo.store.baseParams.id_catalogo = rec.data.codigo.toUpperCase();
+                        this.Cmp.tipo.reset();
+                        this.Cmp.id_catalogo.store.baseParams.id_lugar_fk = rec.data.codigo.toUpperCase();
                         this.Cmp.id_catalogo.modificado = true;
           },this);
 
           this.Cmp.id_catalogo.on('select',function(cmp, rec, indice){
 
-                        // this.channel.push(rec.data.codigo.toUpperCase());
-                        // this.tipo_canal = this.tipo_canal +','+rec.data.codigo;
                         this.Cmp.tipo.reset();
-                        // this.Cmp.tipo.store.baseParams.tipo = this.tipo_canal.substring(1)
                         this.Cmp.tipo.store.baseParams.tipo = this.Cmp.id_catalogo.getValue();
                         this.Cmp.tipo.store.baseParams.id_lugar_fk = this.city;
                         this.Cmp.tipo.modificado = true;
           },this);
 
           this.Cmp.tipo.on('select',function(cmp, rec, indice){
-                        // this.typePOS = rec.data.codigo.toUpperCase();
                         this.typePOS = this.typePOS +','+ rec.data.tipo.toUpperCase();
-                        // this.code_iata = this.code_iata +','+rec.data.tipo;
                         this.Cmp.id_punto_venta.reset();
-                        // this.Cmp.id_punto_venta.store.baseParams.tipoVenta = this.code_iata.substring(1)
                         this.Cmp.id_punto_venta.store.baseParams.tipoVenta = this.Cmp.tipo.getValue();
                         this.Cmp.id_punto_venta.store.baseParams.id_lugar_fk = this.city;
                         this.Cmp.id_punto_venta.store.baseParams.canal = this.Cmp.id_catalogo.getValue();
@@ -520,6 +581,23 @@
           this.Cmp.tipo_documento.on('select',function(cmp, rec, indice){
                         this.transaction = rec.data.key.toUpperCase();
           },this);
+
+          this.Cmp.tipo_fecha.on('select', function(cmp, rec, indice){
+                this.Cmp.fecha_i_ep.reset();
+                this.Cmp.fecha_i_ep.modificado = true;
+                this.Cmp.fecha_f_ep.reset();
+                this.Cmp.fecha_f_ep.modificado = true;
+
+              if (rec.data.key == 'tipo_f_e'){
+                this.Cmp.fecha_i_ep.setVisible(true);
+                this.Cmp.fecha_f_ep.setVisible(true);
+              }else{
+                this.Cmp.fecha_i_ep.setVisible(false);
+                this.Cmp.fecha_f_ep.setVisible(false);
+                this.Cmp.fecha_i_ep.allowBlank = true;
+                this.Cmp.fecha_f_ep.allowBlank = true;
+              }
+          },this)
 
         },
 
@@ -562,36 +640,6 @@
 
         // ActSave:'../../sis_ventas_facturacion/control/ReporteVentas/onReporteVentas',
 
-        callReport: function(resp,data){
-          var unicos = '';
-          var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-          unicos = reg.datos[0].codigo;
-
-          data.channel = (unicos == '')?'TODOS':unicos;
-          data.city = (data.city=='')?'TODOS':data.city;
-          // unicos = (this.channel=='')?'TODOS':unicos.substring(1);
-          data.typePOS = (data.typePOS=='')?'TODOS':data.Cmp.tipo.getValue().toUpperCase();
-          data.iataCode = (data.iataCode=='')?'TODOS':data.iataCode;
-          data.officeID = (data.officeID=='')?'TODOS':data.officeID;
-          data.moneda = (data.moneda=='')?'TODOS':data.moneda.toUpperCase();
-          data.transaction = (data.transaction=='')?'TODOS':data.transaction.toUpperCase();
-
-          var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&FechaFin=' + data.Cmp.fecha_ini.getValue().format('Y-m-d');
-              arg = arg + "&FechaFin=" + data.Cmp.fecha_fin.getValue().format('Y-m-d');
-              arg = arg + "&EstacionVenta=" + data.country;
-              arg = arg + "&Ciudad=" + data.city;
-              arg = arg + "&CanalVenta=" + data.channel;
-              arg = arg + "&TipoAgencia=" + data.typePOS;
-              arg = arg + "&CodigoIata=" + data.iataCode;
-              arg = arg + "&OficinaVentas=" + data.officeID;
-              arg = arg + "&Moneda=" + data.moneda;
-              arg = arg + "&Transaccion="+data.transaction;
-              arg = arg + "&rs:Format=EXCEL";
-
-              console.log("resp", arg);
-              // http://10.150.0.22:8082/Reports/Pages/Report.aspx?ItemPath=%2fBoaDwRepIngresos%2fRepImpuestosVentasPropias
-              // window.open('http://172.17.110.5:8082/BoAReportServer/Pages/RepImpuestosVentasPropias.aspx?'+arg, '_blank');
-        },
         onSubmit: function(){
         	    var me = this;
 
@@ -601,29 +649,26 @@
                 this.country = me.Cmp.id_lugar.getStore().getById(me.Cmp.id_lugar.getValue()).data.codigo.toUpperCase();
             }
 
-            if (this.Cmp.id_catalogo.getValue()!=0){
-            Ext.Ajax.request({
-                          url: '../../sis_ventas_facturacion/control/ReporteVentas/getCanal',
-                          params:{id_catalogos: this.Cmp.id_catalogo.getValue()},
-                          success: function(resp){
-                            me.callReport(resp,me)
-                          },
-                          failure: this.conexionFailure,
-                          timeout:this.timeout,
-                          scope:this
-                      });
-            }else{
-
                 this.channel='TODOS';
                 this.city = (this.city=='')?'TODOS':this.city;
                 // unicos = (this.channel=='')?'TODOS':unicos.substring(1);
                 this.typePOS = (this.typePOS=='')?'TODOS':this.Cmp.tipo.getValue().toUpperCase();
                 this.iataCode = (this.iataCode=='')?'TODOS':this.iataCode;
                 this.officeID = (this.officeID=='')?'TODOS':this.officeID;
-                this.moneda = (this.moneda=='')?'TODOS':this.moneda.toUpperCase();
+                this.moneda = (this.moneda=='')?0:this.moneda.toUpperCase();
                 this.transaction = (this.transaction=='')?'TODOS':this.transaction.toUpperCase();
 
-                var arg =  '/Control Ingresos/Reporte+de+Venta&rs:Command=Render&FecahIni=' + this.Cmp.fecha_ini.getValue().format('Y-m-d');
+                if (this.Cmp.tipo_reporte.getValue() != 'repo_inp'){
+                  var arg =  '/ReportServer?/BoaDwRepIngresos/RepImpuestosVentasPropiasBSP&rs:Command=Render&FechaIni=' + this.Cmp.fecha_ini.getValue().format('Y-m-d');
+                      arg = arg + "&FechaFin=" + this.Cmp.fecha_fin.getValue().format('Y-m-d');
+                      arg = arg + "&EstacionVenta=" + this.country;
+                      arg = arg + "&Ciudad=" + this.city;
+                      arg = arg + "&CanalVenta=" + this.channel;
+                      arg = arg + "&CodigoIata=" + this.iataCode;
+                      arg = arg + "&Moneda=" + this.moneda;
+                      arg = arg + "&Transaccion="+this.transaction;
+                }else{
+                  var arg = '/ReportServer/Pages/ReportViewer.aspx?/BoaDwRepIngresos/RepImpuestosVentasPropias&rs:Command=Render&FechaIni=' + this.Cmp.fecha_ini.getValue().format('Y-m-d');
                     arg = arg + "&FechaFin=" + this.Cmp.fecha_fin.getValue().format('Y-m-d');
                     arg = arg + "&EstacionVenta=" + this.country;
                     arg = arg + "&Ciudad=" + this.city;
@@ -633,13 +678,18 @@
                     arg = arg + "&OficinaVentas=" + this.officeID;
                     arg = arg + "&Moneda=" + this.moneda;
                     arg = arg + "&Transaccion="+this.transaction;
+                }
+
+                if (this.Cmp.tipo_fecha.getValue() == 'tipo_f_e'){
+                    arg = arg + '&Tipo=E';
+                    arg = arg + '&FechaIniP=' + this.Cmp.fecha_i_ep.getValue().format('Y-m-d');
+                    arg = arg + '&FechaFinP=' + this.Cmp.fecha_f_ep.getValue().format('Y-m-d');
+                }else{
+                    arg = arg + '&Tipo=P';
+                }
                     arg = arg + "&rs:Format=EXCEL";
-
-                    console.log("resp", arg);
-                    // http://10.150.0.22:8082/Reports/Pages/Report.aspx?ItemPath=%2fBoaDwRepIngresos%2fRepImpuestosVentasPropias
-                    // window.open('http://10.150.0.22:8082/BoAReportServer/Pages/RepImpuestosVentasPropias.aspx?'+arg, '_blank');
-            }
-
+                  console.log("datatsss",arg);
+                  window.open('http://10.150.0.22:8082'+arg, '_blank');
 
     			}
     		}
