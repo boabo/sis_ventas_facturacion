@@ -390,8 +390,57 @@ BEGIN
 
 		end;
 
+    /*********************************
+   	#TRANSACCION:  'VF_VLUTOT_SEL'
+   	#DESCRIPCION:	Consulta de lugar por pais
+   	#AUTOR:		breydi.vasquez
+   	#FECHA:		28-01-2021
+  	***********************************/
 
+  	elsif(p_transaccion='VF_VLUTOT_SEL')then
 
+  		begin
+  			--Sentencia de la consulta de conteo de registros
+
+  			v_consulta:=' with t1 as (
+                            select
+                                lk.id_lugar,
+                                lk.id_lugar_fk,
+                                lk.codigo,
+                                lk.nombre,
+                                lk.sw_impuesto,
+                                lk.sw_municipio,
+                                lk.tipo,
+                                lk.es_regional
+                                from param.tlugar lug
+                                inner join param.tlugar lk on lk.id_lugar_fk = lug.id_lugar
+                                where lug.id_lugar_fk = '||v_parametros.id_lugar_fk||'
+
+                            union
+
+                            select
+                                id_lugar,
+                                id_lugar_fk,
+                                codigo,
+                                nombre,
+                                sw_impuesto,
+                                sw_municipio,
+                                tipo,
+                                es_regional
+                                from param.tlugar
+                                where  id_lugar_fk = '||v_parametros.id_lugar_fk||'
+                                      )
+                              select *
+                              from t1
+                              where  ';
+
+  			--Definicion de la respuesta
+              v_consulta:=v_consulta||v_parametros.filtro;
+              raise notice 'resp %',v_consulta;
+  			--Devuelve la respuesta
+  			return v_consulta;
+
+  		end;
 
 	else
 

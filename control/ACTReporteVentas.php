@@ -136,6 +136,24 @@ class ACTReporteVentas extends ACTbase{
     $this->res->imprimirRespuesta($this->res->generarJson());
   }
 
+  function subLugarPais() {
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->subLugarPais($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+
+			$respuesta = $this->res->getDatos();
+
+	    array_unshift ( $respuesta, array(  'id_lugar'=>'0',
+								                          'id_lugar_fk'=>'0',
+									                        'codigo'=>'Todos',
+																					'nombre'=>'Todos',
+																					'tipo'=>'Todos'
+                                          ));
+			$this->res->setDatos($respuesta);
+		}
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
 }
 
 ?>

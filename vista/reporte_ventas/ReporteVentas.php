@@ -171,7 +171,8 @@
                   qtip: 'Ciudad',
                   store: new Ext.data.JsonStore(
                       {
-                          url: '../../sis_parametros/control/Lugar/listarLugar',
+                          // url: '../../sis_parametros/control/Lugar/listarLugar',
+                          url: '../../sis_ventas_facturacion/control/ReporteVentas/subLugarPais',
                           id: 'id_lugar',
                           root: 'datos',
                           sortInfo: {
@@ -180,10 +181,9 @@
                           },
                           totalProperty: 'total',
                           fields: ['id_lugar', 'id_lugar_fk', 'codigo', 'nombre', 'tipo', 'sw_municipio', 'sw_impuesto', 'codigo_largo'],
-                          // turn on remote sorting
-                          //baseParams:{tipos:"''departamento'',''pais'',''localidad''",par_filtro:'nombre'}
                           remoteSort: true,
-                          baseParams: {tipos: "''departamento'', ''provincia''", par_filtro: 'nombre',_adicionar:'si'}
+                          baseParams: { par_filtro: 'nombre#codigo',_adicionar:'si'}
+                          // baseParams: {tipos: "''departamento'', ''provincia''", par_filtro: 'nombre',_adicionar:'si'}
                       }),
                   valueField: 'id_lugar',
                   displayField: 'nombre',
