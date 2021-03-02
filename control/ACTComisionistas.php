@@ -298,86 +298,15 @@ class ACTComisionistas extends ACTbase{
         $nombre=str_replace("/", "", $nombre);
 
         $data = $res;
-        $fileName = $nombre.$ext;
+        $fileName = $nombre;
         //create file
         $file = fopen("../../../reportes_generados/$fileName","w+");
         $ctd = 1;
-        /*if($this->objParam->getParametro('formato_reporte') !='txt'){
-            //AÑADE EL BOMM PARA NO TENER PROBLEMAS AL LEER DE APLICACIONES EXTERNAS
-            fwrite($file, pack("CCC",0xef,0xbb,0xbf));
-        }*/
-        /******************************
-         *  IMPRIME CABECERA PARA CSV
-         *****************************/
-        /*if($this->objParam->getParametro('formato_reporte') !='txt'){
 
-            if($this->objParam->getParametro('tipo_lcv')=='lcv_compras' || $this->objParam->getParametro('tipo_lcv')=='endesis_erp'){
-
-                if($dataPeriodoArray['gestion']<2017) {
-                    fwrite($file, "-" . $separador .
-                        'N#' . $separador .
-                        'FECHA DE LA FACTURA O DUI' . $separador .
-                        'NIT PROVEEDOR' . $separador .
-                        'NOMBRE O RAZON SOCIAL' . $separador .
-                        'N# de LA FACTURA.' . $separador .
-                        'N# de DUI' . $separador .
-                        'N# de AUTORIZACION' . $separador .
-                        "IMPORTE TOTAL DE LA COMPRA A" . $separador .
-                        "IMPORTE NO SUJETO A CREDITO FISCAL B" . $separador .
-                        "SUBTOTAL C = A - B" . $separador .
-                        "DESCUENTOS BONOS Y REBAJAS  D" . $separador .
-                        "IMPORTE SUJETO a CREDITO FISCAL E = C-D" . $separador .
-                        "CREDITO FISCAL F = E*13%" . $separador .
-                        'CODIGO DE CONTROL' . $separador .
-                        'TIPO DE COMPRA' . "\r\n");
-                }else{
-                    fwrite($file, "-" . $separador .
-                        'N#' . $separador .
-                        'FECHA DE LA FACTURA O DUI' . $separador .
-                        'NIT PROVEEDOR' . $separador .
-                        'NOMBRE O RAZON SOCIAL' . $separador .
-                        'N# de LA FACTURA.' . $separador .
-                        'N# de DUI' . $separador .
-                        'N# de AUTORIZACION' . $separador .
-                        "IMPORTE TOTAL DE LA COMPRA A" . $separador .
-                        "IMPORTE NO SUJETO A CREDITO FISCAL B" . $separador .
-                        "SUBTOTAL C = A - B" . $separador .
-                        "DESCUENTOS BONOS Y REBAJAS SUJETAS AL IVA D" . $separador .
-                        "IMPORTE SUJETO a CREDITO FISCAL E = C-D" . $separador .
-                        "CREDITO FISCAL F = E*13%" . $separador .
-                        'CODIGO DE CONTROL' . $separador .
-                        'TIPO DE COMPRA' . "\r\n");
-                }
-
-            }
-            else{
-                fwrite ($file,  "-".$separador.
-                    'N#'.$separador.
-                    'FECHA DE LA FACTURA'.$separador.
-                    'N# de LA FACTURA'.$separador.
-                    'N# de AUTORIZACION'.$separador.
-                    'ESTADO'.$separador.
-                    'NIT CLIENTE'.$separador.
-                    'NOMBRE O RAZON SOCIAL'.$separador.
-                    "IMPORTE TOTAL DE LA VENTA A".$separador.
-                    "IMPORTE ICE/ IEHD/ TASAS B".$separador.
-                    "EXPORTACIO. Y OPERACIONES EXENTAS C".$separador.
-                    "VENTAS GRAVADAS TASA CERO D".$separador.
-                    "SUBTOTAL E = A-B-C-D".$separador.
-                    "DESCUENTOS BONOS Y REBAJAS OTORGADAS F".$separador.
-                    "IMPORTE BASE DEBITO FISCAL G = E-F".$separador.
-                    "DEBITO FISCAL H = G*13%".$separador.
-                    'CODIGO DE CONTROL'."\r\n");
-            }
-        }*/
-        /**************************
-         *  IMPRIME CUERPO
-         **************************/
 
         if($this->objParam->getParametro('tipo_reporte')=='per_natu'){
             foreach ($data as $val) {
 
-                //if($this->objParam->getParametro('tipo_lcv')=='lcncd'){
                     fwrite ($file,  $val['nit'].$separador.
                         $val['carnet_ide'].$separador.
                         $val['nit'].$separador.
@@ -388,26 +317,7 @@ class ACTComisionistas extends ACTbase{
                         $val['precio_unitario'].$separador.
                         $val['precio_total']."\r\n");
 
-                //}
-                /*else{
-                    fwrite ($file,  "3".$separador.
-                        $ctd.$separador.
-                        $newDate.$separador.
-                        $val['nro_documento'].$separador.
-                        $val['nro_autorizacion'].$separador.
-                        $val['tipo_doc'].$separador.
-                        $val['nit'].$separador.
-                        $val['razon_social'].$separador.
-                        $val['importe_doc'].$separador.
-                        $val['importe_ice'].$separador.
-                        $val['importe_excento'].$separador.
-                        $val['venta_gravada_cero'].$separador.
-                        $val['subtotal_venta'].$separador.
-                        $val['importe_descuento'].$separador.
-                        $val['sujeto_df'].$separador.
-                        $val['importe_iva'].$separador.
-                        $val['codigo_control']."\r\n");
-                }*/
+
                 $ctd = $ctd + 1;
             } //end for
         }else if ($this->objParam->getParametro('tipo_reporte')=='regimen_simpli') {
@@ -466,7 +376,7 @@ class ACTComisionistas extends ACTbase{
 					fwrite ($file,
 									'Boliviana de Aviacion (BoA)          VENTA DE BIENES Y/O SERVICIOS A SUJETOS PASIVOS DEL REGIMEN TRIBUTARIO SIMPLIFICADO A PERSONAS NO INSCRITAS EN EL PADRON NACIONAL DE CONTRIBUYENTES'."\r\n".
 								  'Dpto. de FINANZAS                                                                     '.$sufijo."\r\n".
-								  'REGIMEN TRIBUTARIO PERSONAS NATURALES                                                    '."\r\n");
+								  'PERSONAS NATURALES                                                    '."\r\n");
 					$numero = 1;
 					$nit_cliente=array();
 

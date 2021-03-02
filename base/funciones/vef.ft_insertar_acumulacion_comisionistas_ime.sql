@@ -29,7 +29,7 @@ DECLARE
     v_total				numeric;
     v_id_periodo_cerrado	integer;
     v_id_periodo_abierto	integer;
-    v_existe_nit		integer;
+    v_existe_nit		numeric;
     v_totales_sumar		numeric;
     v_venta_total		numeric;
     v_cadena_cnx		varchar;
@@ -65,11 +65,19 @@ BEGIN
                                     where ven.id_depto = (select depo.id_depto
                                                           from param.tdepto depo
                                                           where depo.codigo = 'CON')
-                                    and per.id_gestion = v_id_gestion ) loop
+                                    and per.id_gestion = v_id_gestion
+                          /*select   cp.id_periodo,
+                                   cp.estado
+                          from param.tgestion ges
+                          inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+                          inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+                          where ges.gestion = v_id_gestion and cp.id_depto = (select depo.id_depto
+                                                                      from param.tdepto depo
+                                                                      where depo.codigo = 'CON')*/ ) loop
 
-                                            update vef.tacumulacion_comisionistas set
-                                              estado = v_periodos.estado
-                                            where id_periodo = v_periodos.id_periodo;
+                                    update vef.tacumulacion_comisionistas set
+                                      estado = v_periodos.estado
+                                    where id_periodo = v_periodos.id_periodo;
 
                                     end loop;
 
@@ -177,10 +185,9 @@ BEGIN
                       cantidad integer,
                       total_venta numeric,
                       importe_exento numeric)
-                where t1.nro_factura not in (select  bol.nro_boleto
+                where t1.nro_factura::numeric not in (select  bol.nro_boleto::numeric
                                              from vef.tboletos_asociados_fact bol
                                              where bol.estado_reg = 'activo');
-
 
 
 
@@ -198,7 +205,7 @@ BEGIN
                 where v_datos.fecha_factura between per.fecha_ini and per.fecha_fin;
 
 
-                SELECT length(v_datos.nit_ci_cli::varchar) into v_cantidad_nit;
+                SELECT length(trim(v_datos.nit_ci_cli::varchar)) into v_cantidad_nit;
 
                 if (v_cantidad_nit > 8) then
                 	v_natural_sumpli = 'S';
@@ -237,6 +244,7 @@ BEGIN
 
 
                 end loop;
+
 
                 for v_insertar in (
 
@@ -380,7 +388,8 @@ BEGIN
 
                                                else
 
-                                                insert into vef.tacumulacion_comisionistas (nit,
+                                                insert into vef.tacumulacion_comisionistas (
+                                                			nit,
                 		     							    razon_social,
                                                             id_periodo,
                                                             total_acumulado,
@@ -409,10 +418,6 @@ BEGIN
                 end loop;
 
                 end if;
-
-
-
-
 
                /* for v_insertar_acumulados in (WITH periodo_anterior AS (
                                                     select  acumu.nit,
