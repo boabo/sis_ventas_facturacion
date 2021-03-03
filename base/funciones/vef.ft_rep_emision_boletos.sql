@@ -1651,7 +1651,7 @@ BEGIN
                           null::numeric as nro_factura,
                           NULL::varchar as nro_documento,
                           NULL::varchar as ruta,
-                          ''Total:''::varchar as pasajero,
+                          ''TOTALES (''||punto_venta||''):''::varchar as pasajero,
                           SUM(COALESCE(debe,0)),
                           SUM(COALESCE (haber,0)),
                           ''total_pv''::varchar as tipo_factura,
