@@ -86,9 +86,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 1000,
                         //format: 'd/m/Y',
                         renderer:function (value,p,record){
-                          console.log("aqui data fecha",record);
-                          if (value != null && record.data.tipo_reg != 'summary' ){
-                            value = new Date(value);
+                          if (value != null && record.data.tipo_reg != 'summary' && record.data.tipo_factura != 'total_pv'){
+                            var fecha = value.replaceAll('-', ',');
+                            value = new Date(fecha);
                             return value?value.dateFormat('d/m/Y'):'';
                           } else if (value == ''){
                             return '';

@@ -1647,7 +1647,7 @@ BEGIN
                            union all
 
                           (select
-                          null::date as fecha_factura,
+                          now()::date as fecha_factura,
                           null::numeric as nro_factura,
                           NULL::varchar as nro_documento,
                           NULL::varchar as ruta,
@@ -1659,7 +1659,7 @@ BEGIN
                           from facturas_recibos_temporal
                           group by punto_venta)
 
-						  ORDER BY punto_venta ASC,nro_factura asc NULLS LAST
+						  ORDER BY punto_venta ASC,fecha_factura ASC NULLS FIRST,nro_factura asc NULLS LAST
 
                           --ORDER BY punto_venta ASC,tipo_factura ASC NULLS FIRST,fecha_factura ASC NULLS FIRST,pasajero asc nulls LAST
 
