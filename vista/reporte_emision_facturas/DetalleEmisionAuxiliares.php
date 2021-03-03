@@ -20,7 +20,7 @@ header("content-type: text/javascript; charset=UTF-8");
     background-color: #F4FD31;
 }
 .totales {
-    background-color: #FFC318;
+    background-color: #92E176;
 }
 </style>
 
@@ -85,7 +85,15 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 200,
                         maxLength: 1000,
                         //format: 'd/m/Y',
-                        //  renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+                        renderer:function (value,p,record){
+                          console.log("aqui data fecha",record);
+                          if (value != null && record.data.tipo_reg != 'summary' ){
+                            value = new Date(value);
+                            return value?value.dateFormat('d/m/Y'):'';
+                          } else if (value == ''){
+                            return '';
+                          }
+                        }
                   },
                     type:'TextField',
                     //bottom_filter: true,
@@ -100,7 +108,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 95,
-                        maxLength: 1000
+                        maxLength: 1000,
+                        renderer:function (value,p,record){
+                          if (value == 0){
+                            return '';
+                          } else {
+                            return value;
+                          }
+                        }
                     },
                     type: 'TextField',
                     bottom_filter: true,
@@ -178,7 +193,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 return  String.format('<div style="color:red; text-align:right; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
                             }
                             else{
-                                return  String.format('<div style="font-size:20px; text-align:right; color:red;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_debe,'0,000.00'));
+                                return  String.format('<div style="font-size:15px; text-align:right; color:red;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_debe,'0,000.00'));
                             }
                         },
                     },
@@ -202,7 +217,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 return  String.format('<div style="color:blue; text-align:right; font-weight:bold;"><b>{0}</b></div>', Ext.util.Format.number(value,'0,000.00'));
                             }
                             else{
-                                return  String.format('<div style="font-size:20px; text-align:right; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_haber,'0,000.00'));
+                                return  String.format('<div style="font-size:15px; text-align:right; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_haber,'0,000.00'));
                             }
                         },
                     },
@@ -247,9 +262,9 @@ header("content-type: text/javascript; charset=UTF-8");
         ActList: '../../sis_ventas_facturacion/control/ReporteEmisionPasajes/listarReporteEmisionBoletos',
         id_store: 'id_venta',
         fields: [
-          //  {name:'fecha_factura', type: 'date',dateFormat:'Y-m-d'},
+            //{name:'fecha_factura', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
             {name: 'fecha_factura', type: 'varchar'},
-            {name: 'nro_factura', type: 'varchar'},
+            {name: 'nro_factura', type: 'numeric'},
             {name: 'nro_documento', type: 'varchar'},
             {name: 'ruta', type: 'varchar'},
             {name: 'pasajero', type: 'varchar'},
@@ -294,6 +309,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       hasta: this.store.baseParams.hasta,
                       id_punto_venta: this.store.baseParams.id_punto_venta,
                       nombre_pv: this.store.baseParams.nombre_pv,
+                      formato_reporte: this.store.baseParams.formato_reporte,
                   },
                   success: this.successExport,
                   failure: this.conexionFailure,
@@ -304,7 +320,6 @@ header("content-type: text/javascript; charset=UTF-8");
         },
         /***************************************************************************************/
         postReloadPage: function (data) {
-            console.log("Aqui data irva",data);
             ini = data.id_auxiliar;
             fin = data.codigo_auxiliar;
 

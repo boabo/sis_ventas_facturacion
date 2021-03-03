@@ -262,6 +262,26 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                 form: true
             },
 
+        {
+          config : {
+                       name: 'formato_reporte',
+                       fieldLabel: 'Reporte',
+                       allowBlank: false,
+                       emptyText:'Seleccione el reporte...',
+                       typeAhead: true,
+                       triggerAction: 'all',
+                       lazyRender:true,
+                       mode: 'local',
+                       width:250,
+                       gwidth: 150,
+                       disabled : false,
+                       store:['REPORTE FORMAS DE PAGO CTA/CTE','REPORTE ANTICIPO','REPORTE DETALLADO']
+                    },
+            type: 'ComboBox',
+            id_grupo: 0,
+            form: true
+          },
+
 	   	  {
 				config:{
 					name: 'desde',
@@ -307,8 +327,8 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
       var desde = parametros.desde;
       var hasta = parametros.hasta;
       var id_punto_venta = parametros.id_punto_venta;
-			var nombre_pv = parametros.nombre_punto_venta;
-
+      var nombre_pv = parametros.nombre_punto_venta;
+			var formato_reporte = parametros.formato_reporte;
 
       //console.log("aqui llega los paramteros",parametros);
 			 this.onEnablePanel(this.idContenedor + '-south',
@@ -318,7 +338,8 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                     'desde': desde,
 										'hasta': hasta,
                     'id_punto_venta':id_punto_venta,
-                    'nombre_pv':nombre_pv
+                    'nombre_pv':nombre_pv,
+                    'formato_reporte':formato_reporte
 									 }));
         }
     },

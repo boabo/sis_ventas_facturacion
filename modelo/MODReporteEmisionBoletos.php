@@ -28,6 +28,7 @@ class MODReporteEmisionBoletos extends MODbase
         $this->setParametro('desde', 'desde', 'varchar');
         $this->setParametro('hasta', 'hasta', 'varchar');
         $this->setParametro('id_punto_venta', 'id_punto_venta', 'int4');
+        $this->setParametro('formato_reporte', 'formato_reporte', 'varchar');
 
         //var_dump("aqui llega data",$this->objParam->getParametro('codigo_auxiliar'));
         //captura parametros adicionales para el count
@@ -37,8 +38,8 @@ class MODReporteEmisionBoletos extends MODbase
 
 
         //Definicion de la lista del resultado del query
-        $this->captura('fecha_factura', 'varchar');
-        $this->captura('nro_factura', 'varchar');
+        $this->captura('fecha_factura', 'date');
+        $this->captura('nro_factura', 'numeric');
         $this->captura('nro_documento', 'varchar');
         $this->captura('ruta', 'varchar');
         $this->captura('pasajero', 'varchar');

@@ -98,7 +98,7 @@ class RReporteEmisionBoletosXLS
             'fill' => array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
                 'color' => array(
-                    'rgb' => 'A3CFEF'
+                    'rgb' => 'FDAC14'
                 )
             ),
             'borders' => array(
@@ -251,7 +251,7 @@ class RReporteEmisionBoletosXLS
           'fill' => array(
               'type' => PHPExcel_Style_Fill::FILL_SOLID,
               'color' => array(
-                  'rgb' => 'FFC318'
+                  'rgb' => '92E176'
               )
           ),
           'borders' => array(
@@ -274,7 +274,7 @@ class RReporteEmisionBoletosXLS
           'fill' => array(
               'type' => PHPExcel_Style_Fill::FILL_SOLID,
               'color' => array(
-                  'rgb' => 'EEE563'
+                  'rgb' => '63EEAD'
               )
           ),
           'borders' => array(
@@ -283,12 +283,12 @@ class RReporteEmisionBoletosXLS
               )
           ),
           'alignment' => array(
-              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
               'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
           ),
           'font'  => array(
               'bold'  => true,
-              'size'  => 11,
+              'size'  => 13,
               'name'  => 'Calibri',
           )
         );
@@ -345,12 +345,12 @@ class RReporteEmisionBoletosXLS
           )
         );
 
-        $datos = $this->datos_contenido->datos;        
+        $datos = $this->datos_contenido->datos;
         //var_dump("aqui el value 1111",$this->datos_contenido->datos);
         foreach ($datos as $value) {
           // var_dump("aqui el value",$value);
           // var_dump("aqui el value",$value[0]);
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['fecha_factura']);
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, date("d/m/Y", strtotime($value['fecha_factura'])));
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nro_factura']);
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_documento']);
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['ruta']);
@@ -399,6 +399,14 @@ class RReporteEmisionBoletosXLS
 
         $fila=$fila+1;
         $diferencia = ($total_sum['total_debe']-$total_sum['total_haber']);
+
+        if ($total_sum['total_debe'] > $total_sum['total_haber']) {
+          $diferencia = $diferencia;
+        }else{
+          $diferencia = ($diferencia*(-1));
+        }
+
+
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, '(TOTAL DEBE - TOTAL HABER): ');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $diferencia);
