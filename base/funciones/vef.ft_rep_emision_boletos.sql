@@ -118,7 +118,7 @@ BEGIN
                 /*Si el punto de venta es todos no ponemos ningun filtro*/
                 if(v_parametros.id_punto_venta = 0) then
 -----------------/*Inicio del Reporte de Formas de pago*/
-				if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE') then
+				if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') then
 
                 insert into facturas_recibos_temporal (
                                                         fecha_factura,
@@ -389,7 +389,7 @@ BEGIN
 
 ----------------/*Condicion para Generar el reporte Anticipo*/
 
-                elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO') then
+                elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO (HABER)') then
 
                  insert into facturas_recibos_temporal (
                                                         fecha_factura,
@@ -452,7 +452,7 @@ BEGIN
 ------------------/*FIN para Generar el reporte Anticipo*/
 
 -----------------/*Condicion para Generar el reporte con todos los datos Anticipos y Formas de Pago*/
-                elsif (v_parametros.formato_reporte = 'REPORTE DETALLADO') then
+                elsif (v_parametros.formato_reporte = 'REPORTE CONSOLIDADO (DEBE-HABER)') then
 
                  insert into facturas_recibos_temporal (
                                                         fecha_factura,
@@ -782,7 +782,7 @@ BEGIN
 
                 else
 
-              	if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE') then
+              	if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') then
                       insert into facturas_recibos_temporal (
                                                               fecha_factura,
                                                               nro_factura,
@@ -1131,7 +1131,7 @@ BEGIN
                         and bol.id_punto_venta = v_parametros.id_punto_venta));
                 	end if;
 
-                    elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO') then
+                    elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO (HABER)') then
 
                          insert into facturas_recibos_temporal (
                                                                 fecha_factura,
@@ -1194,7 +1194,7 @@ BEGIN
                                 and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date
                                 and ven.id_punto_venta = v_parametros.id_punto_venta;
 
-/*****************************/ elsif (v_parametros.formato_reporte = 'REPORTE DETALLADO') then
+/*****************************/ elsif (v_parametros.formato_reporte = 'REPORTE CONSOLIDADO (DEBE-HABER)') then
 
                       insert into facturas_recibos_temporal (
                                                               fecha_factura,
@@ -1715,7 +1715,7 @@ BEGIN
                 /*Si el punto de venta es todos no ponemos ningun filtro*/
                 if(v_parametros.id_punto_venta = 0) then
 -----------------/*Inicio del Reporte de Formas de pago*/
-				if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE') then
+				if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') then
 
                 insert into facturas_recibos_temporal (
                                                         fecha_factura,
@@ -1986,7 +1986,7 @@ BEGIN
 
 ----------------/*Condicion para Generar el reporte Anticipo*/
 
-                elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO') then
+                elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO (HABER)') then
 
                  insert into facturas_recibos_temporal (
                                                         fecha_factura,
@@ -2049,7 +2049,7 @@ BEGIN
 ------------------/*FIN para Generar el reporte Anticipo*/
 
 -----------------/*Condicion para Generar el reporte con todos los datos Anticipos y Formas de Pago*/
-                elsif (v_parametros.formato_reporte = 'REPORTE DETALLADO') then
+                elsif (v_parametros.formato_reporte = 'REPORTE CONSOLIDADO (DEBE-HABER)') then
 
                  insert into facturas_recibos_temporal (
                                                         fecha_factura,
@@ -2382,7 +2382,7 @@ BEGIN
 
                 else
 
-                if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE') then
+                if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') then
                       insert into facturas_recibos_temporal (
                                                               fecha_factura,
                                                               nro_factura,
@@ -2731,7 +2731,7 @@ BEGIN
                         and bol.id_punto_venta = v_parametros.id_punto_venta));
                         end if;
 
-                    elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO') then
+                    elsif (v_parametros.formato_reporte = 'REPORTE ANTICIPO (HABER)') then
 
                          insert into facturas_recibos_temporal (
                                                                 fecha_factura,
@@ -2794,7 +2794,7 @@ BEGIN
                                 and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date
                                 and ven.id_punto_venta = v_parametros.id_punto_venta;
 
-/*****************************/ elsif (v_parametros.formato_reporte = 'REPORTE DETALLADO') then
+/*****************************/ elsif (v_parametros.formato_reporte = 'REPORTE CONSOLIDADO (DEBE-HABER)') then
 
                       insert into facturas_recibos_temporal (
                                                               fecha_factura,

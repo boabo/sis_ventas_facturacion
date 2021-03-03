@@ -220,7 +220,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                 config: {
                     name: 'id_auxiliar',
                     fieldLabel: 'Cuenta Corriente',
-                    allowBlank: true,
+                    allowBlank: false,
                     width:250,
                     emptyText: 'Cuenta Corriente...',
                     store: new Ext.data.JsonStore({
@@ -275,7 +275,8 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                        width:250,
                        gwidth: 150,
                        disabled : false,
-                       store:['REPORTE FORMAS DE PAGO CTA/CTE','REPORTE ANTICIPO','REPORTE DETALLADO']
+                       listWidth: 300,
+                       store:['REPORTE FORMAS DE PAGO CTA/CTE (DEBE)','REPORTE ANTICIPO (HABER)','REPORTE CONSOLIDADO (DEBE-HABER)']
                     },
             type: 'ComboBox',
             id_grupo: 0,
@@ -286,7 +287,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
 				config:{
 					name: 'desde',
 					fieldLabel: 'Desde',
-					allowBlank: true,
+					allowBlank: false,
 					format: 'd/m/Y',
 					width:250,
 				},
@@ -298,7 +299,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
 				config:{
 					name: 'hasta',
 					fieldLabel: 'Hasta',
-					allowBlank: true,
+					allowBlank: false,
 					format: 'd/m/Y',
 					width:250,
 				},

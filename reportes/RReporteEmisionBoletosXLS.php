@@ -133,10 +133,16 @@ class RReporteEmisionBoletosXLS
         //$this->docexcel->getActiveSheet()->mergeCells('A1:C1');
 
 
+        if ($this->objParam->getParametro('formato_reporte') == 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') {
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,2,'ESTADO DE CUENTA DE: PASAJES, FACTURAS, RECIBOS OFICIALES');
+        } elseif ($this->objParam->getParametro('formato_reporte') == 'REPORTE ANTICIPO (HABER)') {
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,2,'REPORTE DE ANTICIPOS');
+        } elseif ($this->objParam->getParametro('formato_reporte') == 'REPORTE CONSOLIDADO (DEBE-HABER)') {
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,2,'REPORTE CONSOLIDADO (DEBE-HABER)');
+        }
 
 
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,2,'ESTADO DE CUENTA DE: PASAJES, FACTURAS, RECIBOS OFICIALES');
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,3,'DEL: '.$this->objParam->getParametro('desde').' AL: '.$this->objParam->getParametro('desde'));
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,3,'DEL: '.$this->objParam->getParametro('desde').' AL: '.$this->objParam->getParametro('hasta'));
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,4,'CODIGO AUXILIAR: '.$this->objParam->getParametro('codigo_auxiliar'));
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,5,'PUNTO DE VENTA: '.$this->objParam->getParametro('nombre_pv'));
         //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,5,'PERSONA NATURALES');
