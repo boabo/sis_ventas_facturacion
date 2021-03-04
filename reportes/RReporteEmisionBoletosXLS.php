@@ -146,11 +146,11 @@ class RReporteEmisionBoletosXLS
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,4,'CODIGO AUXILIAR: '.$this->objParam->getParametro('codigo_auxiliar'));
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,5,'PUNTO DE VENTA: '.$this->objParam->getParametro('nombre_pv'));
         //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,5,'PERSONA NATURALES');
-        $this->docexcel->getActiveSheet()->mergeCells('C2:F2');
-        $this->docexcel->getActiveSheet()->mergeCells('C3:F3');
-        $this->docexcel->getActiveSheet()->mergeCells('C4:F4');
-        $this->docexcel->getActiveSheet()->mergeCells('C5:F5');
-        $this->docexcel->getActiveSheet()->getStyle('A1:F5')->applyFromArray($styleTituloPrincipal);
+        $this->docexcel->getActiveSheet()->mergeCells('C2:G2');
+        $this->docexcel->getActiveSheet()->mergeCells('C3:G3');
+        $this->docexcel->getActiveSheet()->mergeCells('C4:G4');
+        $this->docexcel->getActiveSheet()->mergeCells('C5:G5');
+        $this->docexcel->getActiveSheet()->getStyle('A1:G5')->applyFromArray($styleTituloPrincipal);
         $this->docexcel->getActiveSheet()->getStyle('A1:I5')->applyFromArray($styleFondoBlanco);
 
 
@@ -166,7 +166,7 @@ class RReporteEmisionBoletosXLS
         $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(45);
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
-        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
+        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(100);
         $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
@@ -182,9 +182,10 @@ class RReporteEmisionBoletosXLS
         $this->docexcel->getActiveSheet()->setCellValue('E6','Pasajero');
         $this->docexcel->getActiveSheet()->setCellValue('F6','Importe Debe');
         $this->docexcel->getActiveSheet()->setCellValue('G6','Importe Haber');
+        $this->docexcel->getActiveSheet()->setCellValue('H6','Cuenta Corriente');
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A6:G6')->applyFromArray($styleSubtitulos);
+        $this->docexcel->getActiveSheet()->getStyle('A6:H6')->applyFromArray($styleSubtitulos);
         $this->docexcel->getActiveSheet()->freezePaneByColumnAndRow(0,7);
 
 
@@ -363,21 +364,22 @@ class RReporteEmisionBoletosXLS
 
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['debe']);
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['haber']);
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['cuenta_auxiliar']);
           $this->docexcel->getActiveSheet()->getStyle("A$fila:C$fila")->applyFromArray($style_datos);
 
 
           if ($value['tipo_factura'] == null) {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'PUNTO DE VENTA: '.$value['pasajero']);
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:G$fila")->applyFromArray($style_haber);
-            $this->docexcel->getActiveSheet()->mergeCells("A$fila:G$fila");
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_haber);
+            $this->docexcel->getActiveSheet()->mergeCells("A$fila:H$fila");
           } else if ($value['tipo_factura'] == 'total_pv') {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'TOTAL PUNTO DE VENTA:');
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:G$fila")->applyFromArray($style_subtotal);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_subtotal);
             $this->docexcel->getActiveSheet()->mergeCells("A$fila:E$fila");
           }
           else {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['pasajero']);
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:G$fila")->applyFromArray($styleFondoBlanco);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleFondoBlanco);
             $this->docexcel->getActiveSheet()->getStyle("A$fila:C$fila")->applyFromArray($style_datos);
           }
 
@@ -400,7 +402,7 @@ class RReporteEmisionBoletosXLS
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $total_sum['total_haber']);
 
         $this->docexcel->getActiveSheet()->getStyle("F$fila:G$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
-        $this->docexcel->getActiveSheet()->getStyle("A$fila:G$fila")->applyFromArray($styleTotales);
+        $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleTotales);
         $this->docexcel->getActiveSheet()->mergeCells("A$fila:E$fila");
 
         $fila=$fila+1;
@@ -419,7 +421,7 @@ class RReporteEmisionBoletosXLS
 
 
         $this->docexcel->getActiveSheet()->getStyle("F$fila:G$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
-        $this->docexcel->getActiveSheet()->getStyle("A$fila:G$fila")->applyFromArray($styleDiferencia);
+        $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleDiferencia);
         $this->docexcel->getActiveSheet()->mergeCells("A$fila:E$fila");
         $this->docexcel->getActiveSheet()->mergeCells("F$fila:G$fila");
 

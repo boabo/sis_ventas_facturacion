@@ -234,7 +234,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                         totalProperty: 'total',
                         fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si'}
+                        baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si', '_adicionar':'si'}
                     }),
                     valueField: 'id_auxiliar',
                     displayField: 'nombre_auxiliar',

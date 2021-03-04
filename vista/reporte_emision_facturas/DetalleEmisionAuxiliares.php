@@ -226,7 +226,21 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
-
+                {
+                    config: {
+                        name: 'cuenta_auxiliar',
+                        fieldLabel: 'Cuenta Auxiliar',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 300,
+                        //galign: 'right ',
+                        maxLength: 100,
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
 
             ];
 
@@ -274,6 +288,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name:'total_debe', type: 'numeric'},
             {name:'total_haber', type: 'numeric'},
             {name:'tipo_factura', type: 'varchar'},
+            {name:'cuenta_auxiliar', type: 'varchar'},
         ],
 
         sortInfo: {
