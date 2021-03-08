@@ -549,7 +549,7 @@ BEGIN
                                       tdatos.importe_total_venta,
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
-                                      pb.nombre
+                                      pb.nombre,
                                       (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
@@ -3782,7 +3782,7 @@ BEGIN
                                       tdatos.importe_total_venta,
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
-                                      pb.nombre
+                                      pb.nombre,
                                       (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
