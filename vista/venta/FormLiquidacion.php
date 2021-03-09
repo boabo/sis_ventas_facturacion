@@ -877,7 +877,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
 
 
           this.Cmp.monto_forma_pago.on('change',function(field,newValue,oldValue){
-          this.obtenersuma();
+          this.obtenersuma();          
           if(this.Cmp.id_moneda.getValue() == 2){
               //console.log("llega el dolar");
             this.Cmp.cambio.setValue(((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)-this.suma_total));
@@ -1271,7 +1271,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
       }
     }
 
-      this.suma_total = suma;
+      this.suma_total = suma.toFixed(2);
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.color="#7400FF";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontWeight="bold";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontSize="20px";
@@ -1479,6 +1479,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                         editor: this.detCmp.cantidad
                     },
                     {
+                        xtype: 'numbercolumn',
                         header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
@@ -1654,6 +1655,7 @@ Phx.vista.FormLiquidacion=Ext.extend(Phx.frmInterfaz,{
                         editor: ''
                     },
                     {
+                        xtype: 'numbercolumn',
                         header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
