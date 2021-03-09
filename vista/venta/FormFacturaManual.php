@@ -515,7 +515,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
 
         /*Condicion cuando el estado de la factura sea anulado*/
           this.Cmp.anulado.on('select',function(c,r,i) {
-            
+
             if (r.data == undefined) {
               this.estado_factura = r;
             } else {
@@ -1639,7 +1639,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
         verificar_montos = [];
       }
 
-      this.suma_total = suma;
+      this.suma_total = suma.toFixed(2);
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="20px";
@@ -1931,6 +1931,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                         editor: this.detCmp.cantidad
                     },
                     {
+                        xtype: 'numbercolumn',
                         header: 'P / Unit',
                         dataIndex: 'precio_unitario',
                         align: 'right',
@@ -1938,9 +1939,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                         width: 85,
                         decimalPrecision : 2,
                         summaryType: 'sum',
-                        renderer : function(value, p, record) {
-                            return parseFloat(record.data['precio_unitario']);
-                        },
+                        format: '0,0.00',
                         editor: this.detCmp.precio_unitario
                     },
                     {
@@ -2115,6 +2114,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                       editor: this.detCmp.cantidad
                   },
                   {
+                      xtype: 'numbercolumn',
                       header: 'P / Unit',
                       dataIndex: 'precio_unitario',
                       align: 'right',
@@ -2122,9 +2122,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                       width: 85,
                       decimalPrecision : 2,
                       summaryType: 'sum',
-                      renderer : function(value, p, record) {
-                          return parseFloat(record.data['precio_unitario']);
-                      },
+                      format: '0,0.00',
                       editor: this.detCmp.precio_unitario
                   },
                   {
@@ -4082,7 +4080,7 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
     for (var i = 0; i < total_datos; i++) {
         suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
     }
-    this.suma_total = suma;
+    this.suma_total = suma.toFixed(2);
     var cliente = this.Cmp.id_cliente.getValue();
     var nit = this.Cmp.nit.getValue();
     var observaciones = this.Cmp.observaciones.getValue();

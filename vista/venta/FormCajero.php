@@ -1670,7 +1670,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       }
     }
 
-      this.suma_total = suma;
+      //this.suma_total = suma;
+      this.suma_total = suma.toFixed(2);
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.color="#7400FF";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontWeight="bold";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[5].childNodes[0].style.fontSize="20px";
@@ -2024,6 +2025,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         editor: this.detCmp.cantidad
                     },
                     {
+                        xtype: 'numbercolumn',
                         header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
@@ -2031,9 +2033,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         width: 100,
                         decimalPrecision : 2,
                         summaryType: 'sum',
-                        renderer : function(value, p, record) {
-                            return parseFloat(record.data['precio_unitario']);
-                        },
+                        format: '0,0.00',
                         editor: this.detCmp.precio_unitario
                     },
                     {
@@ -2215,6 +2215,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         editor: ''
                     },
                     {
+                        xtype: 'numbercolumn',
                         header: '<img src="../../../lib/imagenes/facturacion/Dolar.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle; font-size:17px;"> P / Unit</span>',
                         dataIndex: 'precio_unitario',
                         align: 'right',
@@ -2222,9 +2223,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                         width: 100,
                         decimalPrecision : 2,
                         summaryType: 'sum',
-                        renderer : function(value, p, record) {
-                            return parseFloat(record.data['precio_unitario']);
-                        },
+                        format: '0,0.00',
                         editor: ''
                     },
                     {
@@ -4331,7 +4330,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
       for (var i = 0; i < total_datos; i++) {
           suma = suma + parseFloat(this.megrid.store.data.items[i].data.precio_total);
       }
-      this.suma_total = suma;
+      this.suma_total = suma.toFixed(2);
 
       var cliente = this.Cmp.id_cliente.getValue();
       var nombre_factura = this.Cmp.nombre_factura.getValue();
