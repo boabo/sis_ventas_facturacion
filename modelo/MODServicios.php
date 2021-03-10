@@ -60,6 +60,8 @@ class MODServicios extends MODbase{
 		$this->captura('boleto_asociado','varchar');
 		$this->captura('agrupador','varchar');
 		$this->captura('comision','varchar');
+		$this->captura('id_concepto_ingas_fk','int4');
+		$this->captura('desc_ingasfk','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -126,7 +128,7 @@ class MODServicios extends MODbase{
 		$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 		$this->setParametro('agrupador','agrupador','varchar');
 		$this->setParametro('comision','comision','varchar');
-
+		$this->setParametro('id_concepto_ingas_fk','id_concepto_ingas_fk','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -166,6 +168,7 @@ class MODServicios extends MODbase{
 		$this->setParametro('boleto_asociado','boleto_asociado','varchar');
 		$this->setParametro('agrupador','agrupador','varchar');
 		$this->setParametro('comision','comision','varchar');
+		$this->setParametro('id_concepto_ingas_fk','id_concepto_ingas_fk','int4');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

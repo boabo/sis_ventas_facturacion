@@ -799,6 +799,57 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 grid:true,
 			 form:true
 	 },
+
+	 {
+			 config:{
+					 name: 'id_concepto_ingas_fk',
+					 fieldLabel: 'Concepto',
+					 allowBlank: true,
+					 emptyText : 'Concepto...',
+					 store : new Ext.data.JsonStore({
+							 url:'../../sis_ventas_facturacion/control/Servicios/listarServicios',
+							 id : 'id_producto',
+							 root: 'datos',
+							 sortInfo:{
+									 field: 'desc_ingas',
+									 direction: 'ASC'
+							 },
+							 totalProperty: 'total',
+							 fields: ['id_concepto_ingas', 'tipo','codigo','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad','comision'],
+							 remoteSort: true,
+							 baseParams: {par_filtro: 'ingas.desc_ingas',Facturacion:'conceptos_facturacion'}
+					 }),
+					 valueField: 'id_concepto_ingas',
+					 displayField: 'desc_ingas',
+					 gdisplayField: 'desc_ingasfk',
+					 hiddenName: 'id_producto',
+					 forceSelection:true,
+					 typeAhead: false,
+					 triggerAction: 'all',
+					 listWidth:460,
+					 resizable:true,
+					 lazyRender:true,
+					 mode:'remote',
+					 pageSize:25,
+					 queryDelay:1000,
+					 gwidth:230,
+					 width:200,
+					 minChars : 2,
+					 tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>{desc_ingas}</b></p><p style="color:green;font-weight:bold;">codigo: {codigo}</p></div></tpl>',
+					 renderer:function(value, p, record){
+						 if (value!=null){
+						 	return String.format('{0}', record.data['desc_ingasfk']);
+						}else{
+							return '';
+						}
+					 },
+					 msgTarget: 'side'
+			 },
+			 type:'ComboBox',
+			 id_grupo:1,
+			 grid:true,
+			 form:true
+	 },
 	 {
 			 config:{
 					 name: 'comision',
@@ -1131,7 +1182,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name: 'contabilizable', type: 'string'},
 		{name: 'boleto_asociado', type: 'string'},
 		{name: 'agrupador', type: 'string'},
-		'sw_autorizacion','regionales','nivel_permiso','comision'
+		'sw_autorizacion','regionales','nivel_permiso','comision','id_concepto_ingas_fk','desc_ingasfk'
 	],
 	sortInfo:{
 		field: 'id_concepto_ingas',
