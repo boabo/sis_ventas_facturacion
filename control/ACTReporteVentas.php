@@ -154,6 +154,17 @@ class ACTReporteVentas extends ACTbase{
     $this->res->imprimirRespuesta($this->res->generarJson());
   }
 
+  function consultaFacturaVenta() {
+
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->consultaFacturaVenta($this->objParam);
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+  function consultaDetalleFactura(){
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->consultaDetalleFactura($this->objParam);
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
 }
 
 ?>

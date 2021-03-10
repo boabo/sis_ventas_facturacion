@@ -63,8 +63,8 @@
               config: {
                   name: 'id_catalogo',
                   fieldLabel: 'CANAL DE VENTA',
-                  allowBlank: true,
-                  emptyText: 'Canal venta...',
+                  allowBlank: false,
+                  emptyText: '',
                   store: new Ext.data.JsonStore(
                       {
                           url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVenta',
@@ -77,7 +77,7 @@
                           totalProperty: 'total',
                           fields: ['id_catalogo', 'codigo', 'descripcion'],
                           remoteSort: true,
-                          baseParams: {cod_catalogo: 'canal_venta', par_filtro:'codigo#descripcion', _adicionar:'si'}
+                          baseParams: {cod_catalogo: 'canal_venta', par_filtro:'c.codigo', _adicionar:'si'}
                       }),
                   valueField: 'codigo',
                   displayField: 'codigo',
@@ -120,9 +120,9 @@
   			config: {
   	                name: 'id_punto_venta',
   	                fieldLabel: 'CODIGO IATA',
-  	                allowBlank: true,
-                    disabled: true,
-  	                emptyText: 'Elija la codigo iata...',
+  	                allowBlank: false,
+                    disabled: false,
+  	                emptyText: '',
   	                store: new Ext.data.JsonStore({
   	                    url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaRbol',
   	                    id: 'codigo',
@@ -189,7 +189,7 @@
                   displayField: 'nombre',
                   gdisplayField: 'lugar_depto',
                   hiddenName: 'id_lugar',
-                  tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p></div></tpl>',
+                  tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b> <span style="color:green;">({codigo})</span></p></div></tpl>',
                   triggerAction: 'all',
                   lazyRender: true,
                   mode: 'remote',
@@ -211,8 +211,8 @@
               config: {
                   name: 'tipo',
                   fieldLabel: 'TIPO VENTA',
-                  allowBlank: true,
-                  emptyText: 'tipo venta...',
+                  allowBlank: false,
+                  emptyText: '',
                   store: new Ext.data.JsonStore(
                       {
                           url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaTipo',
@@ -225,7 +225,7 @@
                           totalProperty: 'total',
                           fields: ['tipo', 'codigo'],
                           remoteSort: true,
-                          baseParams: {_adicionar:'si'}
+                          baseParams: {_adicionar:'si', par_filtro:'p.tipo'}
                       }),
                   valueField: 'tipo',
                   displayField: 'tipo',
@@ -252,9 +252,9 @@
   			config: {
   	                name: 'id_punto_venta_1',
   	                fieldLabel: 'OFICINA DE VENTA',
-  	                allowBlank: true,
-                    disabled: true,
-  	                emptyText: 'Elija la Oficina de venta...',
+  	                allowBlank: false,
+                    disabled: false,
+  	                emptyText: '',
   	                store: new Ext.data.JsonStore({
   	                    url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaOfficeId',
                         // url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
@@ -391,6 +391,16 @@
                         this.Cmp.tipo.reset();
                         this.Cmp.id_catalogo.store.baseParams.id_lugar_fk = rec.data.codigo.toUpperCase();
                         this.Cmp.id_catalogo.modificado = true;
+                        this.Cmp.id_catalogo.setValue('');
+                        this.Cmp.tipo.reset()
+                        this.Cmp.tipo.modificado = true;
+                        this.Cmp.tipo.setValue('');
+                        this.Cmp.id_punto_venta.reset()
+                        this.Cmp.id_punto_venta.modificado = true;
+                        this.Cmp.id_punto_venta.setValue('');
+                        this.Cmp.id_punto_venta_1.reset()
+                        this.Cmp.id_punto_venta_1.modificado = true;
+                        this.Cmp.id_punto_venta_1.setValue('');
           },this);
 
           this.Cmp.id_catalogo.on('select',function(cmp, rec, indice){
@@ -419,7 +429,7 @@
 
           this.Cmp.id_punto_venta.on('select',function(cmp, rec, indice){
                         this.iataCode = rec.data.codigo.toUpperCase();
-                        this.Cmp.id_punto_venta_1.setDisabled(false);
+                        // this.Cmp.id_punto_venta_1.setDisabled(false);
 
                         this.Cmp.id_punto_venta_1.reset();
                         this.Cmp.id_punto_venta_1.store.baseParams.tipoVenta = this.Cmp.tipo.getValue();

@@ -3,6 +3,48 @@
 
         Atributos : [
           {
+          config : {
+              name : 'tipo_reporte',
+              fieldLabel : 'REPORTE',
+              allowBlank : false,
+              triggerAction : 'all',
+              lazyRender : true,
+              gwidth : 100,
+              anchor : '100%',
+              mode : 'local',
+              emptyText:'...',
+              style:'margin-bottom: 10px;',
+              store: new Ext.data.ArrayStore({
+                  id: '',
+                  fields: [
+                      'key',
+                      'value'
+                  ],
+                  data: [
+                      ['repo_inp', 'Reporte Impuestos Venta Propia'],
+                      ['repo_bsp', 'Reporte BSP']
+                  ]
+              }),
+              valueField: 'key',
+              displayField: 'value'
+          },
+          type : 'ComboBox',
+          id_grupo : 0,
+          grid : true
+        },
+        {
+            config:{
+                name: 'box_hidden',
+                fieldLabel: '',
+                disabled:true,
+                style:'margin-bottom: 10px;',
+                // hidden: 'hidden'
+            },
+            type:'TextField',
+            id_grupo:1,
+            form:true
+        },
+          {
               config:{
                   name: 'fecha_ini',
                   fieldLabel: 'DESDE',
@@ -63,8 +105,8 @@
               config: {
                   name: 'id_catalogo',
                   fieldLabel: 'CANAL DE VENTA',
-                  allowBlank: true,
-                  emptyText: 'Canal venta...',
+                  allowBlank: false,
+                  emptyText: '',
                   store: new Ext.data.JsonStore(
                       {
                           url: '../../sis_ventas_facturacion/control/ReporteVentas/listarCanalVenta',
@@ -77,7 +119,7 @@
                           totalProperty: 'total',
                           fields: ['id_catalogo', 'codigo', 'descripcion'],
                           remoteSort: true,
-                          baseParams: {cod_catalogo: 'canal_venta', par_filtro:'codigo#descripcion', _adicionar:'si'}
+                          baseParams: {cod_catalogo: 'canal_venta', par_filtro:'c.codigo', _adicionar:'si'}
                       }),
                   valueField: 'codigo',
                   displayField: 'codigo',
@@ -120,9 +162,9 @@
   			config: {
   	                name: 'id_punto_venta',
   	                fieldLabel: 'CODIGO IATA',
-  	                allowBlank: true,
+  	                allowBlank: false,
                     disabled: false,
-  	                emptyText: 'Elija la codigo iata...',
+  	                emptyText: '',
   	                store: new Ext.data.JsonStore({
   	                    url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaRbol',
   	                    id: 'codigo',
@@ -188,7 +230,7 @@
                   displayField: 'nombre',
                   gdisplayField: 'lugar_depto',
                   hiddenName: 'id_lugar',
-                  tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p></div></tpl>',
+                  tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b> <span style="color:green;">({codigo})</span></p></div></tpl>',
                   triggerAction: 'all',
                   lazyRender: true,
                   mode: 'remote',
@@ -209,8 +251,8 @@
               config: {
                   name: 'tipo',
                   fieldLabel: 'TIPO VENTA',
-                  allowBlank: true,
-                  emptyText: 'tipo venta...',
+                  allowBlank: false,
+                  emptyText: '',
                   store: new Ext.data.JsonStore(
                       {
                           url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaTipo',
@@ -223,7 +265,7 @@
                           totalProperty: 'total',
                           fields: ['tipo', 'codigo'],
                           remoteSort: true,
-                          baseParams: {_adicionar:'si'}
+                          baseParams: {_adicionar:'si', par_filtro:'p.tipo'}
                       }),
                   valueField: 'tipo',
                   displayField: 'tipo',
@@ -250,9 +292,9 @@
   			config: {
   	                name: 'id_punto_venta_1',
   	                fieldLabel: 'OFICINA DE VENTA',
-  	                allowBlank: true,
+  	                allowBlank: false,
                     disabled: false,
-  	                emptyText: 'Elija la Oficina de venta...',
+  	                emptyText: '',
   	                store: new Ext.data.JsonStore({
   	                    url: '../../sis_ventas_facturacion/control/ReporteVentas/listarPuntoVentaOfficeId',
                         // url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
@@ -387,36 +429,6 @@
            id_grupo : 1,
            grid : true
          },
-         {
-         config : {
-             name : 'tipo_reporte',
-             fieldLabel : 'REPORTE',
-             allowBlank : false,
-             triggerAction : 'all',
-             lazyRender : true,
-             gwidth : 100,
-             anchor : '100%',
-             mode : 'local',
-             emptyText:'...',
-             style:'margin-bottom: 10px;',
-             store: new Ext.data.ArrayStore({
-                 id: '',
-                 fields: [
-                     'key',
-                     'value'
-                 ],
-                 data: [
-                     ['repo_inp', 'Reporte Impuestos Venta Propia'],
-                     ['repo_bsp', 'Reporte BSP']
-                 ]
-             }),
-             valueField: 'key',
-             displayField: 'value'
-         },
-         type : 'ComboBox',
-         id_grupo : 0,
-         grid : true
-       },
        {
        config : {
            name : 'tipo_fecha',
@@ -444,40 +456,20 @@
            displayField: 'value'
        },
        type : 'ComboBox',
-       id_grupo : 1,
+       id_grupo : 0,
        grid : true
      },
-       {
-           config:{
-               name: 'fecha_i_ep',
-               fieldLabel: 'INICIO PROCESO',
-               width: 177,
-               gwidth: 100,
-               format: 'd/m/Y',
-               allowBlank: false,
-               style:'margin-bottom: 10px;'
-           },
-           type:'DateField',
-           filters:{pfiltro:'fecha_ini',type:'date'},
-           id_grupo:0,
-           form:true
-       },
-       {
-           config:{
-               name: 'fecha_f_ep',
-               fieldLabel: 'FIN PROCESO',
-               allowBlank: false,
-               width: 177,
-               gwidth: 100,
-               format: 'd/m/Y',
-               style:'margin-bottom: 10px;'
-           },
-           type:'DateField',
-           filters:{pfiltro:'fecha_fin',type:'date'},
-           id_grupo:1,
-           form:true
-       },
-
+     {
+         config:{
+             name: 'box_hidden_1',
+             fieldLabel: '',
+             disabled:true,
+             style:'margin-bottom: 10px;'
+         },
+         type:'TextField',
+         id_grupo:1,
+         form:true
+     },
         ],
 
 
@@ -491,9 +483,7 @@
         constructor : function(config) {
             Phx.vista.RepImpuestosVentasPropias.superclass.constructor.call(this, config);
             this.init();
-            this.Cmp.fecha_i_ep.setVisible(false);
-            this.Cmp.fecha_f_ep.setVisible(false);
-            this.country='',this.city='',this.channel='',this.typePOS='',this.iataCode='',this.officeID='', this.tipo_canal='', this.code_iata='',this.moneda='',this.transaction='';
+            this.country='',this.city='',this.channel='',this.typePOS='',this.iataCode='',this.officeID='', this.tipo_canal='', this.code_iata='',this.moneda='',this.transaction='',this.usuario='';
             var fecha = new Date();
             Ext.Ajax.request({
                 url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
@@ -511,7 +501,31 @@
         },
 
         iniciarEventos:function(){
+          this.Cmp.box_hidden.el.dom.style.border='none';
+          this.Cmp.box_hidden_1.el.dom.style.border='none';
+          var me = this;
+          Ext.Ajax.request({
+              url:'../../sis_workflow/control/NumTramite/usuarioAdminTF',
+              params:{data:''},
+              success:function(resp){
+                  var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                  me.usuario = reg.ROOT.datos.funcionario;
+              },
+              failure: this.conexionFailure,
+              timeout:this.timeout,
+              scope:this
+          });
 
+          // this.Cmp.tipo_reporte.on('select', function(cmp, rec, i) {
+          //     if  (rec.data.key == 'repo_bsp'){
+          //         this.Cmp.box_hidden.setValue(rec.data.key)
+          //     }else{
+          //         this.Cmp.box_hidden.setValue('')
+          //     }
+          //     this.Cmp.id_catalogo.store.baseParams.input_text = this.Cmp.box_hidden.getValue();
+          //     this.Cmp.id_catalogo.reset();
+          //     this.Cmp.id_catalogo.modificado=true;
+          // },this);
           this.Cmp.id_lugar.store.load({params:{start:0, limit:100}, scope:this, callback: function (param,op,suc) {
 
                   this.Cmp.id_lugar.setValue(param[7].data.id_lugar);
@@ -534,9 +548,19 @@
                         this.city = rec.data.codigo.toUpperCase();
 
                         this.Cmp.id_catalogo.reset();
-                        this.Cmp.tipo.reset();
                         this.Cmp.id_catalogo.store.baseParams.id_lugar_fk = rec.data.codigo.toUpperCase();
                         this.Cmp.id_catalogo.modificado = true;
+                        this.Cmp.id_catalogo.setValue('');
+                        this.Cmp.id_punto_venta_1.reset();
+                        this.Cmp.id_punto_venta_1.modificado = true;
+                        this.Cmp.id_punto_venta_1.setValue('');
+                        this.Cmp.tipo.reset();
+                        this.Cmp.tipo.modificado = true;
+                        this.Cmp.tipo.setValue('');
+                        this.Cmp.id_punto_venta.reset();
+                        this.Cmp.id_punto_venta.modificado = true;
+                        this.Cmp.id_punto_venta.setValue('');
+
           },this);
 
           this.Cmp.id_catalogo.on('select',function(cmp, rec, indice){
@@ -559,7 +583,7 @@
 
           this.Cmp.id_punto_venta.on('select',function(cmp, rec, indice){
                         this.iataCode = rec.data.codigo.toUpperCase();
-                        this.Cmp.id_punto_venta_1.setDisabled(false);
+                        // this.Cmp.id_punto_venta_1.setDisabled(false);
 
                         this.Cmp.id_punto_venta_1.reset();
                         this.Cmp.id_punto_venta_1.store.baseParams.tipoVenta = this.Cmp.tipo.getValue();
@@ -581,23 +605,6 @@
           this.Cmp.tipo_documento.on('select',function(cmp, rec, indice){
                         this.transaction = rec.data.key.toUpperCase();
           },this);
-
-          this.Cmp.tipo_fecha.on('select', function(cmp, rec, indice){
-                this.Cmp.fecha_i_ep.reset();
-                this.Cmp.fecha_i_ep.modificado = true;
-                this.Cmp.fecha_f_ep.reset();
-                this.Cmp.fecha_f_ep.modificado = true;
-
-              if (rec.data.key == 'tipo_f_e'){
-                this.Cmp.fecha_i_ep.setVisible(true);
-                this.Cmp.fecha_f_ep.setVisible(true);
-              }else{
-                this.Cmp.fecha_i_ep.setVisible(false);
-                this.Cmp.fecha_f_ep.setVisible(false);
-                this.Cmp.fecha_i_ep.allowBlank = true;
-                this.Cmp.fecha_f_ep.allowBlank = true;
-              }
-          },this)
 
         },
 
@@ -655,7 +662,7 @@
                 this.typePOS = (this.typePOS=='')?'TODOS':this.Cmp.tipo.getValue().toUpperCase();
                 this.iataCode = (this.iataCode=='')?'TODOS':this.iataCode;
                 this.officeID = (this.officeID=='')?'TODOS':this.officeID;
-                this.moneda = (this.moneda=='')?0:this.moneda.toUpperCase();
+                this.moneda = (this.moneda=='' || this.moneda=='TODOS')?0:this.moneda.toUpperCase();
                 this.transaction = (this.transaction=='')?'TODOS':this.transaction.toUpperCase();
 
                 if (this.Cmp.tipo_reporte.getValue() != 'repo_inp'){
@@ -680,14 +687,12 @@
                     arg = arg + "&Transaccion="+this.transaction;
                 }
 
-                if (this.Cmp.tipo_fecha.getValue() == 'tipo_f_e'){
+                if (this.Cmp.tipo_fecha.getValue() == 'tipo_f_p'){
                     arg = arg + '&Tipo=E';
-                    arg = arg + '&FechaIniP=' + this.Cmp.fecha_i_ep.getValue().format('Y-m-d');
-                    arg = arg + '&FechaFinP=' + this.Cmp.fecha_f_ep.getValue().format('Y-m-d');
                 }else{
                     arg = arg + '&Tipo=P';
                 }
-                    arg = arg + "&rs:Format=EXCEL";
+                    arg = arg + "&usr= " +this.usuario+ "&rs:Format=EXCEL";
                   console.log("datatsss",arg);
                   window.open('http://10.150.0.22:8082'+arg, '_blank');
 

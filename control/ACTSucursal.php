@@ -49,7 +49,7 @@ class ACTSucursal extends ACTbase{
         if($this->objParam->getParametro('id_entidad') != '') {
                 $this->objParam->addFiltro(" suc.id_entidad = " . $this->objParam->getParametro('id_entidad'));
         }
-				
+
 				if($this->objParam->getParametro('id_sucursal') != '') {
                 $this->objParam->addFiltro(" suc.id_sucursal = " . $this->objParam->getParametro('id_sucursal'));
         }
@@ -100,6 +100,25 @@ class ACTSucursal extends ACTbase{
 	function eliminarSucursal(){
 			$this->objFunc=$this->create('MODSucursal');
 		$this->res=$this->objFunc->eliminarSucursal($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function listarSucursalXestacion () {
+
+		if ($this->objParam->getParametro('x_estacion')!='' && $this->objParam->getParametro('id_lugar') != 0){
+				$this->objParam->addFiltro(" id_lugar in ( select id_lugar from param.tlugar where id_lugar_fk = " . $this->objParam->getParametro('id_lugar').") or id_lugar = ".$this->objParam->getParametro('id_lugar')."");
+		}
+
+		$this->objFunc=$this->create('MODSucursal');
+		$this->res=$this->objFunc->listarSucursalXestacion($this->objParam);
+
+		if($this->objParam->getParametro('_adicionar')!=''){
+			$respuesta = $this->res->getDatos();
+			array_unshift ( $respuesta, array(  'id_sucursal'=>'0',
+																					'codigo'=>'Todos',
+																					'nombre'=>'Todos',) );
+			$this->res->setDatos($respuesta);
+		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 

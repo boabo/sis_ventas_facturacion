@@ -38,9 +38,8 @@ class MODReporteVentas extends MODbase {
 		$this->procedimiento='vef.ft_reporte_ventas';
 		$this->transaccion='VF_RREVBOL_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-		$this->setCount(false);
+		// $this->setCount(false);
 		//Definicion de la lista del resultado del query
-
 		$this->captura('id_catalogo', 'int4');
 		$this->captura('codigo', 'varchar');
 		$this->captura('descripcion', 'varchar');
@@ -152,6 +151,57 @@ class MODReporteVentas extends MODbase {
 		// echo $this->consulta;exit;
 		$this->ejecutarConsulta();
 
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function consultaFacturaVenta() {
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_consulta_factura';
+		$this->transaccion='VF_CONSFACX_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		//Definicion de la lista del resultado del query
+
+		$this->setParametro('id_entidad', 'id_entidad', 'int4');
+		$this->setParametro('id_sucursal', 'id_sucursal', 'int4');
+		$this->setParametro('id_punto_venta', 'id_punto_venta', 'int4');
+		$this->setParametro('tipo_documento', 'tipo_documento', 'varchar');
+		$this->setParametro('nro_documento', 'nro_documento', 'varchar');
+		$this->setParametro('nro_autorizacion', 'nro_autorizacion', 'varchar');
+
+		$this->captura('id_venta','integer');
+		$this->captura('nro_factura','integer');
+		$this->captura('nit','varchar');
+		$this->captura('nombre_factura','varchar');
+		$this->captura('cod_control','varchar');
+		$this->captura('fecha_factura','date');
+		$this->captura('observaciones','text');
+		$this->captura('total_venta','numeric');		
+		$this->captura('excento','numeric');
+		$this->captura('nroaut','varchar');
+		$this->captura('punto_venta','text');
+		$this->captura('desc_persona','text');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+	function consultaDetalleFactura(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_consulta_factura';
+		$this->transaccion='VF_DJSVEN_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		$this->setParametro('id_venta', 'id_venta', 'int4');
+		$this->captura('jsonData','text');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}

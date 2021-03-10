@@ -170,5 +170,25 @@ class MODSucursal extends MODbase{
 		return $this->respuesta;
 	}
 
+	function listarSucursalXestacion () {
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='vef.ft_sucursal_sel';
+		$this->transaccion='VF_SUCXES_SEL';
+		$this->tipo_procedimiento='SEL';
+
+		//Define los parametros para la funcion
+		$this->captura('id_sucursal','int4');
+    $this->captura('id_entidad','int4');
+		$this->captura('id_lugar','int4');
+		$this->captura('codigo','varchar');
+		$this->captura('nombre','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 }
 ?>
