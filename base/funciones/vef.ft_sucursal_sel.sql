@@ -131,6 +131,57 @@ BEGIN
 
 		end;
 
+    /*********************************
+   	#TRANSACCION:  'VF_SUCXES_SEL'
+   	#DESCRIPCION:	Consulta de sucursales por estacion
+   	#AUTOR:		breydi.vasquez
+   	#FECHA:		03-03-2021
+  	***********************************/
+
+  	elsif(p_transaccion='VF_SUCXES_SEL')then
+
+  		begin
+  			--Sentencia de la consulta de conteo de registros
+  			v_consulta:='select id_sucursal,
+                                  id_entidad,
+                                  id_lugar,
+                                  codigo,
+                                  nombre
+                          from vef.tsucursal
+                          where ';
+
+  			--Definicion de la respuesta
+  			v_consulta:=v_consulta||v_parametros.filtro;
+  			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+              raise notice 'resp %',v_consulta;
+  			--Devuelve la respuesta
+  			return v_consulta;
+
+  		end;
+
+  	/*********************************
+   	#TRANSACCION:  'VF_SUCXES_CONT'
+   	#DESCRIPCION:	Conteo de sucursales por estacion
+   	#AUTOR:		breydi.vasquez
+   	#FECHA:		03-03-2021
+  	***********************************/
+
+  	elsif(p_transaccion='VF_SUCXES_CONT')then
+
+  		begin
+  			--Sentencia de la consulta de conteo de registros
+  			v_consulta:='select count(id_sucursal)
+  					    from vef.tsucursal
+                          where ';
+
+  			--Definicion de la respuesta
+  			v_consulta:=v_consulta||v_parametros.filtro;
+
+  			--Devuelve la respuesta
+  			return v_consulta;
+
+  		end;
+
 	else
 
 		raise exception 'Transaccion inexistente';

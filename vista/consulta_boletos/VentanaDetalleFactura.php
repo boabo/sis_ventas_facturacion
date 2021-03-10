@@ -133,11 +133,6 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
     this.tbar.el.dom.parentNode.style.height=0;
     this.bbar.container.dom.firstChild.style.height=0;
     this.grid.view.innerHd.style.height=0;
-    // console.log(this.grid.el.dom.lastElementChild.childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].children[0]);
-    // this.grid.body.dom.firstChild.firstChild.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].style.width=0;
-    // this.grid.body.dom.firstChild.firstChild.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML='';
-    // this.grid.body.dom.children[0].children[0].children[1].firstChild.children[0].children[0].children[0].children[0].style.width=0;
-    // this.grid.body.dom.firstChild.childNodes[0].children[0].firstChild.style.textAlign='center';
 	},
 	Atributos:[
 

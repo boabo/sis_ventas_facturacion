@@ -17,18 +17,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
         Phx.vista.ConsultaFactura.superclass.constructor.call(this,config);
         this.init();
         this.iniciarEventos();
-
-        if(config.detalle){
-
-  			//cargar los valores para el filtro
-  			this.loadForm({data: config.detalle});
-  			var me = this;
-  			setTimeout(function(){
-  				me.onSubmit()
-  			}, 1500);
-
-  		}
-      this.regiones[0].body.dom.style.background='#C8E3F5';
+        this.regiones[0].body.dom.style.background='#C8E3F5';
     },
 
 
