@@ -136,55 +136,52 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
          },
 
          {
- 			config: {
- 	                name: 'id_punto_venta',
- 	                fieldLabel: 'Punto de Venta',
- 	                allowBlank: true,
- 	                emptyText: 'Elija un Punto de Venta...',
-                  store:new Ext.data.JsonStore(
-                  {
-                      url: '../../sis_obingresos/control/Boleto/obtenerPuntosVentasCounter',
-                      id: 'id_punto_venta',
-                      root: 'datos',
-                      sortInfo:{
-                          field: 'nombre',
-                          direction: 'ASC'
-                      },
-                      totalProperty: 'total',
-                      fields: ['id_punto_venta','tipo','id_sucursal','nombre','codigo','habilitar_comisiones','formato_comprobante'],
-                      // turn on remote sorting
-                      remoteSort: true,
-                      baseParams:{par_filtro:'nombre#codigo'}
-                  }),
- 	                valueField: 'id_punto_venta',
- 	                displayField: 'nombre',
- 	                gdisplayField: 'nombre',
- 	                hiddenName: 'id_punto_venta',
- 	                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
- 	                forceSelection: true,
- 	                typeAhead: false,
- 	                triggerAction: 'all',
- 	                lazyRender: true,
- 	                mode: 'remote',
- 	                pageSize: 15,
- 	                queryDelay: 1000,
- 	                gwidth: 150,
-                  listWidth:450,
- 	                width:250,
- 	                resizable:true,
- 	                minChars: 2,
- 	                renderer : function(value, p, record) {
- 	                    return String.format('{0}', record.data['nombre']);
- 	                },
-                 	hidden : true
+			config: {
+	                name: 'id_punto_venta',
+	                fieldLabel: 'Punto de Venta',
+	                allowBlank: false,
+	                emptyText: 'Elija un Punto de Venta...',
+	                store: new Ext.data.JsonStore({
+	                    url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
+	                    id: 'id_punto_venta',
+	                    root: 'datos',
+	                    sortInfo: {
+	                        field: 'nombre',
+	                        direction: 'ASC'
+	                    },
+	                    totalProperty: 'total',
+	                    fields: ['id_punto_venta', 'nombre', 'codigo'],
+	                    remoteSort: true,
+	                    baseParams: {tipo_usuario : 'todos',par_filtro: 'puve.nombre#puve.codigo'}
+	                }),
+	                valueField: 'id_punto_venta',
+	                displayField: 'nombre',
+	                gdisplayField: 'nombre_punto_venta',
+	                hiddenName: 'id_punto_venta',
+	                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
+	                forceSelection: true,
+	                typeAhead: false,
+	                triggerAction: 'all',
+	                lazyRender: true,
+	                mode: 'remote',
+	                pageSize: 15,
+	                queryDelay: 1000,
+	                gwidth: 150,
+	                width:250,
+	                resizable:true,
+	                minChars: 2,
+	                renderer : function(value, p, record) {
+	                    return String.format('{0}', record.data['nombre_punto_venta']);
+	                },
+                	hidden : false
 
- 	            },
- 	            type: 'ComboBox',
- 	            id_grupo: 0,
- 	            filters: {pfiltro: 'puve.nombre',type: 'string'},
- 	            grid: true,
- 	            form: true
- 	       },
+	            },
+	            type: 'ComboBox',
+	            id_grupo: 0,
+	            filters: {pfiltro: 'puve.nombre',type: 'string'},
+	            grid: true,
+	            form: true
+	       },
 
          {
              config:{

@@ -1094,7 +1094,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 
         verificar_montos = [];
       }
-      this.suma_total = suma;
+      this.suma_total = suma.toFixed(2);
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.color="#7400FF";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontWeight="bold";
       this.summary.view.summary.dom.firstChild.lastElementChild.lastElementChild.cells[6].childNodes[0].style.fontSize="20px";
@@ -1323,10 +1323,12 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                     },
                     {
 
+                        xtype: 'numbercolumn',
                         header: 'P / Unit',
                         dataIndex: 'precio_unitario',
                         align: 'right',
                         width: 85,
+                        format: '0,0.00',
                         summaryType: 'sum',
                         editor: this.detCmp.precio_unitario
                     },
