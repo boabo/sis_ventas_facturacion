@@ -32,7 +32,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             this.reportPanel = new Ext.Panel({
-                id: 'reportPanel',
+                id: 'reportPanelBoleto',
                 width: '100%',
                 height: '100%',
                 /*renderTo: Ext.get('principal'),*/
@@ -46,7 +46,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     height: '100%',
                     autoEl: {
                         tag: 'iframe',
-                        src: 'http://erp.obairlines.bo/boa-kiu/',
+                        src: 'https://erp.obairlines.bo/boa-kiu/',
                     }}]
             });
 
