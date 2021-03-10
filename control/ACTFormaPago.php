@@ -17,7 +17,7 @@ class ACTFormaPago extends ACTbase{
         }
 
 		if($this->objParam->getParametro('sw_tipo_venta') != '') {
-			$this->objParam->addFiltro("''".$this->objParam->getParametro('sw_tipo_venta')."''=any(forpa.sw_autorizacion)");
+			$this->objParam->addFiltro("''".$this->objParam->getParametro('sw_tipo_venta')."''=any(forpa.sw_autorizacion) and ''".$this->objParam->getParametro('regionales')."''=any(forpa.regionales)");
 		}
 
 		if($this->objParam->getParametro('defecto') == 'si') {
@@ -53,7 +53,7 @@ class ACTFormaPago extends ACTbase{
 																						inner join vef.tsucursal s on s.id_sucursal = pv.id_sucursal
 																						where id_punto_venta = " . $this->objParam->getParametro('id_punto_venta') ." )");
 						}
-			}			
+			}
 		}
 
 
