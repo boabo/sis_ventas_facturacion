@@ -35,23 +35,23 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
   nombreVista: 'LiquidacionLista',
 	solicitarSucursal: true, //para indicar si es forzoso o no indicar la sucrsal al iniciar
-	tipo_usuario : 'cajero',
+	// tipo_usuario : 'cajero',
 
 
 	constructor:function(config){
 		this.maestro=config.maestro;
 		//this.tipo_usuario = 'cajero';
-		Ext.Ajax.request({
-				url:'../../sis_ventas_facturacion/control/Cajero/getTipoUsuario',
-				params: {'vista':'cajero'},
-				success: function(resp){
-						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-						this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
-				},
-				failure: this.conexionFailure,
-				timeout:this.timeout,
-				scope:this
-		});
+		// Ext.Ajax.request({
+		// 		url:'../../sis_ventas_facturacion/control/Cajero/getTipoUsuario',
+		// 		params: {'vista':'cajero'},
+		// 		success: function(resp){
+		// 				var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+		// 				this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
+		// 		},
+		// 		failure: this.conexionFailure,
+		// 		timeout:this.timeout,
+		// 		scope:this
+		// });
 		//console.log("llega aqui tipo us",this);
 		Ext.Ajax.request({
 					url:'../../sis_ventas_facturacion/control/Venta/getVariablesBasicas',
@@ -350,7 +350,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 											totalProperty: 'total',
 											fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante','enviar_correo'],
 											remoteSort: true,
-											baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura, tipo : this.tipo}
+											baseParams: {tipo_usuario: 'finanzas',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura, tipo : this.tipo}
 			});
 		} else {
 			title = 'Seleccione la sucursal con la que trabajara';
@@ -366,7 +366,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 										totalProperty: 'total',
 										fields: ['id_sucursal', 'nombre', 'codigo','habilitar_comisiones','formato_comprobante','id_entidad'],
 										remoteSort: true,
-										baseParams: {tipo_usuario: this.tipo_usuario,par_filtro: 'suc.nombre#suc.codigo', tipo_factura: this.tipo_factura}
+										baseParams: {tipo_usuario: 'finanzas',par_filtro: 'suc.nombre#suc.codigo', tipo_factura: this.tipo_factura}
 							 });
 		}
 
@@ -379,14 +379,14 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 												this.variables_globales.habilitar_comisiones = r[0].data.habilitar_comisiones;
 												this.variables_globales.formato_comprobante = r[0].data.formato_comprobante;
 												this.store.baseParams.id_punto_venta = this.variables_globales.id_punto_venta;
-														this.store.baseParams.tipo_usuario = this.tipo_usuario;
+														this.store.baseParams.tipo_usuario = 'finanzas';
 											} else {
 												this.variables_globales.id_sucursal = r[0].data.id_sucursal;
 												this.variables_globales.id_entidad = r[0].data.id_entidad;
 												this.variables_globales.habilitar_comisiones = r[0].data.habilitar_comisiones;
 												this.variables_globales.formato_comprobante = r[0].data.formato_comprobante;
 												this.store.baseParams.id_sucursal = this.variables_globales.id_sucursal;
-													this.store.baseParams.tipo_usuario = this.tipo_usuario;
+													this.store.baseParams.tipo_usuario = 'finanzas';
 												}
 											this.store.baseParams.tipo_factura = this.tipo_factura;
 											this.load({params:{start:0, limit:this.tam_pag}});
@@ -446,7 +446,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 																		this.store.baseParams.id_sucursal = this.variables_globales.id_sucursal;
 																	}
 
-																	this.store.baseParams.tipo_usuario = this.tipo_usuario;
+																	this.store.baseParams.tipo_usuario = 'finanzas';
 																	this.store.baseParams.tipo_factura = 'computarizada';
 																	this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
 																	this.punto_venta.setText(combo2.lastSelectionText)
