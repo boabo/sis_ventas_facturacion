@@ -73,8 +73,9 @@ BEGIN
                           from param.tlugar l
                           inner join t1 t  on l.id_lugar_fk = t.id_l
                           )
-                          select pxp.list(id_l::text) into v_id_lug
-                          from t1;
+                          select pxp.list(su.id_sucursal::text) into v_id_lug
+                          from t1 t
+                          inner join vef.tsucursal su on su.id_lugar =  t.id_l;
 
                 	v_fil_su = ' pv.id_sucursal in ('||v_id_lug||') and ';
                 END IF;
@@ -160,8 +161,9 @@ BEGIN
                           from param.tlugar l
                           inner join t1 t  on l.id_lugar_fk = t.id_l
                           )
-                          select pxp.list(id_l::text) into v_id_lug
-                          from t1;
+                          select pxp.list(su.id_sucursal::text) into v_id_lug
+                          from t1 t
+                          inner join vef.tsucursal su on su.id_lugar =  t.id_l;
 
                 	v_fil_su = ' pv.id_sucursal in ('||v_id_lug||') and ';
                 END IF;
@@ -258,7 +260,7 @@ BEGIN
                               us.desc_persona,
                               su.codigo ||''-''|| su.nombre as sucursal,
                               '||v_nroaut||',
-                              case when v.id_auxiliar_anticipo is not null and v.id_deposito is not null then
+                              case when v.id_deposito is not null then
                               (
                             	SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(dep))) as detalle_depo
                                 	FROM (
