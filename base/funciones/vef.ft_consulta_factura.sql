@@ -260,7 +260,7 @@ BEGIN
                               us.desc_persona,
                               su.codigo ||''-''|| su.nombre as sucursal,
                               '||v_nroaut||',
-                              case when v.id_auxiliar_anticipo is not null and v.id_deposito is not null then
+                              case when v.id_deposito is not null then
                               (
                             	SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(dep))) as detalle_depo
                                 	FROM (
