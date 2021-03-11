@@ -199,6 +199,7 @@ $body$
 
 
         /*Aqui ponemos la condicion para recuperar datos del cajero Auxiliar (Ismael Valdivia 08/02/2021)*/
+          IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
           select list(distinct(aper.id_apertura_cierre_caja)::varchar)
           		 into
                  v_id_apertura_cajero_principal
@@ -213,7 +214,7 @@ $body$
             from vef.tapertura_cierre_caja ap
             where ap.id_apertura_cierre_admin in (v_id_apertura_cajero_principal);
           /**************************************************************************************************/
-
+		 end if;
         /*************************************************************************************************/
 
 
@@ -1137,7 +1138,7 @@ $body$
         if (v_cod_moneda != 'USD') then
           v_consulta = v_consulta || '
                      /*************************Aumentando*********************/
-                     CASE WHEN b.forma_pago = ''CC'' and fpusd.id_boleto_amadeus is null then
+                     CASE WHEN b.forma_pago = ''CC'' and fpusd.id_boleto_amadeus is null AND fpmb.id_boleto_amadeus is null then
 
                         (select fp_pw.name
                         from obingresos.tforma_pago_pw fp_pw
