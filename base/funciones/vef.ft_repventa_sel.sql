@@ -199,6 +199,7 @@ $body$
 
 
         /*Aqui ponemos la condicion para recuperar datos del cajero Auxiliar (Ismael Valdivia 08/02/2021)*/
+          IF  pxp.f_existe_parametro(p_tabla,'id_usuario_cajero') THEN
           select list(distinct(aper.id_apertura_cierre_caja)::varchar)
           		 into
                  v_id_apertura_cajero_principal
@@ -213,7 +214,7 @@ $body$
             from vef.tapertura_cierre_caja ap
             where ap.id_apertura_cierre_admin in (v_id_apertura_cajero_principal);
           /**************************************************************************************************/
-
+		 end if;
         /*************************************************************************************************/
 
 
