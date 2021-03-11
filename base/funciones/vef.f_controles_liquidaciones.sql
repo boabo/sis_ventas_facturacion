@@ -97,14 +97,14 @@ BEGIN
           return v_resp;
 
       END IF;
-
-      IF EXISTS(SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) AND estpago='P') THEN
+		--Comentando esta parte para registrar facturas del tipo DEVWEB (Ismael Valdivia)
+      /*IF EXISTS(SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) AND estpago='P') THEN
 
           v_resp[0] = true;
           v_resp[1] = 'No se puede anular la factura porque la liquidacion '||p_liquidaciones||' se encuentra pagada.';
           return v_resp;
 
-      END IF;
+      END IF;*/
 
       IF EXISTS (SELECT 1 FROM liquidevolucion_temp WHERE trim(nroliqui) = trim(p_liquidaciones) and nrofac > 0 and nroaut > 0  ) THEN
          v_resp[0] = true;
@@ -166,4 +166,4 @@ SECURITY INVOKER
 COST 100;
 
 ALTER FUNCTION vef.f_controles_liquidaciones (p_liquidaciones text, p_venta_total numeric)
-  OWNER TO "postgres";
+  OWNER TO postgres;
