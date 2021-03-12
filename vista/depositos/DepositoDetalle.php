@@ -25,13 +25,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 handler: this.archivo
             });
 
-            this.addButton('sincronizar', {
-                grupo: [0,1],
-                text: 'Sincronizar Ingresos',
-                iconCls:'bsendmail' ,
-                disabled: false,
-                handler: this.sincronizar
-            });
+            // this.addButton('sincronizar', {
+            //     grupo: [0,1],
+            //     text: 'Sincronizar Ingresos',
+            //     iconCls:'bsendmail' ,
+            //     disabled: false,
+            //     handler: this.sincronizar
+            // });
 
 
             this.finCons = true;
@@ -77,36 +77,36 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
 
-        sincronizar:function(){
-          var rec = this.getSelectedData();
-          Ext.Ajax.request({
-                  url:'../../sis_obingresos/control/Deposito/sincronizarDeposito',
-                  params:{
-                          codigo_padre:this.maestro.codigo_padre,
-                          estacion:this.maestro.estacion,
-                          codigo:this.maestro.codigo,
-                          fecha_venta:this.maestro.fecha_venta.dateFormat('d-m-Y'),
-                          tipo_cambio:this.maestro.tipo_cambio,
-                          fecha:rec.fecha.dateFormat('d-m-Y'),
-                          nro_deposito:rec.nro_deposito,
-                          monto_deposito:rec.monto_deposito,
-                          id_punto_venta:this.maestro.id_punto_venta,
-                          id_moneda_deposito:rec.id_moneda_deposito
+        // sincronizar:function(){
+        //   var rec = this.getSelectedData();
+        //   Ext.Ajax.request({
+        //           url:'../../sis_obingresos/control/Deposito/sincronizarDeposito',
+        //           params:{
+        //                   codigo_padre:this.maestro.codigo_padre,
+        //                   estacion:this.maestro.estacion,
+        //                   codigo:this.maestro.codigo,
+        //                   fecha_venta:this.maestro.fecha_venta.dateFormat('d-m-Y'),
+        //                   tipo_cambio:this.maestro.tipo_cambio,
+        //                   fecha:rec.fecha.dateFormat('d-m-Y'),
+        //                   nro_deposito:rec.nro_deposito,
+        //                   monto_deposito:rec.monto_deposito,
+        //                   id_punto_venta:this.maestro.id_punto_venta,
+        //                   id_moneda_deposito:rec.id_moneda_deposito
+        //
+        //                 },
+        //           success: this.successSincronizar,
+        //           failure: this.successSincronizar,
+        //           timeout:this.timeout,
+        //           scope:this
+        //   });
+        //
+        // },
 
-                        },
-                  success: this.successSincronizar,
-                  failure: this.successSincronizar,
-                  timeout:this.timeout,
-                  scope:this
-          });
-
-        },
-
-        successSincronizar:function(resp){
-          var rec=this.sm.getSelected();
-          var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-          Phx.CP.getPagina(this.idContenedorPadre).reload();
-        },
+        // successSincronizar:function(resp){
+        //   var rec=this.sm.getSelected();
+        //   var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        //   Phx.CP.getPagina(this.idContenedorPadre).reload();
+        // },
 
 
         bactGroups: [0, 1],
@@ -450,17 +450,17 @@ header("content-type: text/javascript; charset=UTF-8");
         preparaMenu: function () {
             Phx.vista.DepositoDetalle.superclass.preparaMenu.call(this);
             this.getBoton('archivo').enable();
-            this.getBoton('sincronizar').enable();
+            //this.getBoton('sincronizar').enable();
         },
         liberaMenu: function () {
             this.getBoton('archivo').disable();
-            this.getBoton('sincronizar').disable();
+            //this.getBoton('sincronizar').disable();
             Phx.vista.DepositoDetalle.superclass.liberaMenu.call(this);
         },
         onReloadPage: function (m) {
             this.maestro = m;
             if (this.moneda_base != 'BOB') {
-              this.getBoton('sincronizar').setVisible(false);
+              //this.getBoton('sincronizar').setVisible(false);
             }
             //this.store.baseParams.tipo = 'venta_propia';
             this.store.baseParams = {id_apertura_cierre_caja: this.maestro.id_apertura_cierre_caja,
