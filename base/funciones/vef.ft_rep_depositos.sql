@@ -106,8 +106,8 @@ BEGIN
                                                      0
                                                 END) as importe_me,
                                                 cuen.nro_cuenta,
-                                                usu.cuenta,
-                                                usucaja.cuenta,
+                                                usucaja.desc_persona as cajero,
+                                                usu.desc_persona as registrado,
                                                ''''::varchar as observaciones,
                                                ''venta_propia''::varchar as tipo_deposito,
                                                pv.nombre
@@ -145,8 +145,8 @@ BEGIN
                                                      0
                                                 END) as importe_me,
                                                 cuen.nro_cuenta,
-                                                usu.cuenta,
-                                                usucaja.cuenta,
+                                                usucaja.desc_persona as cajero,
+                                                usu.desc_persona as registrado,
                                                 (''RO Concepto: ''||ingas.desc_ingas) as observaciones,
                                                 ''cuenta_corriente''::varchar as tipo_deposito,
 
@@ -195,8 +195,8 @@ BEGIN
                                                      0
                                                 END) as importe_me,
                                                 cuen.nro_cuenta,
-                                                usu.cuenta,
-                                                usucaja.cuenta,
+                                                usucaja.desc_persona as cajero,
+                                                usu.desc_persona as registrado,
                                                 (''Anticipo: RO NroRecibo: ''|| ven.nro_factura||'' CTA/CTE: ''||''(''||aux.codigo_auxiliar||'') ''||aux.nombre_auxiliar) as observaciones,
                                                 NULL::varchar as tipo_deposito,
 
@@ -399,7 +399,9 @@ BEGIN
                                            total_venta_ml,
                                            total_venta_me,
                                            diferencia
-                                      from reporte_depositos ';
+                                      from reporte_depositos
+                                      order by fecha_venta ASC';
+
 
 
 
@@ -479,8 +481,8 @@ BEGIN
                                                      0
                                                 END) as importe_me,
                                                 cuen.nro_cuenta,
-                                                usu.cuenta,
-                                                usucaja.cuenta,
+                                                usucaja.desc_persona as cajero,
+                                                usu.desc_persona as registrado,
                                                ''''::varchar as observaciones,
                                                ''venta_propia''::varchar as tipo_deposito,
                                                pv.nombre
@@ -518,8 +520,8 @@ BEGIN
                                                      0
                                                 END) as importe_me,
                                                 cuen.nro_cuenta,
-                                                usu.cuenta,
-                                                usucaja.cuenta,
+                                                usu.desc_persona as registrado,
+                                                usucaja.desc_persona as cajero,
                                                 (''RO Concepto: ''||ingas.desc_ingas) as observaciones,
                                                 ''cuenta_corriente''::varchar as tipo_deposito,
 
@@ -568,8 +570,8 @@ BEGIN
                                                      0
                                                 END) as importe_me,
                                                 cuen.nro_cuenta,
-                                                usu.cuenta,
-                                                usucaja.cuenta,
+                                                usu.desc_persona as registrado,
+                                                usucaja.desc_persona as cajero,
                                                 (''Anticipo: RO NroRecibo: ''|| ven.nro_factura||'' CTA/CTE: ''||''(''||aux.codigo_auxiliar||'') ''||aux.nombre_auxiliar) as observaciones,
                                                 NULL::varchar as tipo_deposito,
 
