@@ -76,7 +76,7 @@ $body$
 				    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
             left join param.tcatalogo cat on cat.id_catalogo = puve.id_catalogo
             left join param.tcatalogo cat1 on cat1.id_catalogo = puve.id_catalogo_canal
-                        where  ';
+                        where  puve.estado_reg = ''activo'' and ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
@@ -138,14 +138,14 @@ $body$
 
       begin
         --Sentencia de la consulta de conteo de registros
-        v_consulta:='select count(id_punto_venta)
+        v_consulta:='select count(puve.id_punto_venta)
 					    from vef.tpunto_venta puve
 					    inner join segu.tusuario usu1 on usu1.id_usuario = puve.id_usuario_reg
 						  left join segu.tusuario usu2 on usu2.id_usuario = puve.id_usuario_mod
 					    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
               left join param.tcatalogo cat on cat.id_catalogo = puve.id_catalogo
               left join param.tcatalogo cat1 on cat1.id_catalogo = puve.id_catalogo_canal
-              where ';
+              where  puve.estado_reg = ''activo'' and ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
