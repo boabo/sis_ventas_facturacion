@@ -7,8 +7,8 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 
-class ACTConsultaBoletos extends ACTbase{    
-			
+class ACTConsultaBoletos extends ACTbase{
+
 	function listarConsultaBoletos(){
 		$this->objParam->defecto('ordenacion','id_boleto');
 
@@ -22,9 +22,15 @@ class ACTConsultaBoletos extends ACTbase{
 			$this->res = $this->objReporte->generarReporteListado('MODConsultaBoletos','listarConsultaBoletos');
 		} else{
 			$this->objFunc=$this->create('MODConsultaBoletos');
-			
+
 			$this->res=$this->objFunc->listarConsultaBoletos($this->objParam);
 		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function consultaBoletoInhabilitacion(){
+		$this->objFunc=$this->create('MODConsultaBoletos');
+		$this->res=$this->objFunc->consultaBoletoInhabilitacion($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 }

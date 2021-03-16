@@ -26,7 +26,20 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-    v_filto				varchar;
+  v_filto				varchar;
+/*breydi vasquez */
+v_boleto			record;
+v_cadena_cnx		varchar;
+v_rec 				record;
+v_estado_cv			varchar;
+v_sms				text;
+v_periodo			varchar;
+v_inhabilitacion	varchar='false';
+v_estado_bol		varchar;
+v_venta_f			record;
+v_exito				varchar;
+usu_mod				varchar;
+v_count				integer;
 
 BEGIN
 
@@ -113,6 +126,159 @@ BEGIN
 			return v_consulta;
 
 		end;
+
+    /*********************************
+   	#TRANSACCION:  'VF_CNSBOINB_IME'
+   	#DESCRIPCION:	Proceso de inhabilitacion de boleto.
+   	#AUTOR:		breydi.vasquez
+   	#FECHA:		12/03/2021
+  	***********************************/
+
+  	elsif(p_transaccion='VF_CNSBOINB_IME')then
+
+      	begin
+
+             IF ( pxp.f_existe_parametro(p_tabla, 'nro_tkt') and  pxp.f_existe_parametro(p_tabla,'fecha_emision')) THEN
+
+                IF v_parametros.nro_tkt IS NULL OR v_parametros.nro_tkt = '' THEN
+                    raise 'El nro de boleto enviada es nula o vacia';
+                END IF;
+
+                IF v_parametros.fecha_emision IS NULL OR v_parametros.fecha_emision = '' THEN
+                    raise 'La fecha emision enviada es nula o vacia';
+                END IF;
+
+                v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+                v_rec = param.f_get_periodo_gestion(v_parametros.fecha_emision::date);
+
+                -- verificar si existen mas de un boleto con el mismo nro y fecha emision
+                SELECT count(nro_factura) into v_count
+                FROM dblink(v_cadena_cnx,
+                      'SELECT nro_factura
+                       FROM sfe.tfactura
+                       WHERE sistema_origen = ''STAGE DB''
+                       AND TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
+                       AND fecha_factura::date = '''||v_parametros.fecha_emision||'''::date
+                       ')
+                AS t1(nro_factura  varchar);
+
+             	  -- condiciones de respuesta
+                v_resp = pxp.f_agrega_clave(v_resp,'respuesta','Consulta Boleto con exito');
+
+                IF v_count = 1 THEN
+
+                      --Sentencia de la consulta obtener boleto
+                      SELECT * into v_boleto
+                      FROM dblink(v_cadena_cnx,
+                            'SELECT
+                                    id_factura,
+                                    estado,
+                                    nro_factura
+                             FROM sfe.tfactura
+                             WHERE sistema_origen = ''STAGE DB''
+                             AND TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
+                             AND fecha_factura::date = '''||v_parametros.fecha_emision||'''::date
+                             ')
+                      AS t1(id_factura		integer,
+                            estado			varchar,
+                            nro_factura 		varchar);
+
+
+
+
+                      -- captura estado y id_departamento
+                      SELECT codep.estado into v_estado_cv
+                      FROM conta.tperiodo_compra_venta codep
+                      INNER JOIN param.tdepto dep ON dep.id_depto = codep.id_depto
+                      WHERE  dep.codigo = 'CON'
+                          AND codep.id_periodo = v_rec.po_id_periodo
+                          AND dep.id_depto = 4;
+
+                      -- captura de periodo
+                      SELECT pxp.f_obtener_literal_periodo(per.periodo,0) into v_periodo
+                      FROM param.tperiodo per
+                      WHERE per.id_periodo = v_rec.po_id_periodo;
+
+                          IF v_estado_cv IS NULL THEN
+                              v_sms = 'El nro de boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision||', existe pero. No se encontró un periodo para el departamento contable en fecha solicitada. No puede ser ANULADO';
+
+                          ELSIF v_estado_cv != 'cerrado' THEN
+
+                                IF v_boleto.estado = 'ANULADA' THEN
+                                    v_sms = 'EL nro de boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision||' existe, ya se encuentra en estado '||v_boleto.estado||'. En el periodo '||v_periodo||' del libro de compras y ventas que se encuentra abierto.';
+                                ELSE
+
+                                    --verificar si esta asociada a una factura
+
+                                    IF EXISTS (SELECT 1
+                                                FROM vef.tboletos_asociados_fact
+                                                WHERE TRIM(nro_boleto) = TRIM(v_parametros.nro_tkt)) THEN
+
+                                        select ven.nro_factura, ven.nombre_factura,p.nombre into v_venta_f
+                                        from vef.tboletos_asociados_fact f
+                                        inner join vef.tventa ven on ven.id_venta = f.id_venta
+                                        inner join vef.tpunto_venta p on p.id_punto_venta = ven.id_punto_venta
+                                        where TRIM(nro_boleto) = TRIM(v_parametros.nro_tkt);
+
+                                        v_sms = 'El nro de boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision||' existe, se encuentra en estado '||v_boleto.estado||' y esta asociada a la factura nro: '||v_venta_f.nro_factura||'
+                                        del punto de venta '||v_venta_f.nombre||'. No puede ser ANULADO';
+
+                                    ELSE
+
+                                      SELECT UPPER(desc_persona) into usu_mod
+                                      FROM segu.vusuario
+                                      WHERE id_usuario = p_id_usuario;
+
+                                      SELECT  dblink_exec(v_cadena_cnx,
+
+                                      'UPDATE sfe.tfactura SET
+                                        estado=''ANULADA'',
+                                        nit_ci_cli = ''0'',
+                                        razon_social_cli = ''ANULADA'',
+                                        importe_otros_no_suj_iva = 0,
+                                        importe_debito_fiscal = 0,
+                                        importe_total_venta  = 0,
+                                        usuario_mod = '''||usu_mod||''',
+                                        fecha_reg = now()
+                                        WHERE TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
+                                            AND fecha_factura::date = '''||v_parametros.fecha_emision||'''::date
+                                        ')  into v_exito;
+
+                                        IF v_exito = 'UPDATE 1' THEN
+                                          v_sms = 'El nro de boleto fue ANULADO exitosamente ';
+                                          v_inhabilitacion = 'true';
+                                        ELSE
+                                          v_sms = '!Notificacion no se pudo ANULAR el boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision;
+                                        END IF;
+
+                                    END IF;
+
+                                END IF;
+
+                          ELSE
+                              v_sms = 'EL nro de boleto '||v_parametros.nro_tkt|| ' con fecha de emision '||v_parametros.fecha_emision||' existe, pero el periodo '||v_periodo||' del libro de compras y ventas se encuentra cerrado. No puede ser ANULADO';
+                          END IF;
+
+                          v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_sms::varchar);
+                          v_resp = pxp.f_agrega_clave(v_resp,'inhabilitar',v_inhabilitacion::varchar);
+
+                ELSIF v_count = 0 THEN
+                          v_sms = 'El nro de boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision||' no existe.';
+                          v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_sms::varchar);
+                          v_resp = pxp.f_agrega_clave(v_resp,'inhabilitar',v_inhabilitacion::varchar);
+                ELSE
+                          v_sms = 'Existe mas de un registro con el nro de boleto '||v_parametros.nro_tkt||' y fecha de emision '||v_parametros.fecha_emision||'';
+                          v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_sms::varchar);
+                          v_resp = pxp.f_agrega_clave(v_resp,'inhabilitar',v_inhabilitacion::varchar);
+                END IF;
+             ELSE
+                  raise 'No se envio los parametros de nro boleto y fecha emision para su proceso.';
+             END IF;
+
+  			--Devuelve la respuesta
+  			return v_resp;
+
+  		end;
 
 	else
 

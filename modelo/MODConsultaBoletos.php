@@ -8,11 +8,11 @@
 */
 
 class MODConsultaBoletos extends MODbase{
-	
+
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
-			
+
 	function listarConsultaBoletos(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='vef.ft_consulta_boletos_sel';
@@ -50,7 +50,27 @@ class MODConsultaBoletos extends MODbase{
         //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-		
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function consultaBoletoInhabilitacion(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_consulta_boletos_sel';
+		$this->transaccion='VF_CNSBOINB_IME';
+		$this->tipo_procedimiento='IME';//tipo de transaccion
+
+		// $dataJSON = file_get_contents("php://input");
+		// $array = json_decode($dataJSON, true);
+		// $this->arreglo=array("nro_tkt" => $array['nro_tkt'], "fecha_emision" => $array['fecha_emision']);
+
+    $this->setParametro('nro_tkt','nro_tkt','varchar');
+		$this->setParametro('fecha_emision','fecha_emision','varchar');
+
+    //Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
