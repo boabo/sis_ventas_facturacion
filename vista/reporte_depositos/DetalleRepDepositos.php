@@ -81,7 +81,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Fecha-Venta',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 1200,
                         maxLength: 1000,
                         //format: 'd/m/Y',
                         renderer:function (value,p,record){
@@ -114,7 +114,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Venta M/L',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -139,7 +139,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Venta M/E',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -164,7 +164,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Importe Depósito M/L',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -189,7 +189,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Importe Depósito M/E',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -214,7 +214,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'T/C',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -235,7 +235,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Total Venta M/L',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -260,7 +260,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Total Depos M/L',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -285,7 +285,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Saldo / Diferencia',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         hidden:true,
                         renderer:function (value,p,record){
@@ -311,7 +311,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Nro. Boleta',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 700,
+                        gwidth: 800,
                         maxLength: 1000,
                         renderer:function (value,p,record){
                           if (record.data.tipo_deposito == 'total'){
@@ -334,22 +334,23 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Fecha Deposito',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 400,
+                        gwidth: 700,
                         //galign: 'right ',
                         maxLength: 200,
                         renderer:function (value,p,record){
 
-                         if (value != null && value != '') {
-                           if (record.data.tipo_deposito != 'total'){
-                             var fecha = value.replaceAll('-', ',');
-                             value = new Date(fecha);
-                             return value?value.dateFormat('d/m/Y'):'';
+                           if (record.data.tipo_reg != 'summary' && record.data.tipo_deposito != 'total' && record.data.tipo_deposito != 'cabecera'){
+                             if (value != null && value != '') {
+                               var fecha = value.replaceAll('-', ',');
+                               value = new Date(fecha);
+                               value = value.dateFormat('d/m/Y');
+                             } else {
+                               value = '';
+                             }
+                             return value;
                            } else if (record.data.tipo_deposito == 'total'){
                              return '';
                            }
-                         } else {
-                           return '';
-                         }
 
                         }
                     },
@@ -364,7 +365,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Importe M/L',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 500,
                         galign: 'right ',
                         maxLength: 100,
                         renderer:function (value,p,record){
@@ -387,7 +388,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Importe USD',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 500,
                         galign: 'right ',
                         maxLength: 100,
                         renderer:function (value,p,record){
@@ -410,7 +411,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Cuenta Banco',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 400,
+                        gwidth: 500,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -425,7 +426,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Cajero',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 900,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -440,7 +441,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Registrado por',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 900,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -455,7 +456,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Observaciones',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 800,
                         //galign: 'right ',
                         maxLength: 100,
                     },
