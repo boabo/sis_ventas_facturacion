@@ -245,7 +245,7 @@ BEGIN
                                         ')  into v_exito;
 
                                         IF v_exito = 'UPDATE 1' THEN
-                                          v_sms = 'El nro de boleto fue ANULADO exitosamente ';
+                                          v_sms = 'El nro de boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision||' fue ANULADO exitosamente ';
                                           v_inhabilitacion = 'true';
                                         ELSE
                                           v_sms = '!Notificacion no se pudo ANULAR el boleto '||v_parametros.nro_tkt||' con fecha de emision '||v_parametros.fecha_emision;
