@@ -129,7 +129,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
-                        format: 'd/m/Y',
+                        // format: 'd/m/Y',
                         renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
                     },
                     type: 'DateField',
@@ -258,7 +258,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'nit', type: 'varchar'},
             {name: 'nombre_factura', type: 'varchar'},
             {name: 'cod_control', type: 'varchar'},
-            {name: 'fecha_factura', type:'date'},
+            {name: 'fecha_factura', type:'date',dateFormat: 'Y-m-d'},
             {name: 'observaciones', type: 'varchar'},
             {name: 'total_venta', type: 'numeric'},
             {name: 'excento', type: 'numeric'},
