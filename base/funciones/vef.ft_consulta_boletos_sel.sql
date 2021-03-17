@@ -225,9 +225,10 @@ BEGIN
 
                                     ELSE
 
-                                      SELECT UPPER(desc_persona) into usu_mod
-                                      FROM segu.vusuario
-                                      WHERE id_usuario = p_id_usuario;
+                                      SELECT per.nombre_completo2 into usu_mod
+                                      FROM segu.tusuario usu
+                                      INNER JOIN segu.vpersona2 per ON per.id_persona = usu.id_persona
+                                      WHERE usu.id_usuario = p_id_usuario;
 
                                       SELECT  dblink_exec(v_cadena_cnx,
 
@@ -239,7 +240,7 @@ BEGIN
                                         importe_debito_fiscal = 0,
                                         importe_total_venta  = 0,
                                         usuario_mod = '''||usu_mod||''',
-                                        fecha_reg = now()
+                                        fecha_mod = now()
                                         WHERE TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
                                             AND fecha_factura::date = '''||v_parametros.fecha_emision||'''::date
                                         ')  into v_exito;
