@@ -168,6 +168,9 @@ class MODReporteVentas extends MODbase {
 		$this->setParametro('tipo_documento', 'tipo_documento', 'varchar');
 		$this->setParametro('nro_documento', 'nro_documento', 'varchar');
 		$this->setParametro('nro_autorizacion', 'nro_autorizacion', 'varchar');
+		$this->setParametro('estado_documento', 'estado_documento', 'varchar');
+		$this->setParametro('fecha_ini', 'fecha_ini', 'date');
+		$this->setParametro('fecha_fin', 'fecha_fin', 'date');
 
 		$this->captura('id_venta','integer');
 		$this->captura('nro_factura','integer');
@@ -176,11 +179,15 @@ class MODReporteVentas extends MODbase {
 		$this->captura('cod_control','varchar');
 		$this->captura('fecha_factura','date');
 		$this->captura('observaciones','text');
-		$this->captura('total_venta','numeric');		
+		$this->captura('total_venta','numeric');
 		$this->captura('excento','numeric');
 		$this->captura('nroaut','varchar');
 		$this->captura('punto_venta','text');
 		$this->captura('desc_persona','text');
+		$this->captura('nro_deposito','varchar');
+		$this->captura('monto_total','numeric');
+		$this->captura('fecha_dep','date');
+		$this->captura('nro_boleto','text');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;
@@ -206,5 +213,97 @@ class MODReporteVentas extends MODbase {
 		return $this->respuesta;
 	}
 
+	// stage datatsss
+	function puntoVentaPaiStage(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_STPVCP_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->captura('country_name','varchar');
+		$this->captura('country_code','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+	function puntoVentaCiudadStage(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_STPVC_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->captura('city_name','varchar');
+		$this->captura('city_code','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarCanalVentaStage(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_STPVCH_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->captura('sale_channel','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarPuntoVentaTipoStage(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_STPVT_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->captura('tipo_pos','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarCodigoIataStage(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_STPCI_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->captura('iata_code','varchar');
+		$this->captura('name_pv','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function listarPuntoVentaOfficeIdStage(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_reporte_ventas';
+		$this->transaccion='VF_STPOFI_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->captura('office_id','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		// echo $this->consulta;exit;
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 }
 ?>

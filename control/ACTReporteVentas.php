@@ -165,6 +165,97 @@ class ACTReporteVentas extends ACTbase{
     $this->res=$this->objFunc->consultaDetalleFactura($this->objParam);
     $this->res->imprimirRespuesta($this->res->generarJson());
   }
+
+  //  stages datatsss
+  function puntoVentaPaiStage(){
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->puntoVentaPaiStage($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+			$respuesta = $this->res->getDatos();
+	    array_unshift ( $respuesta, array('country_code'=>'TODOS', 'country_name'=>'TODOS'));
+			$this->res->setDatos($respuesta);
+		}
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+  function puntoVentaCiudadStage(){
+    $this->filtrosStage();
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->puntoVentaCiudadStage($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+			$respuesta = $this->res->getDatos();
+	    array_unshift ( $respuesta, array('city_name'=>'TODOS', 'city_code'=>'TODOS'));
+			$this->res->setDatos($respuesta);
+		}
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+  function listarCanalVentaStage(){
+
+    $this->filtrosStage();
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->listarCanalVentaStage($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+      $respuesta = $this->res->getDatos();
+      array_unshift ( $respuesta, array('sale_channel'=>'TODOS'));
+      $this->res->setDatos($respuesta);
+    }
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+  function listarPuntoVentaTipoStage(){
+    $this->filtrosStage();
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->listarPuntoVentaTipoStage($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+      $respuesta = $this->res->getDatos();
+      array_unshift ( $respuesta, array('tipo_pos'=>'TODOS'));
+      $this->res->setDatos($respuesta);
+    }
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+  function listarCodigoIataStage(){
+    $this->filtrosStage();
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->listarCodigoIataStage($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+      $respuesta = $this->res->getDatos();
+      array_unshift ( $respuesta, array('iata_code'=>'TODOS', 'name_pv'=>'TODOS'));
+      $this->res->setDatos($respuesta);
+    }
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+  function listarPuntoVentaOfficeIdStage(){
+    $this->filtrosStage();
+    $this->objFunc=$this->create('MODReporteVentas');
+    $this->res=$this->objFunc->listarPuntoVentaOfficeIdStage($this->objParam);
+    if($this->objParam->getParametro('_adicionar')!=''){
+      $respuesta = $this->res->getDatos();
+      array_unshift ( $respuesta, array('office_id'=>'TODOS'));
+      $this->res->setDatos($respuesta);
+    }
+    $this->res->imprimirRespuesta($this->res->generarJson());
+  }
+
+  function filtrosStage(){
+    if($this->objParam->getParametro('id_lugar_pais') != ''  && $this->objParam->getParametro('id_lugar_pais') !='TODOS') {
+      $this->objParam->addFiltro("country_code = ''".$this->objParam->getParametro('id_lugar_pais')."''");
+    }
+    if($this->objParam->getParametro('id_lugar_ciudad') != ''  && $this->objParam->getParametro('id_lugar_ciudad') !='TODOS') {
+      $this->objParam->addFiltro("city_code = ''".$this->objParam->getParametro('id_lugar_ciudad')."''");
+    }
+    if($this->objParam->getParametro('id_canal') != ''  && $this->objParam->getParametro('id_canal') !='TODOS') {
+      $this->objParam->addFiltro("sale_channel = ''".$this->objParam->getParametro('id_canal')."''");
+    }
+    if($this->objParam->getParametro('tipo_venta') != ''  && $this->objParam->getParametro('tipo_venta') !='TODOS') {
+      $this->objParam->addFiltro("tipo_pos = ''".$this->objParam->getParametro('tipo_venta')."''");
+    }
+    if($this->objParam->getParametro('id_codigo_aita') != ''  && $this->objParam->getParametro('id_codigo_aita') !='TODOS') {
+      $this->objParam->addFiltro("iata_code = ''".$this->objParam->getParametro('id_codigo_aita')."''");
+    }
+  }
 }
 
 ?>

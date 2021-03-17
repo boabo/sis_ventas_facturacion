@@ -266,6 +266,32 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
         form: true
     },
     {
+        config:{
+            name: 'fecha_ini',
+            fieldLabel: 'DESDE',
+            width: 200,
+            format: 'd/m/Y',
+            allowBlank: true,
+            style:'margin-bottom: 10px;'
+        },
+        type:'DateField',
+        id_grupo:1,
+        form:true
+    },
+    {
+        config:{
+            name: 'fecha_fin',
+            fieldLabel: 'HASTA',
+            allowBlank: true,
+            width: 200,
+            format: 'd/m/Y',
+            style:'margin-bottom: 10px;'
+        },
+        type:'DateField',
+        id_grupo:1,
+        form:true
+    },
+    {
 			config:{
 				name: 'nro_documento',
 				fieldLabel: 'N° Documento',
@@ -275,7 +301,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
         style:'margin-bottom: 10px;'
 			},
 				type:'TextField',
-				id_grupo:1,
+				id_grupo:2,
 				form:true
 		},
     {
@@ -287,9 +313,34 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
 				gwidth: 170
 			},
 				type:'TextField',
-				id_grupo:1,
+				id_grupo:2,
 				form:true
 		},
+    {
+        config: {
+            name: 'estado_documento',
+            fieldLabel: 'Estado Factura/recibo',
+            typeAhead: true,
+            allowBlank: true,
+            triggerAction: 'all',
+            emptyText: 'Tipo...',
+            selectOnFocus: true,
+            mode: 'local',
+            store: new Ext.data.ArrayStore({
+                fields: ['ID', 'valor'],
+                data: [['anulado', 'ANULADO'],
+                    ['finalizado', 'VALIDA']
+                ]
+            }),
+            valueField: 'ID',
+            displayField: 'valor',
+            width: 200,
+            style:'margin-bottom: 10px;'
+        },
+        type: 'ComboBox',
+        id_grupo: 2,
+        form: true
+    },
 	],
 	labelSubmit: '<i class="fa fa-check"></i> Aplicar Filtro',
 	south: {
@@ -311,6 +362,9 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
 			var tipo_documento = parametros.tipo_documento;
       var nro_documento =  parametros.nro_documento;
       var nro_autorizacion = parametros.nro_autorizacion;
+      var estado_documento = parametros.estado_documento;
+      var fecha_ini = parametros.fecha_ini;
+      var fecha_fin = parametros.fecha_fin;
 
       //console.log("aqui llega los paramteros",parametros);
 			 this.onEnablePanel(this.idContenedor + '-south',
@@ -320,7 +374,10 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
                     'id_punto_venta': id_punto_venta,
                     'tipo_documento': tipo_documento,
                     'nro_documento':nro_documento,
-                    'nro_autorizacion':nro_autorizacion
+                    'nro_autorizacion':nro_autorizacion,
+                    'estado_documento':estado_documento,
+                    'fecha_ini': fecha_ini,
+                    'fecha_fin': fecha_fin
 									 }));
         }
     },

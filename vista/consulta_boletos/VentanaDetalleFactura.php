@@ -155,7 +155,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                   var total_depo = 0;
                   (obj.anticipo != null)?title_ant = 'ANTICIPO':title_ant='';
                   var info =`	<div class="lista">
-                            <table>
+                            <table width="100%">
                             <tr>
                                 <td>
                                     <table width="100%" align="center" id="table-header">

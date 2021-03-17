@@ -2,52 +2,19 @@
 /**
  * @package pXP
  * @file DetalleFacturaConsulta.php
- * @author  (Ismael Valdivia)
- * @date 01-12-2020 08:30:00
+ * @author  (breydi.vasquez)
+ * @date 01-03-2021
  * @description Archivo con la interfaz de usuario que permite generar el reporte de las facturas
  */
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 
-
-<style>
-.punto_venta {
-    background-color: #319DFD;
-    font-size: 20px;
-}
-.total_pv {
-    background-color: #F4FD31;
-}
-.totales {
-    background-color: #92E176;
-}
-</style>
-
 <script>
     Phx.vista.DetalleFacturaConsulta = Ext.extend(Phx.gridInterfaz, {
-    //     viewConfig: {
-    //         //stripeRows: false,
-    //         autoFill: true,
-    //         getRowClass: function (record) {
-    //           console.log("aqui datos",record);
-    //             if (record.data.tipo_factura == null) {
-    //               return 'punto_venta';
-    //             } else if (record.data.tipo_factura == 'total_pv') {
-    //               return 'total_pv';
-    //             } else if (record.data.tipo_factura == '') {
-    //               return 'totales';
-    //             }
-    //         },
-    // listener: {
-    //     render: this.createTooltip
-    // },
-    //
-    //     },
         constructor: function (config) {
             var me = this;
             this.maestro = config.maestro;
-          //Agrega combo de moneda
 
             this.Atributos = [
                 {
@@ -202,9 +169,79 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Punto de Venta',
                         allowBlank: true,
                         anchor: '100%',
-                        gwidth: 250
+                        gwidth: 300
                     },
                     type: 'TextField',
+                    id_grupo: 1,
+                    grid: true
+                },
+                {
+                    config: {
+                        name: 'nro_boleto',
+                        fieldLabel: 'N° Boleto Asociado',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 120,
+                        renderer:function (value,p,record){
+                          if (value == null || value == ''){
+                              return  String.format('<div style="float:center;"><b><b></div>');
+                          }else{
+                              return  String.format('<div style="float:center;"><b>{0}<b></div>',record.data['nro_boleto']);
+                          }
+                        }
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true
+                },
+                {
+                    config: {
+                        name: 'nro_deposito',
+                        fieldLabel: 'Nro Deposito',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 120,
+                        renderer:function (value,p,record){
+                          if (value == null || value == ''){
+                              return  String.format('<div style="float:right;"><b><b></div>');
+                          }else{
+                              return  String.format('<div style="float:right;"><b>{0}<b></div>',record.data['nro_deposito']);
+                          }
+                        }
+                    },
+                    type: 'TextField',
+                    bottom_filter: true,
+                    filters: {pfiltro: 'obd.nro_deposito', type: 'string'},
+                    id_grupo: 1,
+                    grid: true
+                },
+                {
+                    config: {
+                        name: 'monto_total',
+                        fieldLabel: 'Monto Total Deposito',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 120,
+                        renderer:function (value,p,record){
+                          return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.monto_total,'0.000,00/i'));
+                        }
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true
+                },
+                {
+                    config: {
+                        name: 'fecha_dep',
+                        fieldLabel: 'Fecha Deposito',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 150,
+                        renderer:function (value,p,record){
+                          return  String.format('<div style="float:center;">{0}</div>',value?value.dateFormat('d/m/Y'):'');
+                        }
+                    },
+                    type: 'DateField',
                     id_grupo: 1,
                     grid: true
                 },
@@ -253,18 +290,22 @@ header("content-type: text/javascript; charset=UTF-8");
         ActList: '../../sis_ventas_facturacion/control/ReporteVentas/consultaFacturaVenta',
         id_store: 'id_venta',
         fields: [
-            {name: 'id_venta', type: 'int4'},
-            {name: 'nro_factura', type: 'varchar'},
-            {name: 'nit', type: 'varchar'},
-            {name: 'nombre_factura', type: 'varchar'},
-            {name: 'cod_control', type: 'varchar'},
+            {name: 'id_venta', type: 'numeric'},
+            {name: 'nro_factura', type: 'string'},
+            {name: 'nit', type: 'string'},
+            {name: 'nombre_factura', type: 'string'},
+            {name: 'cod_control', type: 'string'},
             {name: 'fecha_factura', type:'date',dateFormat: 'Y-m-d'},
-            {name: 'observaciones', type: 'varchar'},
+            {name: 'observaciones', type: 'string'},
             {name: 'total_venta', type: 'numeric'},
             {name: 'excento', type: 'numeric'},
-            {name: 'nroaut', type: 'varchar'},
-            {name: 'punto_venta', type: 'varchar'},
-            {name: 'desc_persona', type: 'varchar'}
+            {name: 'nroaut', type: 'string'},
+            {name: 'punto_venta', type: 'string'},
+            {name: 'desc_persona', type: 'string'},
+            {name: 'nro_deposito', type: 'string'},
+            {name: 'monto_total', type: 'numeric'},
+            {name: 'fecha_dep', type:'date',dateFormat: 'Y-m-d'},
+            {name: 'nro_boleto', type: 'string'}
         ],
 
         sortInfo: {

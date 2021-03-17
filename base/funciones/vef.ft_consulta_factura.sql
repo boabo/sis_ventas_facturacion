@@ -38,6 +38,8 @@ DECLARE
     v_nroaut			varchar;
     v_tf				varchar;
     v_nro_autor			varchar='';
+    v_fil_fif 			varchar= '';
+    v_fil_estado_fr		varchar='';
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_consulta_factura';
@@ -104,6 +106,20 @@ BEGIN
             	v_fil_nro_doc = ' v.nro_factura = '''||v_parametros.nro_documento||''' and ';
             END IF;
 
+            IF v_parametros.estado_documento != '' THEN
+            	v_fil_estado_fr = ' v.estado = '''||v_parametros.estado_documento||''' and ';
+            ELSE
+            	v_fil_estado_fr = '(v.estado = ''finalizado'' or v.estado = ''anulado'') and ';
+            END IF;
+
+            IF v_parametros.fecha_ini is not null AND v_parametros.fecha_fin is not null THEN
+            	v_fil_fif = ' v.fecha between '''||v_parametros.fecha_ini||'''::date and '''||v_parametros.fecha_fin||'''::date and ';
+            ELSIF v_parametros.fecha_ini is not null AND v_parametros.fecha_fin is null THEN
+            	v_fil_fif = ' v.fecha = '''||v_parametros.fecha_ini||'''::date and ';
+            ELSIF v_parametros.fecha_ini is null AND v_parametros.fecha_fin is not null THEN
+            	v_fil_fif = ' v.fecha = '''||v_parametros.fecha_fin||'''::date and ';
+            END IF;
+
     		--Sentencia de la consulta
 			v_consulta:='select
                                  v.id_venta,
@@ -117,12 +133,23 @@ BEGIN
                                  v.excento,
                                  '||v_nroaut||',
                                  pv.nombre ||''--''|| pv.codigo as punto_venta,
-                                 us.desc_persona
+                                 us.desc_persona,
+                                 obd.nro_deposito,
+                                 obd.monto_total,
+                                 obd.fecha as fecha_dep,
+                                 (select pxp.list(bas.nro_boleto::text)
+                                 from vef.tboletos_asociados_fact bas
+                                 where bas.id_venta = v.id_venta
+                                 and bas.estado_reg = ''activo'') as nro_boleto
+
                           from vef.tventa v
                           inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
                           inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
+                          left join obingresos.tdeposito obd on obd.id_deposito =v.id_deposito
                           '||v_inner||'
-                          where (v.estado = ''finalizado'' or v.estado = ''anulado'') and '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||' ';
+                          where '||v_fil_estado_fr||'
+                          '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||'
+                          '||v_fil_fif||' ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -189,14 +216,30 @@ BEGIN
             	v_fil_nro_doc = ' v.nro_factura = '''||v_parametros.nro_documento||''' and ';
             END IF;
 
+            IF v_parametros.estado_documento != '' THEN
+            	v_fil_estado_fr = ' v.estado = '''||v_parametros.estado_documento||''' and ';
+            ELSE
+            	v_fil_estado_fr = '(v.estado = ''finalizado'' or v.estado = ''anulado'') and ';
+            END IF;
+
+            IF v_parametros.fecha_ini is not null AND v_parametros.fecha_fin is not null THEN
+            	v_fil_fif = ' v.fecha between '''||v_parametros.fecha_ini||'''::date and '''||v_parametros.fecha_fin||'''::date and ';
+            ELSIF v_parametros.fecha_ini is not null AND v_parametros.fecha_fin is null THEN
+            	v_fil_fif = ' v.fecha = '''||v_parametros.fecha_ini||'''::date and ';
+            ELSIF v_parametros.fecha_ini is null AND v_parametros.fecha_fin is not null THEN
+            	v_fil_fif = ' v.fecha = '''||v_parametros.fecha_fin||'''::date and ';
+            END IF;
 
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(v.id_venta)
                           from vef.tventa v
                           inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
                           inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
-						  '||v_inner||'
-                          where (v.estado = ''finalizado'' or v.estado = ''anulado'') and '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||' ';
+                          left join obingresos.tdeposito obd on obd.id_deposito =v.id_deposito
+                          '||v_inner||'
+                          where '||v_fil_estado_fr||'
+                          '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||'
+                          '||v_fil_fif||' ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
