@@ -199,6 +199,16 @@ DECLARE
     v_estado_periodo		varchar;
     v_fecha_ini				varchar;
     v_fecha_fin 			varchar;
+
+    v_host varchar;
+    v_puerto varchar;
+    v_dbname varchar;
+    p_user varchar;
+    v_password varchar;
+    v_semilla	varchar;
+
+    v_cuenta_usu	varchar;
+    v_pass_usu		varchar;
     /***/
 BEGIN
 
@@ -2980,7 +2990,41 @@ BEGIN
 
         IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+            	v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+               -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
+
+
+
+
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /*************************************************/
 
@@ -3396,7 +3440,36 @@ BEGIN
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+           -- v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+           		v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+               -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /*************************************************/
 
@@ -3672,7 +3745,36 @@ BEGIN
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+            v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+               -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /*************************************************/
 
@@ -4438,7 +4540,40 @@ BEGIN
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
           /*Establecemos la conexion con la base de datos*/
-            v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+
+            v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+               -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
+
+
             v_conexion = (SELECT dblink_connect(v_cadena_cnx));
           /************************************************/
               v_consulta = 'update sfe.tfactura set
