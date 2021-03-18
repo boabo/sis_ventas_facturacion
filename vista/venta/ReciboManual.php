@@ -210,7 +210,8 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
 
 	 bactGroups:  [0,1,2],
  	 btestGroups: [0],
- 	 bexcelGroups: [0,1,2],
+	 bexcelGroups: [0,1,2],
+ 	 bdelGroups: [0,1],
 
 
 	 seleccionarPuntoVentaSucursal : function () {
@@ -423,6 +424,18 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
             type:'Field',
             form:true
         },
+				{
+		            config:{
+		                name: 'nro_factura',
+		                fieldLabel: 'Nro Recibo',
+		                gwidth: 110
+		            },
+		                type:'TextField',
+		                filters:{pfiltro:'ven.nro_factura',type:'string'},
+		                grid:true,
+		                form:false,
+		                bottom_filter: true
+		        },
         {
             config:{
                 name: 'correlativo_venta',
@@ -440,6 +453,18 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
             },
                 type:'TextField',
                 filters:{pfiltro:'ven.correlativo_venta',type:'string'},
+                grid:false,
+                form:false,
+                bottom_filter: true
+        },
+				{
+            config:{
+                name: 'cajero',
+                fieldLabel: 'Cajero',
+                gwidth: 300
+            },
+                type:'TextField',
+                filters : {pfiltro : 'usua.desc_persona',type : 'string'},
                 grid:true,
                 form:false,
                 bottom_filter: true
@@ -456,17 +481,17 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
                 form:false,
                 bottom_filter: true
         },
-        {
-            config:{
-                name: 'cliente_destino',
-                fieldLabel: 'Destino',
-                gwidth: 110
-            },
-                type:'TextField',
-                filters : {pfiltro : 'clides.nombre_factura',type : 'string'},
-                grid:false,
-                form:false
-        },
+        // {
+        //     config:{
+        //         name: 'cliente_destino',
+        //         fieldLabel: 'Destino',
+        //         gwidth: 110
+        //     },
+        //         type:'TextField',
+        //         filters : {pfiltro : 'clides.nombre_factura',type : 'string'},
+        //         grid:false,
+        //         form:false
+        // },
         {
             config:{
                 name: 'total_venta',
@@ -680,18 +705,7 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-		{
-            config:{
-                name: 'nro_factura',
-                fieldLabel: 'Nro Recibo',
-                gwidth: 110
-            },
-                type:'TextField',
-                filters:{pfiltro:'ven.nro_factura',type:'string'},
-                grid:true,
-                form:false,
-                bottom_filter: true
-        },
+
         {
             config:{
                 name: 'excento',
@@ -768,7 +782,8 @@ Phx.vista.ReciboManual=Ext.extend(Phx.gridInterfaz,{
 		'id_moneda','total_venta_msuc','transporte_fob','seguros_fob',
 		'otros_fob','transporte_cif','seguros_cif','otros_cif',
 		'tipo_cambio_venta','desc_moneda','valor_bruto',
-		'descripcion_bulto','cliente_destino','id_cliente_destino'
+		'descripcion_bulto','cliente_destino','id_cliente_destino',
+		'cajero'
 
 
 	],

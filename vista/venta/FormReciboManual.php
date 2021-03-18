@@ -532,9 +532,9 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
             },
             success: function(resp){
               var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-              if (reg.ROOT.datos.v_existe_dosificacion == 'no') {
-                this.crearDosificacion();
-              }
+              // if (reg.ROOT.datos.v_existe_dosificacion == 'no') {
+              //   this.crearDosificacion();
+              // }
             },
             failure: this.conexionFailure,
             timeout:this.timeout,

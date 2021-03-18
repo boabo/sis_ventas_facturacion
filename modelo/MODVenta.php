@@ -123,6 +123,7 @@ class MODVenta extends MODbase{
 		$this->captura('forma_pedido','varchar');
 		$this->captura('id_cliente_destino','integer');
 		$this->captura('cliente_destino','varchar');
+		$this->captura('cajero','varchar');
 
 
 

@@ -196,6 +196,9 @@ DECLARE
 
     v_estacion				varchar;
     v_nro_autorizacion		varchar;
+    v_estado_periodo		varchar;
+    v_fecha_ini				varchar;
+    v_fecha_fin 			varchar;
     /***/
 BEGIN
 
@@ -218,6 +221,12 @@ BEGIN
          if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
 
+          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          	raise exception 'El nit no puede ser vacio verifique los datos';
+          end if;
+
+
+
           update vef.tcliente
           set nit = v_parametros.nit,
               nombre_factura = UPPER(v_parametros.nombre_factura)
@@ -228,6 +237,10 @@ BEGIN
           where c.id_cliente = v_id_cliente;
 
         else
+
+          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          	raise exception 'El nit no puede ser vacio verifique los datos';
+          end if;
 
           INSERT INTO
             vef.tcliente
@@ -332,7 +345,7 @@ BEGIN
             --validar que no exista el mismo nro para la dosificacion
             if (exists(	select 1
                          from vef.tventa ven
-                         where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
+                         where ven.estado_reg = 'activo' and ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
               raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
             end if;
 
@@ -526,6 +539,29 @@ BEGIN
 
           if (pxp.f_existe_parametro(p_tabla,'tipo_cambio_venta')) then
             v_tipo_cambio_venta = v_parametros.tipo_cambio_venta;
+          end if;
+
+
+          /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+          select
+                 per.fecha_ini,
+                 per.fecha_fin,
+                 cp.estado
+                 into
+                 v_fecha_ini,
+                 v_fecha_fin,
+                 v_estado_periodo
+          from param.tgestion ges
+          inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+          inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+          where v_fecha between per.fecha_ini and per.fecha_fin
+           and cp.id_depto = (select depo.id_depto
+          from param.tdepto depo
+          where depo.codigo = 'CON');
+          /*********************************************************************/
+
+          if (v_estado_periodo = 'cerrado') then
+              raise exception 'No se puede registrar la factura debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
           end if;
 
         	--Sentencia de la insercion
@@ -1293,13 +1329,16 @@ BEGIN
 		begin
 			--Sentencia de la eliminacion
 
-            delete from vef.tventa_forma_pago
+            update vef.tventa_forma_pago
+            set estado_reg = 'inactivo'
             where id_venta=v_parametros.id_venta;
 
-            delete from vef.tventa_detalle
+            update vef.tventa_detalle
+            set estado_reg = 'inactivo'
             where id_venta=v_parametros.id_venta;
 
-			delete from vef.tventa
+            update vef.tventa
+            set estado_reg = 'inactivo'
             where id_venta=v_parametros.id_venta;
 
             --Definicion de la respuesta
@@ -1692,6 +1731,10 @@ BEGIN
        if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
 
+          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          	raise exception 'El nit no puede ser vacio verifique los datos';
+          end if;
+
           update vef.tcliente
           set nit = v_parametros.nit,
               nombre_factura = upper(v_parametros.nombre_factura)
@@ -1701,6 +1744,11 @@ BEGIN
           from vef.tcliente c
           where c.id_cliente = v_id_cliente;
         else
+          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          	raise exception 'El nit no puede ser vacio verifique los datos';
+          end if;
+
+
           INSERT INTO
             vef.tcliente
             (
@@ -1849,6 +1897,31 @@ BEGIN
         END IF;
 
     		/*bvp 15-01-2021*/
+
+        /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+        select
+               per.fecha_ini,
+               per.fecha_fin,
+               cp.estado
+               into
+               v_fecha_ini,
+               v_fecha_fin,
+               v_estado_periodo
+        from param.tgestion ges
+        inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+        inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+        where v_fecha between per.fecha_ini and per.fecha_fin
+         and cp.id_depto = (select depo.id_depto
+        from param.tdepto depo
+        where depo.codigo = 'CON');
+        /*********************************************************************/
+
+      	if (v_estado_periodo = 'cerrado') then
+        	raise exception 'No se puede registrar la factura debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+        end if;
+
+
+
         --Sentencia de la insercion
         insert into vef.tventa(
           id_venta,
@@ -3213,6 +3286,12 @@ BEGIN
             end if;
 
             --la factura de exportacion no altera la fecha
+
+            if(trim(v_venta.nit) = '' or v_venta.nit is null) then
+             raise exception 'La factura no puede tener nit vacio';
+            end if;
+
+
             update vef.tventa  set
               id_dosificacion = v_dosificacion.id_dosificacion,
               nro_factura = v_nro_factura,
@@ -3240,6 +3319,9 @@ BEGIN
             into  v_dosificacion
             from  vef.tdosificacion d where d.id_dosificacion = v_venta.id_dosificacion;
 
+			if(trim(v_venta.nit) = '' or v_venta.nit is null) then
+             raise exception 'La factura no puede tener nit vacio';
+            end if;
 
             --la factura de exportacion no altera la fecha
             update vef.tventa  set
@@ -4161,6 +4243,30 @@ BEGIN
         from vef.tventa v
         where v.id_venta = v_parametros.id_venta;
 
+        /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+        select
+               per.fecha_ini,
+               per.fecha_fin,
+               cp.estado
+               into
+               v_fecha_ini,
+               v_fecha_fin,
+               v_estado_periodo
+        from param.tgestion ges
+        inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+        inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+        where v_venta.fecha between per.fecha_ini and per.fecha_fin
+         and cp.id_depto = (select depo.id_depto
+        from param.tdepto depo
+        where depo.codigo = 'CON');
+        /*********************************************************************/
+
+        if (v_estado_periodo = 'cerrado') then
+        	raise exception 'No se puede Anular la factura debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+        end if;
+
+
+
         if (v_venta.id_punto_venta is null) then
           select  su.tipo_usuario into v_tipo_usuario
           from vef.tsucursal_usuario su
@@ -4920,6 +5026,59 @@ BEGIN
 
               if (v_dosificacion is null) then
               		v_existe_dosificacion = 'no';
+
+                    select pv.id_sucursal
+                     into
+                     v_id_sucursal
+                from vef.tpunto_venta pv
+                where pv.id_punto_venta = v_parametros.id_punto_venta;
+
+              	SELECT EXTRACT(YEAR FROM CAST( now()as date))
+                into v_año_actual ;
+
+                v_fecha_limite_emision = '31/12/'||v_año_actual;
+                	/*Aqui aumentamos para crear la dosificacion para los RO Manuales*/
+                    --Esta dosificacion se creara anualmente
+                    insert into vef.tdosificacion_ro(
+                                                      id_sucursal,
+                                                      final,
+                                                      tipo,
+                                                      fecha_dosificacion,
+                                                      nro_siguiente,
+                                                      fecha_inicio_emi,
+                                                      fecha_limite,
+                                                      tipo_generacion,
+                                                      inicial,
+                                                      estado_reg,
+                                                      id_usuario_ai,
+                                                      fecha_reg,
+                                                      usuario_ai,
+                                                      id_usuario_reg,
+                                                      fecha_mod,
+                                                      id_usuario_mod
+                                                    ) values(
+                                                      v_id_sucursal,
+                                                      2000::integer,
+                                                      'Recibo',
+                                                      v_parametros.fecha_apertura::date,
+                                                      1,
+                                                      v_parametros.fecha_apertura::date,
+                                                      v_fecha_limite_emision::date,
+                                                      'manual',
+                                                      1::integer,
+                                                      'activo',
+                                                      v_parametros._id_usuario_ai,
+                                                      now(),
+                                                      v_parametros._nombre_usuario_ai,
+                                                      p_id_usuario,
+                                                      null,
+                                                      null
+
+                                                    )RETURNING id_dosificacion_ro into v_id_dosificacion_ro ;
+
+
+
+
               else
               		v_existe_dosificacion = 'si';
               end if;

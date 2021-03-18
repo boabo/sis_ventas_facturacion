@@ -202,7 +202,7 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 	 btestGroups: [0],
 	 bexcelGroups: [0,1,2],
 	 bnewGroups: [0],
-	 bdelGroups:[0,1],
+	 bdelGroups:[0,1,2],
 
 	seleccionarPuntoVentaSucursal : function () {
 		var validado = false;

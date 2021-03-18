@@ -115,7 +115,7 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         left  join vef.tformula fo on fo.id_formula = fact.id_formula
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
-				        where  ';
+				        where fact.estado_reg = ''activo'' and  ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -143,7 +143,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
-				        where ';
+				        where fact.estado_reg = ''activo'' and';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -268,7 +268,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
-				        where '||v_condicion||' and ';
+				        where fact.estado_reg = ''activo'' and '||v_condicion||' and';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -299,7 +299,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
-				        where ';
+				        where fact.estado_reg = ''activo'' and';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

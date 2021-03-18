@@ -1577,3 +1577,28 @@ WITH (oids = false);
 ALTER TABLE vef.tfiltro
   OWNER TO postgres;
 /***********************************F-SCP-BVP-VEF-0-08/02/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-18/03/2021****************************************/
+ALTER TABLE vef.tventa_forma_pago
+  DROP CONSTRAINT fk_tventa_forma_pago__id_venta RESTRICT;
+
+ALTER TABLE vef.tventa_forma_pago
+ADD CONSTRAINT fk_tventa_forma_pago__id_venta FOREIGN KEY (id_venta)
+REFERENCES vef.tventa(id_venta)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE vef.tventa_detalle
+ADD CONSTRAINT tventa_detalle_id_venta_fk FOREIGN KEY (id_venta)
+REFERENCES vef.tventa(id_venta)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE vef.tboletos_asociados_fact
+ADD CONSTRAINT tboletos_asociados_fact_fk FOREIGN KEY (id_venta)
+REFERENCES vef.tventa(id_venta)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+/***********************************F-SCP-IRVA-VEF-0-18/03/2021****************************************/

@@ -291,7 +291,7 @@ $body$
           --validar que no exista el mismo nro para la dosificacion
           if (exists(	select 1
                        from vef.tventa ven
-                       where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
+                       where ven.estado_reg = 'activo' and ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion_ro = v_dosificacion.id_dosificacion_ro)) then
             raise exception 'Ya existe el mismo número de Recibo en otra venta. Por favor revise los datos';
           end if;
 
@@ -1363,10 +1363,18 @@ $body$
 
 
           --Sentencia de la eliminacion
-          delete from vef.tventa_forma_pago
+         /* delete from vef.tventa_forma_pago
           where id_venta=v_parametros.id_venta;
 
           delete from vef.tventa_detalle
+          where id_venta=v_parametros.id_venta;*/
+
+          update vef.tventa_forma_pago
+          set estado_reg = 'inactivo'
+          where id_venta=v_parametros.id_venta;
+
+          update vef.tventa_detalle
+          set estado_reg = 'inactivo'
           where id_venta=v_parametros.id_venta;
 
           update vef.tventa
