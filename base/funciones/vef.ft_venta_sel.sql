@@ -177,7 +177,9 @@ BEGIN
 
                         ven.forma_pedido,
                         ven.id_cliente_destino,
-                        '||v_columnas_destino||'
+                        '||v_columnas_destino||',
+
+                        usua.desc_persona::varchar as cajero
 
 						from vef.tventa ven
 						inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
@@ -193,6 +195,8 @@ BEGIN
 
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+
+                        left join segu.vusuario usua on usua.id_usuario = ven.id_usuario_cajero
 
                         ' || v_join || '
                         where ven.estado_reg = ''activo'' and ' || v_filtro;
@@ -277,6 +281,8 @@ BEGIN
 
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+
+                        left join segu.vusuario usua on usua.id_usuario = ven.id_usuario_cajero
 
                         ' || v_join || '
                         where ven.estado_reg = ''activo'' and ' || v_filtro;
