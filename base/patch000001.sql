@@ -1601,6 +1601,15 @@ REFERENCES vef.tventa(id_venta)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
+
+CREATE TABLE vef.tdata_carga (
+  nro_factura VARCHAR(200),
+  num_autorizacion VARCHAR(200)
+)
+WITH (oids = false);
+
+ALTER TABLE vef.tdata_carga
+OWNER TO postgres;
 /***********************************F-SCP-IRVA-VEF-0-17/03/2021****************************************/
 /***********************************I-SCP-IRVA-VEF-0-18/03/2021****************************************/
 CREATE TABLE vef.tdatos_carga_recibido (
@@ -1626,16 +1635,6 @@ IS 'Tabla que almacenara los datos que nos llega del servicio para tener respald
 
 ALTER TABLE vef.tdatos_carga_recibido
   OWNER TO postgres;
-
-
-CREATE TABLE vef.tdata_carga (
-  nro_factura VARCHAR(200),
-  num_autorizacion VARCHAR(200)
-)
-WITH (oids = false);
-
-ALTER TABLE vef.tdata_carga
-OWNER TO postgres;
 
 CREATE TYPE vef.medio_pago_venta AS (
   importe NUMERIC(18,2),
