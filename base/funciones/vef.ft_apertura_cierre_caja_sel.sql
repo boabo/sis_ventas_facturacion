@@ -2282,34 +2282,32 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                       0
                                   end)as pago_externo_recibo_me';
 
-                 v_boletos_cash_extranjera = 'sum(case  when fpb.fop_code = ''CA'' and bfp.id_moneda = ' || v_id_moneda_tri  || ' then
-                                                bfp.importe
+                 v_boletos_cash_extranjera = 'sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''carga'' then
+                                                vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                             else
                                                 0
                                             end)as efectivo_boletos_me';
 
-                 v_boletos_tarjetas_extranjera = 'sum(case  when fpb.fop_code is null and b.forma_pago = ''CC'' and b.moneda = ''USD'' then
-                                                      b.total
-                                                  when fpb.fop_code = ''CC'' and bfp.id_moneda = ' || v_id_moneda_tri  || ' THEN
-                                                      bfp.importe
-                                            else
-                                                0
-                                            end)as tarjeta_boletos_me';
+                 v_boletos_tarjetas_extranjera = 'sum(case  when fp.fop_code = ''CC'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''carga'' then
+                                                      vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                                  else
+                                                      0
+                                                  end)as tarjeta_boletos_me';
 
-                 v_boletos_cuenta_corriente_extranjera = 'sum(case  when (fpb.fop_code = ''CUEC'' or fpb.fop_code = ''CU'') and bfp.id_moneda = ' || v_id_moneda_tri  || ' then
-                                                              bfp.importe
+                 v_boletos_cuenta_corriente_extranjera = ' sum(case  when (fp.fop_code = ''CUEC'' or fp.fop_code = ''CU'') and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''carga'' then
+                                                              vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                                           else
                                                               0
                                                           end)as cuenta_corriente_boletos_me';
 
-                 v_boletos_mco_extranjera = 'sum(case  when fpb.fop_code = ''MCO'' and bfp.id_moneda = ' || v_id_moneda_tri || ' then
-                                                bfp.importe
-                                            else
-                                                0
-                                            end)as mco_boletos_me';
+                 v_boletos_mco_extranjera = ' sum(case  when fp.fop_code = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and  v.tipo_factura = ''carga'' then
+                                                  vfp.monto_mb_efectivo/' || v_tipo_cambio || '
+                                              else
+                                                  0
+                                              end)as mco_boletos_me';
 
-                 v_boletos_otros_extranjera = 'sum(case  when fpb.fop_code = ''OTRO'' and bfp.id_moneda = ' || v_id_moneda_tri || ' then
-                                                  bfp.importe
+                 v_boletos_otros_extranjera = 'sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''carga''  then
+                                                  vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                               else
                                                   0
                                               end)as otro_boletos_ml';
@@ -2817,18 +2815,16 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
 
 
 
-                              sum(case  when fpb.fop_code = ''CA'' and bfp.id_moneda = ' || v_id_moneda_base  || ' then
-                                      bfp.importe
+                              sum(case  when fp.fop_code = ''CA'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''carga'' then
+                                      vfp.monto_mb_efectivo
                                   else
                                       0
                                   end)as efectivo_boletos_ml,
 
                               '||v_boletos_cash_extranjera||',
 
-                              sum(case  when fpb.fop_code is null and b.forma_pago = ''CC'' and b.moneda = (select mon.codigo_internacional from param.tmoneda mon where mon.tipo_moneda = ''base'') then
-                                      		b.total
-                                      	when fpb.fop_code = ''CC'' and bfp.id_moneda = ' || v_id_moneda_base  || ' THEN
-                                      		bfp.importe
+                              sum(case  when fp.fop_code = ''CC'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''carga'' then
+                                      vfp.monto_mb_efectivo
                                   else
                                       0
                                   end)as tarjeta_boletos_ml,
@@ -2836,8 +2832,8 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               '||v_boletos_tarjetas_extranjera||',
 
 
-                              sum(case  when (fpb.fop_code = ''CUEC'' or fpb.fop_code = ''CU'') and bfp.id_moneda = ' || v_id_moneda_base  || ' then
-                                      bfp.importe
+                              sum(case  when (fp.fop_code = ''CUEC'' or fp.fop_code = ''CU'') and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''carga'' then
+                                      vfp.monto_mb_efectivo
                                   else
                                       0
                                   end)as cuenta_corriente_boletos_ml,
@@ -2846,8 +2842,8 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               '||v_boletos_cuenta_corriente_extranjera||',
 
 
-                              sum(case  when fpb.fop_code = ''MCO'' and bfp.id_moneda = ' || v_id_moneda_base || ' then
-                                      bfp.importe
+                              sum(case  when fp.fop_code = ''MCO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and  v.tipo_factura = ''carga'' then
+                                      vfp.monto_mb_efectivo
                                   else
                                       0
                                   end)as mco_boletos_ml,
@@ -2855,8 +2851,8 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               '||v_boletos_mco_extranjera||',
 
 
-                              sum(case  when fpb.fop_code = ''OTRO'' and bfp.id_moneda = ' || v_id_moneda_base || ' then
-                                      bfp.importe
+                               sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''carga''  then
+                                      vfp.monto_mb_efectivo
                                   else
                                       0
                                   end)as otro_boletos_ml,
@@ -2924,19 +2920,9 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               /************************************************************************************************/
 
 
-                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
-                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 1 and
-                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta=acc.id_punto_venta
-                                          and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                          bol.estado = ''revisado''),0) as comisiones_ml,
+                              0::NUMERIC as comisiones_ml,
 
-
-
-                              COALESCE((	select sum(bol.comision) from obingresos.tboleto_amadeus bol
-                                  where coalesce(bol.comision,0) > 0 and bol.id_moneda_boleto = 2 and
-                                          bol.fecha_emision = acc.fecha_apertura_cierre and bol.id_punto_venta= acc.id_punto_venta
-                                           and bol.id_usuario_cajero = acc.id_usuario_cajero and
-                                          bol.estado = ''revisado''),0)   as comisiones_me,
+                              0::NUMERIC as comisiones_me,
 
                               acc.monto_ca_recibo_ml,
                               acc.monto_cc_recibo_ml
@@ -2949,19 +2935,16 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                       left join param.tlugar ls on ls.id_lugar = s.id_lugar
                       left join param.tlugar ppv on ppv.id_lugar = param.f_get_id_lugar_pais(lpv.id_lugar)
                       left join param.tlugar ps on ps.id_lugar = param.f_get_id_lugar_pais(ls.id_lugar)
+                      left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
+                                                      and v.fecha = acc.fecha_apertura_cierre and
+                                                      v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
 
+                      left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
-                      /*Recuperamos los Boletos de Amadeus con los nuevos medios de pago (Ismael Valdivia 26/11/2020)*/
-                      left join obingresos.tboleto_amadeus b on b.id_usuario_cajero = u.id_usuario
-                                                      and b.fecha_emision::date = acc.fecha_apertura_cierre and
-                                                      b.id_punto_venta = acc.id_punto_venta and b.estado = ''revisado''
-													  and b.voided=''no''
-
-                      left join obingresos.tboleto_amadeus_forma_pago bfp on bfp.id_boleto_amadeus = b.id_boleto_amadeus
-
-                      left join obingresos.tmedio_pago_pw mpb on mpb.id_medio_pago_pw = bfp.id_medio_pago
-                      left join obingresos.tforma_pago_pw fpb on fpb.id_forma_pago_pw = mpb.forma_pago_id
-                      /***********************************************************************************************/
+                      /*********************************Aumentando para recuperar Instancias de pago**********************************/
+                      left join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vfp.id_medio_pago
+                      left join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mp.forma_pago_id
+                      /***************************************************************************************************************/
 
                       where acc.id_apertura_cierre_caja = ' || v_parametros.id_apertura_cierre_caja  || '
                       group by u.desc_persona, acc.fecha_apertura_cierre,
@@ -3653,7 +3636,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               cod_moneda_local,
                               cod_moneda_extranjera  ,
                               arqueo_moneda_local,
-                             arqueo_moneda_extranjera
+                              arqueo_moneda_extranjera
            			  			';
 
         end if;
