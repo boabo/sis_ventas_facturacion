@@ -1647,5 +1647,12 @@ CREATE TYPE vef.medio_pago_venta AS (
 );
 
 ALTER TYPE vef.medio_pago_venta
-  OWNER TO postgres;  
+  OWNER TO postgres;
+
+
+ALTER TABLE vef.tventa
+ADD COLUMN id_sistema_origen INTEGER;
+
+COMMENT ON COLUMN vef.tventa.id_sistema_origen
+IS 'id del sistema de origen de donde replica al erp';
 /***********************************F-SCP-IRVA-VEF-0-19/03/2021****************************************/

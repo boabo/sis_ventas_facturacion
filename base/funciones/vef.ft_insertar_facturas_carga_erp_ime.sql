@@ -105,6 +105,7 @@ DECLARE
 
     v_cuenta_usu	varchar;
     v_pass_usu		varchar;
+    v_json_data		varchar;
     /********************/
 
 BEGIN
@@ -155,7 +156,7 @@ BEGIN
                 v_parametros.codigo_punto_venta,--11
                 v_parametros.id_funcionario::INTEGER,--12
                 v_parametros.observaciones,--13
-                v_parametros.json_venta_forma_pago--14
+                '['||v_parametros.json_venta_forma_pago||']'--14
             );
         /***************************************************/
 
@@ -218,7 +219,7 @@ BEGIN
         end if;
         /******************************************************************/
 
-        if (v_existencia_cliente = 0) then
+        if (v_existencia_cliente = 0 or v_existencia_cliente is null) then
          	INSERT INTO vef.tcliente
             	(
                 	id_usuario_reg,
@@ -232,7 +233,7 @@ BEGIN
                   	now(),
                   	'activo',
                   	v_parametros.razon_social,
-                  	v_parametros.nit_cliente
+                  	v_parametros.nit
                 ) returning id_cliente into v_id_cliente;
         else
             select cli.id_cliente into v_id_cliente
@@ -589,8 +590,12 @@ BEGIN
 
           /*Aqui Insertamos los Medios de Pago que nos enviara Carga*/
           v_acumulado_fp = 0;
+
+          v_json_data = '['||v_parametros.json_venta_forma_pago||']';
+
+
           for v_medio_pago in (select *
-                              from json_populate_recordset(null::vef.medio_pago_venta,v_parametros.json_venta_forma_pago::json))loop
+                              from json_populate_recordset(null::vef.medio_pago_venta,v_json_data::json))loop
 
            /*Recuperamos el id moneda en base al codigo que nos manda el servicio*/
            select mon.id_moneda
@@ -776,7 +781,7 @@ BEGIN
                             '''||v_parametros.codigo_control::varchar||''',--decomentar
                             ''CARGA'',
                             '||v_parametros.id_origen::integer||',
-                            '''||v_parametros.tipo_factura::varchar||''',
+                            ''computarizada'',
                             '''||v_cajero::varchar||''',
                             ''CARGA NACIONAL COMPUTARIZADA''
                             );';
@@ -1059,7 +1064,7 @@ BEGIN
                                 ''ANULADA'',
                                 0,
                                 '''||v_cajero||''',
-                                '''||v_datos_carga.tipo_factura||''',
+                                ''computarizada'',
                                 '||v_datos_carga.id_origen||',
                                 ''CARGA'',
                                 '''||v_datos_carga.nro_autorizacion||'''
