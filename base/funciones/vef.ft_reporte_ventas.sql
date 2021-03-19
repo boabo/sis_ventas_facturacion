@@ -766,7 +766,7 @@ BEGIN
                               name_pv
                           end as name_pv
                             from vef.tstage_punto_venta
-                            where (office_id is not null and office_id! = '''') and ';
+                            where (office_id is not null and office_id != '''') and ';
       			v_consulta:=v_consulta||v_parametros.filtro;
                   v_consulta:=v_consulta||' group by office_id,name_pv)
                             select count(office_id) from t ';
