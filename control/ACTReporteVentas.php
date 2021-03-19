@@ -155,9 +155,14 @@ class ACTReporteVentas extends ACTbase{
   }
 
   function consultaFacturaVenta() {
-
-    $this->objFunc=$this->create('MODReporteVentas');
-    $this->res=$this->objFunc->consultaFacturaVenta($this->objParam);
+    if ($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte=new Reporte($this->objParam, $this);
+			$this->res=$this->objReporte->generarReporteListado('MODReporteVentas','consultaFacturaVenta');
+		}
+		else {
+      $this->objFunc=$this->create('MODReporteVentas');
+      $this->res=$this->objFunc->consultaFacturaVenta($this->objParam);
+		}
     $this->res->imprimirRespuesta($this->res->generarJson());
   }
   function consultaDetalleFactura(){
@@ -221,7 +226,7 @@ class ACTReporteVentas extends ACTbase{
     $this->res=$this->objFunc->listarCodigoIataStage($this->objParam);
     if($this->objParam->getParametro('_adicionar')!=''){
       $respuesta = $this->res->getDatos();
-      array_unshift ( $respuesta, array('iata_code'=>'TODOS', 'name_pv'=>'TODOS'));
+      array_unshift ( $respuesta, array('iata_code'=>'TODOS'));
       $this->res->setDatos($respuesta);
     }
     $this->res->imprimirRespuesta($this->res->generarJson());
@@ -233,7 +238,7 @@ class ACTReporteVentas extends ACTbase{
     $this->res=$this->objFunc->listarPuntoVentaOfficeIdStage($this->objParam);
     if($this->objParam->getParametro('_adicionar')!=''){
       $respuesta = $this->res->getDatos();
-      array_unshift ( $respuesta, array('office_id'=>'TODOS'));
+      array_unshift ( $respuesta, array('office_id'=>'TODOS','name_pv'=>'TODOS'));
       $this->res->setDatos($respuesta);
     }
     $this->res->imprimirRespuesta($this->res->generarJson());

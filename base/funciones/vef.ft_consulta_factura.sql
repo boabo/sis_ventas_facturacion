@@ -89,7 +89,7 @@ BEGIN
 
             IF v_parametros.tipo_documento = 'factura' THEN
             	v_fil_td = ' v.tipo_factura in(''computarizada'',''carga'',''manual'') and ';
-                v_inner = 'inner join vef.tdosificacion dos on dos.id_dosificacion = v.id_dosificacion';
+                v_inner = 'left join vef.tdosificacion dos on dos.id_dosificacion = v.id_dosificacion';
                 v_nroaut = 'dos.nroaut';
 
                 IF v_parametros.nro_autorizacion != ''THEN
@@ -131,6 +131,7 @@ BEGIN
                                  v.observaciones,
                                  v.total_venta,
                                  v.excento,
+                                 v.tipo_factura,
                                  '||v_nroaut||',
                                  pv.nombre ||''--''|| pv.codigo as punto_venta,
                                  us.desc_persona,
@@ -202,7 +203,7 @@ BEGIN
 
             IF v_parametros.tipo_documento = 'factura' THEN
             	v_fil_td = ' v.tipo_factura in(''computarizada'',''carga'',''manual'') and ';
-                v_inner = 'inner join vef.tdosificacion dos on dos.id_dosificacion = v.id_dosificacion';
+                v_inner = 'left join vef.tdosificacion dos on dos.id_dosificacion = v.id_dosificacion';
 
                 IF v_parametros.nro_autorizacion != ''THEN
                 	v_nro_autor = 'dos.nroaut = '''||v_parametros.nro_autorizacion||''' and ';

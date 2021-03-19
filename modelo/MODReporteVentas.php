@@ -181,6 +181,7 @@ class MODReporteVentas extends MODbase {
 		$this->captura('observaciones','text');
 		$this->captura('total_venta','numeric');
 		$this->captura('excento','numeric');
+		$this->captura('tipo_factura','varchar');
 		$this->captura('nroaut','varchar');
 		$this->captura('punto_venta','text');
 		$this->captura('desc_persona','text');
@@ -282,7 +283,6 @@ class MODReporteVentas extends MODbase {
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		$this->captura('iata_code','varchar');
-		$this->captura('name_pv','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;
@@ -298,6 +298,7 @@ class MODReporteVentas extends MODbase {
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		$this->captura('office_id','varchar');
+		$this->captura('name_pv','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;
