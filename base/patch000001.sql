@@ -1577,7 +1577,7 @@ WITH (oids = false);
 ALTER TABLE vef.tfiltro
   OWNER TO postgres;
 /***********************************F-SCP-BVP-VEF-0-08/02/2021****************************************/
-/***********************************I-SCP-IRVA-VEF-0-18/03/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-17/03/2021****************************************/
 ALTER TABLE vef.tventa_forma_pago
   DROP CONSTRAINT fk_tventa_forma_pago__id_venta RESTRICT;
 
@@ -1601,8 +1601,8 @@ REFERENCES vef.tventa(id_venta)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
-/***********************************F-SCP-IRVA-VEF-0-18/03/2021****************************************/
-/***********************************I-SCP-IRVA-VEF-0-19/03/2021****************************************/
+/***********************************F-SCP-IRVA-VEF-0-17/03/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-18/03/2021****************************************/
 CREATE TABLE vef.tdatos_carga_recibido (
   id_sistema_origen INTEGER,
   fecha VARCHAR(100),
@@ -1655,4 +1655,35 @@ ADD COLUMN id_sistema_origen INTEGER;
 
 COMMENT ON COLUMN vef.tventa.id_sistema_origen
 IS 'id del sistema de origen de donde replica al erp';
-/***********************************F-SCP-IRVA-VEF-0-19/03/2021****************************************/
+
+
+
+CREATE TABLE vef.tfacturas_carga_observadas (
+  id_factura_pendiente SERIAL,
+  id_venta INTEGER,
+  id_funcionario INTEGER,
+  estado VARCHAR(20) DEFAULT 'observado'::character varying,
+  observacion TEXT,
+  CONSTRAINT tfacturas_carga_observadas_pkey PRIMARY KEY(id_factura_pendiente)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON TABLE vef.tfacturas_carga_observadas
+IS 'Tabla donde se ira almacenando las facturas de Carga que no tienen el id_usuario para regularizar
+';
+
+COMMENT ON COLUMN vef.tfacturas_carga_observadas.id_venta
+IS 'Campo para relacionar a que Venta pertenece';
+
+COMMENT ON COLUMN vef.tfacturas_carga_observadas.id_funcionario
+IS 'Campo para almacenar el id_funcionario que nos llega mediante el servicio';
+
+COMMENT ON COLUMN vef.tfacturas_carga_observadas.estado
+IS 'Nos sirve para saber que factruas han sido regularizadas o cuales estan pendientes los estados a usar son (observado, replicado)';
+
+COMMENT ON COLUMN vef.tfacturas_carga_observadas.observacion
+IS 'Descripcion del posible incidente';
+
+ALTER TABLE vef.tfacturas_carga_observadas
+  OWNER TO postgres;
+/***********************************F-SCP-IRVA-VEF-0-18/03/2021****************************************/
