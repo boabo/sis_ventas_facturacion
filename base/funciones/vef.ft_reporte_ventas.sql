@@ -442,6 +442,339 @@ BEGIN
 
   		end;
 
+      ----------------------stage----------
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVCP_SEL'
+       	#DESCRIPCION:	Consulta datos stage puntos de venta paises
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVCP_SEL')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					country_name,
+                                   	country_code
+                            from vef.tstage_punto_venta
+                            where ';
+                  v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by country_name, country_code)
+      	                     select * from t ';
+
+      			--Definicion de la respuesta
+      			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVCP_CONT'
+       	#DESCRIPCION:	Conteo de registros stage puntos de venta paises
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVCP_CONT')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					country_name,
+                                   	country_code
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by country_name, country_code)
+                            select count(country_code) from t ';
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVC_SEL'
+       	#DESCRIPCION:	Consulta datos stage puntos de venta ciudades
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVC_SEL')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					city_name,
+                                   	city_code
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+      			v_consulta:=v_consulta||' group by city_name, city_code)
+                            select * from t ';
+
+          		v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+      			raise notice 'resp %',v_consulta;
+      			--Devuelve la respuesta
+      			return v_consulta;
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVC_CONT'
+       	#DESCRIPCION:	Conteo de registros stage puntos de venta ciudades
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVC_CONT')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					city_name,
+                                   	city_code
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+      			v_consulta:=v_consulta||' group by city_name, city_code)
+                            select count(city_name) from t ';
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVCH_SEL'
+       	#DESCRIPCION:	Consulta datos stage puntos de venta canal
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVCH_SEL')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					sale_channel
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||'  group by sale_channel)
+                            	select * from t ';
+
+          		v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVCH_CONT'
+       	#DESCRIPCION:	Conteo de registros stage puntos de venta canal
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVCH_CONT')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					sale_channel
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by sale_channel)
+                            select count(sale_channel) from t ';
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVT_SEL'
+       	#DESCRIPCION:	Consulta datos stage puntos de venta tipo
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVT_SEL')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					tipo_pos
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by tipo_pos )
+                            select * from t ';
+
+          		v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPVT_CONT'
+       	#DESCRIPCION:	Conteo de registros stage puntos de venta tipo
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPVT_CONT')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					tipo_pos
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by tipo_pos )
+                            select count(tipo_pos) from t ';
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPCI_SEL'
+       	#DESCRIPCION:	Consulta datos stage puntos de venta codigo iata
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+      	elsif(p_transaccion='VF_STPCI_SEL')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					iata_code
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+      			v_consulta:=v_consulta||' group by iata_code)
+                            select * from t ';
+
+          		v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPCI_CONT'
+       	#DESCRIPCION:	Conteo de registros stage puntos de venta codigo iata
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPCI_CONT')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					iata_code
+                            from vef.tstage_punto_venta
+                            where ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+      			v_consulta:=v_consulta||' group by iata_code)
+                            select count(iata_code) from t ';
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPOFI_SEL'
+       	#DESCRIPCION:	Consulta datos stage puntos de venta office id
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+      	elsif(p_transaccion='VF_STPOFI_SEL')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					office_id,
+                            case when name_pv =''Completar el nombre de la Agencia'' then
+                            ''''::varchar
+                            else
+                              name_pv
+                          end as name_pv
+                            from vef.tstage_punto_venta
+                            where (office_id is not null and office_id != '''') and ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by office_id, name_pv)
+                            select * from t ';
+
+          		v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+      		end;
+
+      	/*********************************
+       	#TRANSACCION:  'VF_STPOFI_CONT'
+       	#DESCRIPCION:	Conteo de registros stage puntos de venta codigo office id
+       	#AUTOR:		breydi.vasquez
+       	#FECHA:		28-01-2021
+      	***********************************/
+
+      	elsif(p_transaccion='VF_STPOFI_CONT')then
+
+      		begin
+      			--Sentencia de la consulta de conteo de registros
+      			v_consulta:='
+                  			with t as (
+                  				select
+                  					office_id,
+                            case when name_pv =''Completar el nombre de la Agencia'' then
+                            ''''::varchar
+                            else
+                              name_pv
+                          end as name_pv
+                            from vef.tstage_punto_venta
+                            where (office_id is not null and office_id! = '''') and ';
+      			v_consulta:=v_consulta||v_parametros.filtro;
+                  v_consulta:=v_consulta||' group by office_id,name_pv)
+                            select count(office_id) from t ';
+
+      			--Devuelve la respuesta
+      			return v_consulta;
+
+      		end;
 	else
 
 		raise exception 'Transaccion inexistente';

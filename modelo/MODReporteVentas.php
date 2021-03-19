@@ -282,7 +282,6 @@ class MODReporteVentas extends MODbase {
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		$this->captura('iata_code','varchar');
-		$this->captura('name_pv','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;
@@ -298,6 +297,7 @@ class MODReporteVentas extends MODbase {
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 
 		$this->captura('office_id','varchar');
+		$this->captura('name_pv','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;

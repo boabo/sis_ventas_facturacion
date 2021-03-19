@@ -1686,3 +1686,41 @@ IS 'Descripcion del posible incidente';
 ALTER TABLE vef.tfacturas_carga_observadas
   OWNER TO postgres;
 /***********************************F-SCP-IRVA-VEF-0-18/03/2021****************************************/
+/***********************************I-SCP-BVP-VEF-0-19/03/2021****************************************/
+CREATE TABLE vef.tstage_punto_venta (
+  stage_id_pv INTEGER,
+  iata_area VARCHAR,
+  iata_zone VARCHAR,
+  iata_zone_name VARCHAR,
+  country_code VARCHAR,
+  country_name VARCHAR,
+  city_code VARCHAR,
+  city_name VARCHAR,
+  accounting_station VARCHAR,
+  sale_type VARCHAR,
+  sale_channel VARCHAR,
+  tipo_pos VARCHAR,
+  iata_code VARCHAR,
+  iata_status VARCHAR,
+  osd VARCHAR,
+  office_id VARCHAR,
+  gds VARCHAR,
+  nit VARCHAR,
+  name_pv VARCHAR,
+  address VARCHAR,
+  phone_number VARCHAR,
+  id_stage_pv SERIAL,
+  id_punto_venta_erp INTEGER,
+  CONSTRAINT tstage_punto_venta_pkey PRIMARY KEY(id_stage_pv)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN vef.tstage_punto_venta.stage_id_pv
+IS 'id de registro de punto de venta stage';
+
+COMMENT ON COLUMN vef.tstage_punto_venta.id_punto_venta_erp
+IS 'id de registro del punto de venta del ERP';
+
+ALTER TABLE vef.tstage_punto_venta
+  OWNER TO postgres;
+/***********************************F-SCP-BVP-VEF-0-19/03/2021****************************************/
