@@ -153,7 +153,7 @@ BEGIN
                 v_parametros.tipo_factura,--9
                 v_parametros.moneda,--10
                 v_parametros.codigo_punto_venta,--11
-                v_parametros.id_funcionario,--12
+                v_parametros.id_funcionario::INTEGER,--12
                 v_parametros.observaciones,--13
                 v_parametros.json_venta_forma_pago--14
             );
@@ -178,7 +178,7 @@ BEGIN
                v_cant_id_usuario
         from orga.vfuncionario fun
         inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
-        where fun.id_funcionario = v_parametros.id_funcionario;
+        where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
         /***************************************************/
 
         if (v_cant_id_usuario > 1) then
@@ -190,7 +190,7 @@ BEGIN
             inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
             inner join segu.tusuario_rol usurol on usurol.id_usuario = usu.id_usuario
             inner join segu.trol rol on rol.id_rol = usurol.id_rol and rol.estado_reg = 'activo'
-            where fun.id_funcionario = v_parametros.id_funcionario and rol.rol = 'VEF - Cajero';
+            where fun.id_funcionario = v_parametros.id_funcionario::INTEGER and rol.rol = 'VEF - Cajero';
 
             if (v_cant_id_usuario_rol > 1) then
             	v_observaciones = 'El funcionario tiene dos cuentas con el mismo rol (VEF - Cajero)';
@@ -203,7 +203,7 @@ BEGIN
                 inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
                 inner join segu.tusuario_rol usurol on usurol.id_usuario = usu.id_usuario
                 inner join segu.trol rol on rol.id_rol = usurol.id_rol and rol.estado_reg = 'activo'
-                where fun.id_funcionario = v_parametros.id_funcionario and rol.rol = 'VEF - Cajero';
+                where fun.id_funcionario = v_parametros.id_funcionario::INTEGER and rol.rol = 'VEF - Cajero';
 
             end if;
 
@@ -214,7 +214,7 @@ BEGIN
                    v_id_usuario
             from orga.vfuncionario fun
             inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
-            where fun.id_funcionario = v_parametros.id_funcionario;
+            where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
         end if;
         /******************************************************************/
 
@@ -462,7 +462,7 @@ BEGIN
                         observacion--4
                       ) values(
                         v_id_venta,--1
-                        v_parametros.id_funcionario,--2
+                        v_parametros.id_funcionario::INTEGER,--2
                         'pendiente',--3
                         'El Funcionario no tiene una cuenta de usuario en el Sistema ERP'--4
                       );
@@ -474,7 +474,7 @@ BEGIN
                         observacion--4
                       ) values(
                         v_id_venta,--1
-                        v_parametros.id_funcionario,--2
+                        v_parametros.id_funcionario::INTEGER,--2
                         'pendiente',--3
                         v_observaciones--4
                       );
@@ -733,7 +733,7 @@ BEGIN
           v_semilla = pxp.f_get_variable_global('semilla_erp');
 
 
-          select md5(v_semilla||'202cb962ac59075b964b07152d234b70') into v_password;
+          select md5(v_semilla||v_pass_usu) into v_password;
 
           v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
 
@@ -981,7 +981,7 @@ BEGIN
           v_semilla = pxp.f_get_variable_global('semilla_erp');
 
 
-          select md5(v_semilla||'202cb962ac59075b964b07152d234b70') into v_password;
+          select md5(v_semilla||v_pass_usu) into v_password;
 
           v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
 

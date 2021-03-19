@@ -1602,3 +1602,50 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 /***********************************F-SCP-IRVA-VEF-0-18/03/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-19/03/2021****************************************/
+CREATE TABLE vef.tdatos_carga_recibido (
+  id_sistema_origen INTEGER,
+  fecha VARCHAR(100),
+  nro_factura VARCHAR(200),
+  nro_autorizacion VARCHAR(200),
+  nit VARCHAR(200),
+  razon_social VARCHAR(200),
+  importe_total NUMERIC(18,2),
+  codigo_control VARCHAR(200),
+  tipo_factura VARCHAR(200),
+  moneda VARCHAR(5),
+  codigo_punto_venta VARCHAR(200),
+  id_funcionario INTEGER,
+  observaciones TEXT,
+  json_venta_forma_pago TEXT
+)
+WITH (oids = false);
+
+COMMENT ON TABLE vef.tdatos_carga_recibido
+IS 'Tabla que almacenara los datos que nos llega del servicio para tener respaldo';
+
+ALTER TABLE vef.tdatos_carga_recibido
+  OWNER TO postgres;
+
+
+CREATE TABLE vef.tdata_carga (
+  nro_factura VARCHAR(200),
+  num_autorizacion VARCHAR(200)
+)
+WITH (oids = false);
+
+ALTER TABLE vef.tdata_carga
+OWNER TO postgres;
+
+CREATE TYPE vef.medio_pago_venta AS (
+  importe NUMERIC(18,2),
+  moneda VARCHAR(10),
+  numero_tarjeta VARCHAR(25),
+  codigo_tarjeta VARCHAR(10),
+  cod_auxiliar VARCHAR(50),
+  cod_medio_pago VARCHAR(30)
+);
+
+ALTER TYPE vef.medio_pago_venta
+  OWNER TO postgres;  
+/***********************************F-SCP-IRVA-VEF-0-19/03/2021****************************************/
