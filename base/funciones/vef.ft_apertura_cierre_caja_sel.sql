@@ -3835,4 +3835,4 @@ SECURITY INVOKER
 COST 100;
 
 ALTER FUNCTION vef.ft_apertura_cierre_caja_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
-  OWNER TO postgres;
+  OWNER TO postgres; 
