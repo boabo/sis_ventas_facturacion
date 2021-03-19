@@ -155,9 +155,14 @@ class ACTReporteVentas extends ACTbase{
   }
 
   function consultaFacturaVenta() {
-
-    $this->objFunc=$this->create('MODReporteVentas');
-    $this->res=$this->objFunc->consultaFacturaVenta($this->objParam);
+    if ($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte=new Reporte($this->objParam, $this);
+			$this->res=$this->objReporte->generarReporteListado('MODReporteVentas','consultaFacturaVenta');
+		}
+		else {
+      $this->objFunc=$this->create('MODReporteVentas');
+      $this->res=$this->objFunc->consultaFacturaVenta($this->objParam);
+		}
     $this->res->imprimirRespuesta($this->res->generarJson());
   }
   function consultaDetalleFactura(){

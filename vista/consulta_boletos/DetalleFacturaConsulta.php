@@ -106,6 +106,23 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'tipo_factura',
+                        fieldLabel: 'Tipo Documento',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 150,
+                        renderer:function (value,p,record){
+                          return  String.format('<div style="text-align:center;">{0}</div>',record.data['tipo_factura']);
+                        }
+                    },
+                    type: 'TextField',
+                    bottom_filter: true,
+                    filters: {pfiltro: 'v.tipo_factura', type: 'string'},
+                    id_grupo: 1,
+                    grid: true
+                },
+                {
+                    config: {
                         name: 'observaciones',
                         fieldLabel: 'observaciones',
                         allowBlank: true,
@@ -203,9 +220,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 120,
                         renderer:function (value,p,record){
                           if (value == null || value == ''){
-                              return  String.format('<div style="float:right;"><b><b></div>');
+                              return  String.format('<div style="text-align:center;"><b><b></div>');
                           }else{
-                              return  String.format('<div style="float:right;"><b>{0}<b></div>',record.data['nro_deposito']);
+                              return  String.format('<div style="text-align:center;"><b>{0}<b></div>',record.data['nro_deposito']);
                           }
                         }
                     },
@@ -299,6 +316,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'observaciones', type: 'string'},
             {name: 'total_venta', type: 'numeric'},
             {name: 'excento', type: 'numeric'},
+            {name: 'tipo_factura', type: 'string'},
             {name: 'nroaut', type: 'string'},
             {name: 'punto_venta', type: 'string'},
             {name: 'desc_persona', type: 'string'},

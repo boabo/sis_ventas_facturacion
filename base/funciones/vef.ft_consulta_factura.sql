@@ -131,6 +131,7 @@ BEGIN
                                  v.observaciones,
                                  v.total_venta,
                                  v.excento,
+                                 v.tipo_factura,
                                  '||v_nroaut||',
                                  pv.nombre ||''--''|| pv.codigo as punto_venta,
                                  us.desc_persona,
