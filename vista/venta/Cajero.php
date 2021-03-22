@@ -1068,6 +1068,21 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
  			 grid:true,
  			 form:false
  	 },
+   {
+		 config:{
+			 name: 'nro_autorizacion',
+			 fieldLabel: 'Nro Autorización',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 200,
+			 maxLength:15
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'dosifi.nroaut',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
 	 {
 		 config:{
 			 name: 'cod_control',
@@ -2094,8 +2109,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_formula', type: 'numeric'},
 		{name:'formato_factura_emitida', type: 'string'},
     {name:'correo_electronico', type: 'string'},
-		{name:'cajero', type: 'string'},
-
+    {name:'cajero', type: 'string'},
+		{name:'nro_autorizacion', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_venta',

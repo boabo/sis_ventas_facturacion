@@ -2979,7 +2979,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  trim(v_venta.nit),
+                                                  v_venta.nit,
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta,0))
             where id_venta = v_venta.id_venta;
@@ -3005,7 +3005,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  trim(v_venta.nit),
+                                                  v_venta.nit,
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta_msuc,0))
             where id_venta = v_venta.id_venta;
@@ -3407,7 +3407,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  trim(v_venta.nit),
+                                                  v_venta.nit,
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta,0))
             where id_venta = v_venta.id_venta;
@@ -3436,7 +3436,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  trim(v_venta.nit),
+                                                  v_venta.nit,
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta_msuc,0))
             where id_venta = v_venta.id_venta;

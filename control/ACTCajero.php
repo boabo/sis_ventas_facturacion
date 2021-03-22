@@ -20,7 +20,11 @@ class ACTCajero extends ACTbase{
 		if ($this->objParam->getParametro('id_punto_venta') != '') {
 				if ($this->objParam->getParametro('tipo_factura') == 'todos') {
 					$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''computarizada'' or fact.tipo_factura =''manual'' or fact.tipo_factura =''carga'')");
-				} else {
+				} else if ($this->objParam->getParametro('tipo_factura') == 'manual') {
+				 			$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."'')");
+				 	}
+
+				else {
 				 			$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''carga'' or fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."'')");
 				 	}
 			}

@@ -634,6 +634,22 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true
 		},
+
+		{
+ 		 config:{
+ 			 name: 'cajero',
+ 			 fieldLabel: 'Cajero',
+ 			 allowBlank: true,
+ 			 anchor: '80%',
+ 			 gwidth: 300,
+ 			 maxLength:15
+ 		 },
+ 			 type:'TextField',
+ 			 filters:{pfiltro:'usuca.desc_persona',type:'string'},
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 form:false
+ 	 },
 		{
 			config:{
 				name: 'fecha',
@@ -853,6 +869,21 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 		 },
 			 type:'TextField',
 			 filters:{pfiltro:'ven.estado',type:'string'},
+			 id_grupo:1,
+			 grid:true,
+			 form:false
+	 },
+	 {
+		 config:{
+			 name: 'nro_autorizacion',
+			 fieldLabel: 'Nro Autorización',
+			 allowBlank: true,
+			 anchor: '80%',
+			 gwidth: 200,
+			 maxLength:15
+		 },
+			 type:'TextField',
+			 filters:{pfiltro:'dosifi.nroaut',type:'string'},
 			 id_grupo:1,
 			 grid:true,
 			 form:false
@@ -1166,7 +1197,8 @@ Phx.vista.FacturacionManual=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'nombre_sucursal', type: 'string'},
-
+		{name:'cajero', type: 'string'},
+		{name:'nro_autorizacion', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_venta',
