@@ -238,8 +238,8 @@ BEGIN
 
 
           update vef.tcliente
-          set nit = v_parametros.nit,
-              nombre_factura = UPPER(v_parametros.nombre_factura)
+          set nit = trim(v_parametros.nit),
+              nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -248,7 +248,7 @@ BEGIN
 
         else
 
-          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
 
@@ -265,11 +265,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.nombre_factura),
-            v_parametros.nit
+            regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
+            trim(v_parametros.nit)
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = upper(v_parametros.nombre_factura);
+          v_nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g');
 
         end if;
 
@@ -660,8 +660,8 @@ BEGIN
           COALESCE(v_tipo_cambio_venta,0),
           COALESCE(v_valor_bruto,0),
           COALESCE(v_descripcion_bulto,''),
-          v_parametros.nit,
-          v_nombre_factura,
+          trim(v_parametros.nit),
+          upper(regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
           v_id_cliente_destino,
           v_hora_estimada_entrega,
           v_tiene_formula,
@@ -768,8 +768,8 @@ BEGIN
                 v_id_cliente = v_parametros.id_cliente::integer;
 
                 update vef.tcliente
-                set nit = v_parametros.nit,
-                    nombre_factura = UPPER(v_parametros.nombre_factura)
+                set nit = trim(v_parametros.nit),
+                    nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'))
                 where id_cliente = v_id_cliente;
 
                 select c.nombre_factura into v_nombre_factura
@@ -791,11 +791,11 @@ BEGIN
                   p_id_usuario,
                   now(),
                   'activo',
-                  upper(v_parametros.nombre_factura),
-                  v_parametros.nit
+                  upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+                  trim(v_parametros.nit)
                 ) returning id_cliente into v_id_cliente;
 
-                v_nombre_factura = upper(v_parametros.nombre_factura);
+                v_nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'));
 
               end if;
 
@@ -804,8 +804,8 @@ BEGIN
 			update vef.tventa set
 			id_cliente = v_parametros.id_cliente::integer,
 			observaciones = v_parametros.observaciones,
-			nit = v_parametros.nit,
-            nombre_factura = upper(v_parametros.nombre_factura)
+			nit = trim(v_parametros.nit),
+            nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'))
 			where id_venta=v_parametros.id_venta;
 
             if ( v_parametros.id_formula is not null) then
@@ -1351,6 +1351,70 @@ BEGIN
             set estado_reg = 'inactivo'
             where id_venta=v_parametros.id_venta;
 
+
+            /*Para migrar los datos a la nueva base de datos db_facturas_2019*/
+			IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
+          	/*Establecemos la conexion con la base de datos*/
+            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+
+            v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+               -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
+
+
+              v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+          		/************************************************/
+              v_consulta = 'update sfe.tfactura set
+                            estado_reg = ''inactivo''
+                            where id_origen = '''||v_parametros.id_venta||''' and sistema_origen = ''ERP'' and estado <> ''ANULADA'';';
+
+               select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+            	into v_id_factura;
+
+              IF(v_conexion!='OK') THEN
+              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+              ELSE
+                       perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+              	v_res_cone=(select dblink_disconnect());
+
+              END IF;
+
+          	end if;
+
+
+
+
+
+
+
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Factura Computarizada eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_parametros.id_venta::varchar);
@@ -1554,7 +1618,7 @@ BEGIN
           --validar que no exista el mismo nro para la dosificacion
           if (exists(	select 1
                        from vef.tventa ven
-                       where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
+                       where ven.estado_reg = 'activo' and ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion)) then
             raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
           end if;
 
@@ -1741,20 +1805,20 @@ BEGIN
        if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
 
-          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
 
           update vef.tcliente
-          set nit = v_parametros.nit,
-              nombre_factura = upper(v_parametros.nombre_factura)
+          set nit = trim(v_parametros.nit),
+              nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
           from vef.tcliente c
           where c.id_cliente = v_id_cliente;
         else
-          IF(trim(v_parametros.nit) = '' or v_parametros.nit is null)then
+          IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
 
@@ -1772,11 +1836,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.nombre_factura),
-            v_parametros.nit
+            regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
+            trim(v_parametros.nit)
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = v_parametros.nombre_factura;
+          v_nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g');
 
         end if;
 
@@ -2025,8 +2089,8 @@ BEGIN
           COALESCE(v_tipo_cambio_venta,0),
           COALESCE(v_valor_bruto,0),
           COALESCE(v_descripcion_bulto,''),
-          v_parametros.nit,
-          UPPER(v_nombre_factura),
+          trim(v_parametros.nit),
+          upper(regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
           v_id_cliente_destino,
           v_hora_estimada_entrega,
           v_tiene_formula,
@@ -2240,7 +2304,7 @@ BEGIN
       --validaciones de factura manual
           if (exists(	select 1
                        from vef.tventa ven
-                       where ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion and (ven.estado = 'finalizado' or ven.estado = 'anulado'))) then
+                       where ven.estado_reg = 'activo' and ven.nro_factura = v_parametros.nro_factura::integer and ven.id_dosificacion = v_parametros.id_dosificacion and (ven.estado = 'finalizado' or ven.estado = 'anulado'))) then
             raise exception 'Ya existe el mismo numero de factura en otra venta y con la misma dosificacion. Por favor revise los datos';
           end if;
 
@@ -2413,8 +2477,8 @@ BEGIN
           v_id_cliente = v_parametros.id_cliente::integer;
 
           update vef.tcliente
-          set nit = v_parametros.nit,
-              nombre_factura = upper(v_parametros.nombre_factura)
+          set nit = trim(v_parametros.nit),
+              nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -2434,11 +2498,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.nombre_factura),
-            v_parametros.nit
+            upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+            trim(v_parametros.nit)
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = upper(v_parametros.nombre_factura);
+          v_nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'));
         end if;
        /*************************************************************************/
 
@@ -2480,8 +2544,8 @@ BEGIN
           tipo_cambio_venta = COALESCE(v_tipo_cambio_venta,0),
           valor_bruto = COALESCE(v_valor_bruto,0),
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
-          nit = v_parametros.nit,
-          nombre_factura = v_nombre_factura ,
+          nit = trim(v_parametros.nit),
+          nombre_factura = upper(regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')) ,
           id_cliente_destino = v_id_cliente_destino
         where id_venta=v_parametros.id_venta;
 
@@ -2903,7 +2967,7 @@ BEGIN
             --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
             if (exists(	select 1
                          from vef.tventa ven
-                         where ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion = v_dosificacion.id_dosificacion)) then
+                         where ven.estado_reg = 'activo' and ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion = v_dosificacion.id_dosificacion)) then
               raise exception 'El numero de factura ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema';
             end if;
 
@@ -2915,7 +2979,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  v_venta.nit,
+                                                  trim(v_venta.nit),
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta,0))
             where id_venta = v_venta.id_venta;
@@ -2941,7 +3005,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  v_venta.nit,
+                                                  trim(v_venta.nit),
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta_msuc,0))
             where id_venta = v_venta.id_venta;
@@ -3069,14 +3133,14 @@ BEGIN
                             '''||v_nro_factura::varchar||''',
                             '''||v_dosificacion.nroaut::varchar||''',
                             ''VÁLIDA'',
-                            '''||v_venta.nit::varchar||''',
-                            '''||v_venta.nombre_factura::varchar||''',
+                            '''||trim(v_venta.nit)::varchar||''',
+                            '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
                             '||v_venta.total_venta::numeric||',
                             '||v_venta.excento||',
                             '''||pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  v_venta.nit,
+                                                  trim(v_venta.nit),
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta_msuc,0))||''',
                             '''||v_cajero||''',
@@ -3325,7 +3389,7 @@ BEGIN
             --validar que el nro de factura no supere el maximo nro de factura de la dosificaiocn
             if (exists(	select 1
                          from vef.tventa ven
-                         where ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion = v_dosificacion.id_dosificacion)) then
+                         where ven.estado_reg = 'activo' and ven.nro_factura =  v_dosificacion.nro_siguiente and ven.id_dosificacion = v_dosificacion.id_dosificacion)) then
               raise exception 'El numero de factura ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema';
             end if;
 
@@ -3343,7 +3407,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  v_venta.nit,
+                                                  trim(v_venta.nit),
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta,0))
             where id_venta = v_venta.id_venta;
@@ -3372,7 +3436,7 @@ BEGIN
               cod_control = pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  v_venta.nit,
+                                                  trim(v_venta.nit),
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta_msuc,0))
             where id_venta = v_venta.id_venta;
@@ -3434,6 +3498,30 @@ BEGIN
         if (pxp.f_get_variable_global('vef_integracion_lcv') = 'si' and v_es_fin = 'si') then
           v_res = vef.f_inserta_lcv(p_administrador,p_id_usuario,p_tabla,'FIN',v_venta.id_venta);
         end if;
+
+
+        /*****************************************************************/
+        IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
+
+              UPDATE informix.liquidevolucion
+              SET
+                nroaut = v_dosificacion.nroaut::numeric,
+                nrofac = v_nro_factura
+              WHERE trim(nroliqui) = upper(trim(v_parametros.liquidaciones));
+
+              select
+                  l.codigo into v_estacion
+              from vef.tventa v
+              inner join vef.tsucursal s on s.id_sucursal = v.id_sucursal
+              inner join param.tlugar l on l.id_lugar = s.id_lugar
+              where v.id_venta = v_venta.id_venta;
+
+              INSERT INTO informix.tfactucomdoc
+              (pais, estacion, nroaut, nrofac, renglon, documento) VALUES
+              ('BO', v_estacion, v_dosificacion.nroaut::numeric, v_nro_factura, 1, upper(trim(v_parametros.liquidaciones)));
+
+  		  END IF;
+
 
 
         /*Replicacion a la base de datos DB_FACTURAS 2019*/
@@ -3514,14 +3602,14 @@ BEGIN
                             '''||v_nro_factura::varchar||''',
                             '''||v_dosificacion.nroaut::varchar||''',
                             ''VÁLIDA'',
-                            '''||v_venta.nit::varchar||''',
-                            '''||v_venta.nombre_factura::varchar||''',
+                            '''||trim(v_venta.nit)::varchar||''',
+                            '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
                             '||v_venta.total_venta::numeric||',
                             '||v_venta.excento||',
                             '''||pxp.f_gen_cod_control(v_dosificacion.llave,
                                                   v_dosificacion.nroaut,
                                                   v_nro_factura::varchar,
-                                                  v_venta.nit,
+                                                  trim(v_venta.nit),
                                                   to_char(v_fecha_venta,'YYYYMMDD')::varchar,
                                                   round(v_venta.total_venta_msuc,0))||''',
                             '''||v_cajero||''',
@@ -3543,27 +3631,7 @@ BEGIN
               END IF;
 		end if;
               /************************************/
-        /*****************************************************************/
-        IF (pxp.f_existe_parametro(p_tabla, 'liquidaciones')) THEN
 
-              UPDATE informix.liquidevolucion
-              SET
-                nroaut = v_dosificacion.nroaut::numeric,
-                nrofac = v_nro_factura
-              WHERE trim(nroliqui) = upper(trim(v_parametros.liquidaciones));
-
-              select
-                  l.codigo into v_estacion
-              from vef.tventa v
-              inner join vef.tsucursal s on s.id_sucursal = v.id_sucursal
-              inner join param.tlugar l on l.id_lugar = s.id_lugar
-              where v.id_venta = v_venta.id_venta;
-
-              INSERT INTO informix.tfactucomdoc
-              (pais, estacion, nroaut, nrofac, renglon, documento) VALUES
-              ('BO', v_estacion, v_dosificacion.nroaut::numeric, v_nro_factura, 1, upper(trim(v_parametros.liquidaciones)));
-
-  		  END IF;
 
         /*************************************************/
 
@@ -3825,8 +3893,8 @@ BEGIN
                             '''||v_venta.fecha||''',
                             '''||v_venta.nro_factura::varchar||''',
                             ''CONTINGENCIA'',
-                            '''||v_venta.nit::varchar||''',
-                            '''||v_venta.nombre_factura::varchar||''',
+                            '''||trim(v_venta.nit)::varchar||''',
+                            '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
                             '||v_venta.total_venta::numeric||',
                             '||v_venta.excento||',
                             '''||v_cajero||''',
@@ -4345,6 +4413,14 @@ BEGIN
         from vef.tventa v
         where v.id_venta = v_parametros.id_venta;
 
+        /*Para no anular facturas de carga*/
+        if (v_venta.tipo_factura = 'carga') then
+        	raise exception 'No se puede Anular la factura debido a que esta corresponde al sistema de Carga, favor contactarse con personal de Carga para su respectiva anulación.';
+        end if;
+        /**********************************/
+
+
+
         /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
         select
                per.fecha_ini,
@@ -4536,6 +4612,9 @@ BEGIN
             where usu.id_usuario = p_id_usuario;
             /******************************************************************/
 
+
+         v_res = vef.f_anula_venta(p_administrador,p_id_usuario,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_parametros.id_venta);
+
         /*Replicacion a la base de datos DB_FACTURAS 2019*/
    		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
 		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
@@ -4635,7 +4714,7 @@ BEGIN
 
         /*************************************************/
 
-        v_res = vef.f_anula_venta(p_administrador,p_id_usuario,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_parametros.id_venta);
+
 
         --Definicion de la respuesta
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta anulada');
@@ -5597,8 +5676,8 @@ BEGIN
                   v_id_cliente = v_parametros.id_cliente::integer;
 
                   update vef.tcliente
-                  set nit = v_parametros.nit,
-                      nombre_factura = upper(v_parametros.id_cliente)
+                  set nit = trim(v_parametros.nit),
+                      nombre_factura = regexp_replace(trim(v_parametros.id_cliente), '[^a-zA-ZñÑ ]+', '','g')
                   where id_cliente = v_id_cliente;
 
                   select c.nombre_factura into v_nombre_factura
@@ -5618,7 +5697,7 @@ BEGIN
                     p_id_usuario,
                     now(),
                     'activo',
-                    upper(v_parametros.id_cliente),
+                    regexp_replace(trim(v_parametros.id_cliente), '[^a-zA-ZñÑ ]+', '','g'),
                     v_parametros.nit
                   ) returning id_cliente into v_id_cliente;
 
@@ -5817,8 +5896,8 @@ BEGIN
                   COALESCE(v_tipo_cambio_venta,0),
                   COALESCE(v_valor_bruto,0),
                   COALESCE(v_descripcion_bulto,''),
-                  v_parametros.nit,
-                  v_nombre_factura,
+                  trim(v_parametros.nit),
+                  regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
                   v_id_cliente_destino,
                   v_hora_estimada_entrega,
                   v_tiene_formula,
@@ -5860,14 +5939,14 @@ BEGIN
 
             begin
 
-               IF (v_parametros.nit != '') THEN
+               IF (trim(v_parametros.nit) != '') THEN
                		select cli.id_cliente,
                            cli.nombre_factura,
                            cli.nit
                     INTO
                     	   v_cliente
                     from vef.tcliente cli
-                    where cli.nit = v_parametros.nit
+                    where trim(cli.nit) = trim(v_parametros.nit)
                     ORDER BY cli.id_cliente DESC
                     limit 1;
                end if;

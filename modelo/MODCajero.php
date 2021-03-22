@@ -80,6 +80,7 @@ class MODCajero extends MODbase{
 		$this->captura('id_formula','int4');
 		$this->captura('formato_factura_emitida','varchar');
 		$this->captura('correo_electronico','varchar');
+		$this->captura('cajero','varchar');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion

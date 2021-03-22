@@ -261,12 +261,15 @@ BEGIN
 
                         det.id_formula,
                         fact.formato_factura_emitida,
-                        fact.correo_electronico
+                        fact.correo_electronico,
+                        usuca.desc_persona::varchar as cajero
+
 
 						from vef.tventa fact
                         left join vef.tventa_detalle det on det.id_venta = fact.id_venta
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
+                        left join segu.vusuario usuca on usuca.id_usuario = fact.id_usuario_cajero
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
 				        where fact.estado_reg = ''activo'' and '||v_condicion||' and';
 
@@ -274,7 +277,7 @@ BEGIN
 			v_consulta:=v_consulta||v_parametros.filtro;
 
             /*Agrupamos*/
-            v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula';
+            v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula, usuca.desc_persona';
 
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 			raise notice 'Respuesta es %',v_consulta;
@@ -299,6 +302,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
+                        left join segu.vusuario usuca on usuca.id_usuario = fact.id_usuario_cajero
 				        where fact.estado_reg = ''activo'' and';
 
 			--Definicion de la respuesta

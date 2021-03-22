@@ -265,13 +265,50 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 	preparaMenu: function () {
 			var rec = this.sm.getSelected();
 			// console.log("llega aqui select",rec);
-			this.getBoton('completar_pago').enable();
-			this.getBoton('btnImprimir').enable();
-			this.getBoton('btnChequeoDocumentosWf').enable();
-			this.getBoton('anular_fact').enable();
-			this.getBoton('completar_pago_2').enable();
-			this.getBoton('ant_estado').enable();
-			this.getBoton('asociar_boletos').enable();
+
+      if (rec.data.tipo_factura == 'carga') {
+        //this.getBoton('completar_pago').setVisible(false);
+        this.getBoton('btnImprimir').setVisible(false);
+        this.getBoton('btnChequeoDocumentosWf').setVisible(false);
+        this.getBoton('anular_fact').setVisible(false)
+        //this.getBoton('completar_pago_2').setVisible(false);
+        //this.getBoton('ant_estado').setVisible(false);
+        this.getBoton('asociar_boletos').setVisible(false);
+
+        //this.getBoton('completar_pago').disable();
+        this.getBoton('btnImprimir').disable();
+        this.getBoton('btnChequeoDocumentosWf').disable();
+        this.getBoton('anular_fact').disable();
+        //this.getBoton('completar_pago_2').disable();
+        //this.getBoton('ant_estado').disable();
+        this.getBoton('asociar_boletos').disable();
+      } else {
+        //this.getBoton('completar_pago').setVisible(true);
+        this.getBoton('btnImprimir').setVisible(true);
+        this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+        this.getBoton('anular_fact').setVisible(true);
+        //this.getBoton('completar_pago_2').setVisible(true);
+        //this.getBoton('ant_estado').setVisible(true);
+        this.getBoton('asociar_boletos').setVisible(true);
+
+        //this.getBoton('completar_pago').enable();
+        this.getBoton('btnImprimir').enable();
+        this.getBoton('btnChequeoDocumentosWf').enable();
+        this.getBoton('anular_fact').enable();
+        //this.getBoton('completar_pago_2').enable();
+        //this.getBoton('ant_estado').enable();
+        this.getBoton('asociar_boletos').enable();
+      }
+
+
+
+			 this.getBoton('completar_pago').enable();
+			// this.getBoton('btnImprimir').enable();
+			// this.getBoton('btnChequeoDocumentosWf').enable();
+			// this.getBoton('anular_fact').enable();
+			 this.getBoton('completar_pago_2').enable();
+			 this.getBoton('ant_estado').enable();
+			// this.getBoton('asociar_boletos').enable();
 
 			if (rec.data.formato_factura_emitida == 'Carta') {
 				this.getBoton('btnChequeoDocumentosWf').setVisible(true);
@@ -985,6 +1022,21 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true
 		},
+    {
+ 		 config:{
+ 			 name: 'cajero',
+ 			 fieldLabel: 'Cajero',
+ 			 allowBlank: true,
+ 			 anchor: '80%',
+ 			 gwidth: 300,
+ 			 maxLength:15
+ 		 },
+ 			 type:'TextField',
+ 			 filters:{pfiltro:'usuca.desc_persona',type:'string'},
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 form:false
+ 	 },
 		{
 			config:{
 				name: 'fecha',
@@ -1348,7 +1400,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			 type:'TextField',
 			 filters:{pfiltro:'fact.formato_factura_emitida',type:'string'},
 			 id_grupo:1,
-			 grid:true,
+			 grid:false,
 			 form:false
 	 },
 	 {
@@ -1363,7 +1415,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			 type:'TextField',
 			 filters:{pfiltro:'fact.correo_electronico',type:'string'},
 			 id_grupo:1,
-			 grid:true,
+			 grid:false,
 			 form:false
 	 },
 		// {
@@ -1942,7 +1994,7 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 				type:'Field',
 				filters:{pfiltro:'usu1.cuenta',type:'string'},
 				id_grupo:1,
-				grid:true,
+				grid:false,
 				form:false
 		},
 		{
@@ -2041,7 +2093,8 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 		{name:'nombre_sucursal', type: 'string'},
 		{name:'id_formula', type: 'numeric'},
 		{name:'formato_factura_emitida', type: 'string'},
-		{name:'correo_electronico', type: 'string'},
+    {name:'correo_electronico', type: 'string'},
+		{name:'cajero', type: 'string'},
 
 	],
 	sortInfo:{

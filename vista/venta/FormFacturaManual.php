@@ -2541,6 +2541,13 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                 ]);
 
                 for (var i = 0; i < this.producto_nombre.length; i++) {
+
+                  if (this.nombre_moneda[i] != this.data.objPadre.variables_globales.codigo_moneda_base) {
+                    var precio_base = this.precio_form[i]*this.tipo_cambio;
+                  } else {
+                    var precio_base = this.precio_form[i];
+                  }
+
                 var myNewRecord = new grillaRecord({
                     nombre_producto : this.producto_nombre[i],
                 //     descripcion : request.arguments.nombre_formula,
@@ -2549,8 +2556,8 @@ Phx.vista.FormFacturaManual=Ext.extend(Phx.frmInterfaz,{
                     tipo : 'formula',
                     cantidad : '1',
                     requiere_excento:this.req_excento[i],
-                    precio_unitario : (this.precio_form[i]==undefined || this.precio_form[i]==null || this.precio_form[i]=='')?0:this.precio_form[i],
-                    precio_total: this.precio_form[i]*1,
+                    precio_unitario : (precio_base==undefined || precio_base==null || precio_base=='')?0:precio_base,
+                    precio_total: precio_base*1,
                     asociar_boletos: this.boletos_asociados_recup[i]           //
                   });
                    this.mestore.add(myNewRecord);
