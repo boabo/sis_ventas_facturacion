@@ -908,7 +908,7 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 100,
 				maxLength:25
 			},
-				type:'TextField',
+				type:'NumberField',
 				filters:{pfiltro:'fact.nit',type:'string'},
 				id_grupo:1,
 				grid:true,
