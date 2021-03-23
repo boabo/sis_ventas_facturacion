@@ -726,7 +726,10 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.glosa_impuestos.setValue('ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS. EL USO ILÍCITO DE ÉSTA SERÁ SANCIONADO DE ACUERDO A LEY')
         this.Cmp.leyenda.setValue('Gracias por su preferencia!!!');
     },
-    iniciarEventos :  function () {
+    iniciarEventos :  function () {			 
+			  this.cm.setHidden(15, true);
+
+
         this.Cmp.tipo_generacion.on('select',function (c,r,v) {
             if (this.Cmp.tipo_generacion.getValue() == 'manual') {
                 this.mostrarComponente(this.Cmp.inicial);
