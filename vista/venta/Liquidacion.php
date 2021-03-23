@@ -81,7 +81,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			this.store.baseParams.pes_estado = 'caja';
 		//	this.bbar.add(this.cmbPuntoV);
 		this.addButton('ant_estado',{
-				grupo:[1],
+				//grupo:[1],
 				text :'Regresar a Counter',
 				iconCls : 'batras',
 				disabled: true,
@@ -138,10 +138,11 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		);
 
 		this.addButton('asociar_boletos',
-				{   grupo:[2],
+				{   grupo:[8],
 						text: '<b>Asociar Boletos</b>',
 						iconCls: 'bchecklist',
 						disabled: true,
+            hidden: true,
 						handler: this.AsociarBoletos,
 						tooltip: '<b>Asociar Boletos</b><br/>Asocia Boletos a la factura emitida.'
 				}
@@ -271,7 +272,6 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			this.getBoton('anular_fact').enable();
 			this.getBoton('completar_pago_2').enable();
 			this.getBoton('ant_estado').enable();
-			this.getBoton('asociar_boletos').enable();
 
 			if (rec.data.formato_factura_emitida == 'Carta') {
 				// this.getBoton('btnChequeoDocumentosWf').setVisible(true);
