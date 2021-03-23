@@ -55,7 +55,7 @@ BEGIN
         ELSIF   v_var = 'adminEntrega' THEN
          v_filto = '0=0 AND';
          ELSE
-        v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
+        v_filto = ' eng.id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
 
 
@@ -126,7 +126,7 @@ BEGIN
         ELSIF   v_var = 'adminEntrega' THEN
          v_filto = '0=0 AND';
          ELSE
-        v_filto = ' id_usuario_reg = '||p_id_usuario||' and ';
+        v_filto = ' eng.id_usuario_reg = '||p_id_usuario||' and ';
         END IF;
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='WITH punto_venta AS (SELECT p.id_punto_venta,
