@@ -1714,7 +1714,7 @@ $body$
                                           inner join vef.tsucursal suc on suc.id_sucursal = vent.id_sucursal
                                           inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
                                           inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                                          where (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                                          where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                                           group by vent.id_venta, pv.nombre, pv.codigo, lug.nombre,lug.id_lugar_fk, usu.desc_persona),
 
                                         detalle as (
@@ -1729,7 +1729,7 @@ $body$
                                         inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
                                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
                                         inner join obingresos.tforma_pago_pw fpw on fpw.id_forma_pago_pw = mp.forma_pago_id
-                                        where (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
+                                        where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
 
                                         group by vent.id_venta)
 
@@ -1962,7 +1962,7 @@ $body$
                       inner join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       order by  vent.id_venta, vent.nro_factura DESC)
 
                       UNION ALL
@@ -1984,7 +1984,7 @@ $body$
                       inner join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       group by pv.nombre, pv.codigo, ingas.desc_ingas)
                       )
                       order by desc_ingas ASC, id_venta ASC NULLS FIRST';
@@ -2065,7 +2065,7 @@ $body$
                       inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       group by ingas.desc_ingas, pv.nombre, pv.codigo, usu.desc_persona)
 
                       UNION ALL
@@ -2081,7 +2081,7 @@ $body$
                         inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                         inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                        where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                        where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       	group by pv.nombre, pv.codigo))
                         order by desc_ingas ASC NULLS FIRST';
 		raise notice '%',v_consulta;
