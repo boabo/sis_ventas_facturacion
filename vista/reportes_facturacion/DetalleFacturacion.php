@@ -8,6 +8,17 @@
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
+<style>
+.punto_venta {
+    background-color: #319DFD;
+    font-size: 20px;
+}
+.anulado {
+    background-color: #FA7967;
+}
+
+</style>
+
 <script>
     var ini = null;
     var fin = null;
@@ -20,6 +31,25 @@ header("content-type: text/javascript; charset=UTF-8");
 
     Phx.vista.DetalleFacturacion = Ext.extend(Phx.gridInterfaz, {
         title: 'Mayor',
+
+        viewConfig: {
+            //stripeRows: false,
+            autoFill: false,
+            getRowClass: function (record) {
+                if (record.data.tipo_factura == 'cabecera') {
+                  return 'punto_venta';
+                }
+
+                if (record.data.estado == 'ANULADA') {
+                  return 'anulado';
+                }
+            },
+            listener: {
+                render: this.createTooltip
+            },
+
+        },
+
         constructor: function (config) {
             var me = this;
             this.maestro = config.maestro;
@@ -52,9 +82,17 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'nombre',
                         fieldLabel: 'Punto de Venta',
                         allowBlank: true,
-                        anchor: '80%',
-                        gwidth: 200,
+                        gwidth: 400,
                         maxLength: 1000,
+                        renderer: function (value, p, record) {
+                          console.log("aqui lelga el codigo");
+                        if (record.data.tipo_factura == 'cabecera') {
+                          return '<b>Detalle PV: '+record.data.nombre+' ('+record.data.codigo+')</b>';
+                        } else {
+                          return value;
+                        }
+
+                      },
 
                     },
                     type: 'TextField',
@@ -112,16 +150,6 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 110,
                         galign: 'right ',
                         maxLength: 100,
-                    //     renderer:function (value,p,record){
-                		// 			if(record.data.tipo_reg != 'summary'){
-                		// 				return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
-                		// 			}
-                    //
-                		// 			else{
-                		// 				return  String.format('<div style="font-size:20px; text-align:rigth; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_monto_facturas,'0,000.00'));
-                		// 			}
-                    //
-                		// },
                     },
                     type: 'NumberField',
                     id_grupo: 1,
@@ -137,16 +165,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 110,
                         galign: 'right ',
                         maxLength: 100,
-                    //     renderer:function (value,p,record){
-                		// 			if(record.data.tipo_reg != 'summary'){
-                		// 				return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
-                		// 			}
-                    //
-                		// 			else{
-                		// 				return  String.format('<div style="font-size:20px; text-align:rigth; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_excentos,'0,000.00'));
-                		// 			}
-                    //
-                		// },
+
                     },
                     type: 'NumberField',
                     id_grupo: 1,
@@ -163,18 +182,102 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 110,
                         galign: 'right ',
                         maxLength: 100,
-                    //     renderer:function (value,p,record){
-                		// 			if(record.data.tipo_reg != 'summary'){
-                		// 				return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
-                		// 			}
-                    //
-                		// 			else{
-                		// 				return  String.format('<div style="font-size:20px; text-align:rigth; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_comision,'0,000.00'));
-                		// 			}
-                    //
-                		// },
                     },
                     type: 'NumberField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
+                        name: 'conceptos',
+                        fieldLabel: 'Detalle Conceptos',
+                        allowBlank: true,
+                        gwidth: 900,
+                        maxLength: 100,
+                        renderer: function (value, p, record) {
+
+                          if (value != null) {
+                            var concepto = value.split(",");
+                            var cantidad = record.data.cantidad.split(",");
+                            var precio = record.data.precio.split(",");
+                            var precio_total = record.data.total_precio.split(",");
+                            var total_concepto = concepto.length;
+                            var info = `<table border="2" >
+                                            <tbody>
+                                              <tr>
+                                                <td style="font-size:13px; background-color: #54B6FF;"><b>Concepto</b></td>
+                                                <td style="font-size:13px; background-color: #54B6FF;"><b>Cantidad</b></td>
+                                                <td style="font-size:13px; background-color: #54B6FF;"><b>Precio/Unitario</b></td>
+                                                <td style="font-size:13px; background-color: #54B6FF;"><b>Precio/Total</b></td>
+                                              </tr>`;
+                          for (var i = 0; i < total_concepto; i++) {
+                            info += `
+                                        <tr>
+                                            <td style="font-size:13px; background-color: #AFDBFC;" align="center">${concepto[i]}</td>
+                                            <td style="font-size:13px; background-color: #AFDBFC;" align="center">${parseFloat(cantidad[i])}</td>
+                                            <td style="font-size:13px; background-color: #AFDBFC;" align="center">${parseFloat(precio[i])}</td>
+                                            <td style="font-size:13px; background-color: #AFDBFC;" align="center">${parseFloat(precio_total[i])}</td>
+                                        </tr>
+                                    `;
+                          }
+
+                              info += `</table>`;
+                              return info;
+                          } else {
+                            return '';
+                          }
+
+
+                        },
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
+                        name: 'forma_pago',
+                        fieldLabel: 'Detalle Formas de Pago',
+                        allowBlank: true,
+                        gwidth: 400,
+                        maxLength: 100,
+                        renderer: function (value, p, record) {
+
+                        if (value != null) {
+                          var forma_pago = value.split(",");
+                          var total_monto = record.data.total_monto.split(",");
+                          var medio_pago = record.data.medio_pago.split(",");
+                          var total_forma_pago = forma_pago.length;
+                          var info2 = `<table border="2">
+                                          <tbody>
+                                            <tr>
+                                            <td style="font-size:13px; background-color: #88FD13;"><b>Forma de Pago</b></td>
+                                            <td style="font-size:13px; background-color: #88FD13;"><b>Medio de Pago</b></td>
+                                            <td style="font-size:13px; background-color: #88FD13;"><b>Monto</b></td>
+                                            </tr>`;
+                        for (var i = 0; i < total_forma_pago; i++) {
+                          info2 += `
+                                      <tr>
+                                          <td style="font-size:13px; background-color: #C2FF85;" align="center">${forma_pago[i]}</td>
+                                          <td style="font-size:13px; background-color: #C2FF85;" align="center">${medio_pago[i]}</td>
+                                          <td style="font-size:13px; background-color: #C2FF85;" align="center">${parseFloat(total_monto[i])}</td>
+                                      </tr>
+                                  `;
+                        }
+
+                            info2 += `</table>`;
+                            return info2;
+                        } else {
+                          return '';
+                        }
+
+
+                      },
+                    },
+                    type: 'TextField',
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -182,147 +285,20 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 // {
                 //     config: {
-                //         name: 'cantidad',
-                //         fieldLabel: 'Cantidad',
-                //         allowBlank: true,
-                //         width: '100%',
-                //         gwidth: 110,
-                //         galign: 'right ',
-                //         maxLength: 100
-                //     },
-                //     type: 'NumberField',
-                //     id_grupo: 1,
-                //     grid: true,
-                //     form: true
-                // },
-                // {
-                //     config: {
-                //         name: 'conceptos',
-                //         fieldLabel: 'Conceptos',
-                //         allowBlank: true,
-                //         anchor: '80%',
-                //         gwidth: 200,
-                //         maxLength: 1000,
-                //         renderer:function (value,p,record){
-                // 					if(record.data.tipo_reg != 'summary'){
-                // 						return  String.format('{0}', record.data['conceptos']);
-                // 					}
-                // 					else{
-                // 						return '<b><p style="font-size:20px; color:red; text-decoration: border-top:2px;">Totales FP: &nbsp;&nbsp; </p></b>';
-                // 					}
-                // 			},
-                //     },
-                //     type: 'TextField',
-                //     bottom_filter: true,
-                //     filters: {pfiltro: 'ingas.desc_ingas', type: 'string'},
-                //     id_grupo: 1,
-                //     grid: false,
-                //     form: true
-                // },
-
-                {
-                    config: {
-                        name: 'precio',
-                        fieldLabel: 'Precio/Unit',
-                        allowBlank: true,
-                        width: '100%',
-                        gwidth: 110,
-                        galign: 'right ',
-                        maxLength: 100,
-                    //     renderer:function (value,p,record){
-                		// 			if(record.data.tipo_reg != 'summary'){
-                		// 				return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
-                		// 			}
-                    //
-                		// 			else{
-                		// 				return  String.format('<div style="font-size:20px; text-align:rigth; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_precio_unitario,'0,000.00'));
-                		// 			}
-                    //
-                		// },
-                    },
-                    type: 'NumberField',
-                    id_grupo: 1,
-                    grid: false,
-                    form: true
-                },
-
-                // {
-                //     config: {
-                //         name: 'monto_mb_efectivo',
-                //         fieldLabel: 'Total',
+                //         name: 'precio',
+                //         fieldLabel: 'Precio/Unit',
                 //         allowBlank: true,
                 //         width: '100%',
                 //         gwidth: 110,
                 //         galign: 'right ',
                 //         maxLength: 100,
-                //     //     renderer:function (value,p,record){
-                // 		// 			if(record.data.tipo_reg != 'summary'){
-                // 		// 				return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
-                // 		// 			}
-                //     //
-                // 		// 			else{
-                // 		// 				return  String.format('<div style="font-size:20px; text-align:rigth; color:blue;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_forma_pago,'0,000.00'));
-                // 		// 			}
-                //     //
-                // 		// },
+                //
                 //     },
                 //     type: 'NumberField',
                 //     id_grupo: 1,
                 //     grid: false,
                 //     form: true
                 // },
-                //
-                // {
-                //     config: {
-                //         name: 'fop_code',
-                //         fieldLabel: 'Forma de Pago',
-                //         allowBlank: true,
-                //         width: '100%',
-                //         gwidth: 110,
-                //         galign: 'right ',
-                //         maxLength: 100
-                //     },
-                //     type: 'TextField',
-                //     filters: {pfiltro: 'fpw.fop_code', type: 'string'},
-                //     id_grupo: 1,
-                //     grid: true,
-                //     form: true
-                // },
-
-                // {
-                //     config: {
-                //         name: 'codigo_internacional',
-                //         fieldLabel: 'Moneda',
-                //         allowBlank: true,
-                //         width: '100%',
-                //         gwidth: 110,
-                //         galign: 'right ',
-                //         maxLength: 100
-                //     },
-                //     type: 'TextField',
-                //     filters: {pfiltro: 'fpw.fop_code', type: 'string'},
-                //     id_grupo: 1,
-                //     grid: true,
-                //     form: true
-                // },
-
-                // {
-                //     config: {
-                //         name: 'numero_tarjeta',
-                //         fieldLabel: 'Nro Tarjeta',
-                //         allowBlank: true,
-                //         width: '100%',
-                //         gwidth: 110,
-                //         galign: 'right ',
-                //         maxLength: 100
-                //     },
-                //     type: 'TextField',
-                //     filters: {pfiltro: 'fp.numero_tarjeta', type: 'string'},
-                //     id_grupo: 1,
-                //     grid: true,
-                //     form: true
-                // },
-
                 {
                     config: {
                         name: 'observaciones',
@@ -335,6 +311,60 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'TextField',
                     filters: {pfiltro: 'vent.observaciones', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
+                        name: 'estado',
+                        fieldLabel: 'Estado Factura',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 110,
+                        maxLength: 100,
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
+                        name: 'tipo_factura',
+                        fieldLabel: 'Tipo Factura',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 200,
+                        maxLength: 100,
+                        renderer: function (value, p, record) {
+
+                        if (value != null && value != 'cabecera') {
+                          return value;
+                        } else {
+                          return '';
+                        }
+
+                      },
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
+                        name: 'cajero',
+                        fieldLabel: 'Cajero',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 300,
+                        maxLength: 100,
+                    },
+                    type: 'TextField',
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -391,34 +421,38 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'numero_tarjeta', type: 'varchar'},
             {name: 'observaciones', type: 'varchar'},
             {name: 'tipo_reg', type: 'string'},
-            {name: 'total_monto_facturas', type: 'numeric'},
+            {name: 'total_monto', type: 'numeric'},
             {name: 'total_excentos', type: 'numeric'},
             {name: 'total_comision', type: 'numeric'},
             {name: 'total_precio_unitario', type: 'numeric'},
             {name: 'total_forma_pago', type: 'numeric'},
+            {name: 'tipo_factura', type: 'varchar'},
+            {name: 'cajero', type: 'varchar'},
+            {name: 'estado', type: 'varchar'},
+            {name: 'codigo', type: 'varchar'},
         ],
 
 
-        rowExpander: new Ext.ux.grid.RowExpander({
-            tpl: new Ext.Template(
-                '<br>',
-                '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Conceptos:&nbsp;&nbsp;</b> {conceptos}</p>',
-                '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Cantidad:&nbsp;&nbsp;</b> {cantidad}</p>',
-                '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Precio/Unitario:&nbsp;&nbsp;</b> {precio}</p>',
-                '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Precio Total:&nbsp;&nbsp;</b> {total_precio}</p>',
-                '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Formas de Pago:&nbsp;&nbsp;</b> {forma_pago}</p><br>',
-                '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Medios de Pago:&nbsp;&nbsp;</b> {medio_pago}</p><br>'
-            ),
+        // rowExpander: new Ext.ux.grid.RowExpander({
+        //     tpl: new Ext.Template(
+        //         '<br>',
+        //         '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Conceptos:&nbsp;&nbsp;</b> {conceptos}</p>',
+        //         '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Cantidad:&nbsp;&nbsp;</b> {cantidad}</p>',
+        //         '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Precio/Unitario:&nbsp;&nbsp;</b> {precio}</p>',
+        //         '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Precio Total:&nbsp;&nbsp;</b> {total_precio}</p>',
+        //         '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Formas de Pago:&nbsp;&nbsp;</b> {forma_pago}</p><br>',
+        //         '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Medios de Pago:&nbsp;&nbsp;</b> {medio_pago}</p><br>'
+        //     ),
 
-            renderer: function(v, p, record) {
-              console.log("aqui llega detalle total",record.data);
-              if (record.data['tipo_reg'] == 'summary') {
-
-              } else {
-                return '<div class="x-grid3-row-expander"></div>';
-              }
-
-            },
+            // renderer: function(v, p, record) {
+            //   console.log("aqui llega detalle total",record.data);
+            //   if (record.data['tipo_reg'] == 'summary') {
+            //
+            //   } else {
+            //     return '<div class="x-grid3-row-expander"></div>';
+            //   }
+            //
+            // },
             // renderer: function(v, p, record) {
             //   console.log("aqui llega detalle total",record.data);
             //   if (record.data['glosa1'] == 'SALDO ANTERIOR' || record.data['tipo_reg'] == 'summary') {
@@ -429,7 +463,7 @@ header("content-type: text/javascript; charset=UTF-8");
             //
             // },
 
-        }),
+        //}),
 
         //arrayDefaultColumHidden: ['fecha_mod', 'usr_reg', 'usr_mod', 'estado_reg', 'fecha_reg',],
 
@@ -457,7 +491,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
         ReporteEXCEL: function () {
               Phx.CP.loadingShow();
-              console.log("aqui llega data",this.store);
               Ext.Ajax.request({
                   url: '../../sis_ventas_facturacion/control/ReportesVentas/ReporteFacturaComputarizada',
                   params: {
@@ -466,6 +499,9 @@ header("content-type: text/javascript; charset=UTF-8");
                       id_concepto: this.store.baseParams.id_concepto,
                       desde: this.store.baseParams.desde,
                       hasta: this.store.baseParams.hasta,
+                      id_usuario_cajero: this.store.baseParams.id_usuario_cajero,
+                      tipo_documento: this.store.baseParams.tipo_documento,
+                      nombre_pv: this.store.baseParams.nombre_pv,
                       imprimir_reporte: 'si'
                   },
                   success: this.successExport,

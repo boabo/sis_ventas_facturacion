@@ -25,7 +25,7 @@ class ACTReportesVentas extends ACTbase{
 
 //var_dump("aqui llega data",$this->res2);exit;
 		if($this->res2->getTipo() == 'ERROR'){
-		 	throw new \Exception($this->res2->getMensaje());		 	
+		 	throw new \Exception($this->res2->getMensaje());
 		}
 
 		$this->objFunc=$this->create('MODReportesVentas');
@@ -65,8 +65,9 @@ class ACTReportesVentas extends ACTbase{
 		if ($this->objParam->getParametro('imprimir_reporte') != NULL && $this->objParam->getParametro('imprimir_reporte') != '') {
 
 			if ($this->objParam->getParametro('formato_reporte') == 'REPORTE DE FACTURAS') {
-					$this->objFunc=$this->create('MODReportesVentas');
-					$this->res=$this->objFunc->listarFacturaComputarizadaCabecera($this->objParam);
+
+					// $this->objFunc=$this->create('MODReportesVentas');
+					// $this->res=$this->objFunc->listarFacturaComputarizadaCabecera($this->objParam);
 
 					$this->objFunc=$this->create('MODReportesVentas');
 					$this->detalle=$this->objFunc->listarFacturaComputarizadaDetalle($this->objParam);
@@ -81,8 +82,9 @@ class ACTReportesVentas extends ACTbase{
 					//$this->objParam->addParametro('resumen',$this->res3->datos);
 					//var_dump($this->res->getDatos());
 					//Instancia la clase de excel
+					//var_dump("data",$this->detalle->getDatos());
 					$reporte=new RFacturacionComputarizada($this->objParam);
-					$reporte->datosHeader($this->res->getDatos(),$this->detalle->getDatos());
+					$reporte->datosHeader($this->detalle->getDatos());
 	        $reporte->generarReporte();
 
 					$this->mensajeExito=new Mensaje();
@@ -92,8 +94,8 @@ class ACTReportesVentas extends ACTbase{
 					$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
 			} elseif ($this->objParam->getParametro('formato_reporte') == 'REPORTE DE FACTURAS / CONCEPTO') {
 
-				$this->objFunc=$this->create('MODReportesVentas');
-				$this->res=$this->objFunc->listarFacturaComputarizadaCabecera($this->objParam);
+				// $this->objFunc=$this->create('MODReportesVentas');
+				// $this->res=$this->objFunc->listarFacturaComputarizadaCabecera($this->objParam);
 
 				$this->objFunc=$this->create('MODReportesVentas');
 				$this->detalle=$this->objFunc->listarFacturaConcepto($this->objParam);
@@ -107,7 +109,7 @@ class ACTReportesVentas extends ACTbase{
 				$this->objParam->addParametro('datos',$this->res->datos);
 				//Instancia la clase de excel
 				$reporte=new RReporteFacturasConcepto($this->objParam);
-				$reporte->datosHeader($this->res->getDatos(),$this->detalle->getDatos());
+				$reporte->datosHeader(/*$this->res->getDatos(),*/$this->detalle->getDatos());
 				$reporte->generarReporte();
 
 				$this->mensajeExito=new Mensaje();
@@ -118,8 +120,8 @@ class ACTReportesVentas extends ACTbase{
 
 			} elseif ($this->objParam->getParametro('formato_reporte') == 'RESUMEN DE FACTURAS / CONCEPTO') {
 
-				$this->objFunc=$this->create('MODReportesVentas');
-				$this->res=$this->objFunc->listarFacturaComputarizadaCabecera($this->objParam);
+				// $this->objFunc=$this->create('MODReportesVentas');
+				// $this->res=$this->objFunc->listarFacturaComputarizadaCabecera($this->objParam);
 
 				$this->objFunc=$this->create('MODReportesVentas');
 				$this->detalle=$this->objFunc->listarResumenFacturaComputarizada($this->objParam);
@@ -133,7 +135,7 @@ class ACTReportesVentas extends ACTbase{
 				$this->objParam->addParametro('datos',$this->res->datos);
 				//Instancia la clase de excel
 				$reporte=new RReporteResumenFacturasConcepto($this->objParam);
-				$reporte->datosHeader($this->res->getDatos(),$this->detalle->getDatos());
+				$reporte->datosHeader(/*$this->res->getDatos(),*/$this->detalle->getDatos());
 				$reporte->generarReporte();
 
 				$this->mensajeExito=new Mensaje();

@@ -170,10 +170,14 @@ class MODReportesVentas extends MODbase{
 		$this->setParametro('id_concepto','id_concepto','integer');
 		$this->setParametro('desde','desde','varchar');
 		$this->setParametro('hasta','hasta','varchar');
+		$this->setParametro('id_usuario_cajero','id_usuario_cajero','integer');
+		$this->setParametro('tipo_documento','tipo_documento','varchar');
 
 		$this->captura('conceptos','varchar');
 		$this->captura('total_precio','numeric');
 		$this->captura('nombre','varchar');
+		$this->captura('codigo','varchar');
+		$this->captura('desc_persona','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -194,6 +198,8 @@ class MODReportesVentas extends MODbase{
 		$this->setParametro('id_concepto','id_concepto','integer');
 		$this->setParametro('desde','desde','varchar');
 		$this->setParametro('hasta','hasta','varchar');
+		$this->setParametro('id_usuario_cajero','id_usuario_cajero','integer');
+		$this->setParametro('tipo_documento','tipo_documento','varchar');
 		$this->setCount(false);
 
 		$this->captura('id_venta','integer');
@@ -216,6 +222,9 @@ class MODReportesVentas extends MODbase{
 		$this->captura('medio_pago','varchar');
 		$this->captura('lugar','varchar');
 		$this->captura('pais','varchar');
+		$this->captura('estado','varchar');
+		$this->captura('tipo_factura','varchar');
+		$this->captura('cajero','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -265,6 +274,8 @@ class MODReportesVentas extends MODbase{
 		$this->setParametro('id_concepto','id_concepto','integer');
 		$this->setParametro('desde','desde','varchar');
 		$this->setParametro('hasta','hasta','varchar');
+		$this->setParametro('id_usuario_cajero','id_usuario_cajero','integer');
+		$this->setParametro('tipo_documento','tipo_documento','varchar');
 		$this->setCount(false);
 
 		$this->captura('concepto','varchar');
@@ -275,6 +286,8 @@ class MODReportesVentas extends MODbase{
 		$this->captura('fecha','varchar');
 		$this->captura('nombre','varchar');
 		$this->captura('id_venta','integer');
+		$this->captura('desc_persona','varchar');
+		$this->captura('codigo','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -294,7 +307,7 @@ class MODReportesVentas extends MODbase{
 
 		//Definicion de la lista del resultado del query
 		$this->setParametro('id_punto_venta','id_punto_venta','integer');
-		
+
 		$this->captura('moneda','varchar');
 		$this->captura('nombre_pv','varchar');
 

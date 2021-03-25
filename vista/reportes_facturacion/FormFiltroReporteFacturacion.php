@@ -136,7 +136,7 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
          },
 
          {
-			config: {
+			        config: {
 	                name: 'id_punto_venta',
 	                fieldLabel: 'Punto de Venta',
 	                allowBlank: false,
@@ -182,6 +182,105 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
 	            grid: true,
 	            form: true
 	       },
+         {
+                config: {
+                    name: 'nombre_punto_venta',
+                    fieldLabel: 'Desc Pv',
+                    allowBlank: true,
+                    width: '100%',
+                    gwidth: 110,
+                    /* galign: 'right ', */
+                    maxLength: 100,
+                    hidden : true,
+                },
+                type: 'TextField',
+                id_grupo: 0,
+                grid: true,
+                form: true
+          },
+         {
+   				config:{
+   					name:'id_usuario_cajero',
+   					fieldLabel:'Cajero',
+   					allowBlank:false,
+   					emptyText:'Cajero...',
+   					store: new Ext.data.JsonStore({
+
+   						url: '../../sis_seguridad/control/Usuario/listarUsuario',
+   						id: 'id_usuario',
+   						root: 'datos',
+   						sortInfo:{
+   							field: 'desc_person',
+   							direction: 'ASC'
+   						},
+   						totalProperty: 'total',
+   						fields: ['id_usuario','desc_person','cuenta'],
+   						// turn on remote sorting
+   						remoteSort: true,
+   						baseParams:{par_filtro:'PERSON.nombre_completo2', '_adicionar':'si'}
+   					}),
+   					valueField: 'id_usuario',
+   					displayField: 'desc_person',
+   					gdisplayField:'desc_persona',//dibuja el campo extra de la consulta al hacer un inner join con orra tabla
+   					tpl:'<tpl for="."><div class="x-combo-list-item"><br><p>{desc_person}</p><p>Cuenta Usuario:{cuenta}</p> </div></tpl>',
+   					hiddenName: 'id_usuario',
+   					forceSelection:true,
+   					typeAhead: true,
+   					triggerAction: 'all',
+   					lazyRender:true,
+   					mode:'remote',
+   					pageSize:10,
+   					queryDelay:1000,
+   					width:250,
+   					gwidth:280,
+   					minChars:2,
+   					turl:'../../../sis_seguridad/vista/usuario/Usuario.php',
+   					ttitle:'Usuarios',
+   					// tconfig:{width:1800,height:500},
+   					tdata:{},
+   					tcls:'usuario',
+   					pid:this.idContenedor,
+
+   					renderer:function (value, p, record){return String.format('{0}', record.data['desc_persona']);}
+   				},
+   				//type:'TrigguerCombo',
+   				type:'ComboBox',
+   				bottom_filter: true,
+   				id_grupo:0,
+   				filters:{
+   					pfiltro:'nombre_completo1',
+   					type:'string'
+   				},
+
+   				grid:true,
+   				form:true
+   			},
+
+        {
+            config: {
+                name: 'tipo_documento',
+                fieldLabel: 'Tipo Documento',
+                typeAhead: true,
+                allowBlank: false,
+                triggerAction: 'all',
+                emptyText: 'Tipo...',
+                selectOnFocus: true,
+                mode: 'local',
+                store: new Ext.data.ArrayStore({
+                    fields: ['ID', 'valor'],
+                    data: [['factura', 'Factura'],
+                        ['recibo', 'Recibo']
+                    ]
+                }),
+                valueField: 'ID',
+                displayField: 'valor',
+                width: 250,
+                style:'margin-bottom: 10px;'
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            form: true
+        },
 
          {
              config:{
@@ -189,40 +288,44 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
                  fieldLabel: 'Concepto',
                  allowBlank: true,
                  emptyText : 'Concepto...',
-                 store : new Ext.data.JsonStore({
-                             url:'../../sis_parametros/control/ConceptoIngas/listarConceptoIngas',
-                             id : 'id_concepto_ingas',
-                             root: 'datos',
-                             sortInfo:{
-                                     field: 'desc_ingas',
-                                     direction: 'ASC'
-                             },
-                             totalProperty: 'total',
-                             fields: ['id_concepto_ingas','tipo','desc_ingas','movimiento','desc_partida','id_grupo_ots','filtro_ot','requiere_ot', 'codigo'],
-                             remoteSort: true,
-                             baseParams:{par_filtro:'desc_ingas',codigo:'Facturacion'}
+                 store: new Ext.data.JsonStore({
+                     url: '../../sis_ventas_facturacion/control/Servicios/listarServicios',
+                     id: 'id_producto',
+                     root: 'datos',
+                     sortInfo: {
+                         field: 'desc_ingas',
+                         direction: 'ASC'
+                     },
+                     totalProperty: 'total',
+                     fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad','comision'],
+                     remoteSort: true,
+                     baseParams: {par_filtro: 'ingas.desc_ingas'}
                  }),
-                valueField: 'id_concepto_ingas',
-                displayField: 'desc_ingas',
-                gdisplayField: 'desc_ingas',
-                hiddenName: 'id_concepto_ingas',
-                forceSelection:true,
-                typeAhead: false,
-                triggerAction: 'all',
-                tpl:'<tpl for="."><div class="x-combo-list-item"><b>Codigo: </b><span style="color:red;font-weight:bold;">{codigo}</span><br><b>Descripcion: </b><span style="color:blue;font-weight:bold;">{desc_ingas}</span></div></tpl>',
-                listWidth:450,
-                resizable:true,
-                lazyRender:true,
-                mode:'remote',
-                pageSize:10,
-                width:250,
-                hidden:true,
-                queryDelay:1000,
-                gwidth:100,
-                minChars:1
+                 valueField: 'id_concepto_ingas',
+                 displayField: 'desc_ingas',
+                 gdisplayField: 'desc_ingas',
+                 hiddenName: 'id_producto',
+                 forceSelection: true,
+                 typeAhead: false,
+                 triggerAction: 'all',
+                 lazyRender: true,
+                 mode: 'remote',
+                 resizable:true,
+                 pageSize: 20,
+                 queryDelay: 1000,
+                 //anchor: '100%',
+                 width : 250,
+                 listWidth:'600',
+                 hidden:true,
+                 minChars: 2 ,
+                 listeners: {
+                   beforequery: function(qe){
+                     delete qe.combo.lastQuery;
+                   }
+                 }
              },
              type:'ComboBox',
-             id_grupo:0,
+             id_grupo:1,
              form:true,
              grid:true
          },
@@ -271,15 +374,21 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
 			var hasta=parametros.hasta;
 			var formato_reporte=parametros.formato_reporte;
 			var id_concepto=parametros.id_concepto;
-			var id_punto_venta=parametros.id_punto_venta;
-
+      var id_punto_venta=parametros.id_punto_venta;
+      var id_usuario_cajero=parametros.id_usuario_cajero;
+			var tipo_documento=parametros.tipo_documento;
+      var nombre_pv = parametros.nombre_punto_venta;
 
 			this.onEnablePanel(this.idContenedor + '-south',
-				Ext.apply(parametros,{	'desde': desde,
+				Ext.apply(parametros,{
+                    'desde': desde,
 										'hasta': hasta,
 										'formato_reporte': formato_reporte,
 										'id_concepto': id_concepto,
-										'id_punto_venta' : id_punto_venta
+                    'id_punto_venta' : id_punto_venta,
+                    'id_usuario_cajero' : id_usuario_cajero,
+                    'tipo_documento' : tipo_documento,
+										'nombre_pv' : nombre_pv
 									 }));
         }
     },
@@ -294,13 +403,24 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
 				} else if (b.data.field1 == 'REPORTE DE FACTURAS / CONCEPTO') {
               this.mostrarComponente(this.Cmp.id_concepto);
               this.mostrarComponente(this.Cmp.id_punto_venta);
-              this.Cmp.id_punto_venta.reset();
+              //this.Cmp.id_punto_venta.reset();
         } else if (b.data.field1 == 'RESUMEN DE FACTURAS / CONCEPTO') {
               this.mostrarComponente(this.Cmp.id_concepto);
               this.mostrarComponente(this.Cmp.id_punto_venta);
-              this.Cmp.id_punto_venta.reset();
+              //this.Cmp.id_punto_venta.reset();
          }
 			},this);
+
+      /*Aumentando para controlar los conceptos dependiendo del tipo de documento (Ismael Valdivia 24/03/2021)*/
+      this.Cmp.tipo_documento.on('select',function(a,b,c) {
+        this.Cmp.id_concepto.store.baseParams.tipo_documento = b.data.valor;
+      },this);
+      /********************************************************************************************************/
+
+      this.Cmp.id_punto_venta.on('select',function(a,b,c) {
+        this.Cmp.nombre_punto_venta.setValue(b.data.nombre);
+      },this);
+
 
     },
 
