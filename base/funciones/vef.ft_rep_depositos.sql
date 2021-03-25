@@ -125,7 +125,7 @@ BEGIN
 
 
                                         inner join vef.tapertura_cierre_caja acc on acc.fecha_apertura_cierre = ven.fecha and acc.id_punto_venta = ven.id_punto_venta
-                                        and acc.id_usuario_cajero = ven.id_usuario_cajero
+                                        and acc.id_usuario_cajero = ven.id_usuario_cajero and ven.id_punto_venta = cdo.id_punto_venta
                                         inner join segu.vusuario usucaja on usucaja.id_usuario = acc.id_usuario_cajero
 
                                         where ven.id_deposito is not null
@@ -224,7 +224,7 @@ BEGIN
 
 
                                         inner join vef.tapertura_cierre_caja acc on acc.fecha_apertura_cierre = ven.fecha and acc.id_punto_venta = ven.id_punto_venta
-                                        and acc.id_usuario_cajero = ven.id_usuario_cajero
+                                        and acc.id_usuario_cajero = ven.id_usuario_cajero and ven.id_punto_venta = cdo.id_punto_venta
                                          inner join segu.vusuario usucaja on usucaja.id_usuario = acc.id_usuario_cajero
 
                                         where ven.id_deposito is not null
@@ -274,7 +274,7 @@ BEGIN
                                         inner join segu.vusuario usu on usu.id_usuario = depo.id_usuario_reg
 
                                         inner join vef.tapertura_cierre_caja acc on acc.fecha_apertura_cierre = ven.fecha and acc.id_punto_venta = ven.id_punto_venta
-                                        and acc.id_usuario_cajero = ven.id_usuario_cajero
+                                        and acc.id_usuario_cajero = ven.id_usuario_cajero and ven.id_punto_venta = cdo.id_punto_venta
                                         inner join segu.vusuario usucaja on usucaja.id_usuario = acc.id_usuario_cajero
 
                                         where ven.id_deposito is not null
@@ -605,7 +605,7 @@ BEGIN
                                             --inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
                                             inner join vef.tventa_forma_pago venfp on venfp.id_venta = ven.id_venta
                                             inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = venfp.id_medio_pago
-                                            inner join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha
+                                            inner join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha and ven.id_punto_venta = cdo.id_punto_venta
                                             inner join param.ttipo_cambio tc on tc.fecha = cdo.fecha_apertura_cierre and tc.id_moneda = 2
 
                                             and cdo.id_usuario_cajero = ven.id_usuario_cajero
@@ -850,7 +850,7 @@ BEGIN
 
 
                                         inner join vef.tapertura_cierre_caja acc on acc.fecha_apertura_cierre = ven.fecha and acc.id_punto_venta = ven.id_punto_venta
-                                        and acc.id_usuario_cajero = ven.id_usuario_cajero
+                                        and acc.id_usuario_cajero = ven.id_usuario_cajero and ven.id_punto_venta = cdo.id_punto_venta
                                          inner join segu.vusuario usucaja on usucaja.id_usuario = acc.id_usuario_cajero
 
                                         where ven.id_deposito is not null
@@ -899,8 +899,8 @@ BEGIN
                                         inner join tes.tcuenta_bancaria cuen on cuen.id_cuenta_bancaria = de.id_cuenta_bancaria and cuen.id_moneda = depo.id_moneda_deposito
                                         inner join segu.vusuario usu on usu.id_usuario = depo.id_usuario_reg
 
-                                        inner join vef.tapertura_cierre_caja acc on acc.fecha_apertura_cierre = ven.fecha and acc.id_punto_venta = ven.id_punto_venta
-                                        and acc.id_usuario_cajero = ven.id_usuario_cajero
+                                        inner join vef.tapertura_cierre_caja acc on acc.fecha_apertura_cierre = ven.fecha
+                                        and acc.id_usuario_cajero = ven.id_usuario_cajero and ven.id_punto_venta = cdo.id_punto_venta
                                         inner join segu.vusuario usucaja on usucaja.id_usuario = acc.id_usuario_cajero
 
                                         where ven.id_deposito is not null
@@ -1172,7 +1172,7 @@ BEGIN
                                             --inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
                                             inner join vef.tventa_forma_pago venfp on venfp.id_venta = ven.id_venta
                                             inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = venfp.id_medio_pago
-                                            inner join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha
+                                            inner join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha and ven.id_punto_venta = cdo.id_punto_venta
                                             inner join param.ttipo_cambio tc on tc.fecha = cdo.fecha_apertura_cierre and tc.id_moneda = 2
 
                                             and cdo.id_usuario_cajero = ven.id_usuario_cajero
