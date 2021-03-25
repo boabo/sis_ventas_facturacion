@@ -803,7 +803,8 @@ $body$
             numero_tarjeta,
             codigo_tarjeta,
             id_auxiliar,
-            tipo_tarjeta
+            tipo_tarjeta,
+            nro_mco
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -822,7 +823,8 @@ $body$
             v_parametros.numero_tarjeta,
             replace(upper(v_parametros.codigo_tarjeta),' ',''),
             v_parametros.id_auxiliar,
-            v_parametros.tipo_tarjeta
+            v_parametros.tipo_tarjeta,
+            v_parametros.mco
           );
         end if;
 
@@ -869,6 +871,14 @@ $body$
         end if;
 		*/
 
+        if (left (v_parametros.mco_2,3)  <> '930' and v_parametros.mco_2 <> '')then
+            raise exception 'El numero del MCO tiene que empezar con 930';
+            end if;
+
+        if (char_length(v_parametros.mco_2::varchar) <> 15 and v_parametros.mco_2 <> '' ) then
+            raise exception 'El numero del MCO debe tener 15 digitos obligatorios, 930000000012345';
+        end if;
+
         /**************************************************************************************/
 
          --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago;
@@ -889,7 +899,8 @@ $body$
             numero_tarjeta,
             codigo_tarjeta,
             id_auxiliar,
-            tipo_tarjeta
+            tipo_tarjeta,
+            nro_mco
           )
 
           values(
@@ -909,7 +920,8 @@ $body$
             v_parametros.numero_tarjeta_2,
             replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
-            v_parametros.tipo_tarjeta
+            v_parametros.tipo_tarjeta,
+            v_parametros.mco_2
           );
         end if;
 
@@ -1212,7 +1224,8 @@ $body$
             tipo_tarjeta,
             /*Aumentando instancia y moneda*/
             id_medio_pago,
-            id_moneda
+            id_moneda,
+            nro_mco
             /*******************************/
           )
           values(
@@ -1233,7 +1246,8 @@ $body$
             v_parametros.tipo_tarjeta,
             /*Aumentando instancia de pago y id_moneda*/
             v_parametros.id_medio_pago,
-            v_parametros.id_moneda
+            v_parametros.id_moneda,
+            v_parametros.mco
             /*****************************************/
           );
 
@@ -1263,6 +1277,16 @@ $body$
                             v_res = pxp.f_valida_numero_tarjeta_credito(v_parametros.numero_tarjeta_2::varchar,v_codigo_tarjeta);
                         end if;
                     end if;
+
+
+                     if (left (v_parametros.mco_2,3)  <> '930' and v_parametros.mco_2 <> '')then
+                          raise exception 'El numero del MCO tiene que empezar con 930';
+                          end if;
+
+                      if (char_length(v_parametros.mco_2::varchar) <> 15 and v_parametros.mco_2 <> '' ) then
+                          raise exception 'El numero del MCO debe tener 15 digitos obligatorios, 930000000012345';
+                      end if;
+
 
            /*******************************Control para la tarjeta 2******************************/
 
@@ -1304,7 +1328,8 @@ $body$
             tipo_tarjeta,
             /*Aumentando la instancia de pago y el id_moneda*/
             id_medio_pago,
-            id_moneda
+            id_moneda,
+            nro_mco
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -1324,7 +1349,8 @@ $body$
             v_parametros.tipo_tarjeta_2,
             /*Aumentando la instancia de pago y el id_moneda*/
             v_parametros.id_medio_pago_2,
-            v_parametros.id_moneda_2
+            v_parametros.id_moneda_2,
+            v_parametros.mco_2
           );
           end if;
         end if;

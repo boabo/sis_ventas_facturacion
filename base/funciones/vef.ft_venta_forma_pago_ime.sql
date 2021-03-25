@@ -244,7 +244,8 @@ BEGIN
             tipo_tarjeta,
             /*Aumentamos el id_instancia*/
             id_medio_pago,
-            id_moneda
+            id_moneda,
+            nro_mco
             /****************************/
           )
           values(
@@ -264,7 +265,8 @@ BEGIN
             '',
             /*Aumentamos el id_instancia y el id_moneda*/
             v_parametros.id_medio_pago,
-            v_parametros.id_moneda
+            v_parametros.id_moneda,
+            v_parametros.mco
             /****************************/
           )RETURNING id_venta_forma_pago into v_id_venta_forma_pago;
 

@@ -1724,3 +1724,11 @@ IS 'id de registro del punto de venta del ERP';
 ALTER TABLE vef.tstage_punto_venta
   OWNER TO postgres;
 /***********************************F-SCP-BVP-VEF-0-19/03/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-25/03/2021****************************************/
+ALTER TABLE vef.tventa_forma_pago
+  ADD COLUMN nro_mco VARCHAR(20);
+
+  ALTER TABLE vef.tventa_forma_pago_log
+    ADD COLUMN nro_mco VARCHAR(20);
+
+/***********************************F-SCP-IRVA-VEF-0-25/03/2021****************************************/
