@@ -1033,7 +1033,8 @@ BEGIN
                         (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                 /************************************************************************************************/
 
 
@@ -1118,7 +1119,8 @@ BEGIN
                         NULL::varchar as cuenta_auxiliar
                   from obingresos.tdeposito depo
                   inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                  and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                  and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                  where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                   );
 
 
@@ -1676,7 +1678,8 @@ BEGIN
                         (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                 /************************************************************************************************/
 
 
@@ -2050,7 +2053,8 @@ BEGIN
                                 NULL::varchar as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
 
                           /**************************************************/
 
@@ -2149,7 +2153,8 @@ BEGIN
                                 NULL::varchar as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
 
                           /**************************************************/
 
@@ -3080,7 +3085,8 @@ BEGIN
                                   (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                           /************************************************************************************************/
 
 
@@ -3165,7 +3171,8 @@ BEGIN
                                   NULL::varchar as cuenta_auxiliar
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                            where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                         /*******************************/    );
 					end if;
 /*****************************/ elsif (v_parametros.formato_reporte = 'REPORTE CONSOLIDADO (DEBE-HABER)') then
@@ -3730,7 +3737,8 @@ BEGIN
                                   (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                           /************************************************************************************************/
 
 
@@ -4129,7 +4137,8 @@ BEGIN
                                   NULL::varchar as cuenta_auxiliar
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                            where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                         /*******************************/
                         );
 
@@ -4230,7 +4239,8 @@ BEGIN
                                   NULL::varchar as cuenta_auxiliar
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                            where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                         /*******************************/
 
                         );
@@ -5223,7 +5233,8 @@ BEGIN
                         (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                 /************************************************************************************************/
 
 
@@ -5308,7 +5319,8 @@ BEGIN
                         NULL::varchar as cuenta_auxiliar
                   from obingresos.tdeposito depo
                   inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                  and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                  and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                  where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                   );
 
 
@@ -5866,7 +5878,8 @@ BEGIN
                         (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                 /************************************************************************************************/
 
 
@@ -6240,7 +6253,8 @@ BEGIN
                                 NULL::varchar as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
 
                           /**************************************************/
 
@@ -6339,7 +6353,8 @@ BEGIN
                                 NULL::varchar as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
 
                           /**************************************************/
 
@@ -7270,7 +7285,8 @@ BEGIN
                                   (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                           /************************************************************************************************/
 
 
@@ -7355,7 +7371,8 @@ BEGIN
                                   NULL::varchar as cuenta_auxiliar
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                            where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                         /*******************************/    );
 					end if;
 /*****************************/ elsif (v_parametros.formato_reporte = 'REPORTE CONSOLIDADO (DEBE-HABER)') then
@@ -7920,7 +7937,8 @@ BEGIN
                                   (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
+                          and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                          where aux.codigo_auxiliar = v_parametros.codigo_auxiliar;
                           /************************************************************************************************/
 
 
@@ -8319,7 +8337,8 @@ BEGIN
                                   NULL::varchar as cuenta_auxiliar
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                            where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                         /*******************************/
                         );
 
@@ -8420,7 +8439,8 @@ BEGIN
                                   NULL::varchar as cuenta_auxiliar
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
+                            and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
+                            where aux.codigo_auxiliar = v_parametros.codigo_auxiliar)
                         /*******************************/
 
                         );
