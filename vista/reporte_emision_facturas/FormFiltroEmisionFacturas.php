@@ -136,6 +136,52 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
          },
 
          {
+             config: {
+                 name: 'id_auxiliar',
+                 fieldLabel: 'Cuenta Corriente',
+                 allowBlank: false,
+                 width:250,
+                 emptyText: 'Cuenta Corriente...',
+                 store: new Ext.data.JsonStore({
+                     url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
+                     id: 'id_auxiliar',
+                     root: 'datos',
+                     sortInfo: {
+                         field: 'codigo_auxiliar',
+                         direction: 'ASC'
+                     },
+                     totalProperty: 'total',
+                     fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
+                     remoteSort: true,
+                     baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si', '_adicionar':'si'}
+                 }),
+                 valueField: 'id_auxiliar',
+                 displayField: 'nombre_auxiliar',
+                 gdisplayField: 'codigo_auxiliar',
+                 hiddenName: 'id_auxiliar',
+                 tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+                 forceSelection: true,
+                 typeAhead: false,
+                 triggerAction: 'all',
+                 lazyRender: true,
+                 mode: 'remote',
+                 pageSize: 15,
+                 queryDelay: 1000,
+                 gwidth: 150,
+                 listWidth:350,
+                 resizable:true,
+                 minChars: 2,
+                 renderer : function(value, p, record) {
+                     return String.format('{0}', record.data['nombre_auxiliar']);
+                 }
+             },
+             type: 'ComboBox',
+             id_grupo: 0,
+             grid: true,
+             form: true
+         },
+
+         {
  			config: {
  	                name: 'id_punto_venta',
  	                fieldLabel: 'Punto de Venta',
@@ -216,51 +262,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                 form: true
           },
 
-            {
-                config: {
-                    name: 'id_auxiliar',
-                    fieldLabel: 'Cuenta Corriente',
-                    allowBlank: false,
-                    width:250,
-                    emptyText: 'Cuenta Corriente...',
-                    store: new Ext.data.JsonStore({
-                        url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
-                        id: 'id_auxiliar',
-                        root: 'datos',
-                        sortInfo: {
-                            field: 'codigo_auxiliar',
-                            direction: 'ASC'
-                        },
-                        totalProperty: 'total',
-                        fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
-                        remoteSort: true,
-                        baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si', '_adicionar':'si'}
-                    }),
-                    valueField: 'id_auxiliar',
-                    displayField: 'nombre_auxiliar',
-                    gdisplayField: 'codigo_auxiliar',
-                    hiddenName: 'id_auxiliar',
-                    tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
-                    forceSelection: true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender: true,
-                    mode: 'remote',
-                    pageSize: 15,
-                    queryDelay: 1000,
-                    gwidth: 150,
-                    listWidth:350,
-                    resizable:true,
-                    minChars: 2,
-                    renderer : function(value, p, record) {
-                        return String.format('{0}', record.data['nombre_auxiliar']);
-                    }
-                },
-                type: 'ComboBox',
-                id_grupo: 0,
-                grid: true,
-                form: true
-            },
+
 
         {
           config : {

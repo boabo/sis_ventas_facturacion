@@ -22,6 +22,11 @@ header("content-type: text/javascript; charset=UTF-8");
 .totales {
     background-color: #92E176;
 }
+
+.depositos {
+    background-color: #FF6060;
+}
+
 </style>
 
 <script>
@@ -42,13 +47,23 @@ header("content-type: text/javascript; charset=UTF-8");
             autoFill: true,
             getRowClass: function (record) {
               console.log("aqui datos",record);
-                if (record.data.tipo_factura == null) {
+                if (record.data.tipo_factura == null && record.data.pasajero != 'DEPOSITO') {
                   return 'punto_venta';
-                } else if (record.data.tipo_factura == 'total_pv') {
+                } else if (record.data.tipo_factura == 'total_pv' ) {
                   return 'total_pv';
-                } else if (record.data.tipo_factura == '') {
+                } else if (record.data.tipo_factura == '' && record.data.pasajero != 'DEPOSITO') {
                   return 'totales';
                 }
+
+                else if (record.data.tipo_factura == null && record.data.pasajero == 'DEPOSITO') {
+                  return 'depositos';
+                }
+
+                // else if (record.data.tipo_factura == 'total_pv' && record.data.pasajero == 'TOTALES (DEPOSITO):') {
+                //   return 'depositos';
+                // }
+
+
             },
     listener: {
         render: this.createTooltip

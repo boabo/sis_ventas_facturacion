@@ -59,7 +59,7 @@ class RReporteEmisionBoletosXLS
     }
     function imprimeCabecera() {
         $this->docexcel->createSheet();
-        $this->docexcel->getActiveSheet()->setTitle('Naturales');
+        $this->docexcel->getActiveSheet()->setTitle('Reporte Venta Propia');
         $this->docexcel->setActiveSheetIndex(0);
 
         $styleTituloPrincipal = array(
@@ -222,6 +222,24 @@ class RReporteEmisionBoletosXLS
           )
         );
 
+        $style_depositos = array(
+          'fill' => array(
+              'type' => PHPExcel_Style_Fill::FILL_SOLID,
+              'color' => array(
+                  'rgb' => 'FF6060'
+              )
+          ),
+          'alignment' => array(
+              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+              'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+          ),
+          'font'  => array(
+              'bold'  => true,
+              'size'  => 11,
+              'name'  => 'Calibri',
+          )
+        );
+
         $style_subtotal = array(
           'fill' => array(
               'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -368,7 +386,7 @@ class RReporteEmisionBoletosXLS
           $this->docexcel->getActiveSheet()->getStyle("A$fila:C$fila")->applyFromArray($style_datos);
 
 
-          if ($value['tipo_factura'] == null) {
+          if ($value['tipo_factura'] == null && $value['pasajero'] != 'DEPOSITO') {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'PUNTO DE VENTA: '.$value['pasajero']);
             $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_haber);
             $this->docexcel->getActiveSheet()->mergeCells("A$fila:H$fila");
@@ -376,6 +394,11 @@ class RReporteEmisionBoletosXLS
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'TOTAL PUNTO DE VENTA:');
             $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_subtotal);
             $this->docexcel->getActiveSheet()->mergeCells("A$fila:E$fila");
+          } else if ($value['tipo_factura'] == null && $value['pasajero'] == 'DEPOSITO') {
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'DEPOSITOS:');
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_depositos);
+            $this->docexcel->getActiveSheet()->mergeCells("A$fila:E$fila");
+            $this->docexcel->getActiveSheet()->mergeCells("A$fila:H$fila");
           }
           else {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['pasajero']);
