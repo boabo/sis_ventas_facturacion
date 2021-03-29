@@ -153,7 +153,7 @@ BEGIN
                         left join param.tconcepto_ingas cig on cig.id_concepto_ingas = vedet.id_producto
 					    left join vef.tmedico med on med.id_medico = vedet.id_medico
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
-                        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida,
+                        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
                         left join param.tmoneda mon on mon.id_moneda = cig.id_moneda
                         where ';
 
