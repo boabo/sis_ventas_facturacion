@@ -61,7 +61,7 @@ class RReporteResumenDetalleCtaCteXLS
     function imprimeCabecera() {
         // $this->docexcel->createSheet();
         $this->docexcel->setActiveSheetIndex(0);
-        $this->docexcel->getActiveSheet()->setTitle('Reporte Venta Propia');
+        $this->docexcel->getActiveSheet()->setTitle('RESUMEN');
 
         $styleTituloPrincipal = array(
             'font'  => array(
@@ -436,7 +436,7 @@ class RReporteResumenDetalleCtaCteXLS
 
           $this->docexcel->createSheet();
           $this->docexcel->setActiveSheetIndex($sheet);
-          $this->docexcel->getActiveSheet()->setTitle('RESUMEN');
+          $this->docexcel->getActiveSheet()->setTitle('DETALLADO');
 
           $inicio = 7;
           $fila = 8;
