@@ -179,7 +179,8 @@ BEGIN
                         ven.id_cliente_destino,
                         '||v_columnas_destino||',
 
-                        usua.desc_persona::varchar as cajero
+                        usua.desc_persona::varchar as cajero,
+                        ven.tipo_factura,ven.id_auxiliar_anticipo
 
 						from vef.tventa ven
 						inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg

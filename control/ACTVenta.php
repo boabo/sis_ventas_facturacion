@@ -83,7 +83,12 @@ class ACTVenta extends ACTbase{
             }elseif ($this->objParam->getParametro('pes_estado') == 'finalizado') {
                 $this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."'' and ven.fecha = ''".$this->objParam->getParametro('fecha')."''");
             }elseif ($this->objParam->getParametro('pes_estado') == 'anulado') {
-            	$this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."''");
+								if ($this->objParam->getParametro('fecha') !=''){
+										$this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."'' and ven.fecha = ''".$this->objParam->getParametro('fecha')."''");
+								}else{
+										$this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."''");
+								}
+
             }
         }
 
@@ -96,8 +101,12 @@ class ACTVenta extends ACTbase{
 			$this->objParam->addFiltro(" ven.id_sucursal = ". $this->objParam->getParametro('id_sucursal'));
 		}
 
-		if ($this->objParam->getParametro('tipo_factura') != '') {			
-			$this->objParam->addFiltro(" ven.tipo_factura = ''". $this->objParam->getParametro('tipo_factura')."''");
+		if ($this->objParam->getParametro('tipo_factura') != '') {
+			if ($this->objParam->getParametro('tipo_factura') == 'todos') {
+				$this->objParam->addFiltro(" ven.tipo_factura in (''recibo'', ''recibo_manual'')");
+			}else{
+				$this->objParam->addFiltro(" ven.tipo_factura = ''". $this->objParam->getParametro('tipo_factura')."''");
+			}
 		}
 		// var_dump("LLEGA AQUI",$this->objParam->getParametro('tipo_factura'));
 		if ($this->objParam->getParametro('id_punto_venta') != '') {

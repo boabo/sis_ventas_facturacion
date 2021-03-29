@@ -124,13 +124,14 @@ class MODVenta extends MODbase{
 		$this->captura('id_cliente_destino','integer');
 		$this->captura('cliente_destino','varchar');
 		$this->captura('cajero','varchar');
-
-
+		$this->captura('tipo_factura','varchar');
+		$this->captura('id_auxiliar_anticipo','int4');
 
 
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
+		// echo $this->consulta;exit;
 		$this->ejecutarConsulta();
 
 		//Devuelve la respuesta
