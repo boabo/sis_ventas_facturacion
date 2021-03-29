@@ -7,6 +7,7 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 require_once(dirname(__FILE__).'/../reportes/RReporteEmisionBoletosXLS.php');
+require_once(dirname(__FILE__).'/../reportes/RReporteResumenDetalleCtaCteXLS.php');
 
 class ACTReporteEmisionPasajes extends ACTbase{
 
@@ -60,6 +61,39 @@ class ACTReporteEmisionPasajes extends ACTbase{
 			//Instancia la clase de excel
 			$this->objReporteFormato=new RReporteEmisionBoletosXLS($this->objParam);
 			$this->objReporteFormato->datosHeader($this->res);
+			$this->objReporteFormato->generarReporte();
+
+			$this->mensajeExito=new Mensaje();
+			$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado',
+											'Se generó con éxito el reporte: '.$nombreArchivo,'control');
+			$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+			$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+
+		}
+
+
+    function reporteResumenDetalle()	{
+
+		  $this->objFunc=$this->create('MODReporteEmisionBoletos');
+			$this->res=$this->objFunc->reporteResumenDetalle($this->objParam);
+
+
+      $this->objFunc=$this->create('MODReporteEmisionBoletos');
+			$this->res_resu=$this->objFunc->reporteResumenCtaCte($this->objParam);
+
+			//obtener titulo del reporte
+			$titulo = 'Reporte Auxiliares';
+			//Genera el nombre del archivo (aleatorio + titulo)
+			$nombreArchivo=uniqid(md5(session_id()).$titulo);
+
+			$nombreArchivo.='.xls';
+			$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+			$this->objParam->addParametro('datos',$this->res->datos);
+
+
+			//Instancia la clase de excel
+			$this->objReporteFormato=new RReporteResumenDetalleCtaCteXLS($this->objParam);
+			$this->objReporteFormato->datosHeader($this->res, $this->res_resu);
 			$this->objReporteFormato->generarReporte();
 
 			$this->mensajeExito=new Mensaje();

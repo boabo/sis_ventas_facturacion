@@ -304,7 +304,7 @@ BEGIN
                               /*Aqui ponemos la condicion para recuperar carda antes del 19/03/2021*/
                               if(v_parametros.desde::date < '19/03/2021')then
 
-                              if (v_parametros.desde::date >= '19/03/2021') then
+                              if (v_parametros.hasta::date >= '19/03/2021') then
                               	v_fecha_final = '18/03/2021';
                               else
                               	v_fecha_final = v_parametros.hasta::date;
@@ -368,7 +368,7 @@ BEGIN
                               /*Aqui para ir agrupando los puntos de ventas*/
 							if(v_parametros.desde::date < '19/03/2021')then
 
-                            if (v_parametros.desde::date >= '19/03/2021') then
+                            if (v_parametros.hasta::date >= '19/03/2021') then
                             v_fecha_final = '18/03/2021';
                             else
                             v_fecha_final = v_parametros.hasta::date;
@@ -661,7 +661,7 @@ BEGIN
 
                               if(v_parametros.desde::date < '19/03/2021')then
 
-                              if (v_parametros.desde::date >= '19/03/2021') then
+                              if (v_parametros.hasta::date >= '19/03/2021') then
                               v_fecha_final = '18/03/2021';
                               else
                               v_fecha_final = v_parametros.hasta::date;
@@ -729,7 +729,7 @@ BEGIN
 
                               if(v_parametros.desde::date < '19/03/2021')then
 
-                              if (v_parametros.desde::date >= '19/03/2021') then
+                              if (v_parametros.hasta::date >= '19/03/2021') then
                               v_fecha_final = '18/03/2021';
                               else
                               v_fecha_final = v_parametros.hasta::date;
@@ -1334,7 +1334,7 @@ BEGIN
                 /*Aqui Recuperamos los datos de Carga*/
                 if(v_parametros.desde::date < '19/03/2021')then
 
-                if (v_parametros.desde::date >= '19/03/2021') then
+                if (v_parametros.hasta::date >= '19/03/2021') then
                 v_fecha_final = '18/03/2021';
                 else
                 v_fecha_final = v_parametros.hasta::date;
@@ -1397,7 +1397,7 @@ BEGIN
                 /*Aqui para ir agrupando los puntos de ventas*/
 			if(v_parametros.desde::date < '19/03/2021')then
 
-            if (v_parametros.desde::date >= '19/03/2021') then
+            if (v_parametros.hasta::date >= '19/03/2021') then
             v_fecha_final = '18/03/2021';
             else
             v_fecha_final = v_parametros.hasta::date;
@@ -1854,7 +1854,7 @@ BEGIN
 
                 if(v_parametros.desde::date < '19/03/2021')then
 
-                if (v_parametros.desde::date >= '19/03/2021') then
+                if (v_parametros.hasta::date >= '19/03/2021') then
                 v_fecha_final = '18/03/2021';
                 else
                 v_fecha_final = v_parametros.hasta::date;
@@ -1916,7 +1916,7 @@ BEGIN
                 /*Aqui para ir agrupando los puntos de ventas*/
 				if(v_parametros.desde::date < '19/03/2021')then
 
-                if (v_parametros.desde::date >= '19/03/2021') then
+                if (v_parametros.hasta::date >= '19/03/2021') then
                 v_fecha_final = '18/03/2021';
                 else
                 v_fecha_final = v_parametros.hasta::date;
@@ -2332,7 +2332,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -2396,7 +2396,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -2718,7 +2718,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -2780,7 +2780,7 @@ BEGIN
                       end if;
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -3397,7 +3397,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -3460,7 +3460,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -3931,7 +3931,7 @@ BEGIN
                       /*****************************************************************/
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
-						if (v_parametros.desde::date >= '19/03/2021') then
+						if (v_parametros.hasta::date >= '19/03/2021') then
                         v_fecha_final = '18/03/2021';
                         else
                         v_fecha_final = v_parametros.hasta::date;
@@ -3994,7 +3994,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -4504,7 +4504,7 @@ BEGIN
                               /*Aqui ponemos la condicion para recuperar carda antes del 19/03/2021*/
                               if(v_parametros.desde::date < '19/03/2021')then
 
-                              if (v_parametros.desde::date >= '19/03/2021') then
+                              if (v_parametros.hasta::date >= '19/03/2021') then
                               	v_fecha_final = '18/03/2021';
                               else
                               	v_fecha_final = v_parametros.hasta::date;
@@ -4568,7 +4568,7 @@ BEGIN
                               /*Aqui para ir agrupando los puntos de ventas*/
 							if(v_parametros.desde::date < '19/03/2021')then
 
-                            if (v_parametros.desde::date >= '19/03/2021') then
+                            if (v_parametros.hasta::date >= '19/03/2021') then
                             v_fecha_final = '18/03/2021';
                             else
                             v_fecha_final = v_parametros.hasta::date;
@@ -4861,7 +4861,7 @@ BEGIN
 
                               if(v_parametros.desde::date < '19/03/2021')then
 
-                              if (v_parametros.desde::date >= '19/03/2021') then
+                              if (v_parametros.hasta::date >= '19/03/2021') then
                               v_fecha_final = '18/03/2021';
                               else
                               v_fecha_final = v_parametros.hasta::date;
@@ -4929,7 +4929,7 @@ BEGIN
 
                               if(v_parametros.desde::date < '19/03/2021')then
 
-                              if (v_parametros.desde::date >= '19/03/2021') then
+                              if (v_parametros.hasta::date >= '19/03/2021') then
                               v_fecha_final = '18/03/2021';
                               else
                               v_fecha_final = v_parametros.hasta::date;
@@ -5534,7 +5534,7 @@ BEGIN
                 /*Aqui Recuperamos los datos de Carga*/
                 if(v_parametros.desde::date < '19/03/2021')then
 
-                if (v_parametros.desde::date >= '19/03/2021') then
+                if (v_parametros.hasta::date >= '19/03/2021') then
                 v_fecha_final = '18/03/2021';
                 else
                 v_fecha_final = v_parametros.hasta::date;
@@ -5597,7 +5597,7 @@ BEGIN
                 /*Aqui para ir agrupando los puntos de ventas*/
 			if(v_parametros.desde::date < '19/03/2021')then
 
-            if (v_parametros.desde::date >= '19/03/2021') then
+            if (v_parametros.hasta::date >= '19/03/2021') then
             v_fecha_final = '18/03/2021';
             else
             v_fecha_final = v_parametros.hasta::date;
@@ -6054,7 +6054,7 @@ BEGIN
 
                 if(v_parametros.desde::date < '19/03/2021')then
 
-                if (v_parametros.desde::date >= '19/03/2021') then
+                if (v_parametros.hasta::date >= '19/03/2021') then
                 v_fecha_final = '18/03/2021';
                 else
                 v_fecha_final = v_parametros.hasta::date;
@@ -6116,7 +6116,7 @@ BEGIN
                 /*Aqui para ir agrupando los puntos de ventas*/
 				if(v_parametros.desde::date < '19/03/2021')then
 
-                if (v_parametros.desde::date >= '19/03/2021') then
+                if (v_parametros.hasta::date >= '19/03/2021') then
                 v_fecha_final = '18/03/2021';
                 else
                 v_fecha_final = v_parametros.hasta::date;
@@ -6532,7 +6532,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -6596,7 +6596,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -6918,7 +6918,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -6980,7 +6980,7 @@ BEGIN
                       end if;
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -7597,7 +7597,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -7660,7 +7660,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;
@@ -8131,7 +8131,7 @@ BEGIN
                       /*****************************************************************/
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
-						if (v_parametros.desde::date >= '19/03/2021') then
+						if (v_parametros.hasta::date >= '19/03/2021') then
                         v_fecha_final = '18/03/2021';
                         else
                         v_fecha_final = v_parametros.hasta::date;
@@ -8194,7 +8194,7 @@ BEGIN
 
                       if (v_codigo != '' and v_parametros.desde::date < '19/03/2021') then
 
-                      if (v_parametros.desde::date >= '19/03/2021') then
+                      if (v_parametros.hasta::date >= '19/03/2021') then
                       v_fecha_final = '18/03/2021';
                       else
                       v_fecha_final = v_parametros.hasta::date;

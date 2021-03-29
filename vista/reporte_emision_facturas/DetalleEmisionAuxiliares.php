@@ -263,7 +263,7 @@ header("content-type: text/javascript; charset=UTF-8");
             //llama al constructor de la clase padre
             Phx.vista.DetalleEmisionAuxiliares.superclass.constructor.call(this, config);
 
-            /********************Aumentando boton para sacar reporte libro mayor*******************************/
+            /********************Aumentando boton para sacar reporte ***************************************/
             this.addButton('btnImprimirReporteExcel', {
               text: '<center>Generar Reporte Excel</center>',
               iconCls: 'bexcel',
@@ -272,6 +272,17 @@ header("content-type: text/javascript; charset=UTF-8");
               tooltip: '<b>Generar Reporte Excel'
             });
             /***********************************************************************************************/
+
+
+            /*Boton para Generar Resumen y Detalle de cta corriente*/
+            this.addButton('btnReporteResuDet', {
+              text: '<center>Reporte Resumen <br> y Detallado</center>',
+              iconCls: 'bexcel',
+              disabled: false,
+              handler: this.ReporteResumenDetalle,
+              tooltip: '<b>Generar Reporte Excel'
+            });
+            /*******************************************************/
 
 
             this.grid.getTopToolbar().disable();
@@ -348,6 +359,32 @@ header("content-type: text/javascript; charset=UTF-8");
               });
 
         },
+
+        ReporteResumenDetalle: function () {
+              Phx.CP.loadingShow();
+              Ext.Ajax.request({
+                  url: '../../sis_ventas_facturacion/control/ReporteEmisionPasajes/reporteResumenDetalle',
+                  params: {
+                      id_auxiliar: this.store.baseParams.id_auxiliar,
+                      codigo_auxiliar: this.store.baseParams.codigo_auxiliar,
+                      desde: this.store.baseParams.desde,
+                      hasta: this.store.baseParams.hasta,
+                      id_punto_venta: this.store.baseParams.id_punto_venta,
+                      nombre_pv: this.store.baseParams.nombre_pv,
+                      formato_reporte: this.store.baseParams.formato_reporte,
+                  },
+                  success: this.successExport,
+                  failure: this.conexionFailure,
+                  timeout: this.timeout,
+                  scope: this
+              });
+
+        },
+
+
+
+
+
         /***************************************************************************************/
         postReloadPage: function (data) {
             ini = data.id_auxiliar;
