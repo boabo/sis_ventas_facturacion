@@ -252,6 +252,22 @@ function getConceptoAsociar(){
 	 $this->res->imprimirRespuesta($this->res->generarJson());
 }
 
+function listarInstanciaPagoCorreccion(){
+	if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+		$this->objReporte = new Reporte($this->objParam,$this);
+		$this->res = $this->objReporte->generarReporteListado('MODCajero','listarInstanciaPagoCorreccion');
+	} else{
+		$this->objFunc=$this->create('MODCajero');
+
+		$this->res=$this->objFunc->listarInstanciaPagoCorreccion($this->objParam);
+	}	
+	$this->res->imprimirRespuesta($this->res->generarJson());
+}
+function correccionInstanciaPago(){
+	$this->objFunc=$this->create('MODCajero');
+	$this->res=$this->objFunc->correccionInstanciaPago($this->objParam);
+	$this->res->imprimirRespuesta($this->res->generarJson());
+}
 
 }
 

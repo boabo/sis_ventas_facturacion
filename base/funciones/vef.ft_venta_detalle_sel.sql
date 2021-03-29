@@ -73,6 +73,8 @@ BEGIN
                                 cig.desc_ingas
                             when vedet.id_formula is not null then
                                 form.nombre
+                            when vedet.id_producto is not null then
+                              cig.desc_ingas
                             end)::varchar as nombre_producto,
                             vedet.porcentaje_descuento,
                             (vedet.precio_sin_descuento * vedet.cantidad)::numeric,
@@ -104,18 +106,21 @@ BEGIN
 
                             COALESCE(cig.ruta_foto,'''')::varchar as ruta_foto,
 
-                            umcig.codigo as codigo_unidad_cig
+                            umcig.codigo as codigo_unidad_cig,
+                            cig.id_moneda,
+                            mon.codigo_internacional as desc_moneda_recibo
 						from vef.tventa_detalle vedet
 						inner join segu.tusuario usu1 on usu1.id_usuario = vedet.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = vedet.id_usuario_mod
 						left join vef.tsucursal_producto sprod on sprod.id_sucursal_producto = vedet.id_sucursal_producto
 						left join vef.tformula form on form.id_formula = vedet.id_formula
 						left join alm.titem item on item.id_item = vedet.id_item
-                        left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
+                        left join param.tconcepto_ingas cig on cig.id_concepto_ingas = vedet.id_producto
 				        left join vef.vmedico med on med.id_medico = vedet.id_medico
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
                         left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
+                        left join param.tmoneda mon on mon.id_moneda = cig.id_moneda
                         where  ';
 
 			--Definicion de la respuesta
@@ -145,10 +150,11 @@ BEGIN
 						left join vef.tsucursal_producto sprod on sprod.id_sucursal_producto = vedet.id_sucursal_producto
 						left join vef.tformula form on form.id_formula = vedet.id_formula
 						left join alm.titem item on item.id_item = vedet.id_item
-                        left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
+                        left join param.tconcepto_ingas cig on cig.id_concepto_ingas = vedet.id_producto
 					    left join vef.tmedico med on med.id_medico = vedet.id_medico
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
-                        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
+                        left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida,
+                        left join param.tmoneda mon on mon.id_moneda = cig.id_moneda
                         where ';
 
 			--Definicion de la respuesta

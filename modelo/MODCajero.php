@@ -612,5 +612,39 @@ class MODCajero extends MODbase{
 			return $this->respuesta;
 	}
 
+		function listarInstanciaPagoCorreccion(){
+			//Definicion de variables para ejecucion del procedimientp
+			$this->procedimiento='vef.ft_venta_facturacion_sel';
+			$this->transaccion='VF_LFPCOR_SEL';
+			$this->tipo_procedimiento='SEL';//tipo de transaccio
+
+			$this->setParametro('id_venta','id_venta','integer');
+
+			//Definicion de la lista del resultado del query
+			$this->captura('id_medio_pago_pw','int4');
+			$this->captura('name','varchar');
+			$this->captura('codigo_tarjeta','varchar');
+			$this->captura('numero_tarjeta','varchar');
+			$this->captura('monto_forma_pago','numeric');
+			$this->captura('id_moneda','int4');
+			$this->captura('id_venta_forma_pago','int4');
+			$this->captura('id_venta','int4');
+			$this->captura('desc_moneda','varchar');
+			$this->captura('fop_code','varchar');
+			$this->captura('id_auxiliar','int4');
+			$this->captura('nombre_auxiliar','varchar');
+			$this->captura('codigo_auxiliar','varchar');
+			$this->captura('nro_deposito','varchar');
+			$this->captura('fecha_deposito','date');
+			$this->captura('monto_deposito','numeric');
+			$this->captura('mco','varchar');
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			// echo $this->consulta;exit;
+			$this->ejecutarConsulta();
+			//Devuelve la respuesta
+			return $this->respuesta;
+		}
+
 }
 ?>

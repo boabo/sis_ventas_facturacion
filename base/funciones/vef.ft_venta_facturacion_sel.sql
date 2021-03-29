@@ -719,6 +719,93 @@ BEGIN
 
 		end;
 
+    /*********************************
+ 	#TRANSACCION:  'VF_LFPCOR_SEL'
+ 	#DESCRIPCION:   Listar formas de pago de venta para su correccion
+ 	#AUTOR:		breydi vasquez
+ 	#FECHA:		25-03-2020
+	***********************************/
+
+	elsif(p_transaccion='VF_LFPCOR_SEL')then
+
+    	begin
+
+    		--Sentencia de la consulta
+			v_consulta:='
+                        select 	ip.id_medio_pago_pw,
+                                case when ven.id_deposito is not null then
+                                    ''DEPÓSITO''
+                                else
+                                    ip.name
+                                end,
+                                fp.codigo_tarjeta,
+                                fp.numero_tarjeta,
+                                fp.monto_transaccion as monto_forma_pago,
+                                fp.id_moneda,
+                                fp.id_venta_forma_pago,
+                                fp.id_venta,
+                                mon.codigo_internacional as desc_moneda,
+                                case when ven.id_deposito is not null then
+                                    ''DEPO''
+                                else
+                                    fo.fop_code
+                                end,
+                                fp.id_auxiliar,
+                                aux.nombre_auxiliar,
+                                aux.codigo_auxiliar,
+                                depo.nro_deposito,
+                                depo.fecha as fecha_deposito,
+                                depo.monto_total as monto_deposito,
+                                fp.nro_mco as mco
+                        from obingresos.tmedio_pago_pw ip
+                        inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
+                        inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
+                        inner join obingresos.tforma_pago_pw fo on fo.id_forma_pago_pw = ip.forma_pago_id
+                        left join conta.tauxiliar aux on aux.id_auxiliar = fp.id_auxiliar
+                        inner join vef.tventa ven on ven.id_venta = fp.id_venta
+						left join obingresos.tdeposito depo on depo.id_deposito = ven.id_deposito
+                        where fp.id_venta = '||v_parametros.id_venta::integer||'
+                        and
+						';
+            v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+			raise notice 'Respuesta es %',v_consulta;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_LFPCOR_CONT'
+ 	#DESCRIPCION:  contador de registros formas de pago de venta para su correccion
+ 	#AUTOR:		breydi vasquez
+ 	#FECHA:		25-03-2020
+	***********************************/
+
+	elsif(p_transaccion='VF_LFPCOR_CONT')then
+
+    	begin
+        	--raise exception 'llega aqui el id_venta %',v_parametros.id_venta;
+    		--Sentencia de la consulta
+			v_consulta:='
+                        select 	count(ip.id_medio_pago_pw)
+                        from obingresos.tmedio_pago_pw ip
+                        inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
+                        inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
+                        inner join obingresos.tforma_pago_pw fo on fo.id_forma_pago_pw = ip.forma_pago_id
+                        left join conta.tauxiliar aux on aux.id_auxiliar = fp.id_auxiliar
+                        inner join vef.tventa ven on ven.id_venta = fp.id_venta
+						left join obingresos.tdeposito depo on depo.id_deposito = ven.id_deposito
+                        where fp.id_venta = '||v_parametros.id_venta::integer||' and
+						';
+            v_consulta:=v_consulta||v_parametros.filtro;
+			raise notice 'Respuesta es %',v_consulta;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
 
 	else
 
