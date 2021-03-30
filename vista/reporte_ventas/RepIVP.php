@@ -4,7 +4,7 @@
           this.maestro = config.maestro;
           Phx.vista.RepIVP.superclass.constructor.call(this, config);
           this.panel.destroy();
-          window.open('http://10.150.0.22:8082/Reports/Pages/Folder.aspx?ItemPath=%2fBoaDwRepIngresos', '_blank')
+          window.open('http://172.17.110.5:8082/BoAReports/browse/BoaDwRepIngresos', '_blank')
           }
     });
 </script>
