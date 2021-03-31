@@ -4495,12 +4495,12 @@ BEGIN
 
         end if;
 
-        select 	* into v_respaldo
-        from vef.tventa ven
-        inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
-        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
-        inner join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
-        where ven.id_venta = v_parametros.id_venta;
+       for v_respaldo in  (select *
+                          from vef.tventa ven
+                          inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
+                          inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                          inner join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
+                          where ven.id_venta = v_parametros.id_venta) loop
 
         		insert into vef.trespaldo_facturas_anuladas (
                 id_venta,
@@ -4535,7 +4535,8 @@ BEGIN
                 fecha_reg,
                 id_usuario_reg,
                 id_dosificacion,
-                nro_autorizacion
+                nro_autorizacion,
+                nro_mco
                 )
                 VALUES (
                 v_respaldo.id_venta,
@@ -4570,10 +4571,11 @@ BEGIN
                 now(),
                 p_id_usuario,
                 v_respaldo.id_dosificacion,
-                v_respaldo.nroaut
+                v_respaldo.nroaut,
+                v_respaldo.nro_mco
                 );
 
-       -- END LOOP;
+       END LOOP;
 
 
 

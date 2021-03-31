@@ -1732,3 +1732,8 @@ ALTER TABLE vef.tventa_forma_pago
     ADD COLUMN nro_mco VARCHAR(20);
 
 /***********************************F-SCP-IRVA-VEF-0-25/03/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-25/03/2021****************************************/
+ALTER TABLE vef.trespaldo_facturas_anuladas
+  ADD COLUMN nro_mco VARCHAR(20);
+/***********************************F-SCP-IRVA-VEF-0-25/03/2021****************************************/

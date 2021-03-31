@@ -141,6 +141,7 @@ $body$
     v_estado_periodo		varchar;
     v_fecha_ini				varchar;
     v_fecha_fin 			varchar;
+    v_respaldo				record;
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
@@ -2590,6 +2591,88 @@ $body$
                 where id_deposito = v_registros.id_deposito;
         end if;
 
+        for v_respaldo in  (select *
+                          from vef.tventa ven
+                          inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
+                          inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                          left join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
+                          where ven.id_venta = v_parametros.id_venta) loop
+
+        		insert into vef.trespaldo_facturas_anuladas (
+                id_venta,
+                nombre_factura,
+                nit,
+                cod_control,
+                num_factura,
+                total_venta,
+                total_venta_msuc,
+                id_sucursal,
+                id_cliente,
+                id_punto_venta,
+                observaciones,
+                id_moneda,
+                excento,
+                fecha,
+                id_sucursal_producto,
+                id_formula,
+                id_producto,
+                cantidad,
+                precio,
+                tipo,
+                descripcion,
+                id_medio_pago,
+                monto,
+                monto_transaccion,
+                monto_mb_efectivo,
+                numero_tarjeta,
+                codigo_tarjeta,
+                tipo_tarjeta,
+                id_auxiliar,
+                fecha_reg,
+                id_usuario_reg,
+                id_dosificacion,
+                nro_autorizacion,
+                nro_mco
+                )
+                VALUES (
+                v_respaldo.id_venta,
+      			v_respaldo.nombre_factura,
+                v_respaldo.nit,
+                v_respaldo.cod_control,
+                v_respaldo.nro_factura,
+                v_respaldo.total_venta,
+                v_respaldo.total_venta_msuc,
+                v_respaldo.id_sucursal,
+                v_respaldo.id_cliente,
+                v_respaldo.id_punto_venta,
+                v_respaldo.observaciones,
+                v_respaldo.id_moneda,
+                v_respaldo.excento,
+                v_respaldo.fecha,
+                v_respaldo.id_sucursal_producto,
+                v_respaldo.id_formula,
+                v_respaldo.id_producto,
+                v_respaldo.cantidad,
+                v_respaldo.precio,
+                v_respaldo.tipo,
+                v_respaldo.descripcion,
+                v_respaldo.id_medio_pago,
+                v_respaldo.monto,
+                v_respaldo.monto_transaccion,
+                v_respaldo.monto_mb_efectivo,
+                v_respaldo.numero_tarjeta,
+                v_respaldo.codigo_tarjeta,
+                v_respaldo.tipo_tarjeta,
+                v_respaldo.id_auxiliar,
+                now(),
+                p_id_usuario,
+                v_respaldo.id_dosificacion,
+                v_respaldo.nroaut,
+                v_respaldo.nro_mco
+                );
+
+       END LOOP;
+
 
         v_res = vef.f_anula_venta(p_administrador,p_id_usuario,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_parametros.id_venta);
 
@@ -2761,8 +2844,6 @@ $body$
             return v_resp;
 
         END;
-
-
 
     else
 
