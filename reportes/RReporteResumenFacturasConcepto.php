@@ -60,8 +60,14 @@ class RReporteResumenFacturasConcepto
     }
     function imprimeCabecera() {
         $this->docexcel->createSheet();
-        $this->docexcel->getActiveSheet()->setTitle('RESUMEN POR CONCEPTO');
-        $this->docexcel->setActiveSheetIndex(0);
+
+        if ($this->objParam->getParametro('tipo_documento') == 'factura') {
+          $this->docexcel->getActiveSheet()->setTitle('');
+          $this->docexcel->setActiveSheetIndex(0);
+        } elseif ($this->objParam->getParametro('tipo_documento') == 'recibo') {
+          $this->docexcel->getActiveSheet()->setTitle('RESUMEN RECIBOS POR CONCEPTO');
+          $this->docexcel->setActiveSheetIndex(0);
+        }
 
         $styleTitulos1 = array(
             'font'  => array(
@@ -139,7 +145,13 @@ class RReporteResumenFacturasConcepto
           $horaGeneracion=  date("H:i:s");
 
           $this->docexcel->getActiveSheet()->mergeCells('B3:E3');
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,3,'RESUMEN DE FACTURAS COMPUTARIZADAS POR CONCEPTO');
+          if ($this->objParam->getParametro('tipo_documento') == 'factura') {
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,3,'RESUMEN DE FACTURAS (COMPUTARIZADAS/MANUALES) POR CONCEPTO');
+          } elseif ($this->objParam->getParametro('tipo_documento') == 'recibo') {
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,3,'RESUMEN DE RECIBOS (COMPUTARIZADOS/MANUALES) POR CONCEPTO');
+          }
+
+
           $this->docexcel->getActiveSheet()->mergeCells('C4:D4');
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,4,'Del: '.$this->objParam->getParametro('desde').' Al: '.$this->objParam->getParametro('hasta'));
 

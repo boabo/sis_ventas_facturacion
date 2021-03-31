@@ -288,6 +288,8 @@ class MODReportesVentas extends MODbase{
 		$this->captura('id_venta','integer');
 		$this->captura('desc_persona','varchar');
 		$this->captura('codigo','varchar');
+		$this->captura('tipo_factura','varchar');
+		$this->captura('estado','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

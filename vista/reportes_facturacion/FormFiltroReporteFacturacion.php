@@ -128,7 +128,16 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
                       gwidth: 150,
                      disabled : false,
                      hidden : false,
-                      store:['REPORTE DE FACTURAS','REPORTE DE FACTURAS / CONCEPTO','RESUMEN DE FACTURAS / CONCEPTO']
+                     store: new Ext.data.ArrayStore({
+                           id: 0,
+                           fields: [
+                               'cod',
+                               'desc'
+                           ],
+                           data: [['REPORTE DE FACTURAS', 'REPORTE DE EMISIONES'], ['REPORTE DE FACTURAS / CONCEPTO', 'REPORTE DE EMISIONES / CONCEPTO'], ['RESUMEN DE FACTURAS / CONCEPTO','RESUMEN DE EMISIONES / CONCEPTO']]
+                       }),
+                       valueField: 'cod',
+                       displayField: 'desc'
            },
            type: 'ComboBox',
            id_grupo: 0,
@@ -396,15 +405,18 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
     iniciarEventos: function(){
 
       this.Cmp.formato_reporte.on('select',function(a,b,c) {
-				if (b.data.field1 == 'REPORTE DE FACTURAS') {
+
+        console.log("aqui llega el combo data",b.data);
+
+				if (b.data.cod == 'REPORTE DE FACTURAS') {
 				      this.mostrarComponente(this.Cmp.id_punto_venta);
               this.ocultarComponente(this.Cmp.id_concepto);
               this.Cmp.id_concepto.reset();
-				} else if (b.data.field1 == 'REPORTE DE FACTURAS / CONCEPTO') {
+				} else if (b.data.cod == 'REPORTE DE FACTURAS / CONCEPTO') {
               this.mostrarComponente(this.Cmp.id_concepto);
               this.mostrarComponente(this.Cmp.id_punto_venta);
               //this.Cmp.id_punto_venta.reset();
-        } else if (b.data.field1 == 'RESUMEN DE FACTURAS / CONCEPTO') {
+        } else if (b.data.cod == 'RESUMEN DE FACTURAS / CONCEPTO') {
               this.mostrarComponente(this.Cmp.id_concepto);
               this.mostrarComponente(this.Cmp.id_punto_venta);
               //this.Cmp.id_punto_venta.reset();

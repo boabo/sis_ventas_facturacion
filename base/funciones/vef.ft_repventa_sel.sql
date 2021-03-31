@@ -1722,8 +1722,22 @@ $body$
                                                list (mon.codigo_internacional) AS moneda,
                                                list (fp.numero_tarjeta) as num_tarjeta,
                                                list (fp.monto_mb_efectivo::varchar) as total_monto,
-                                               list (fpw.fop_code) as forma_pago,
-                                               list (mp.mop_code) as medio_pago
+                                               CASE
+                                                      WHEN vent.id_deposito is not null
+                                                      THEN
+                                                      ''DEPÓSITO''
+                                                      else
+                                                      list (fpw.fop_code)
+                                                END  as forma_pago,
+
+                                                 CASE
+                                                      WHEN vent.id_deposito is not null
+
+                                                      THEN
+                                                      ''DEPO''
+                                                      else
+                                                      list (mp.mop_code)
+                                                END  as medio_pago
                                         from vef.tventa vent
                                         inner join vef.tventa_forma_pago fp on fp.id_venta = vent.id_venta
                                         inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
@@ -1955,14 +1969,32 @@ $body$
                          pv.nombre::varchar,
                          vent.id_venta::integer,
                          usu.desc_persona::varchar as desc_persona,
-                         pv.codigo
+                         pv.codigo,
+                         (CASE
+                            WHEN vent.estado = ''finalizado'' THEN
+                            ''EMITIDA''
+                            WHEN vent.estado = ''anulado''  THEN
+                            ''ANULADA''
+                         END)::varchar as estado,
+                         (CASE
+                            WHEN vent.tipo_factura = ''computarizada'' THEN
+                            ''Facturación Computarizada''
+                            WHEN vent.tipo_factura = ''manual''  THEN
+                            ''Facturación Manual''
+                            WHEN vent.tipo_factura = ''recibo''  THEN
+                            ''RO Computarizado''
+                            WHEN vent.tipo_factura = ''recibo_manual''  THEN
+                            ''RO Manual''
+                            WHEN vent.tipo_factura = ''carga''  THEN
+                            ''Facturación Carga Computarizada''
+                         END)::varchar as tipo_factura
                       from vef.tventa vent
                       inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
                       inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
-                      inner join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
+                      left join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       order by  vent.id_venta, vent.nro_factura DESC)
 
                       UNION ALL
@@ -1977,14 +2009,16 @@ $body$
                          pv.nombre::varchar,
                          NULL::integer as id_venta,
                          ''cabecera''::varchar as desc_persona,
-                         pv.codigo
+                         pv.codigo,
+                         NULL::varchar as tipo_factura,
+     					 NULL::varchar as estado
                       from vef.tventa vent
                       inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
                       inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
-                      inner join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
+                      left join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       group by pv.nombre, pv.codigo, ingas.desc_ingas)
                       )
                       order by desc_ingas ASC, id_venta ASC NULLS FIRST';
