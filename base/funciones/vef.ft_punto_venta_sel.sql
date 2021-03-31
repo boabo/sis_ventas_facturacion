@@ -76,7 +76,7 @@ $body$
 				    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
             left join param.tcatalogo cat on cat.id_catalogo = puve.id_catalogo
             left join param.tcatalogo cat1 on cat1.id_catalogo = puve.id_catalogo_canal
-                        where  puve.estado_reg = ''activo'' and ';
+                        where puve.estado_reg = ''activo'' and ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
@@ -98,7 +98,7 @@ $body$
 
 		begin
         --prueba para consumo de servicio
-        if (v_parametros.id_punto_venta = 3404 )then
+        /*if (v_parametros.id_punto_venta = 3404 )then
 
          --Sentencia de la consulta de conteo de registros
             v_consulta:='select ''CBBOB04TE''::varchar as officeID,
@@ -121,7 +121,20 @@ $body$
                         left join vef.tpunto_venta_reporte pvr on pvr.id_punto_venta=pv.id_punto_venta
      					and pvr.fecha='''||v_parametros.fecha||''' and pvr.moneda='''||v_parametros.moneda||'''';
             raise notice 'v_consulta %', v_consulta;
-           end if;
+           end if;     */
+
+            v_consulta:='select pv.office_id as officeID,
+                               NULL::integer as id_agencia,
+                              ''0''::varchar AS identificador_reporte
+                        from vef.tpunto_venta pv
+                      	where pv.estado_reg = ''activo'' and pv.id_punto_venta='||v_parametros.id_punto_venta||'';
+
+
+
+
+           
+
+
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -145,7 +158,7 @@ $body$
 					    inner join vef.tsucursal suc on suc.id_sucursal = puve.id_sucursal
               left join param.tcatalogo cat on cat.id_catalogo = puve.id_catalogo
               left join param.tcatalogo cat1 on cat1.id_catalogo = puve.id_catalogo_canal
-              where  puve.estado_reg = ''activo'' and ';
+              where puve.estado_reg = ''activo'' and ';
 
         --Definicion de la respuesta
         v_consulta:=v_consulta||v_parametros.filtro;
