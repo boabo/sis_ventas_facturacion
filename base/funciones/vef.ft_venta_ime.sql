@@ -137,6 +137,10 @@ $body$
     v_existencia			numeric;
     v_comision_paquete		varchar;
     v_comision_req			varchar;
+
+    v_estado_periodo		varchar;
+    v_fecha_ini				varchar;
+    v_fecha_fin 			varchar;
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
@@ -2514,6 +2518,31 @@ $body$
         from vef.tventa v
         where v.id_venta = v_parametros.id_venta;
 
+        /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+        select
+               per.fecha_ini,
+               per.fecha_fin,
+               cp.estado
+               into
+               v_fecha_ini,
+               v_fecha_fin,
+               v_estado_periodo
+        from param.tgestion ges
+        inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+        inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+        where v_venta.fecha between per.fecha_ini and per.fecha_fin
+         and cp.id_depto = (select depo.id_depto
+        from param.tdepto depo
+        where depo.codigo = 'CON');
+        /*********************************************************************/
+
+        if (v_estado_periodo = 'cerrado') then
+        	raise exception 'No se puede Anular la factura debido a que el periodo %, %, se  			encuentra cerrado',v_fecha_ini,v_fecha_fin;
+        end if;
+
+
+
+
         v_tipo_usuario = 'cajero';
 
         if (v_venta.id_punto_venta is null) then
@@ -2563,6 +2592,29 @@ $body$
 
 
         v_res = vef.f_anula_venta(p_administrador,p_id_usuario,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_parametros.id_venta);
+
+
+        update vef.tventa_forma_pago set
+        monto_transaccion = 0,
+        monto = 0,
+        cambio = 0,
+        monto_mb_efectivo = 0
+        where id_venta = v_parametros.id_venta;
+
+        update vef.tventa_detalle set
+        precio = 0,
+        cantidad = 0
+        where id_venta = v_parametros.id_venta;
+
+        update vef.tventa set
+        cod_control = Null,
+        total_venta_msuc = 0,
+        nombre_factura = 'ANULADO',
+        nit = '0',
+        total_venta = 0
+        where id_venta = v_parametros.id_venta;
+
+
 
         --Definicion de la respuesta
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta anulada');
