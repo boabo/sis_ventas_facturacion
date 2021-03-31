@@ -119,8 +119,31 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'tipo_factura',
+                        fieldLabel: 'Tipo Documento',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 200,
+                        maxLength: 100,
+                        renderer: function (value, p, record) {
+
+                        if (value != null && value != 'cabecera') {
+                          return value;
+                        } else {
+                          return '';
+                        }
+
+                      },
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
                         name: 'nro_factura',
-                        fieldLabel: 'Nro. Factura',
+                        fieldLabel: 'Nro. Documento',
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 200,
@@ -144,7 +167,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'total_venta',
-                        fieldLabel: 'Total Factura',
+                        fieldLabel: 'Total Documento',
                         allowBlank: true,
                         width: '100%',
                         gwidth: 110,
@@ -319,7 +342,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'estado',
-                        fieldLabel: 'Estado Factura',
+                        fieldLabel: 'Estado Documento',
                         allowBlank: true,
                         width: '100%',
                         gwidth: 110,
@@ -330,31 +353,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
-
-                {
-                    config: {
-                        name: 'tipo_factura',
-                        fieldLabel: 'Tipo Factura',
-                        allowBlank: true,
-                        width: '100%',
-                        gwidth: 200,
-                        maxLength: 100,
-                        renderer: function (value, p, record) {
-
-                        if (value != null && value != 'cabecera') {
-                          return value;
-                        } else {
-                          return '';
-                        }
-
-                      },
-                    },
-                    type: 'TextField',
-                    id_grupo: 1,
-                    grid: true,
-                    form: true
-                },
-
                 {
                     config: {
                         name: 'cajero',
