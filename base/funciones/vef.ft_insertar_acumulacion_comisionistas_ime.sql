@@ -165,7 +165,6 @@ BEGIN
                                           else
                                               trim (nit_ci_cli)::numeric
                                           end)) != 1 and
-
                                  ((case when
                                           nit_ci_cli = '''' then
                                           0::numeric
@@ -256,7 +255,6 @@ BEGIN
                                         tempo.id_gestion
                                 from temporal_acumulativo tempo
                                 LEFT JOIN vef.tacumulacion_comisionistas ac on ac.nit = tempo.nit_ci_cli
-
                                 /*Exluimos los nits no considerados*/
                                 where tempo.nit_ci_cli::numeric not in (
                                 select nc.nit_ci::numeric
@@ -427,7 +425,6 @@ BEGIN
                                                     where acumu.estado = 'cerrado'
                                                     group by acumu.nit,acumu.id_periodo
                                                    )
-
                                                    select  acumu.nit,
                                                           sum(acumu.total_acumulado) + sum(per.total_arrastrado) as total_arrastrado
                                                     from vef.tacumulacion_comisionistas acumu
@@ -440,7 +437,6 @@ BEGIN
                         total_acumulado = v_insertar_acumulados.total_arrastrado
                       where nit = v_insertar_acumulados.nit;
                   end if;
-
                 end loop;*/
                 /*********************************************************/
 
