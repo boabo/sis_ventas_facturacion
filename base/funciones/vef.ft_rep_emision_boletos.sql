@@ -164,6 +164,7 @@ BEGIN
 
                 /*Si el punto de venta es todos no ponemos ningun filtro*/
                 if(v_parametros.id_punto_venta = 0) then
+
 -----------------/*Inicio del Reporte de Formas de pago*/
 				if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') then
 					if (v_parametros.codigo_auxiliar = 'Todos') then
@@ -687,7 +688,7 @@ BEGIN
                                       tdatos.importe_total_venta,
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
-                                      pb.nombre
+                                      pb.nombre,
                                       (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
@@ -4364,6 +4365,7 @@ BEGIN
 
                 /*Si el punto de venta es todos no ponemos ningun filtro*/
                 if(v_parametros.id_punto_venta = 0) then
+
 -----------------/*Inicio del Reporte de Formas de pago*/
 				if (v_parametros.formato_reporte = 'REPORTE FORMAS DE PAGO CTA/CTE (DEBE)') then
 					if (v_parametros.codigo_auxiliar = 'Todos') then
@@ -4887,7 +4889,7 @@ BEGIN
                                       tdatos.importe_total_venta,
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
-                                      pb.nombre
+                                      pb.nombre,
                                       (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
