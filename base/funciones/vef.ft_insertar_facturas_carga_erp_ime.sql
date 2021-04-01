@@ -610,7 +610,7 @@ BEGIN
              select aux.id_auxiliar into
                     v_id_auxiliar_fp
              from conta.tauxiliar aux
-             where aux.codigo_auxiliar = v_medio_pago.cod_auxiliar;
+             where (aux.codigo_auxiliar = v_medio_pago.cod_auxiliar OR aux.cod_antiguo = v_medio_pago.cod_auxiliar);
            end if;
            /************************************************************************/
 
