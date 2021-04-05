@@ -272,13 +272,17 @@ $body$
           v_parametros.tipo,
           v_parametros.fecha_dosificacion,
           1,
-          v_parametros.nroaut,
+          TRIM(regexp_replace(v_parametros.nroaut, E'[\\n\\r]+', ' ', 'g' )),
+          --v_parametros.nroaut,
           v_parametros.fecha_inicio_emi,
           v_parametros.fecha_limite,
           v_parametros.tipo_generacion,
           v_parametros.glosa_impuestos,
           string_to_array(v_parametros.id_activida_economica, ',')::integer[],
-          v_parametros.llave,
+          /*AUMENTANDO PARA PONER CONTROL DE QUITAR SALTO DE LINEA Y ESPACIOS*/
+          --v_parametros.llave,
+          TRIM(regexp_replace(v_parametros.llave, E'[\\n\\r]+', ' ', 'g' )),
+          /********************************************************************/
           v_parametros.inicial,
           'activo',
           v_parametros.glosa_empresa,
@@ -304,8 +308,10 @@ $body$
         where s.id_sucursal = v_parametros.id_sucursal;
 
         v_cod_control = pxp.f_gen_cod_control(
-           v_parametros.llave,
-            v_parametros.nroaut,
+            --v_parametros.llave
+            TRIM(regexp_replace(v_parametros.llave, E'[\\n\\r]+', ' ', 'g' )),
+            --v_parametros.nroaut,
+            TRIM(regexp_replace(v_parametros.nroaut, E'[\\n\\r]+', ' ', 'g' )),
             '1'::varchar,
             '196560027'::varchar,
             to_char(v_parametros.fecha_inicio_emi,'YYYYMMDD')::varchar,
@@ -349,13 +355,17 @@ $body$
           final = v_parametros.final,
           tipo = v_parametros.tipo,
           fecha_dosificacion = v_parametros.fecha_dosificacion,
-          nroaut = v_parametros.nroaut,
+          --nroaut = v_parametros.nroaut,
+          nroaut = TRIM(regexp_replace(v_parametros.nroaut, E'[\\n\\r]+', ' ', 'g' )),
           fecha_inicio_emi = v_parametros.fecha_inicio_emi,
           fecha_limite = v_parametros.fecha_limite,
           tipo_generacion = v_parametros.tipo_generacion,
           glosa_impuestos = v_parametros.glosa_impuestos,
           id_activida_economica = string_to_array(v_parametros.id_activida_economica, ',')::integer[],
-          llave =v_parametros.llave,
+          /*AUMENTANDO PARA PONER CONTROL DE QUITAR SALTO DE LINEA Y ESPACIOS*/
+          llave = TRIM(regexp_replace(v_parametros.llave, E'[\\n\\r]+', ' ', 'g' )),
+          --v_parametros.llave,
+          /********************************************************************/
           inicial = v_parametros.inicial,
           glosa_empresa = v_parametros.glosa_empresa,
           fecha_mod = now(),
@@ -376,8 +386,10 @@ $body$
         where s.id_sucursal = v_parametros.id_sucursal;
 
         v_cod_control = pxp.f_gen_cod_control(
-            v_parametros.llave,
-            v_parametros.nroaut,
+            --v_parametros.llave,
+            TRIM(regexp_replace(v_parametros.llave, E'[\\n\\r]+', ' ', 'g' )),
+            --v_parametros.nroaut,
+            TRIM(regexp_replace(v_parametros.nroaut, E'[\\n\\r]+', ' ', 'g' )),
             '1'::varchar,
             '196560027'::varchar,
             to_char(v_parametros.fecha_inicio_emi,'YYYYMMDD')::varchar,
@@ -385,7 +397,7 @@ $body$
         );
 
         v_mensaje = '
-            	Dosificacion modificada con exito para la sucursal ' || v_nombre_sucursal || '-' || v_codigo_sucursal || '.<br> Por favor valide la siguiente informacion en <b><a href="http://ov.impuestos.gob.bo/Paginas/Publico/VerificacionFactura.aspx">Impuestos</a></b>:<br><br>
+            	Dosificacion modificada con exito para la sucursal ' || v_nombre_sucursal || '-' || v_codigo_sucursal || '.<br style = "color: red;"> Por favor valide la siguiente información en <b><a href="http://ov.impuestos.gob.bo/Paginas/Publico/VerificacionFactura.aspx">Impuestos </a></b>:<br><br>
             		NIT Emisor : ' || v_nit || '<br>
                     Numero Factura : 1 <br>
                     Numero autorizacion : ' || v_parametros.nroaut || ' <br>

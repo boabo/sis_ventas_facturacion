@@ -15,7 +15,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
 	tabsouth:[
 		{
 			url:'../../../sis_ventas_facturacion/vista/servicios/ServiciosDosificaciones.php',
-			title:'Detalle Facturacion',
+			title:'Conceptos Relacionados a la Dosificación',
 			width:'100%',
 			height:'50%',
 			cls:'ServiciosDosificaciones'
@@ -726,7 +726,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.glosa_impuestos.setValue('ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS. EL USO ILÍCITO DE ÉSTA SERÁ SANCIONADO DE ACUERDO A LEY')
         this.Cmp.leyenda.setValue('Gracias por su preferencia!!!');
     },
-    iniciarEventos :  function () {			 
+    iniciarEventos :  function () {
 			  this.cm.setHidden(15, true);
 
 
