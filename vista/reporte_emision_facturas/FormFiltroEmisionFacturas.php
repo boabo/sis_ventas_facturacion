@@ -198,7 +198,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
  	                    totalProperty: 'total',
  	                    fields: ['id_punto_venta', 'nombre', 'codigo'],
  	                    remoteSort: true,
- 	                    baseParams: {tipo_usuario : 'todos',par_filtro: 'puve.nombre#puve.codigo', '_adicionar':'si'}
+ 	                    baseParams: {par_filtro: 'puve.nombre#puve.codigo', '_adicionar':'si'}
  	                }),
  	                valueField: 'id_punto_venta',
  	                displayField: 'nombre',
