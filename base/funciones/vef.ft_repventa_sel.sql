@@ -1615,7 +1615,7 @@ $body$
 
         if (v_parametros.tipo_documento is not null) then
         	if (v_parametros.tipo_documento = 'factura') then
-            	v_filtro_tipo_factura = '(vent.tipo_factura = ''computarizada'' or vent.tipo_factura = ''manual'')';
+            	v_filtro_tipo_factura = '(vent.tipo_factura = ''computarizada'' or vent.tipo_factura = ''manual'' OR vent.tipo_factura = ''carga'')';
             elsif (v_parametros.tipo_documento = 'recibo') then
             	v_filtro_tipo_factura = '(vent.tipo_factura = ''recibo'' or vent.tipo_factura = ''recibo_manual'')';
             end if;
@@ -1708,8 +1708,8 @@ $body$
                                                  vent.tipo_factura,
                                                  usu.desc_persona
                                           from vef.tventa vent
-                                          inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
-                                          inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+                                          left join vef.tventa_detalle det on det.id_venta = vent.id_venta
+                                          left join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
                                           inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                                           inner join vef.tsucursal suc on suc.id_sucursal = vent.id_sucursal
                                           inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
