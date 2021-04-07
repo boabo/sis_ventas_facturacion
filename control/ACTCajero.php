@@ -22,7 +22,9 @@ class ACTCajero extends ACTbase{
 					$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''computarizada'' or fact.tipo_factura =''manual'' or fact.tipo_factura =''carga'')");
 				} else if ($this->objParam->getParametro('tipo_factura') == 'manual') {
 				 			$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."'')");
-				 	}
+				 	} else if ($this->objParam->getParametro('tipo_factura') == 'recibos') {
+					 			$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''recibo'' or fact.tipo_factura =''recibo_manual'')");
+					 	}
 
 				else {
 				 			$this->objParam->addFiltro(" fact.id_punto_venta = ". $this->objParam->getParametro('id_punto_venta')." and (fact.tipo_factura =''carga'' or fact.tipo_factura =''".$this->objParam->getParametro('tipo_factura')."'')");
@@ -246,6 +248,13 @@ class ACTCajero extends ACTbase{
 		$this->res=$this->objFunc->listarInstanciaPago($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 }
+
+function listarInstanciaPagoRecibos(){
+	 $this->objFunc=$this->create('MODCajero');
+	 $this->res=$this->objFunc->listarInstanciaPagoRecibos($this->objParam);
+	 $this->res->imprimirRespuesta($this->res->generarJson());
+}
+
 function getConceptoAsociar(){
 	 $this->objFunc=$this->create('MODCajero');
 	 $this->res=$this->objFunc->getConceptoAsociar($this->objParam);
@@ -260,7 +269,7 @@ function listarInstanciaPagoCorreccion(){
 		$this->objFunc=$this->create('MODCajero');
 
 		$this->res=$this->objFunc->listarInstanciaPagoCorreccion($this->objParam);
-	}	
+	}
 	$this->res->imprimirRespuesta($this->res->generarJson());
 }
 function correccionInstanciaPago(){

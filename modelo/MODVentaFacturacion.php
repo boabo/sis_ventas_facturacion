@@ -1146,8 +1146,8 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('codigo_tarjeta_2','codigo_tarjeta_2','varchar');
 			$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
 			$this->setParametro('numero_tarjeta_2','numero_tarjeta_2','varchar');
-			$this->setParametro('id_auxiliar','id_auxiliar','varchar');
-			$this->setParametro('id_auxiliar_2','id_auxiliar_2','varchar');
+			$this->setParametro('id_auxiliar','id_auxiliar','numeric');
+			$this->setParametro('id_auxiliar_2','id_auxiliar_2','numeric');
 			$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
 			$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
 			$this->setParametro('mco','mco','varchar');
@@ -1161,6 +1161,56 @@ class MODVentaFacturacion extends MODbase{
 			//Devuelve la respuesta
 			return $this->respuesta;
 		}
+
+		function corregirReciboOficial(){
+			//Definicion de variables para ejecucion del procedimiento
+			$this->procedimiento='vef.ft_venta_facturacion_ime';
+			$this->transaccion='VF_ROS_CORRE';
+			$this->tipo_procedimiento='IME';
+
+			//Define los parametros para la funcion
+			$this->setParametro('id_venta','id_venta','int4');
+			$this->setParametro('id_moneda','id_moneda','int4');
+			$this->setParametro('id_moneda_2','id_moneda_2','int4');
+			$this->setParametro('id_venta_forma_pago_1','id_venta_forma_pago_1','int4');
+			$this->setParametro('id_venta_forma_pago_2','id_venta_forma_pago_2','int4');
+			$this->setParametro('id_medio_pago','id_medio_pago','int4');
+			$this->setParametro('id_medio_pago_2','id_medio_pago_2','int4');
+			$this->setParametro('codigo_tarjeta','codigo_tarjeta','varchar');
+			$this->setParametro('codigo_tarjeta_2','codigo_tarjeta_2','varchar');
+			$this->setParametro('numero_tarjeta','numero_tarjeta','varchar');
+			$this->setParametro('numero_tarjeta_2','numero_tarjeta_2','varchar');
+			$this->setParametro('id_auxiliar','id_auxiliar','numeric');
+			$this->setParametro('id_auxiliar_2','id_auxiliar_2','numeric');
+			$this->setParametro('monto_forma_pago','monto_forma_pago','numeric');
+			$this->setParametro('monto_forma_pago_2','monto_forma_pago_2','numeric');
+			$this->setParametro('mco','mco','varchar');
+			$this->setParametro('mco_2','mco_2','varchar');
+			$this->setParametro('tipo_tarjeta','tipo_tarjeta','varchar');
+			$this->setParametro('tipo_tarjeta_2','tipo_tarjeta_2','varchar');
+
+			/*Los Nuevos campos*/
+			$this->setParametro('nro_deposito', 'nro_deposito', 'varchar');
+			$this->setParametro('monto_deposito', 'monto_deposito', 'numeric');
+			$this->setParametro('fecha_deposito', 'fecha_deposito', 'varchar');
+			$this->setParametro('id_moneda_venta_recibo', 'id_moneda_venta_recibo', 'integer');
+			$this->setParametro('id_auxiliar_anticipo', 'id_auxiliar_anticipo', 'integer');
+			/***********************************************************************************/
+
+
+
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+
+			//Devuelve la respuesta
+			return $this->respuesta;
+		}
+
+
+
+
 		/****************************************************************************/
 		/******Aumentando para listar boletos*******/
 		function listarAsociarBoletos(){

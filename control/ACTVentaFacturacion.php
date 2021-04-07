@@ -133,6 +133,18 @@ class ACTVentaFacturacion extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
  }
  /*******************************************/
+
+ /*Aumentando para Corregir las formas de pago*/
+  function corregirReciboOficial(){
+ 		$this->objFunc=$this->create('MODVentaFacturacion');
+ 		$this->res=$this->objFunc->corregirReciboOficial($this->objParam);
+ 		$this->res->imprimirRespuesta($this->res->generarJson());
+  }
+  /*******************************************/
+
+
+
+
  /*Aumentando para asociar boletos*/
  function listarAsociarBoletos(){
 		$this->objFunc=$this->create('MODVentaFacturacion');

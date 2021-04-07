@@ -4290,10 +4290,12 @@ BEGIN
 
 						  ORDER BY punto_venta ASC,fecha_factura ASC NULLS FIRST,nro_factura asc NULLS LAST
 
-                          --ORDER BY punto_venta ASC,tipo_factura ASC NULLS FIRST,fecha_factura ASC NULLS FIRST,pasajero asc nulls LAST
 
 
                            ';
+
+                v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
 
                 return v_consulta;
 

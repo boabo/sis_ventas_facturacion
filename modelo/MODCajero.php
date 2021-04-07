@@ -82,12 +82,16 @@ class MODCajero extends MODbase{
 		$this->captura('correo_electronico','varchar');
 		$this->captura('cajero','varchar');
 		$this->captura('nro_autorizacion','varchar');
+		$this->captura('id_auxiliar_anticipo','int4');
+		$this->captura('nro_deposito','varchar');
+		$this->captura('fecha_deposito','date');
+		$this->captura('id_moneda_venta_recibo','int4');
 		//$this->captura('nombre_sucursal','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-
+		//var_dump("aqui llega data",$this->respuesta);
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
@@ -564,6 +568,37 @@ class MODCajero extends MODbase{
 		$this->captura('monto_transaccion','numeric');
 		$this->captura('id_moneda','int4');
 		$this->captura('id_venta_forma_pago','int4');
+		$this->captura('id_auxiliar','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+
+		$this->ejecutarConsulta();
+		//var_dump("aqui llega data",$this->respuesta);
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+
+	function listarInstanciaPagoRecibos(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='vef.ft_venta_facturacion_sel';
+		$this->transaccion='VF_LIST_INST_PA_RO';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		$this->setParametro('id_venta','id_venta','integer');
+
+		//Definicion de la lista del resultado del query
+		$this->captura('id_medio_pago','int4');
+		$this->captura('nombre','varchar');
+		$this->captura('codigo_tarjeta','varchar');
+		$this->captura('numero_tarjeta','varchar');
+		$this->captura('monto_transaccion','numeric');
+		$this->captura('id_moneda','int4');
+		$this->captura('id_venta_forma_pago','int4');
+		$this->captura('deposito','varchar');
+		$this->captura('id_auxiliar','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

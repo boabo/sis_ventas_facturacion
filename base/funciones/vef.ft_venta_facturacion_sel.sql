@@ -33,6 +33,7 @@ DECLARE
     v_condicion			varchar;
     v_tipo_punto_venta	varchar;
     v_existencia		integer;
+    v_id_deposito		integer;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_venta_facturacion_sel';
@@ -263,7 +264,14 @@ BEGIN
                         fact.formato_factura_emitida,
                         fact.correo_electronico,
                         usuca.desc_persona::varchar as cajero,
-                        dosifi.nroaut as nro_autorizacion
+                        dosifi.nroaut as nro_autorizacion,
+                        fact.id_auxiliar_anticipo,
+
+                        /*Aqui para los depositos*/
+                        depo.nro_deposito,
+                        depo.fecha as fecha_deposito,
+                        /*************************/
+						fact.id_moneda_venta_recibo
 
 						from vef.tventa fact
                         left join vef.tventa_detalle det on det.id_venta = fact.id_venta
@@ -273,6 +281,9 @@ BEGIN
 
                         left join vef.tdosificacion dosifi on dosifi.id_dosificacion = fact.id_dosificacion
 
+                        left join obingresos.tdeposito depo on depo.id_deposito = fact.id_deposito
+
+
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
 				        where fact.estado_reg = ''activo'' and '||v_condicion||' and';
 
@@ -280,7 +291,9 @@ BEGIN
 			v_consulta:=v_consulta||v_parametros.filtro;
 
             /*Agrupamos*/
-            v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula, usuca.desc_persona, dosifi.nroaut';
+            v_consulta:=v_consulta||'group by fact.id_venta,usu1.cuenta,usu2.cuenta,det.id_formula, usuca.desc_persona, dosifi.nroaut,
+            depo.nro_deposito,
+            depo.fecha';
 
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 			raise notice 'Respuesta es %',v_consulta;
@@ -706,9 +719,11 @@ BEGIN
                                 fp.numero_tarjeta,
                                 fp.monto_transaccion,
                                 fp.id_moneda,
-                                fp.id_venta_forma_pago
+                                fp.id_venta_forma_pago,
+                                fp.id_auxiliar
                         from obingresos.tmedio_pago_pw ip
                         inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
+                        inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
                         where fp.id_venta = '||v_parametros.id_venta::integer||'
                         order by fp.id_venta_forma_pago
 						';
@@ -718,6 +733,80 @@ BEGIN
 			return v_consulta;
 
 		end;
+
+    /*********************************
+ 	#TRANSACCION:  'VF_LIST_INST_PA_RO'
+ 	#DESCRIPCION:   Listar instancias de pago de Ros
+ 	#AUTOR:		Ismael Valdivia
+ 	#FECHA:		1-04-2021 12:15:00
+	***********************************/
+
+	elsif(p_transaccion='VF_LIST_INST_PA_RO')then
+
+    	begin
+        	--raise exception 'llega aqui el id_venta %',v_parametros.id_venta;
+    		--Sentencia de la consulta
+
+            select ven.id_deposito
+            into
+            v_id_deposito
+            from vef.tventa ven
+            where ven.id_venta = v_parametros.id_venta::integer;
+
+
+
+
+            if (v_id_deposito is null) then
+
+            v_consulta:='
+                        select 	ip.id_medio_pago_pw,
+                                ip.name,
+                                fp.codigo_tarjeta,
+                                fp.numero_tarjeta,
+                                fp.monto_transaccion,
+                                fp.id_moneda,
+                                fp.id_venta_forma_pago,
+                                ''no''::varchar as deposito,
+                                fp.id_auxiliar::numeric
+                        from obingresos.tmedio_pago_pw ip
+                        inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
+                        inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
+                        where fp.id_venta = '||v_parametros.id_venta::integer||'
+                        order by fp.id_venta_forma_pago
+						';
+            else
+
+            v_consulta:='
+                        select 	0::integer as id_medio_pago_pw,
+                                ip.name,
+                                fp.codigo_tarjeta,
+                                fp.numero_tarjeta,
+                                fp.monto_transaccion,
+                                fp.id_moneda,
+                                fp.id_venta_forma_pago,
+                                ''si''::varchar as deposito,
+                                null::numeric as id_auxiliar
+                        from obingresos.tmedio_pago_pw ip
+                        inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
+                        inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
+                        where fp.id_venta = '||v_parametros.id_venta::integer||'
+                        order by fp.id_venta_forma_pago
+						';
+
+            end if;
+
+
+
+
+
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+
+
 
     /*********************************
  	#TRANSACCION:  'VF_LFPCOR_SEL'
@@ -806,7 +895,6 @@ BEGIN
 			return v_consulta;
 
 		end;
-
 	else
 
 		raise exception 'Transaccion inexistente';

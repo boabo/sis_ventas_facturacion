@@ -16,6 +16,11 @@ header("content-type: text/javascript; charset=UTF-8");
     filter: saturate(250%);
     background-size: 80%;
 }
+
+#ventanaEmergente:hover {
+  background-color: #91FF81;
+  font-size: 20px;
+}
 </style>
 <script>
 Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
@@ -351,7 +356,11 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 																	this.store.baseParams.fecha = this.campo_fecha.getValue().dateFormat('d/m/Y');
 																	this.punto_venta.setText(combo2.lastSelectionText)
 																	this.load({params:{start:0, limit:this.tam_pag}});
-																	this.iniciarEventos();
+                                  this.grid.on('cellclick', this.abrirEnlace, this);
+                              		this.grid.body.dom.firstChild.firstChild.lastChild.style.background='#EFFBFF';
+                              		this.grid.body.dom.firstChild.firstChild.firstChild.firstChild.style.background='#DBF0F5';
+
+                                  this.iniciarEventos();
 															}
 														},
 										scope: this
@@ -609,6 +618,24 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true
 		},
+    {
+ 		 config:{
+ 			 name: 'nro_factura',
+ 			 fieldLabel: 'Nro Factura',
+ 			 allowBlank: true,
+ 			 anchor: '80%',
+ 			 gwidth: 100,
+ 			 maxLength:4,
+       renderer: function(value,p,record){
+               return String.format('{0}','<b id="ventanaEmergente"><i class="fa fa-share" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;'+record.data['nro_factura']+'</b>');
+       },
+ 		 },
+ 			 type:'NumberField',
+ 			 filters:{pfiltro:'ven.nro_factura',type:'numeric'},
+ 			 id_grupo:1,
+ 			 grid:true,
+ 			 form:false
+ 	 },
 		{
 			config:{
 				name: 'fecha',
@@ -625,21 +652,6 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-		{
- 		 config:{
- 			 name: 'nro_factura',
- 			 fieldLabel: 'Nro Factura',
- 			 allowBlank: true,
- 			 anchor: '80%',
- 			 gwidth: 100,
- 			 maxLength:4
- 		 },
- 			 type:'NumberField',
- 			 filters:{pfiltro:'ven.nro_factura',type:'numeric'},
- 			 id_grupo:1,
- 			 grid:true,
- 			 form:false
- 	 },
 	 {
 		 config:{
 			 name: 'cod_control',
@@ -1274,6 +1286,23 @@ Phx.vista.CorregirFormasPagoFacturas=Ext.extend(Phx.gridInterfaz,{
 	bexcel:false,
 	btest:false,
 	bedit:false,
+
+  abrirEnlace: function(cell,rowIndex,columnIndex,e){
+    if(columnIndex==1){
+      var data = this.sm.getSelected().data;
+      Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/consulta_boletos/VentanaDetalleFactura.php',
+      '<span style="font-size:14pt;padding-left: 35%;letter-spacing: 12px;">DETALLE DEL DOCUMENTO</span>', {
+        width:'90%',
+        height:'90%'
+        }, {
+          id_venta: data.id_venta,
+          link: true
+        },
+        this.idContenedor,
+        'VentanaDetalleFactura'
+      );
+    }
+  },
 
 	cmbPuntoV: new Ext.form.ComboBox({
 			name: 'punto_venta',

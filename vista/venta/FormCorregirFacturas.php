@@ -435,9 +435,10 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.codigo_tarjeta);
           	this.ocultarComponente(this.Cmp.tipo_tarjeta);
 			      this.ocultarComponente(this.Cmp.numero_tarjeta);
+            this.ocultarComponente(this.Cmp.mco);
             this.Cmp.codigo_tarjeta.reset();
             this.Cmp.tipo_tarjeta.reset();
-            this.Cmp.id_auxiliar.reset();
+            //this.Cmp.id_auxiliar.reset();
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
           }else if (codigo_forma_pago.startsWith("CA")) {
@@ -505,9 +506,9 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
             this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
           	this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
 			      this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+            this.ocultarComponente(this.Cmp.mco_2);
             this.Cmp.codigo_tarjeta_2.reset();
             this.Cmp.tipo_tarjeta_2.reset();
-            this.Cmp.id_auxiliar_2.reset();
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
           }else if (codigo_forma_pago.startsWith("CA")) {
@@ -1343,6 +1344,7 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
 	           {name: 'numero_tarjeta',     type: 'string'},
 	           {name: 'monto_transaccion',     type: 'numeric'},
              {name: 'id_venta_forma_pago',type: 'numeric'},
+             {name: 'id_auxiliar',type: 'numeric'},
 
 	        ]
 		});
@@ -1365,6 +1367,22 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
       /*Aqui continuar Facturacion Ismael Valdivia*/
       this.Cmp.id_venta_forma_pago_1.setValue(store[0].data.id_venta_forma_pago);
 
+      /*Aqui para recuperar la cuenta auxiliar*/
+      this.Cmp.id_auxiliar.store.baseParams.id_auxiliar = store[0].data.id_auxiliar;
+
+      this.Cmp.id_auxiliar.store.load({params:{start:0,limit:50},
+        callback : function (r) {
+          if (r.length == 1 ) {
+                this.Cmp.id_auxiliar.setValue(r[0].data.id_auxiliar);
+                this.Cmp.id_auxiliar.fireEvent('select', this.Cmp.id_auxiliar,r[0],0);
+                this.Cmp.id_auxiliar.store.baseParams.id_auxiliar = '';
+            }
+         }, scope : this
+     });
+      /****************************************/
+
+
+
       this.Cmp.id_moneda.store.load({params:{start:0,limit:50},
          callback : function (r) {
            this.Cmp.id_moneda.setValue(store[0].data.id_moneda);
@@ -1381,10 +1399,6 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
                this.Cmp.id_medio_pago.fireEvent('select', this.Cmp.id_medio_pago_pw,r[i]);
              }
            }
-
-
-
-
            // this.Cmp.id_medio_pago.setValue(store[0].data.id_medio_pago);
            // this.Cmp.id_medio_pago.fireEvent('select',this.Cmp.id_medio_pago, this.Cmp.id_medio_pago.store.getById(store[0].data.id_medio_pago));
            //this.obtenersuma();
@@ -1423,6 +1437,19 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
       });
 
 
+      this.Cmp.id_auxiliar.store.baseParams.id_auxiliar = store[0].data.id_auxiliar;
+
+      this.Cmp.id_auxiliar.store.load({params:{start:0,limit:50},
+        callback : function (r) {
+          if (r.length == 1 ) {
+                this.Cmp.id_auxiliar.setValue(r[0].data.id_auxiliar);
+                this.Cmp.id_auxiliar.fireEvent('select', this.Cmp.id_auxiliar,r[0],0);
+                this.Cmp.id_auxiliar.store.baseParams.id_auxiliar = '';
+            }
+         }, scope : this
+     });
+
+
       // this.Cmp.id_medio_pago.store.load({params:{start:0,limit:50},
       //    callback : function (r) {
       //      this.Cmp.id_medio_pago.setValue(store[0].data.id_medio_pago);
@@ -1450,6 +1477,18 @@ Phx.vista.FormCorregirFacturas=Ext.extend(Phx.frmInterfaz,{
            }
           }, scope : this
       });
+
+      this.Cmp.id_auxiliar_2.store.baseParams.id_auxiliar = store[1].data.id_auxiliar;
+
+      this.Cmp.id_auxiliar_2.store.load({params:{start:0,limit:50},
+        callback : function (r) {
+          if (r.length == 1 ) {
+                this.Cmp.id_auxiliar_2.setValue(r[0].data.id_auxiliar);
+                this.Cmp.id_auxiliar_2.fireEvent('select', this.Cmp.id_auxiliar_2,r[0],0);
+                this.Cmp.id_auxiliar_2.store.baseParams.id_auxiliar = '';
+            }
+         }, scope : this
+     });
 
       // this.Cmp.id_medio_pago_2.store.load({params:{start:0,limit:50},
       //    callback : function (r) {
