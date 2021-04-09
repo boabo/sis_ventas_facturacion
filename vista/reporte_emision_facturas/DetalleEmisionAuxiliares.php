@@ -336,7 +336,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         initFiltro: function (param) {
             this.store.baseParams = param;
-            this.load({params: {start: 0, limit: this.tam_pag}});
+            this.load({params: {start: 0, limit: 50}});
         },
 
         ReporteEXCEL: function () {
@@ -351,6 +351,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       id_punto_venta: this.store.baseParams.id_punto_venta,
                       nombre_pv: this.store.baseParams.nombre_pv,
                       formato_reporte: this.store.baseParams.formato_reporte,
+                      generar_reporte: 'si',
                   },
                   success: this.successExport,
                   failure: this.conexionFailure,

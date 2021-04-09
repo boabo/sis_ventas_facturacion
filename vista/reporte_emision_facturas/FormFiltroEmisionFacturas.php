@@ -342,7 +342,8 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
 										'hasta': hasta,
                     'id_punto_venta':id_punto_venta,
                     'nombre_pv':nombre_pv,
-                    'formato_reporte':formato_reporte
+                    'formato_reporte':formato_reporte,
+                    'generar_reporte':'no',
 									 }));
         }
     },

@@ -29,6 +29,7 @@ class MODReporteEmisionBoletos extends MODbase
         $this->setParametro('hasta', 'hasta', 'varchar');
         $this->setParametro('id_punto_venta', 'id_punto_venta', 'int4');
         $this->setParametro('formato_reporte', 'formato_reporte', 'varchar');
+        $this->setParametro('generar_reporte', 'generar_reporte', 'varchar');
 
         //var_dump("aqui llega data",$this->objParam->getParametro('codigo_auxiliar'));
         //captura parametros adicionales para el count

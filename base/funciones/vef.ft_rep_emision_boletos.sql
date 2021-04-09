@@ -4294,8 +4294,9 @@ BEGIN
 
                            ';
 
-               -- v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+				if (v_parametros.generar_reporte = 'no') then
+                	v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+				end if;
 
                 return v_consulta;
 
