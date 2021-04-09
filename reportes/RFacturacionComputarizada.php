@@ -129,7 +129,7 @@ class RFacturacionComputarizada
         $objDrawing->setHeight(100);
         $objDrawing->setCoordinates('A1');
         $objDrawing->setWorksheet($this->docexcel->getActiveSheet());
-        $this->docexcel->getActiveSheet()->mergeCells('A1:C1');
+        // $this->docexcel->getActiveSheet()->mergeCells('A1:C1');
 
         $fechaGeneracion =  date("d/m/Y");
         $horaGeneracion=  date("H:i:s");
