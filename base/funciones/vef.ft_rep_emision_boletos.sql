@@ -4294,7 +4294,7 @@ BEGIN
 
                            ';
 
-                v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+               -- v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 
                 return v_consulta;
