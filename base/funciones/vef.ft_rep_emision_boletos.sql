@@ -4317,7 +4317,7 @@ BEGIN
                 where mon.tipo_moneda = 'base';
                 /*****************************************************/
 
-                create  table reporte_resumen_totalizado_cta_cte (
+                create temp table reporte_resumen_totalizado_cta_cte (
                                                                 fecha_factura date,
                                                                 nro_factura varchar,
                                                                 nro_documento varchar,
@@ -4328,7 +4328,7 @@ BEGIN
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
                                                                 cuenta_auxiliar varchar
-                                                              );--on commit drop;
+                                                              )on commit drop;
                 CREATE INDEX treporte_resumen_totalizado_cta_cte_fecha_factura ON reporte_resumen_totalizado_cta_cte
                 USING btree (fecha_factura);
 
@@ -8880,7 +8880,7 @@ BEGIN
                 where mon.tipo_moneda = 'base';
                 /*****************************************************/
 
-                create table reporte_resumen_totalizado_cta_cte (
+                create temp table reporte_resumen_totalizado_cta_cte (
                                                                 fecha_factura date,
                                                                 nro_factura varchar,
                                                                 nro_documento varchar,
@@ -8891,7 +8891,7 @@ BEGIN
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
                                                                 cuenta_auxiliar varchar
-                                                              );--on commit drop;
+                                                              )on commit drop;
                 CREATE INDEX treporte_resumen_totalizado_cta_cte_fecha_factura ON reporte_resumen_totalizado_cta_cte
                 USING btree (fecha_factura);
 
