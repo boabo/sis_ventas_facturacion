@@ -234,7 +234,8 @@ BEGIN
                                    importe_total_venta  = 0,
                                    usuario_mod = '''||usu_mod||''',
                                    fecha_reg = now()
-                                   WHERE TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
+                                   WHERE sistema_origen = ''STAGE DB''
+                                       AND TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
                                        AND fecha_factura::date = '''||v_parametros.fecha_emision||'''::date
                                    ')  into v_exito;
 
@@ -265,7 +266,7 @@ BEGIN
                          v_resp = pxp.f_agrega_clave(v_resp,'periodo',v_ac_per::varchar);
                      END IF;
 
-                     v_res_cone=(select dblink_disconnect());
+                     --v_res_cone=(select dblink_disconnect());
 
            ELSE
                    v_sms = 'EL nro de boleto '||v_parametros.nro_tkt|| ' con fecha de emision '||v_parametros.fecha_emision||', no puede ser ANULADO. Ya que el periodo '||v_periodo||' del libro de compras y ventas se encuentra cerrado.';
