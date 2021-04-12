@@ -113,6 +113,7 @@ BEGIN
         if(p_transaccion = 'VEF_REP_EMI_BOL_SEL')then
             begin
 			--Condicional para ejecutar los diferentes reportes
+
             IF (v_parametros.formato_reporte != 'RESUMEN CTA/CTE TOTALIZADO') THEN
 
             /*Recuperamos la moneda base para sacar la conversion*/
@@ -4316,7 +4317,7 @@ BEGIN
                 where mon.tipo_moneda = 'base';
                 /*****************************************************/
 
-                create temp table reporte_resumen_totalizado_cta_cte (
+                create  table reporte_resumen_totalizado_cta_cte (
                                                                 fecha_factura date,
                                                                 nro_factura varchar,
                                                                 nro_documento varchar,
@@ -4327,7 +4328,7 @@ BEGIN
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
                                                                 cuenta_auxiliar varchar
-                                                              )on commit drop;
+                                                              );--on commit drop;
                 CREATE INDEX treporte_resumen_totalizado_cta_cte_fecha_factura ON reporte_resumen_totalizado_cta_cte
                 USING btree (fecha_factura);
 
@@ -4433,6 +4434,8 @@ BEGIN
                                       and '||v_codigo_auxiliar_venta||'';
 
                 execute v_insertar_ventas;
+
+
 
                 /******************************************************************************************/
 
@@ -4585,6 +4588,7 @@ BEGIN
                 where pb.tipo = 'carga');
                 /*************************************/
 
+
                end if;
 
 
@@ -4616,13 +4620,12 @@ BEGIN
                                                 (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tdeposito depo
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
+                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
                                         and '||v_codigo_auxiliar_venta||'
                                         and depo.estado_reg = ''activo''';
 
                 execute v_insertar_depositos;
                /***************************************************************************************************/
-
                /*Aqui los recibos anticipo*/
 
                v_insertar_aticipos = 'insert into reporte_resumen_totalizado_cta_cte (
@@ -4655,12 +4658,14 @@ BEGIN
                                         where ven.estado_reg = ''activo'' and ven.estado = ''finalizado''
                                         and (ven.tipo_factura = ''recibo'' or ven.tipo_factura = ''recibo_manual'')
                                         and ven.id_auxiliar_anticipo is not null
-                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
+                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
                                         and '||v_codigo_auxiliar_venta||'';
 
                	/**********************************************************************************************************/
 
                 execute v_insertar_aticipos;
+
+
 
                  v_consulta := 'select
                                       null::DATE AS fecha_factura,
@@ -4681,7 +4686,7 @@ BEGIN
                 	v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 				end if;
 
-
+                 raise notice '%',v_consulta;
                 return v_consulta;
 
             END IF;
@@ -8875,7 +8880,7 @@ BEGIN
                 where mon.tipo_moneda = 'base';
                 /*****************************************************/
 
-                create temp table reporte_resumen_totalizado_cta_cte (
+                create table reporte_resumen_totalizado_cta_cte (
                                                                 fecha_factura date,
                                                                 nro_factura varchar,
                                                                 nro_documento varchar,
@@ -8886,7 +8891,7 @@ BEGIN
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
                                                                 cuenta_auxiliar varchar
-                                                              )on commit drop;
+                                                              );--on commit drop;
                 CREATE INDEX treporte_resumen_totalizado_cta_cte_fecha_factura ON reporte_resumen_totalizado_cta_cte
                 USING btree (fecha_factura);
 
@@ -9175,7 +9180,7 @@ BEGIN
                                                 (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tdeposito depo
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
+                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
                                         and '||v_codigo_auxiliar_venta||'
                                         and depo.estado_reg = ''activo''';
 
@@ -9214,7 +9219,7 @@ BEGIN
                                         where ven.estado_reg = ''activo'' and ven.estado = ''finalizado''
                                         and (ven.tipo_factura = ''recibo'' or ven.tipo_factura = ''recibo_manual'')
                                         and ven.id_auxiliar_anticipo is not null
-                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
+                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
                                         and '||v_codigo_auxiliar_venta||'';
 
                	/**********************************************************************************************************/

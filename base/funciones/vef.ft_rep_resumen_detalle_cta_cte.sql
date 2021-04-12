@@ -389,7 +389,7 @@ BEGIN
                                                 (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tdeposito depo
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
+                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
                                         and '||v_codigo_auxiliar_venta||'
                                         and depo.estado_reg = ''activo''';
 
@@ -428,7 +428,7 @@ BEGIN
                                         where ven.estado_reg = ''activo'' and ven.estado = ''finalizado''
                                         and (ven.tipo_factura = ''recibo'' or ven.tipo_factura = ''recibo_manual'')
                                         and ven.id_auxiliar_anticipo is not null
-                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
+                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
                                         and '||v_codigo_auxiliar_venta||'';
 
                	/**********************************************************************************************************/
@@ -772,7 +772,7 @@ BEGIN
                                                 (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tdeposito depo
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
-                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
+                                        where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
                                         and '||v_codigo_auxiliar_venta||'
                                         and depo.estado_reg = ''activo''';
 
@@ -811,7 +811,7 @@ BEGIN
                                         where ven.estado_reg = ''activo'' and ven.estado = ''finalizado''
                                         and (ven.tipo_factura = ''recibo'' or ven.tipo_factura = ''recibo_manual'')
                                         and ven.id_auxiliar_anticipo is not null
-                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
+                                        and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
                                         and '||v_codigo_auxiliar_venta||'';
 
                	/**********************************************************************************************************/
