@@ -56,6 +56,7 @@ $body$
 
     v_filtro_id_cajero varchar;
   	v_filtro_tipo_factura varchar;
+    v_filtro_nit varchar;
 
 
   BEGIN
@@ -1623,6 +1624,15 @@ $body$
         	v_filtro_tipo_factura = '0=0';
         end if;
 
+        if (v_parametros.nit = '' or v_parametros.nit is null) then
+
+        	v_filtro_nit = '0=0';
+
+        else
+
+       		v_filtro_nit = 'vent.nit = '''||v_parametros.nit||'''';
+
+	    end if;
 
 
         /*Aqui creamos la tabla temporal para insertar y separar por punto de venta*/
@@ -1715,6 +1725,7 @@ $body$
                                           inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
                                           inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
                                           where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                                          and '||v_filtro_nit||'
                                           group by vent.id_venta, pv.nombre, pv.codigo, lug.nombre,lug.id_lugar_fk, usu.desc_persona),
 
                                         detalle as (
@@ -1744,7 +1755,7 @@ $body$
                                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
                                         inner join obingresos.tforma_pago_pw fpw on fpw.id_forma_pago_pw = mp.forma_pago_id
                                         where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
-
+										and '||v_filtro_nit||'
                                         group by vent.id_venta)
 
                                         select ca.id_venta::integer,
@@ -1815,7 +1826,8 @@ $body$
                                 estado,
                                 tipo_factura,
                                 cajero
-        			from reporte_facturacion_computarizada)
+        			from reporte_facturacion_computarizada
+                    where '||v_parametros.filtro||')
 
                     UNION ALL
 
@@ -1843,14 +1855,274 @@ $body$
                                 ''cabecera''::varchar as tipo_factura,
                                 NULL::varchar as cajero
                         from reporte_facturacion_computarizada
+                        where '||v_parametros.filtro||'
                         group by nombre, codigo))
                     	order by id_venta ASC NULLS FIRST';
 
+        if (v_parametros.imprimir_reporte != 'si') then
+
+        	v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+        end if;
+
+        return v_consulta;
+
+      end;
+
+
+      /*********************************
+ 	#TRANSACCION:  'VF_REPFACTDET_CONT'
+ 	#DESCRIPCION:	Reporte de Facturacion Computarizada
+ 	#AUTOR:		admin
+ 	#FECHA:		01-12-2020 14:47:00
+	***********************************/
+
+    elsif(p_transaccion='VF_REPFACTDET_CONT')then
+
+      begin
+       	--raise exception 'Aqui llega datos %',v_parametros.desde;
+        if (v_parametros.desde != '' || v_parametros.desde is not null) then
+        	v_filtro_fecha_desde = 'vent.fecha >= '''||v_parametros.desde||''' ';
+        else
+        	v_filtro_fecha_desde = '0=0';
+        end if;
+
+        if (v_parametros.hasta != '' || v_parametros.hasta is not null) then
+        	v_filtro_fecha_hasta = 'vent.fecha <= '''||v_parametros.hasta||''' ';
+        else
+        	v_filtro_fecha_hasta = '0=0';
+        end if;
+
+        if (v_parametros.id_punto_venta is not null) then
+        	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
+        else
+        	v_filtro_id_punto_venta = '0=0';
+        end if;
+
+         if (v_parametros.id_concepto is not null) then
+        	v_filtro_id_concepto = 'det.id_producto = '||v_parametros.id_concepto||'';
+        else
+        	v_filtro_id_concepto = '0=0';
+        end if;
+
+        if (v_parametros.id_usuario_cajero is not null) then
+          if (v_parametros.id_usuario_cajero != 0) then
+              v_filtro_id_cajero = 'vent.id_usuario_cajero = '||v_parametros.id_usuario_cajero||'';
+          else
+              v_filtro_id_cajero = '0=0';
+          end if;
+        else
+        	v_filtro_id_cajero = '0=0';
+        end if;
+
+
+        if (v_parametros.tipo_documento is not null) then
+        	if (v_parametros.tipo_documento = 'factura') then
+            	v_filtro_tipo_factura = '(vent.tipo_factura = ''computarizada'' or vent.tipo_factura = ''manual'' OR vent.tipo_factura = ''carga'')';
+            elsif (v_parametros.tipo_documento = 'recibo') then
+            	v_filtro_tipo_factura = '(vent.tipo_factura = ''recibo'' or vent.tipo_factura = ''recibo_manual'')';
+            end if;
+        else
+        	v_filtro_tipo_factura = '0=0';
+        end if;
+
+        if (v_parametros.nit = '' or v_parametros.nit is null) then
+
+        	v_filtro_nit = '0=0';
+
+        else
+
+       		v_filtro_nit = 'vent.nit = '''||v_parametros.nit||'''';
+
+	    end if;
+
+
+
+        /*Aqui creamos la tabla temporal para insertar y separar por punto de venta*/
+         create temp table reporte_facturacion_computarizada (
+                                                                id_venta integer,
+                                                                total_venta varchar,
+                                                                fecha varchar,
+                                                                conceptos varchar,
+                                                                nombre varchar,
+                                                                codigo varchar,
+                                                                observaciones varchar,
+                                                                nro_factura integer,
+                                                                cantidad varchar,
+                                                                precio	varchar,
+                                                                exento varchar,
+                                                                comision varchar,
+                                                                total_precio varchar,
+                                                                moneda varchar,
+                                                                num_tarjeta varchar,
+                                                                total_monto varchar,
+                                                                forma_pago varchar,
+                                                                medio_pago varchar,
+                                                                lugar varchar,
+                                                                pais varchar,
+                                                                estado varchar,
+                                                                tipo_factura varchar,
+                                                                cajero varchar
+                                                              )on commit drop;
+
+                CREATE INDEX treporte_facturacion_computarizada_id_venta ON reporte_facturacion_computarizada
+                USING btree (id_venta);
+
+                CREATE INDEX treporte_facturacion_computarizada_fecha ON reporte_facturacion_computarizada
+                USING btree (fecha);
+
+                CREATE INDEX treporte_facturacion_computarizada_nro_factura ON reporte_facturacion_computarizada
+                USING btree (nro_factura);
+
+        /*************************************************************************************************************/
+
+
+        v_consulta_insertar_reporte = 'insert into reporte_facturacion_computarizada (
+                                                    id_venta,
+                                                    total_venta,
+                                                    fecha,
+                                                    conceptos,
+                                                    nombre,
+                                                    codigo,
+                                                    observaciones,
+                                                    nro_factura,
+                                                    cantidad,
+                                                    precio,
+                                                    exento,
+                                                    comision,
+                                                    total_precio,
+                                                    moneda,
+                                                    num_tarjeta,
+                                                    total_monto,
+                                                    forma_pago,
+                                                    medio_pago,
+                                                    lugar,
+                                                    pais,
+                                                    estado,
+                                                    tipo_factura,
+                                                    cajero
+        								)
+                                        (WITH  cabecera AS (select vent.id_venta,
+                                                 vent.total_venta,
+                                                 vent.fecha,
+                                                 list (ingas.desc_ingas) as conceptos ,
+                                                 pv.nombre ,
+                                                 pv.codigo,
+                                                 vent.observaciones,
+                                                 vent.nro_factura,
+                                                 list (det.cantidad::Varchar) cantidad,
+                                                 list (det.precio::varchar) as precio,
+                                                 vent.excento::varchar as exento,
+                                                 vent.comision::varchar as comision,
+                                                 list ((det.cantidad*det.precio)::Varchar) total_precio,
+                                                 lug.nombre as lugar,
+                                                 lug.id_lugar_fk,
+                                                 vent.estado,
+                                                 vent.tipo_factura,
+                                                 usu.desc_persona
+                                          from vef.tventa vent
+                                          left join vef.tventa_detalle det on det.id_venta = vent.id_venta
+                                          left join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
+                                          inner join vef.tsucursal suc on suc.id_sucursal = vent.id_sucursal
+                                          inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
+                                          inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
+                                          where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                                          and '||v_filtro_nit||'
+                                          group by vent.id_venta, pv.nombre, pv.codigo, lug.nombre,lug.id_lugar_fk, usu.desc_persona),
+
+                                        detalle as (
+                                        select vent.id_venta,
+                                               list (mon.codigo_internacional) AS moneda,
+                                               list (fp.numero_tarjeta) as num_tarjeta,
+                                               list (fp.monto_mb_efectivo::varchar) as total_monto,
+                                               CASE
+                                                      WHEN vent.id_deposito is not null
+                                                      THEN
+                                                      ''DEPÓSITO''
+                                                      else
+                                                      list (fpw.fop_code)
+                                                END  as forma_pago,
+
+                                                 CASE
+                                                      WHEN vent.id_deposito is not null
+
+                                                      THEN
+                                                      ''DEPO''
+                                                      else
+                                                      list (mp.mop_code)
+                                                END  as medio_pago
+                                        from vef.tventa vent
+                                        inner join vef.tventa_forma_pago fp on fp.id_venta = vent.id_venta
+                                        inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
+                                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                                        inner join obingresos.tforma_pago_pw fpw on fpw.id_forma_pago_pw = mp.forma_pago_id
+                                        where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'' OR vent.estado = ''anulado'') and '||v_filtro_tipo_factura||' and '||v_filtro_id_cajero||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
+										and '||v_filtro_nit||'
+                                        group by vent.id_venta)
+
+                                        select ca.id_venta::integer,
+                                               ca.total_venta::varchar,
+                                               to_char(ca.fecha,''DD/MM/YYYY'')::varchar as fecha,
+                                               ca.conceptos::varchar,
+                                               ca.nombre::varchar,
+                                               ca.codigo::varchar,
+                                               ca.observaciones::varchar,
+                                               ca.nro_factura::integer,
+                                               ca.cantidad::varchar,
+                                               ca.precio::varchar,
+                                               ca.exento,
+                                               ca.comision,
+                                               ca.total_precio::varchar,
+                                               det.moneda::varchar,
+                                               det.num_tarjeta::varchar,
+                                               det.total_monto::varchar,
+                                               det.forma_pago::varchar,
+                                               det.medio_pago::varchar,
+                                               ca.lugar,
+                                               lug.nombre::varchar as pais,
+                                               (CASE
+                                                  WHEN ca.estado = ''finalizado'' THEN
+                                                  ''EMITIDA''
+                                                  WHEN ca.estado = ''anulado''  THEN
+                                                  ''ANULADA''
+                                               END)::varchar as estado,
+                                               (CASE
+                                                  WHEN ca.tipo_factura = ''computarizada'' THEN
+                                                  ''Facturación Computarizada''
+                                                  WHEN ca.tipo_factura = ''manual''  THEN
+                                                  ''Facturación Manual''
+                                                  WHEN ca.tipo_factura = ''recibo''  THEN
+                                                  ''RO Computarizado''
+                                                  WHEN ca.tipo_factura = ''recibo_manual''  THEN
+                                                  ''RO Manual''
+                                                  WHEN ca.tipo_factura = ''carga''  THEN
+                                                  ''Facturación Carga Computarizada''
+                                               END)::varchar as tipo_factura,
+                                               ca.desc_persona
+                                        from cabecera ca
+                                        inner join detalle det on det.id_venta = ca.id_venta
+                                        inner join param.tlugar lug on lug.id_lugar = ca.id_lugar_fk
+                                        order by nombre, nro_factura ASC)';
+        execute v_consulta_insertar_reporte;
+
+
+        v_consulta:='select 	count (id_venta),
+        				       sum (COALESCE (comision::numeric,0)) as totales_comision,
+                               sum (COALESCE(exento::numeric,0)) as totales_exento,
+                               sum (COALESCE (total_venta::numeric,0)) as totales_venta
+        			from reporte_facturacion_computarizada
+                    where ';
+
+        v_consulta:=v_consulta||v_parametros.filtro;
 
         --Devuelve la respuesta
         return v_consulta;
 
       end;
+
+
+
 
 
        /*********************************

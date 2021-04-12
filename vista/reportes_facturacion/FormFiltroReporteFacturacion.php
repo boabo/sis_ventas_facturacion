@@ -363,6 +363,18 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
 				id_grupo: 1,
 				form: true
 		  },
+      {
+  			config:{
+  				name: 'nit',
+  				fieldLabel: 'NIT',
+  				allowBlank: true,
+  				width:250,
+  				maxLength:20
+  			},
+  			type:'NumberField',
+  			id_grupo:1,
+  			form:true,
+  		},
 
 	],
 	labelSubmit: '<i class="fa fa-check"></i> Aplicar Filtro',
@@ -387,6 +399,7 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
       var id_usuario_cajero=parametros.id_usuario_cajero;
 			var tipo_documento=parametros.tipo_documento;
       var nombre_pv = parametros.nombre_punto_venta;
+      var nit = parametros.nit;
 
 			this.onEnablePanel(this.idContenedor + '-south',
 				Ext.apply(parametros,{
@@ -397,7 +410,9 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
                     'id_punto_venta' : id_punto_venta,
                     'id_usuario_cajero' : id_usuario_cajero,
                     'tipo_documento' : tipo_documento,
-										'nombre_pv' : nombre_pv
+                    'nombre_pv' : nombre_pv,
+                    'nit' : nit,
+										'imprimir_reporte' : 'no'
 									 }));
         }
     },

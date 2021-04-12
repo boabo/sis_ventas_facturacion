@@ -200,7 +200,14 @@ class MODReportesVentas extends MODbase{
 		$this->setParametro('hasta','hasta','varchar');
 		$this->setParametro('id_usuario_cajero','id_usuario_cajero','integer');
 		$this->setParametro('tipo_documento','tipo_documento','varchar');
-		$this->setCount(false);
+		$this->setParametro('nit','nit','varchar');
+		$this->setParametro('imprimir_reporte','imprimir_reporte','varchar');
+		//$this->setCount(false);
+
+		$this->capturaCount('totales_comision', 'numeric');
+		$this->capturaCount('totales_exento', 'numeric');
+		$this->capturaCount('totales_venta', 'numeric');
+
 
 		$this->captura('id_venta','integer');
 		$this->captura('total_venta','varchar');
@@ -234,6 +241,8 @@ class MODReportesVentas extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+
 	function listarFacturaComputarizadaCabecera(){
 
 		//Definicion de variables para ejecucion del procedimientp

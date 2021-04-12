@@ -62,7 +62,7 @@ class ACTReportesVentas extends ACTbase{
 	/*Aumentando para Los reportes de Facturacion (Ismael Valdivia 01/12/2020)*/
 	function ReporteFacturaComputarizada()	{
 
-		if ($this->objParam->getParametro('imprimir_reporte') != NULL && $this->objParam->getParametro('imprimir_reporte') != '') {
+		if ($this->objParam->getParametro('imprimir_reporte') == 'si') {
 
 			if ($this->objParam->getParametro('formato_reporte') == 'REPORTE DE FACTURAS') {
 
@@ -151,18 +151,23 @@ class ACTReportesVentas extends ACTbase{
 		} else {
 			$this->objFunc = $this->create('MODReportesVentas');
 			$this->res = $this->objFunc->listarFacturaComputarizadaDetalle($this->objParam);
-			// $temp = Array();
-			// $temp['total_monto_facturas'] = $this->res->extraData['total_monto_facturas'];
-			// $temp['total_excentos'] = $this->res->extraData['total_excentos'];
-			// $temp['total_comision'] = $this->res->extraData['total_comision'];
-			// $temp['total_precio_unitario'] = $this->res->extraData['total_precio_unitario'];
-			// $temp['total_forma_pago'] = $this->res->extraData['total_forma_pago'];
-			// $temp['tipo_reg'] = 'summary';
-			//
-			// $this->res->total++;
-			// $this->res->addLastRecDatos($temp);
+
+
+			$temp = Array();
+			$temp['totales_comision'] = $this->res->extraData['totales_comision'];
+			$temp['totales_exento'] = $this->res->extraData['totales_exento'];
+			$temp['totales_venta'] = $this->res->extraData['totales_venta'];
+			$temp['tipo_reg'] = 'summary';
+
+			$this->res->total++;
+
+			$this->res->addLastRecDatos($temp);
 			$this->res->imprimirRespuesta($this->res->generarJson());
+
+
 		}
+
+
 
 		// $this->objFunc=$this->create('MODReportesVentas');
 		//

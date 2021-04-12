@@ -278,7 +278,7 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                        gwidth: 150,
                        disabled : false,
                        listWidth: 300,
-                       store:['REPORTE FORMAS DE PAGO CTA/CTE (DEBE)','REPORTE ANTICIPO (HABER)','REPORTE CONSOLIDADO (DEBE-HABER)']
+                       store:['REPORTE FORMAS DE PAGO CTA/CTE (DEBE)','REPORTE ANTICIPO (HABER)','REPORTE CONSOLIDADO (DEBE-HABER)','RESUMEN CTA/CTE TOTALIZADO']
                     },
             type: 'ComboBox',
             id_grupo: 0,

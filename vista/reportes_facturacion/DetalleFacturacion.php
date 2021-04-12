@@ -85,7 +85,6 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 400,
                         maxLength: 1000,
                         renderer: function (value, p, record) {
-                          console.log("aqui lelga el codigo");
                         if (record.data.tipo_factura == 'cabecera') {
                           return '<b>Detalle PV: '+record.data.nombre+' ('+record.data.codigo+')</b>';
                         } else {
@@ -96,7 +95,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'pv.nombre', type: 'string'},
+                    filters: {pfiltro: 'nombre', type: 'string'},
                     bottom_filter: true,
                     id_grupo: 1,
                     grid: true,
@@ -148,6 +147,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         anchor: '80%',
                         gwidth: 200,
                         maxLength: 1000,
+                        renderer:function (value,p,record){
+                            if(record.data.tipo_reg != 'summary'){
+                                return  value;
+                            }
+                            else{
+                                return '<b><p style="font-size:15px; color:red; text-align:right; text-decoration: border-top:2px;">Totales:</p></b>';
+                            }
+                        },
                       //   renderer:function (value,p,record){
                 			// 		if(record.data.tipo_reg != 'summary'){
                 			// 			return  String.format('{0}', record.data['nro_factura']);
@@ -159,7 +166,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'TextField',
                     bottom_filter: true,
-                    filters: {pfiltro: 'vent.nro_factura', type: 'string'},
+                    filters: {pfiltro: 'nro_factura', type: 'numeric'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -173,6 +180,16 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 110,
                         galign: 'right ',
                         maxLength: 100,
+
+                        renderer:function (value,p,record){
+                            if(record.data.tipo_reg != 'summary'){
+                                return  value;
+                            }
+                            else{
+                                return  String.format('<div style="font-size:15px; text-align:right; color:red;"><b>{0}<b></div>', Ext.util.Format.number(record.data.totales_venta,'0,000.00'));
+                            }
+                        },
+
                     },
                     type: 'NumberField',
                     id_grupo: 1,
@@ -181,13 +198,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
-                        name: 'excento',
+                        name: 'exento',
                         fieldLabel: 'Exentos',
                         allowBlank: true,
                         width: '100%',
                         gwidth: 110,
                         galign: 'right ',
                         maxLength: 100,
+                        renderer:function (value,p,record){
+                            if(record.data.tipo_reg != 'summary'){
+                                return  value;
+                            }
+                            else{
+                                return  String.format('<div style="font-size:15px; text-align:right; color:red;"><b>{0}<b></div>', Ext.util.Format.number(record.data.totales_exento,'0,000.00'));
+                            }
+                        },
 
                     },
                     type: 'NumberField',
@@ -205,6 +230,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 110,
                         galign: 'right ',
                         maxLength: 100,
+                        renderer:function (value,p,record){
+                            if(record.data.tipo_reg != 'summary'){
+                                return  value;
+                            }
+                            else{
+                                return  String.format('<div style="font-size:15px; text-align:right; color:red;"><b>{0}<b></div>', Ext.util.Format.number(record.data.totales_comision,'0,000.00'));
+                            }
+                        },
                     },
                     type: 'NumberField',
                     id_grupo: 1,
@@ -220,7 +253,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 100,
                         renderer: function (value, p, record) {
 
-                          if (value != null) {
+                          if (value != null && record.data.tipo_reg != 'summary') {
                             var concepto = value.split(",");
                             var cantidad = record.data.cantidad.split(",");
                             var precio = record.data.precio.split(",");
@@ -269,7 +302,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 100,
                         renderer: function (value, p, record) {
 
-                        if (value != null) {
+                        if (value != null && record.data.tipo_reg != 'summary') {
                           var forma_pago = value.split(",");
                           var total_monto = record.data.total_monto.split(",");
                           var medio_pago = record.data.medio_pago.split(",");
@@ -407,7 +440,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'fecha', type: 'varchar'},
             {name: 'nro_factura', type: 'numeric'},
             {name: 'total_venta', type: 'numeric'},
-            {name: 'excento', type: 'numeric'},
+            {name: 'exento', type: 'numeric'},
             {name: 'comision', type: 'numeric'},
             {name: 'cantidad', type: 'numeric'},
             {name: 'conceptos', type: 'varchar'},
@@ -428,6 +461,10 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'cajero', type: 'varchar'},
             {name: 'estado', type: 'varchar'},
             {name: 'codigo', type: 'varchar'},
+            {name:'tipo_reg', type: 'string'},
+            {name:'totales_comision', type: 'numeric'},
+            {name:'totales_exento', type: 'numeric'},
+            {name:'totales_venta', type: 'numeric'},
         ],
 
 
@@ -500,6 +537,7 @@ header("content-type: text/javascript; charset=UTF-8");
                       id_usuario_cajero: this.store.baseParams.id_usuario_cajero,
                       tipo_documento: this.store.baseParams.tipo_documento,
                       nombre_pv: this.store.baseParams.nombre_pv,
+                      nit: this.store.baseParams.nit,
                       imprimir_reporte: 'si'
                   },
                   success: this.successExport,
@@ -528,7 +566,6 @@ header("content-type: text/javascript; charset=UTF-8");
             }],
         //mpmpmp
         postReloadPage: function (data) {
-            console.log("Aqui data irva",data);
             ini = data.desde;
             fin = data.hasta;
 

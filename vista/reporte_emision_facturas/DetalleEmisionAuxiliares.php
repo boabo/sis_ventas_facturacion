@@ -44,7 +44,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         viewConfig: {
             //stripeRows: false,
-            autoFill: true,
+            //autoFill: true,
             getRowClass: function (record) {
               console.log("aqui datos",record);
                 if (record.data.tipo_factura == null && record.data.pasajero != 'DEPOSITO') {
@@ -54,7 +54,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 } else if (record.data.tipo_factura == '' && record.data.pasajero != 'DEPOSITO') {
                   return 'totales';
                 }
-
                 else if (record.data.tipo_factura == null && record.data.pasajero == 'DEPOSITO') {
                   return 'depositos';
                 }
@@ -122,7 +121,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Nro. Factura',
                         allowBlank: true,
                         anchor: '80%',
-                        gwidth: 95,
+                        gwidth: 130,
                         maxLength: 1000,
                         renderer:function (value,p,record){
                           if (value == 0){
@@ -145,7 +144,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Nro. Documento',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 95,
+                        gwidth: 130,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -160,7 +159,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Rutas',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 200,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -175,7 +174,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Pasajero',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 300,
+                        gwidth: 200,
                         //galign: 'right ',
                         //maxLength: 100,
                         renderer:function (value,p,record){
@@ -196,11 +195,27 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 {
                     config: {
+                        name: 'cuenta_auxiliar',
+                        fieldLabel: 'Cuenta Auxiliar',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 350,
+                        //galign: 'right ',
+                        maxLength: 100,
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
                         name: 'debe',
                         fieldLabel: 'Debe',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 110,
+                        gwidth: 200,
                         galign: 'right ',
                         maxLength: 100,
                         renderer:function (value,p,record){
@@ -224,7 +239,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Haber',
                         allowBlank: true,
                         width: '100%',
-                        gwidth: 110,
+                        gwidth: 200,
                         galign: 'right ',
                         maxLength: 100,
                         renderer:function (value,p,record){
@@ -241,21 +256,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
-                {
-                    config: {
-                        name: 'cuenta_auxiliar',
-                        fieldLabel: 'Cuenta Auxiliar',
-                        allowBlank: true,
-                        width: '100%',
-                        gwidth: 300,
-                        //galign: 'right ',
-                        maxLength: 100,
-                    },
-                    type: 'TextField',
-                    id_grupo: 1,
-                    grid: true,
-                    form: true
-                },
+
 
             ];
 
@@ -332,6 +333,26 @@ header("content-type: text/javascript; charset=UTF-8");
             //Se obtiene la gestión en función de la fecha del comprobante para filtrar partidas, cuentas, etc.
             var me = this;
             this.initFiltro(param);
+
+            if (this.store.baseParams.formato_reporte == 'RESUMEN CTA/CTE TOTALIZADO') {
+              this.cm.setHidden(0, true);
+              this.cm.setHidden(1, true);
+              this.cm.setHidden(2, true);
+              this.cm.setHidden(3, true);
+              this.cm.setHidden(4, true);
+              this.cm.setHidden(5, true);
+            } else {
+              this.cm.setHidden(0, false);
+              this.cm.setHidden(1, false);
+              this.cm.setHidden(2, false);
+              this.cm.setHidden(3, false);
+              this.cm.setHidden(4, false);
+              this.cm.setHidden(5, false);
+            }
+
+
+
+
         },
 
         initFiltro: function (param) {
