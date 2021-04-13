@@ -49,6 +49,7 @@ class MODReporteEmisionBoletos extends MODbase
         $this->captura('tipo_factura', 'varchar');
         $this->captura('punto_venta', 'varchar');
         $this->captura('cuenta_auxiliar', 'varchar');
+        $this->captura('observaciones', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

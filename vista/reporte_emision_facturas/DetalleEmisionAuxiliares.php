@@ -46,7 +46,7 @@ header("content-type: text/javascript; charset=UTF-8");
             //stripeRows: false,
             //autoFill: true,
             getRowClass: function (record) {
-              console.log("aqui datos",record);
+              //console.log("aqui datos",record);
                 if (record.data.tipo_factura == null && record.data.pasajero != 'DEPOSITO') {
                   return 'punto_venta';
                 } else if (record.data.tipo_factura == 'total_pv' ) {
@@ -145,6 +145,21 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: true,
                         width: '100%',
                         gwidth: 130,
+                        //galign: 'right ',
+                        maxLength: 100,
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
+                        name: 'observaciones',
+                        fieldLabel: 'Observaciones',
+                        allowBlank: true,
+                        //width: '100%',
+                        gwidth: 500,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -256,6 +271,21 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
+                {
+                    config: {
+                        name: 'punto_venta',
+                        fieldLabel: 'Punto de Venta',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 250,
+                        //galign: 'right ',
+                        maxLength: 100,
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
 
 
             ];
@@ -316,6 +346,8 @@ header("content-type: text/javascript; charset=UTF-8");
             {name:'total_haber', type: 'numeric'},
             {name:'tipo_factura', type: 'varchar'},
             {name:'cuenta_auxiliar', type: 'varchar'},
+            {name:'punto_venta', type: 'varchar'},
+            {name:'observaciones', type: 'varchar'},
         ],
 
         sortInfo: {
@@ -341,6 +373,15 @@ header("content-type: text/javascript; charset=UTF-8");
               this.cm.setHidden(3, true);
               this.cm.setHidden(4, true);
               this.cm.setHidden(5, true);
+              this.cm.setHidden(6, true);
+              /*Esconder el punto de venta para diferenciar los auxiliares*/
+              if (this.store.baseParams.nombre_pv == 'Todos') {
+                this.cm.setHidden(10, true);
+              } else {
+                this.cm.setHidden(10, false);
+              }
+              /*************************************************************/
+
             } else {
               this.cm.setHidden(0, false);
               this.cm.setHidden(1, false);
@@ -348,6 +389,8 @@ header("content-type: text/javascript; charset=UTF-8");
               this.cm.setHidden(3, false);
               this.cm.setHidden(4, false);
               this.cm.setHidden(5, false);
+              this.cm.setHidden(6, false);
+              this.cm.setHidden(10, true);
             }
 
 

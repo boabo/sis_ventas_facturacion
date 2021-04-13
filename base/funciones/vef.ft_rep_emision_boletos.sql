@@ -98,6 +98,10 @@ DECLARE
     v_insertar_ventas	varchar;
     v_insertar_boletos	varchar;
     v_insertar_depositos varchar;
+    v_punto_venta_fac	varchar;
+    v_punto_venta_bol 	varchar;
+    v_punto_venta_carga	varchar;
+    v_codigo_pv	varchar;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_emision_boletos';
@@ -134,7 +138,8 @@ BEGIN
                                                                 haber numeric,
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
-                                                                cuenta_auxiliar varchar
+                                                                cuenta_auxiliar varchar,
+                                                                observaciones varchar
                                                               )on commit drop;
                 CREATE INDEX tfacturas_recibos_temporal_fecha_factura ON facturas_recibos_temporal
                 USING btree (fecha_factura);
@@ -186,7 +191,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
 
 
                               select  ven.fecha,
@@ -222,7 +228,8 @@ BEGIN
                                       0::numeric as monto_haber,
                                       ven.tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      UPPER(ven.observaciones)::varchar as observaciones
                               from vef.tventa ven
                               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -278,7 +285,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               select
                                       bol.fecha_emision,
                                       bol.nro_boleto as nro_factura,
@@ -296,7 +304,8 @@ BEGIN
                                       0::numeric as haber,
                                       'boletos'::varchar as tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               from obingresos.tboleto_amadeus bol
                               inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -329,7 +338,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                             (SELECT 	tdatos.fecha_factura,
                                       tdatos.nro_factura,
                                       tdatos.nro_documento,
@@ -339,7 +349,8 @@ BEGIN
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
                                       pb.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
                                       fecha_factura,
@@ -395,7 +406,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar
+                                                                      cuenta_auxiliar,
+                                                                      observaciones
                                                                       )
                               ((select
                                       DISTINCT(pv.nombre),
@@ -407,7 +419,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -429,7 +442,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -450,7 +464,8 @@ BEGIN
                                               null::numeric importe_total_venta,
                                               null::numeric,
                                               NULL::varchar as tipo_factura,
-                                              NULL::varchar as cuenta_auxiliar
+                                              NULL::varchar as cuenta_auxiliar,
+                                              NULL::varchar as observaciones
 
                                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                                         'select
@@ -488,7 +503,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar
+                                                                      cuenta_auxiliar,
+                                                                      observaciones
                                                                       )
                               ((select
                                       DISTINCT(pv.nombre),
@@ -500,7 +516,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -522,7 +539,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -544,7 +562,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
 
 
                               select  ven.fecha,
@@ -580,7 +599,8 @@ BEGIN
                                       0::numeric as monto_haber,
                                       ven.tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      upper(ven.observaciones)::varchar as observaciones
                               from vef.tventa ven
                               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -636,7 +656,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               select
                                       bol.fecha_emision,
                                       bol.nro_boleto as nro_factura,
@@ -654,7 +675,8 @@ BEGIN
                                       0::numeric as haber,
                                       'boletos'::varchar as tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               from obingresos.tboleto_amadeus bol
                               inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -687,7 +709,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                             (SELECT 	tdatos.fecha_factura,
                                       tdatos.nro_factura,
                                       tdatos.nro_documento,
@@ -697,7 +720,8 @@ BEGIN
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
                                       pb.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
                                       fecha_factura,
@@ -754,7 +778,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               ((select
                                       DISTINCT(pv.nombre),
                                       NULL::date as fecha_factura,
@@ -765,7 +790,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -787,7 +813,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -808,7 +835,8 @@ BEGIN
                                               null::numeric importe_total_venta,
                                               null::numeric,
                                               NULL::varchar as tipo_factura,
-                                              NULL::varchar as cuenta_auxiliar
+                                              NULL::varchar as cuenta_auxiliar,
+                                              NULL::varchar as observaciones
 
                                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                                         'select
@@ -846,7 +874,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               ((select
                                       DISTINCT(pv.nombre),
                                       NULL::date as fecha_factura,
@@ -857,7 +886,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -879,7 +909,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -912,7 +943,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
 
                     select  depo.fecha,
@@ -924,7 +956,8 @@ BEGIN
                             param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                             'deposito'::varchar as tipo_factura,
                             'DEPOSITO'::varchar AS nombre,
-                            (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                            ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                            ''::varchar as observaciones
                     from obingresos.tdeposito depo
                     inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                     and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -940,7 +973,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
 
                   select  ven.fecha,
@@ -952,7 +986,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          upper(ven.observaciones)::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -971,7 +1006,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 ((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -982,7 +1018,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1005,7 +1042,8 @@ BEGIN
                       NULL::numeric as debe,
                       NULL::numeric as haber,
                       NULL::varchar as tipo_factura,
-                      NULL::varchar as cuenta_auxiliar
+                      NULL::varchar as cuenta_auxiliar,
+                      NULL::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -1027,7 +1065,8 @@ BEGIN
                                                     haber,
                                                     tipo_factura,
                                                     punto_venta,
-                                                    cuenta_auxiliar
+                                                    cuenta_auxiliar,
+                                                    observaciones
                                                     )
 
                 select  depo.fecha,
@@ -1039,7 +1078,8 @@ BEGIN
                         param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -1058,7 +1098,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -1069,7 +1110,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          upper(ven.observaciones)::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1089,7 +1131,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 ((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -1100,7 +1143,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1125,7 +1169,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                   from obingresos.tdeposito depo
                   inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                   and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -1157,7 +1202,8 @@ BEGIN
                                                     haber,
                                                     tipo_factura,
                                                     punto_venta,
-                                                    cuenta_auxiliar
+                                                    cuenta_auxiliar,
+                                                    observaciones
                                                     )
 
                 select  depo.fecha,
@@ -1169,7 +1215,8 @@ BEGIN
                         param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -1187,7 +1234,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -1198,7 +1246,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          upper(ven.observaciones)::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1219,7 +1268,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
 
                 select  ven.fecha,
@@ -1254,7 +1304,8 @@ BEGIN
                         0::numeric as monto_haber,
                         ven.tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        upper(ven.observaciones)::varchar as observaciones
                 from vef.tventa ven
                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -1310,7 +1361,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 select
                         bol.fecha_emision,
                         bol.nro_boleto as nro_factura,
@@ -1328,7 +1380,8 @@ BEGIN
                         0::numeric as haber,
                         'boletos'::varchar as tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tboleto_amadeus bol
                 inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -1360,7 +1413,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
               (SELECT 	tdatos.fecha_factura,
                         tdatos.nro_factura,
                         tdatos.nro_documento,
@@ -1370,7 +1424,8 @@ BEGIN
                         0::numeric as haber,
                         'carga'::varchar as tipo_factura,
                         pb.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                 'select
                         fecha_factura,
@@ -1422,7 +1477,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 (
                 	(select
@@ -1435,7 +1491,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -1457,7 +1514,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -1478,8 +1536,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -1518,7 +1576,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1542,7 +1601,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -1566,7 +1626,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 (
                 	(select
@@ -1579,7 +1640,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -1601,7 +1663,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -1623,7 +1686,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1647,7 +1711,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -1672,7 +1737,8 @@ BEGIN
                                                     haber,
                                                     tipo_factura,
                                                     punto_venta,
-                                                    cuenta_auxiliar
+                                                    cuenta_auxiliar,
+                                                    observaciones
                                                     )
 
                 select  depo.fecha,
@@ -1684,7 +1750,8 @@ BEGIN
                         param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -1705,7 +1772,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -1716,7 +1784,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1738,7 +1807,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
 
                 select  ven.fecha,
@@ -1773,7 +1843,8 @@ BEGIN
                         0::numeric as monto_haber,
                         ven.tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        upper(ven.observaciones)::varchar as observaciones
                 from vef.tventa ven
                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -1829,7 +1900,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 select
                         bol.fecha_emision,
                         bol.nro_boleto as nro_factura,
@@ -1847,7 +1919,8 @@ BEGIN
                         0::numeric as haber,
                         'boletos'::varchar as tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tboleto_amadeus bol
                 inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -1879,7 +1952,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
               (SELECT 	tdatos.fecha_factura,
                         tdatos.nro_factura,
                         tdatos.nro_documento,
@@ -1889,7 +1963,8 @@ BEGIN
                         0::numeric as haber,
                         'carga'::varchar as tipo_factura,
                         pb.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                 'select
                         fecha_factura,
@@ -1941,7 +2016,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 (
                 	(select
                 		DISTINCT(pv.nombre),
@@ -1953,7 +2029,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -1975,7 +2052,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -1996,7 +2074,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-								NULL::varchar as cuenta_auxiliar
+								NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -2035,7 +2114,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -2059,7 +2139,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -2079,7 +2160,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 (
                 	(select
                 		DISTINCT(pv.nombre),
@@ -2091,7 +2173,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2113,7 +2196,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2135,7 +2219,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -2159,7 +2244,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -2193,7 +2279,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -2240,7 +2327,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2299,7 +2387,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -2317,7 +2406,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2358,7 +2448,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -2368,7 +2459,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -2421,7 +2513,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 		((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -2432,7 +2525,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2455,7 +2549,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2477,8 +2572,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -2517,7 +2612,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 		((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -2528,7 +2624,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2552,7 +2649,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2580,7 +2678,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -2627,7 +2726,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2686,7 +2786,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -2704,7 +2805,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2744,7 +2846,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -2754,7 +2857,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -2805,7 +2909,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -2817,7 +2922,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2840,7 +2946,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as codigo_auxiliar
+                        NULL::varchar as codigo_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2862,8 +2969,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -2901,7 +3008,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -2913,7 +3021,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2937,7 +3046,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2965,7 +3075,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -2977,7 +3088,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -2994,7 +3106,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -3005,7 +3118,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3025,7 +3139,8 @@ BEGIN
                                                                 debe,
                                                                 haber,
                                                                 tipo_factura,
-                                                                cuenta_auxiliar
+                                                                cuenta_auxiliar,
+                                                                observaciones
                                                                 )
                        ( (select
                                 DISTINCT(pv.nombre),
@@ -3037,7 +3152,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3059,7 +3175,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -3079,7 +3196,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -3091,7 +3209,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -3111,7 +3230,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -3122,7 +3242,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  upper(ven.observaciones)::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3143,7 +3264,8 @@ BEGIN
                                                                 debe,
                                                                 haber,
                                                                 tipo_factura,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                         ((select
                                 DISTINCT(pv.nombre),
                                 NULL::date as fecha_factura,
@@ -3154,7 +3276,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3177,7 +3300,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -3198,7 +3322,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -3210,7 +3335,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -3227,7 +3353,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -3274,7 +3401,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -3333,7 +3461,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -3351,7 +3480,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -3374,7 +3504,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -3385,7 +3516,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3423,7 +3555,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -3433,7 +3566,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -3486,7 +3620,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -3498,7 +3633,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -3521,7 +3657,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -3543,7 +3680,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-								NULL::varchar as cuenta_auxiliar
+								NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -3583,7 +3721,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3606,7 +3745,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -3625,7 +3765,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -3637,7 +3778,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -3661,7 +3803,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -3684,7 +3827,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3707,7 +3851,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -3731,7 +3876,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -3743,7 +3889,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -3761,7 +3908,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -3808,7 +3956,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -3867,7 +4016,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -3885,7 +4035,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -3908,7 +4059,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -3919,7 +4071,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  upper(ven.observaciones)::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3957,7 +4110,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -3967,7 +4121,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -4021,7 +4176,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -4033,7 +4189,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -4056,7 +4213,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -4078,8 +4236,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -4119,7 +4277,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -4143,7 +4302,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -4162,7 +4322,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -4174,7 +4335,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -4198,7 +4360,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -4221,7 +4384,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -4245,7 +4409,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -4275,7 +4440,8 @@ BEGIN
                                         haber,
                                         tipo_factura,
                                         punto_venta,
-                                        cuenta_auxiliar
+                                        cuenta_auxiliar,
+                                        observaciones
             			   from facturas_recibos_temporal
                            ORDER BY punto_venta DESC,tipo_factura ASC NULLS FIRST, fecha_factura DESC )
 
@@ -4292,7 +4458,8 @@ BEGIN
                           SUM(COALESCE (haber,0)),
                           ''total_pv''::varchar as tipo_factura,
                           punto_venta,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from facturas_recibos_temporal
                           group by punto_venta)
 
@@ -4371,6 +4538,33 @@ BEGIN
                     v_codigo_auxiliar_carga = '0=0';
                 end if;
 
+                /*Aqui filtro del punto de venta*/
+
+                if (v_parametros.id_punto_venta != 0) then
+                	v_punto_venta_fac = 'ven.id_punto_venta = '||v_parametros.id_punto_venta;
+                    v_punto_venta_bol = 'bol.id_punto_venta = '||v_parametros.id_punto_venta;
+                /*Para Recuperar Datos de tfactura para carga*/
+
+                	select pv.codigo
+                    	    into
+                            v_codigo_pv
+                    from vef.tpunto_venta pv
+                    where pv.id_punto_venta = v_parametros.id_punto_venta and
+                    pv.tipo = 'carga';
+
+                    v_punto_venta_carga = 'codigo_punto_venta = '''||v_codigo_pv||'''';
+
+
+                else
+                	v_punto_venta_fac = '0=0';
+                    v_punto_venta_bol = '0=0';
+                    v_punto_venta_carga = '0=0';
+
+                end if;
+
+
+                /********************************/
+
 
                 /*CUENTAS CORRIENTES DEBE RECIBOS FACTURAS ERP*/
 
@@ -4422,7 +4616,7 @@ BEGIN
                                               0::numeric as monto_haber,
                                               ''venta''::varchar as tipo_factura,
                                               pv.nombre,
-                                              (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                              (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -4431,7 +4625,7 @@ BEGIN
                                       inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
                                       where ven.estado_reg = ''activo'' and ven.estado = ''finalizado''
                                       and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                      and '||v_codigo_auxiliar_venta||'';
+                                      and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_fac||'';
 
                 execute v_insertar_ventas;
 
@@ -4506,7 +4700,7 @@ BEGIN
                                                 0::numeric as haber,
                                                 ''boletos''::varchar as tipo_factura,
                                                 pv.nombre,
-                                                (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tboleto_amadeus bol
                                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -4516,7 +4710,7 @@ BEGIN
                                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                         where bol.estado_reg = ''activo'' and bol.estado = ''revisado'' and bol.voided = ''no''
                                         and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                        and '||v_codigo_auxiliar_venta||'';
+                                        and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol||'';
 
                 execute v_insertar_boletos;
 
@@ -4555,7 +4749,7 @@ BEGIN
                         0::numeric as haber,
                         'carga'::varchar as tipo_factura,
                         pb.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar
                 FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                 'select
                         fecha_factura,
@@ -4572,6 +4766,7 @@ BEGIN
                   and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
                   and sistema_origen = ''CARGA''
                   and '||v_codigo_auxiliar_carga||'
+                  and '||v_punto_venta_carga||'
                  order by fecha_factura ASC, nro_factura ASC
                 ')
                 AS tdatos(
@@ -4616,8 +4811,8 @@ BEGIN
                                                 0::numeric as monto_debe,
                                                 param.f_convertir_moneda(depo.id_moneda_deposito,'||v_id_moneda_base||',depo.monto_deposito,depo.fecha,''O'',2,NULL,''si'') as monto_haber,
                                                 ''deposito''::varchar as tipo_factura,
-                                                NULL::varchar AS nombre,
-                                                (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                                ''DEPÓSITO''::varchar AS nombre,
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tdeposito depo
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                                         where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
@@ -4650,7 +4845,7 @@ BEGIN
                                                 fp.monto_mb_efectivo as monto_haber,
                                                 ''anticipo''::varchar as tipo_factura,
                                                 pv.nombre,
-                                                (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from vef.tventa ven
                                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -4659,27 +4854,49 @@ BEGIN
                                         and (ven.tipo_factura = ''recibo'' or ven.tipo_factura = ''recibo_manual'')
                                         and ven.id_auxiliar_anticipo is not null
                                         and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
-                                        and '||v_codigo_auxiliar_venta||'';
+                                        and '||v_codigo_auxiliar_venta||'
+                                        and '||v_punto_venta_fac||'';
 
                	/**********************************************************************************************************/
 
                 execute v_insertar_aticipos;
 
+                if (v_parametros.id_punto_venta = 0) then
+
+                    v_consulta := 'select
+                                          null::DATE AS fecha_factura,
+                                          null::numeric as nro_factura,
+                                          null::VARCHAR  AS nro_documento,
+                                          NULL::varchar as ruta,
+                                          NULL::varchar as pasajero,
+                                          sum (debe) as total_debe,
+                                          sum (haber) as total_haber,
+                                          ''totalizado''::VARCHAR as tipo_factura,
+                                          NULL::varchar as punto_venta,
+                                          cuenta_auxiliar,
+                                          NULL::varchar as observaciones
+                                    from reporte_resumen_totalizado_cta_cte
+                                    group by cuenta_auxiliar';
+
+                else
+                	v_consulta := 'select
+                                          null::DATE AS fecha_factura,
+                                          null::numeric as nro_factura,
+                                          null::VARCHAR  AS nro_documento,
+                                          NULL::varchar as ruta,
+                                          NULL::varchar as pasajero,
+                                          sum (debe) as total_debe,
+                                          sum (haber) as total_haber,
+                                          ''totalizado''::VARCHAR as tipo_factura,
+                                          punto_venta,
+                                          cuenta_auxiliar,
+                                          NULL::varchar as observaciones
+                                    from reporte_resumen_totalizado_cta_cte
+                                    group by cuenta_auxiliar,punto_venta';
+
+                end if;
 
 
-                 v_consulta := 'select
-                                      null::DATE AS fecha_factura,
-                                      null::numeric as nro_factura,
-                                      null::VARCHAR  AS nro_documento,
-                                      NULL::varchar as ruta,
-                                      NULL::varchar as pasajero,
-                                      sum (debe) as total_debe,
-                                      sum (haber) as total_haber,
-                                      ''totalizado''::VARCHAR as tipo_factura,
-                                      NULL::varchar as punto_venta,
-                                      cuenta_auxiliar
-                                from reporte_resumen_totalizado_cta_cte
-                                group by cuenta_auxiliar';
 
 
                  if (v_parametros.generar_reporte = 'no') then
@@ -4708,7 +4925,7 @@ BEGIN
 
                 IF (v_parametros.formato_reporte != 'RESUMEN CTA/CTE TOTALIZADO') THEN
 
-                	 /*Recuperamos la moneda base para sacar la conversion*/
+            /*Recuperamos la moneda base para sacar la conversion*/
                 select mon.id_moneda
                 	   into
                        v_id_moneda_base
@@ -4726,7 +4943,8 @@ BEGIN
                                                                 haber numeric,
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
-                                                                cuenta_auxiliar varchar
+                                                                cuenta_auxiliar varchar,
+                                                                observaciones varchar
                                                               )on commit drop;
                 CREATE INDEX tfacturas_recibos_temporal_fecha_factura ON facturas_recibos_temporal
                 USING btree (fecha_factura);
@@ -4778,7 +4996,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
 
 
                               select  ven.fecha,
@@ -4814,7 +5033,8 @@ BEGIN
                                       0::numeric as monto_haber,
                                       ven.tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      UPPER(ven.observaciones)::varchar as observaciones
                               from vef.tventa ven
                               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -4870,7 +5090,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               select
                                       bol.fecha_emision,
                                       bol.nro_boleto as nro_factura,
@@ -4888,7 +5109,8 @@ BEGIN
                                       0::numeric as haber,
                                       'boletos'::varchar as tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               from obingresos.tboleto_amadeus bol
                               inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -4921,7 +5143,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                             (SELECT 	tdatos.fecha_factura,
                                       tdatos.nro_factura,
                                       tdatos.nro_documento,
@@ -4931,7 +5154,8 @@ BEGIN
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
                                       pb.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
                                       fecha_factura,
@@ -4987,7 +5211,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar
+                                                                      cuenta_auxiliar,
+                                                                      observaciones
                                                                       )
                               ((select
                                       DISTINCT(pv.nombre),
@@ -4999,7 +5224,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -5021,7 +5247,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -5042,7 +5269,8 @@ BEGIN
                                               null::numeric importe_total_venta,
                                               null::numeric,
                                               NULL::varchar as tipo_factura,
-                                              NULL::varchar as cuenta_auxiliar
+                                              NULL::varchar as cuenta_auxiliar,
+                                              NULL::varchar as observaciones
 
                                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                                         'select
@@ -5080,7 +5308,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar
+                                                                      cuenta_auxiliar,
+                                                                      observaciones
                                                                       )
                               ((select
                                       DISTINCT(pv.nombre),
@@ -5092,7 +5321,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -5114,7 +5344,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -5136,7 +5367,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
 
 
                               select  ven.fecha,
@@ -5172,7 +5404,8 @@ BEGIN
                                       0::numeric as monto_haber,
                                       ven.tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      upper(ven.observaciones)::varchar as observaciones
                               from vef.tventa ven
                               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -5228,7 +5461,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               select
                                       bol.fecha_emision,
                                       bol.nro_boleto as nro_factura,
@@ -5246,7 +5480,8 @@ BEGIN
                                       0::numeric as haber,
                                       'boletos'::varchar as tipo_factura,
                                       pv.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               from obingresos.tboleto_amadeus bol
                               inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -5279,7 +5514,8 @@ BEGIN
                                                                       haber,
                                                                       tipo_factura,
                                                                       punto_venta,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                             (SELECT 	tdatos.fecha_factura,
                                       tdatos.nro_factura,
                                       tdatos.nro_documento,
@@ -5289,7 +5525,8 @@ BEGIN
                                       0::numeric as haber,
                                       'carga'::varchar as tipo_factura,
                                       pb.nombre,
-                                      (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                      ''::varchar as observaciones
                               FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                               'select
                                       fecha_factura,
@@ -5346,7 +5583,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               ((select
                                       DISTINCT(pv.nombre),
                                       NULL::date as fecha_factura,
@@ -5357,7 +5595,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -5379,7 +5618,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -5400,7 +5640,8 @@ BEGIN
                                               null::numeric importe_total_venta,
                                               null::numeric,
                                               NULL::varchar as tipo_factura,
-                                              NULL::varchar as cuenta_auxiliar
+                                              NULL::varchar as cuenta_auxiliar,
+                                              NULL::varchar as observaciones
 
                                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                                         'select
@@ -5438,7 +5679,8 @@ BEGIN
                                                                       debe,
                                                                       haber,
                                                                       tipo_factura,
-                                                                      cuenta_auxiliar)
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
                               ((select
                                       DISTINCT(pv.nombre),
                                       NULL::date as fecha_factura,
@@ -5449,7 +5691,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -5471,7 +5714,8 @@ BEGIN
                                       NULL::numeric as debe,
                                       NULL::numeric as haber,
                                       NULL::varchar as tipo_factura,
-                                      NULL::varchar as cuenta_auxiliar
+                                      NULL::varchar as cuenta_auxiliar,
+                                      NULL::varchar as observaciones
                                       from obingresos.tboleto_amadeus bol
                                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -5504,7 +5748,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
 
                     select  depo.fecha,
@@ -5516,7 +5761,8 @@ BEGIN
                             param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                             'deposito'::varchar as tipo_factura,
                             'DEPOSITO'::varchar AS nombre,
-                            (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                            ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                            ''::varchar as observaciones
                     from obingresos.tdeposito depo
                     inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                     and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -5532,7 +5778,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
 
                   select  ven.fecha,
@@ -5544,7 +5791,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          upper(ven.observaciones)::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -5563,7 +5811,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 ((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -5574,7 +5823,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -5597,7 +5847,8 @@ BEGIN
                       NULL::numeric as debe,
                       NULL::numeric as haber,
                       NULL::varchar as tipo_factura,
-                      NULL::varchar as cuenta_auxiliar
+                      NULL::varchar as cuenta_auxiliar,
+                      NULL::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -5619,7 +5870,8 @@ BEGIN
                                                     haber,
                                                     tipo_factura,
                                                     punto_venta,
-                                                    cuenta_auxiliar
+                                                    cuenta_auxiliar,
+                                                    observaciones
                                                     )
 
                 select  depo.fecha,
@@ -5631,7 +5883,8 @@ BEGIN
                         param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -5650,7 +5903,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -5661,7 +5915,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          upper(ven.observaciones)::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -5681,7 +5936,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 ((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -5692,7 +5948,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -5717,7 +5974,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                   from obingresos.tdeposito depo
                   inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                   and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -5749,7 +6007,8 @@ BEGIN
                                                     haber,
                                                     tipo_factura,
                                                     punto_venta,
-                                                    cuenta_auxiliar
+                                                    cuenta_auxiliar,
+                                                    observaciones
                                                     )
 
                 select  depo.fecha,
@@ -5761,7 +6020,8 @@ BEGIN
                         param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -5779,7 +6039,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -5790,7 +6051,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          upper(ven.observaciones)::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -5811,7 +6073,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
 
                 select  ven.fecha,
@@ -5846,7 +6109,8 @@ BEGIN
                         0::numeric as monto_haber,
                         ven.tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        upper(ven.observaciones)::varchar as observaciones
                 from vef.tventa ven
                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -5902,7 +6166,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 select
                         bol.fecha_emision,
                         bol.nro_boleto as nro_factura,
@@ -5920,7 +6185,8 @@ BEGIN
                         0::numeric as haber,
                         'boletos'::varchar as tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tboleto_amadeus bol
                 inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -5952,7 +6218,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
               (SELECT 	tdatos.fecha_factura,
                         tdatos.nro_factura,
                         tdatos.nro_documento,
@@ -5962,7 +6229,8 @@ BEGIN
                         0::numeric as haber,
                         'carga'::varchar as tipo_factura,
                         pb.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                 'select
                         fecha_factura,
@@ -6014,7 +6282,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 (
                 	(select
@@ -6027,7 +6296,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -6049,7 +6319,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -6070,8 +6341,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -6110,7 +6381,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -6134,7 +6406,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -6158,7 +6431,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 (
                 	(select
@@ -6171,7 +6445,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -6193,7 +6468,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -6215,7 +6491,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -6239,7 +6516,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -6264,7 +6542,8 @@ BEGIN
                                                     haber,
                                                     tipo_factura,
                                                     punto_venta,
-                                                    cuenta_auxiliar
+                                                    cuenta_auxiliar,
+                                                    observaciones
                                                     )
 
                 select  depo.fecha,
@@ -6276,7 +6555,8 @@ BEGIN
                         param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                 from obingresos.tdeposito depo
                 inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                 and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -6297,7 +6577,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -6308,7 +6589,8 @@ BEGIN
                           fp.monto_mb_efectivo as monto_haber,
                           ven.tipo_factura,
                           pv.nombre,
-                          (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                          ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -6330,7 +6612,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
 
 
                 select  ven.fecha,
@@ -6365,7 +6648,8 @@ BEGIN
                         0::numeric as monto_haber,
                         ven.tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        upper(ven.observaciones)::varchar as observaciones
                 from vef.tventa ven
                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -6421,7 +6705,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 select
                         bol.fecha_emision,
                         bol.nro_boleto as nro_factura,
@@ -6439,7 +6724,8 @@ BEGIN
                         0::numeric as haber,
                         'boletos'::varchar as tipo_factura,
                         pv.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 from obingresos.tboleto_amadeus bol
                 inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -6471,7 +6757,8 @@ BEGIN
                                                         haber,
                                                         tipo_factura,
                                                         punto_venta,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
               (SELECT 	tdatos.fecha_factura,
                         tdatos.nro_factura,
                         tdatos.nro_documento,
@@ -6481,7 +6768,8 @@ BEGIN
                         0::numeric as haber,
                         'carga'::varchar as tipo_factura,
                         pb.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                        ''::varchar as observaciones
                 FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                 'select
                         fecha_factura,
@@ -6533,7 +6821,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 (
                 	(select
                 		DISTINCT(pv.nombre),
@@ -6545,7 +6834,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -6567,7 +6857,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -6588,7 +6879,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-								NULL::varchar as cuenta_auxiliar
+								NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -6627,7 +6919,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -6651,7 +6944,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -6671,7 +6965,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 (
                 	(select
                 		DISTINCT(pv.nombre),
@@ -6683,7 +6978,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -6705,7 +7001,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -6727,7 +7024,8 @@ BEGIN
                           NULL::numeric as debe,
                           NULL::numeric as haber,
                           NULL::varchar as tipo_factura,
-                          NULL::varchar as cuenta_auxiliar
+                          NULL::varchar as cuenta_auxiliar,
+                          NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -6751,7 +7049,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -6785,7 +7084,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -6832,7 +7132,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -6891,7 +7192,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -6909,7 +7211,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -6950,7 +7253,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -6960,7 +7264,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -7013,7 +7318,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 		((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -7024,7 +7330,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -7047,7 +7354,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -7069,8 +7377,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -7109,7 +7417,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar)
+                                                        cuenta_auxiliar,
+                                                        observaciones)
                 		((select
                 		DISTINCT(pv.nombre),
                 		NULL::date as fecha_factura,
@@ -7120,7 +7429,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -7144,7 +7454,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -7172,7 +7483,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -7219,7 +7531,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -7278,7 +7591,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -7296,7 +7610,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -7336,7 +7651,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -7346,7 +7662,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -7397,7 +7714,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -7409,7 +7727,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -7432,7 +7751,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as codigo_auxiliar
+                        NULL::varchar as codigo_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -7454,8 +7774,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -7493,7 +7813,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -7505,7 +7826,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -7529,7 +7851,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -7557,7 +7880,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -7569,7 +7893,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -7586,7 +7911,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -7597,7 +7923,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -7617,7 +7944,8 @@ BEGIN
                                                                 debe,
                                                                 haber,
                                                                 tipo_factura,
-                                                                cuenta_auxiliar
+                                                                cuenta_auxiliar,
+                                                                observaciones
                                                                 )
                        ( (select
                                 DISTINCT(pv.nombre),
@@ -7629,7 +7957,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -7651,7 +7980,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -7671,7 +8001,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -7683,7 +8014,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -7703,7 +8035,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -7714,7 +8047,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  upper(ven.observaciones)::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -7735,7 +8069,8 @@ BEGIN
                                                                 debe,
                                                                 haber,
                                                                 tipo_factura,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                         ((select
                                 DISTINCT(pv.nombre),
                                 NULL::date as fecha_factura,
@@ -7746,7 +8081,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -7769,7 +8105,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -7790,7 +8127,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -7802,7 +8140,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -7819,7 +8158,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -7866,7 +8206,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -7925,7 +8266,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -7943,7 +8285,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -7966,7 +8309,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -7977,7 +8321,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -8015,7 +8360,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -8025,7 +8371,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -8078,7 +8425,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -8090,7 +8438,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -8113,7 +8462,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -8135,7 +8485,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-								NULL::varchar as cuenta_auxiliar
+								NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -8175,7 +8526,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -8198,7 +8550,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -8217,7 +8570,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -8229,7 +8583,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -8253,7 +8608,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -8276,7 +8632,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -8299,7 +8656,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date)
@@ -8323,7 +8681,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar
+                                                              cuenta_auxiliar,
+                                                              observaciones
                                                               )
 
                           select  depo.fecha,
@@ -8335,7 +8694,8 @@ BEGIN
                                   param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  ''::varchar as observaciones
                           from obingresos.tdeposito depo
                           inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                           and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -8353,7 +8713,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
 
 
                       select  ven.fecha,
@@ -8400,7 +8761,8 @@ BEGIN
                               0::numeric as monto_haber,
                               ven.tipo_factura,
                               pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              upper(ven.observaciones)::varchar as observaciones
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -8459,7 +8821,8 @@ BEGIN
                                                               haber,
                                                               tipo_factura,
                                                               punto_venta,
-                                                              cuenta_auxiliar)
+                                                              cuenta_auxiliar,
+                                                              observaciones)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -8477,7 +8840,8 @@ BEGIN
                               0::numeric as haber,
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
-                              (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -8500,7 +8864,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -8511,7 +8876,8 @@ BEGIN
                                   fp.monto_mb_efectivo as monto_haber,
                                   ven.tipo_factura,
                                   pv.nombre,
-                                  (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                  ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                  upper(ven.observaciones)::varchar as observaciones
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -8549,7 +8915,8 @@ BEGIN
                                                                 haber,
                                                                 tipo_factura,
                                                                 punto_venta,
-                                                                cuenta_auxiliar)
+                                                                cuenta_auxiliar,
+                                                                observaciones)
                       (SELECT 	tdatos.fecha_factura,
                                 tdatos.nro_factura,
                                 tdatos.nro_documento,
@@ -8559,7 +8926,8 @@ BEGIN
                                 0::numeric as haber,
                                 'carga'::varchar as tipo_factura,
                                 pb.nombre,
-                                (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                                ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                ''::varchar as observaciones
                         FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                         'select
                                 fecha_factura,
@@ -8613,7 +8981,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -8625,7 +8994,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -8648,7 +9018,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -8670,8 +9041,8 @@ BEGIN
                                 null::numeric importe_total_venta,
                                 null::numeric,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
-
+                                NULL::varchar as cuenta_auxiliar,
+								NULL::varchar as observaciones
                           FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                           'select
                                   fecha_factura,
@@ -8711,7 +9082,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -8735,7 +9107,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -8754,7 +9127,8 @@ BEGIN
                                                         debe,
                                                         haber,
                                                         tipo_factura,
-                                                        cuenta_auxiliar
+                                                        cuenta_auxiliar,
+                                                        observaciones
                                                         )
                 		((select
                 		DISTINCT(pv.nombre),
@@ -8766,7 +9140,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from vef.tventa ven
                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -8790,7 +9165,8 @@ BEGIN
                         NULL::numeric as debe,
                         NULL::numeric as haber,
                         NULL::varchar as tipo_factura,
-                        NULL::varchar as cuenta_auxiliar
+                        NULL::varchar as cuenta_auxiliar,
+                        NULL::varchar as observaciones
                         from obingresos.tboleto_amadeus bol
                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -8813,7 +9189,8 @@ BEGIN
                                 NULL::numeric as debe,
                                 NULL::numeric as haber,
                                 NULL::varchar as tipo_factura,
-                                NULL::varchar as cuenta_auxiliar
+                                NULL::varchar as cuenta_auxiliar,
+                                NULL::varchar as observaciones
                                 from vef.tventa ven
                                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                 inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -8837,7 +9214,8 @@ BEGIN
                                   NULL::numeric as debe,
                                   NULL::numeric as haber,
                                   NULL::varchar as tipo_factura,
-                                  NULL::varchar as cuenta_auxiliar
+                                  NULL::varchar as cuenta_auxiliar,
+                                  NULL::varchar as observaciones
                             from obingresos.tdeposito depo
                             inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                             and depo.fecha between v_parametros.desde::date and v_parametros.hasta::date
@@ -8934,6 +9312,33 @@ BEGIN
                     v_codigo_auxiliar_carga = '0=0';
                 end if;
 
+                /*Aqui filtro del punto de venta*/
+
+                if (v_parametros.id_punto_venta != 0) then
+                	v_punto_venta_fac = 'ven.id_punto_venta = '||v_parametros.id_punto_venta;
+                    v_punto_venta_bol = 'bol.id_punto_venta = '||v_parametros.id_punto_venta;
+                /*Para Recuperar Datos de tfactura para carga*/
+
+                	select pv.codigo
+                    	    into
+                            v_codigo_pv
+                    from vef.tpunto_venta pv
+                    where pv.id_punto_venta = v_parametros.id_punto_venta and
+                    pv.tipo = 'carga';
+
+                    v_punto_venta_carga = 'codigo_punto_venta = '''||v_codigo_pv||'''';
+
+
+                else
+                	v_punto_venta_fac = '0=0';
+                    v_punto_venta_bol = '0=0';
+                    v_punto_venta_carga = '0=0';
+
+                end if;
+
+
+                /********************************/
+
 
                 /*CUENTAS CORRIENTES DEBE RECIBOS FACTURAS ERP*/
 
@@ -8985,7 +9390,7 @@ BEGIN
                                               0::numeric as monto_haber,
                                               ''venta''::varchar as tipo_factura,
                                               pv.nombre,
-                                              (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                              (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                       from vef.tventa ven
                                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -8994,9 +9399,11 @@ BEGIN
                                       inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
                                       where ven.estado_reg = ''activo'' and ven.estado = ''finalizado''
                                       and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                      and '||v_codigo_auxiliar_venta||'';
+                                      and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_fac||'';
 
                 execute v_insertar_ventas;
+
+
 
                 /******************************************************************************************/
 
@@ -9067,7 +9474,7 @@ BEGIN
                                                 0::numeric as haber,
                                                 ''boletos''::varchar as tipo_factura,
                                                 pv.nombre,
-                                                (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tboleto_amadeus bol
                                         inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                                         inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -9077,7 +9484,7 @@ BEGIN
                                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                         where bol.estado_reg = ''activo'' and bol.estado = ''revisado'' and bol.voided = ''no''
                                         and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                        and '||v_codigo_auxiliar_venta||'';
+                                        and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol||'';
 
                 execute v_insertar_boletos;
 
@@ -9116,7 +9523,7 @@ BEGIN
                         0::numeric as haber,
                         'carga'::varchar as tipo_factura,
                         pb.nombre,
-                        (aux.codigo_auxiliar||' '||aux.nombre_auxiliar) as cuenta_auxiliar
+                        ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar
                 FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
                 'select
                         fecha_factura,
@@ -9133,6 +9540,7 @@ BEGIN
                   and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
                   and sistema_origen = ''CARGA''
                   and '||v_codigo_auxiliar_carga||'
+                  and '||v_punto_venta_carga||'
                  order by fecha_factura ASC, nro_factura ASC
                 ')
                 AS tdatos(
@@ -9148,6 +9556,7 @@ BEGIN
                 inner join conta.tauxiliar aux on aux.codigo_auxiliar = codigo_auxiliar_carga
                 where pb.tipo = 'carga');
                 /*************************************/
+
 
                end if;
 
@@ -9176,8 +9585,8 @@ BEGIN
                                                 0::numeric as monto_debe,
                                                 param.f_convertir_moneda(depo.id_moneda_deposito,'||v_id_moneda_base||',depo.monto_deposito,depo.fecha,''O'',2,NULL,''si'') as monto_haber,
                                                 ''deposito''::varchar as tipo_factura,
-                                                NULL::varchar AS nombre,
-                                                (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                                ''DEPÓSITO''::varchar AS nombre,
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from obingresos.tdeposito depo
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = depo.id_auxiliar
                                         where depo.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
@@ -9186,7 +9595,6 @@ BEGIN
 
                 execute v_insertar_depositos;
                /***************************************************************************************************/
-
                /*Aqui los recibos anticipo*/
 
                v_insertar_aticipos = 'insert into reporte_resumen_totalizado_cta_cte (
@@ -9211,7 +9619,7 @@ BEGIN
                                                 fp.monto_mb_efectivo as monto_haber,
                                                 ''anticipo''::varchar as tipo_factura,
                                                 pv.nombre,
-                                                (aux.codigo_auxiliar||'' ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
                                         from vef.tventa ven
                                         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                                         inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -9220,17 +9628,49 @@ BEGIN
                                         and (ven.tipo_factura = ''recibo'' or ven.tipo_factura = ''recibo_manual'')
                                         and ven.id_auxiliar_anticipo is not null
                                         and ven.fecha between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta||'''
-                                        and '||v_codigo_auxiliar_venta||'';
+                                        and '||v_codigo_auxiliar_venta||'
+                                        and '||v_punto_venta_fac||'';
 
                	/**********************************************************************************************************/
 
                 execute v_insertar_aticipos;
 
-                 v_consulta := 'select
+
+                if (v_parametros.id_punto_venta = 0) then
+
+                	v_consulta := 'select
                                       count (distinct (cuenta_auxiliar)),
                                       sum (debe) as total_debe,
                                       sum (haber) as total_haber
                                 from reporte_resumen_totalizado_cta_cte';
+
+                else
+
+                	v_consulta := 'WITH datos as (select
+                                                  null::DATE AS fecha_factura,
+                                                  null::numeric as nro_factura,
+                                                  null::VARCHAR  AS nro_documento,
+                                                  NULL::varchar as ruta,
+                                                  NULL::varchar as pasajero,
+                                                  sum (debe) as total_debe,
+                                                  sum (haber) as total_haber,
+                                                  ''totalizado''::VARCHAR as tipo_factura,
+                                                  punto_venta,
+                                                  cuenta_auxiliar
+                                                  from reporte_resumen_totalizado_cta_cte
+                                                  group by cuenta_auxiliar,punto_venta)
+                                  select
+                                  count (cuenta_auxiliar),
+                                  sum (total_debe) as total_debe,
+                                  sum (total_haber) as total_haber
+                                  from datos';
+
+
+                end if;
+
+
+
+
 
 
                 return v_consulta;
