@@ -1557,15 +1557,31 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     	if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
     		this.variables.items.items[1].store.baseParams.id_punto_venta = this.Cmp.id_punto_venta.getValue();
         this.variables.items.items[1].on('select',function(c,r,i) {
+
           /********************LA CONDICION AQUI DEL CODIGO DE RO*********************/
             if (r.data.codigo == 'ROAC' || r.data.codigo == 'ROPC') {
               //this.mostrarComponente(this.Cmp.boleta);
               this.instanciasPagoAnticipo = 'si';
               this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.reset();
               this.Cmp.id_auxiliar_anticipo.allowBlank=false;
+              this.Cmp.id_auxiliar_anticipo.label.dom.innerHTML='Cuenta Corriente';
+              this.Cmp.id_auxiliar_anticipo.store.baseParams.ro_activo='no';
+              this.Cmp.id_auxiliar_anticipo.modificado = true;
               Ext.getCmp('datos_deposito').show();
               this.fecha_actual_RO =   moment().format("DD/MM/YYYY");
-            } else {
+            } else if (r.data.codigo == 'ANGRU') { //breydi.vasquez anticipo por grupo 09/04/2021
+              this.instanciasPagoAnticipo = 'si';
+              this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+              this.Cmp.id_auxiliar_anticipo.reset();
+              this.Cmp.id_auxiliar_anticipo.allowBlank=false;
+              this.Cmp.id_auxiliar_anticipo.label.dom.innerHTML='Grupo';
+              this.Cmp.id_auxiliar_anticipo.store.baseParams.ro_activo='si';
+              this.Cmp.id_auxiliar_anticipo.modificado = true;
+              Ext.getCmp('datos_deposito').show();
+              this.fecha_actual_RO =   moment().format("DD/MM/YYYY");
+            }
+            else {
               this.instanciasPagoAnticipo = 'no';
               this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
               this.Cmp.id_auxiliar_anticipo.reset();
