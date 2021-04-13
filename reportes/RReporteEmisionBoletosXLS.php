@@ -516,7 +516,7 @@ class RReporteEmisionBoletosXLS
             }
             else {
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['pasajero']);
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleFondoBlanco);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
               $this->docexcel->getActiveSheet()->getStyle("A$fila:C$fila")->applyFromArray($style_datos);
             }
 
@@ -554,7 +554,7 @@ class RReporteEmisionBoletosXLS
 
 
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, '(TOTAL DEBE - TOTAL HABER): ');
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $diferencia);
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $diferencia);
 
 
           $this->docexcel->getActiveSheet()->getStyle("G$fila:H$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
@@ -566,7 +566,7 @@ class RReporteEmisionBoletosXLS
 
           if ($total_sum['total_debe'] > $total_sum['total_haber']) {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, 'SALDO DEUDOR');
-            $this->docexcel->getActiveSheet()->getStyle("F$fila:G$fila")->applyFromArray($styleDeudor);
+            $this->docexcel->getActiveSheet()->getStyle("G$fila:H$fila")->applyFromArray($styleDeudor);
           } else {
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, 'SALDO ACREEDOR');
             $this->docexcel->getActiveSheet()->getStyle("G$fila:H$fila")->applyFromArray($styleAcreedor);
