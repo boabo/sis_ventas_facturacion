@@ -43,7 +43,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
                    layout: 'form',
                    width: '90%',
                    style: {
-                          height:'150px',
+                          height:'200px',
                           width:'590px',
                           backgroundColor:'#C8E3F5'
                        },
@@ -64,8 +64,8 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
                  border: false,
                  layout: 'form',
                  style: {
-                        height:'150px',
-                        width:'300px',
+                        height:'200px',
+                        width:'100%',
                         backgroundColor:'#C8E3F5'
                      },
                  padding: '0 0 0 0',
@@ -83,14 +83,34 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
                    frame: true,
                    layout: 'form',
                    style: {
-                          height:'150px',
-                          width:'350px',
+                          height:'200px',
+                          width:'100%',
                           backgroundColor:'#C8E3F5',
                          },
                    border: false,
                    padding: '0 0 0 0',
                    bodyStyle: 'padding-left:0px;',
                    id_grupo: 2,
+                   items: [],
+                }]
+            },
+            {
+             bodyStyle: 'padding-right:0px;',
+             border: false,
+             autoHeight: true,
+             items: [{
+                   xtype: 'fieldset',
+                   frame: true,
+                   layout: 'form',
+                   style: {
+                          height:'200px',
+                          width:'100%',
+                          backgroundColor:'#C8E3F5',
+                         },
+                   border: false,
+                   padding: '0 0 0 0',
+                   bodyStyle: 'padding-left:0px;',
+                   id_grupo: 3,
                    items: [],
                 }]
             },
@@ -106,30 +126,49 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
             fieldLabel: 'Estación',
             allowBlank: false,
             emptyText: 'Elija un Punto...',
-            store: new Ext.data.JsonStore({
-                url: '../../sis_parametros/control/Lugar/listarLugar',
-                id: 'id_lugar',
-                root: 'datos',
-                sortInfo: {
-                    field: 'nombre',
-                    direction: 'ASC'
-                },
-                totalProperty: 'total',
-                fields: ['id_lugar', 'codigo','nombre'],
-                remoteSort: true,
-                baseParams: {par_filtro: 'codigo', lugar_estacion: 'Bol', _adicionar: true}
-            }),
-            valueField: 'id_lugar',
-            displayField: 'codigo',
-            gdisplayField: 'codigo',
-            hiddenName: 'id_lugar',
-            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b> <span style="color:green;font-weight:bold;"> ({codigo})</span></p></div></tpl>',
+            store: new Ext.data.JsonStore(
+                {
+                    url: '../../sis_ventas_facturacion/control/ReporteVentas/puntoVentaCiudadStage',
+                    id: 'city_name',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'city_name',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['city_name', 'city_code'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'city_name#city_code',_adicionar:'si',pais_ini:'BO'}
+                }),
+            valueField: 'city_code',
+            displayField: 'city_name',
+            gdisplayField: 'city_code',
+            hiddenName: 'city_code',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{city_name} -- <span style="color:green;">{city_code}</span></b></p></div></tpl>',
+            // store: new Ext.data.JsonStore({
+            //     url: '../../sis_parametros/control/Lugar/listarLugar',
+            //     id: 'id_lugar',
+            //     root: 'datos',
+            //     sortInfo: {
+            //         field: 'nombre',
+            //         direction: 'ASC'
+            //     },
+            //     totalProperty: 'total',
+            //     fields: ['id_lugar', 'codigo','nombre'],
+            //     remoteSort: true,
+            //     baseParams: {par_filtro: 'codigo', lugar_estacion: 'Bol', _adicionar: true}
+            // }),
+            // valueField: 'id_lugar',
+            // displayField: 'codigo',
+            // gdisplayField: 'codigo',
+            // hiddenName: 'id_lugar',
+            // tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b> <span style="color:green;font-weight:bold;"> ({codigo})</span></p></div></tpl>',
             forceSelection: true,
             typeAhead: false,
             triggerAction: 'all',
             lazyRender: true,
             mode: 'remote',
-            pageSize: 15,
+            pageSize: 16,
             queryDelay: 1000,
             gwidth: 150,
             width: 250,
@@ -230,7 +269,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
             queryDelay: 1000,
             gwidth: 150,
             width: 250,
-            listWidth: 250,
+            listWidth: 350,
             resizable: true,
             minChars: 2,
             hidden: false
@@ -258,7 +297,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
             }),
             valueField: 'ID',
             displayField: 'valor',
-            width: 200,
+            width: 100,
             style:'margin-bottom: 10px;'
         },
         type: 'ComboBox',
@@ -269,7 +308,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
         config:{
             name: 'fecha_ini',
             fieldLabel: 'DESDE',
-            width: 200,
+            width: 100,
             format: 'd/m/Y',
             allowBlank: true,
             style:'margin-bottom: 10px;'
@@ -283,7 +322,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
             name: 'fecha_fin',
             fieldLabel: 'HASTA',
             allowBlank: true,
-            width: 200,
+            width: 100,
             format: 'd/m/Y',
             style:'margin-bottom: 10px;'
         },
@@ -296,7 +335,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
 				name: 'nro_documento',
 				fieldLabel: 'N° Documento',
 				allowBlank: true,
-				anchor: '100%',
+				width: 150,
 				gwidth: 170,
         style:'margin-bottom: 10px;'
 			},
@@ -309,7 +348,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
 				name: 'nro_autorizacion',
 				fieldLabel: 'N° Autorizacion',
 				allowBlank: true,
-				anchor: '100%',
+				width: 150,
 				gwidth: 170
 			},
 				type:'TextField',
@@ -334,13 +373,24 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
             }),
             valueField: 'ID',
             displayField: 'valor',
-            width: 200,
+            width: 150,
             style:'margin-bottom: 10px;'
         },
         type: 'ComboBox',
         id_grupo: 2,
         form: true
     },
+    {
+			config:{
+				name: 'nit',
+				fieldLabel: 'NIT',
+				allowBlank: true,
+				width: 150,
+			},
+				type:'TextField',
+				id_grupo:3,
+				form:true
+		},
 	],
 	labelSubmit: '<i class="fa fa-check"></i> Aplicar Filtro',
 	south: {
@@ -355,7 +405,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
 		var me = this;
 		if (me.form.getForm().isValid()) {
 			var parametros = me.getValForm();
-
+      
       var id_entidad = parametros.id_lugar;
       var id_sucursal = parametros.id_sucursal;
       var id_punto_venta = parametros.id_punto_venta;
@@ -365,6 +415,7 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
       var estado_documento = parametros.estado_documento;
       var fecha_ini = parametros.fecha_ini;
       var fecha_fin = parametros.fecha_fin;
+      var nit = parametros.nit;
 
       //console.log("aqui llega los paramteros",parametros);
 			 this.onEnablePanel(this.idContenedor + '-south',
@@ -377,17 +428,19 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
                     'nro_autorizacion':nro_autorizacion,
                     'estado_documento':estado_documento,
                     'fecha_ini': fecha_ini,
-                    'fecha_fin': fecha_fin
+                    'fecha_fin': fecha_fin,
+                    'nit':nit
 									 }));
         }
     },
 
     iniciarEventos: function(){
 
-      this.getComponente('id_lugar').on('select', function (cmp, rec, indice) {
+      this.Cmp.id_lugar.on('select', function (cmp, rec, indice) {
+        // console.log("data",rec);
           this.Cmp.id_sucursal.reset();
           this.Cmp.id_punto_venta.reset();
-          this.Cmp.id_sucursal.store.baseParams.id_lugar = rec.data.id_lugar;
+          this.Cmp.id_sucursal.store.baseParams.cod_lugar = rec.data.city_code;
           this.Cmp.id_sucursal.modificado = true;
       }, this);
 
@@ -404,12 +457,12 @@ Phx.vista.ConsultaFactura=Ext.extend(Phx.frmInterfaz,{
               this.mostrarComponente(this.Cmp.nro_autorizacion)
           }
       }, this);
-
+      this.Cmp.nit.el.dom.labels[0].style.width='40px';
+      this.Cmp.nit.el.dom.offsetParent.style.paddingLeft='45px';
     },
 
     loadValoresIniciales: function(){
     	Phx.vista.ConsultaFactura.superclass.loadValoresIniciales.call(this);
-
     }
 
 })

@@ -162,7 +162,11 @@ class MODReporteVentas extends MODbase {
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		//Definicion de la lista del resultado del query
 
-		$this->setParametro('id_entidad', 'id_entidad', 'int4');
+		$this->capturaCount('total_venta','numeric');
+		$this->capturaCount('excento','numeric');
+		$this->capturaCount('monto_total','numeric');
+
+		$this->setParametro('id_entidad', 'id_entidad', 'varchar');
 		$this->setParametro('id_sucursal', 'id_sucursal', 'int4');
 		$this->setParametro('id_punto_venta', 'id_punto_venta', 'int4');
 		$this->setParametro('tipo_documento', 'tipo_documento', 'varchar');
@@ -171,6 +175,7 @@ class MODReporteVentas extends MODbase {
 		$this->setParametro('estado_documento', 'estado_documento', 'varchar');
 		$this->setParametro('fecha_ini', 'fecha_ini', 'date');
 		$this->setParametro('fecha_fin', 'fecha_fin', 'date');
+		$this->setParametro('nit', 'nit', 'varchar');
 
 		$this->captura('id_venta','integer');
 		$this->captura('nro_factura','integer');

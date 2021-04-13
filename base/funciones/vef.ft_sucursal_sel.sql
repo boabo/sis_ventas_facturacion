@@ -142,12 +142,13 @@ BEGIN
 
   		begin
   			--Sentencia de la consulta de conteo de registros
-  			v_consulta:='select id_sucursal,
-                                  id_entidad,
-                                  id_lugar,
-                                  codigo,
-                                  nombre
-                          from vef.tsucursal
+  			v_consulta:='select suc.id_sucursal,
+                                  suc.id_entidad,
+                                  suc.id_lugar,
+                                  suc.codigo,
+                                  suc.nombre
+                          from vef.tsucursal suc
+                          left join param.tlugar lug on lug.id_lugar = suc.id_lugar
                           where ';
 
   			--Definicion de la respuesta
@@ -170,8 +171,9 @@ BEGIN
 
   		begin
   			--Sentencia de la consulta de conteo de registros
-  			v_consulta:='select count(id_sucursal)
-  					    from vef.tsucursal
+  			v_consulta:='select count(suc.id_sucursal)
+  					    from vef.tsucursal suc
+                left join param.tlugar lug on lug.id_lugar = suc.id_lugar
                           where ';
 
   			--Definicion de la respuesta

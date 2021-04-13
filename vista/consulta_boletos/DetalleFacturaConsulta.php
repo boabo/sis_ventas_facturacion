@@ -35,7 +35,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         anchor: '100%',
                         gwidth: 100,
                         renderer: function(value,p,record){
+                          if(record.data.tipo_reg != 'summary'){
 					                      return String.format('{0}','<i class="fa fa-reply-all" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;'+record.data['nro_factura']);
+                          }else{
+                            return ''
+                          }
 				                }
                     },
                     type: 'TextField',
@@ -143,7 +147,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         anchor: '100%',
                         gwidth: 120,
                         renderer:function (value,p,record){
-                          return  String.format('<div style="float:center;">{0}</div>',record.data['nroaut']);
+                          if(record.data.tipo_reg != 'summary'){
+                            return  String.format('<div style="float:center;">{0}</div>',record.data['nroaut']);
+                          }else{
+                            return '<hr><b><p style="font-size:20px; float:right; color:green; border-top:2px;">Totales: &nbsp;&nbsp; </p></b>';
+                          }
                         }
                     },
                     type: 'TextField',
@@ -156,10 +164,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Total Venta',
                         allowBlank: true,
                         anchor: '100%',
-                        gwidth: 100,
-                        renderer:function (value,p,record){
-                          return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_venta,'0.000,00/i'));
-                        }
+                        gwidth: 150,
+                        renderer : function(value, p, record) {
+            		          if(record.data.tipo_reg != 'summary'){
+            		            return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_venta,'0.000,00/i'));
+            		          }else{
+            		            return  String.format('<hr><div style="font-size:20px; float:right; color:#004DFF;"><b><font>{0}</font><b></div>', Ext.util.Format.number(record.data.mt_venta,'0.000,00/i'));
+            		          }
+            		        }
                     },
                     type: 'NumberField',
                     id_grupo: 1,
@@ -171,9 +183,13 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Excento',
                         allowBlank: true,
                         anchor: '100%',
-                        gwidth: 100,
+                        gwidth: 150,
                         renderer:function (value,p,record){
-                          return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.excento,'0.000,00/i'));
+                          if(record.data.tipo_reg != 'summary'){
+                            return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.excento,'0.000,00/i'));
+                          }else{
+                            return  String.format('<hr><div style="font-size:20px; float:right; color:#004DFF;"><b><font>{0}</font><b></div>', Ext.util.Format.number(record.data.mt_excento,'0.000,00/i'));
+                          }
                         }
                     },
                     type: 'NumberField',
@@ -238,9 +254,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Monto Total Deposito',
                         allowBlank: true,
                         anchor: '100%',
-                        gwidth: 120,
+                        gwidth: 150,
                         renderer:function (value,p,record){
-                          return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.monto_total,'0.000,00/i'));
+                          if(record.data.tipo_reg != 'summary'){
+                            return  String.format('<div style="float:right;"><b>{0}<b></div>', Ext.util.Format.number(record.data.monto_total,'0.000,00/i'));
+                          }else{
+
+                            return  String.format('<hr><div style="font-size:20px; float:right; color:#004DFF;"><b><font>{0}</font><b></div>', Ext.util.Format.number((record.data.mt_total==null)?0.00:record.data.mt_total,'0.000,00/i'));
+                          }
                         }
                     },
                     type: 'TextField',
@@ -323,7 +344,12 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'nro_deposito', type: 'string'},
             {name: 'monto_total', type: 'numeric'},
             {name: 'fecha_dep', type:'date',dateFormat: 'Y-m-d'},
-            {name: 'nro_boleto', type: 'string'}
+            {name: 'nro_boleto', type: 'string'},
+            {name: 'tipo_reg', type: 'string'},
+            {name: 'mt_venta', type: 'numeric'},
+            {name: 'mt_excento', type: 'numeric'},
+            {name: 'mt_total', type: 'numeric'},
+
         ],
 
         sortInfo: {
@@ -351,8 +377,8 @@ header("content-type: text/javascript; charset=UTF-8");
         bexcel:true,
       	btest:false,
         abrirEnlace: function(cell,rowIndex,columnIndex,e){
-      		if(columnIndex==1){
-      			var data = this.sm.getSelected().data;
+          var data = this.sm.getSelected().data;
+      		if(columnIndex==1 && data.id_venta != ''){
       			Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/consulta_boletos/VentanaDetalleFactura.php',
       			'<span style="font-size:14pt;padding-left: 35%;letter-spacing: 12px;">DETALLE DEL DOCUMENTO</span>', {
       				width:'90%',

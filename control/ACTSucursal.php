@@ -105,8 +105,11 @@ class ACTSucursal extends ACTbase{
 
 	function listarSucursalXestacion () {
 
-		if ($this->objParam->getParametro('x_estacion')!='' && $this->objParam->getParametro('id_lugar') != 0){
-				$this->objParam->addFiltro(" id_lugar in ( select id_lugar from param.tlugar where id_lugar_fk = " . $this->objParam->getParametro('id_lugar').") or id_lugar = ".$this->objParam->getParametro('id_lugar')."");
+		// if ($this->objParam->getParametro('x_estacion')!='' && $this->objParam->getParametro('id_lugar') != 0){
+		// 		$this->objParam->addFiltro(" id_lugar in ( select id_lugar from param.tlugar where id_lugar_fk = " . $this->objParam->getParametro('id_lugar').") or id_lugar = ".$this->objParam->getParametro('id_lugar')."");
+		// }
+		if ($this->objParam->getParametro('cod_lugar') != 'TODOS'){
+				$this->objParam->addFiltro(" lug.codigo = ''" .$this->objParam->getParametro('cod_lugar')."''");
 		}
 
 		$this->objFunc=$this->create('MODSucursal');

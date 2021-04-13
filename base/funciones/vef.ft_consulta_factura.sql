@@ -40,6 +40,7 @@ DECLARE
     v_nro_autor			varchar='';
     v_fil_fif 			varchar= '';
     v_fil_estado_fr		varchar='';
+    v_fil_nit			varchar='';
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_consulta_factura';
@@ -58,26 +59,30 @@ BEGIN
        	--raise 'resp %',v_parametros.nro_documento;
 
 
-			IF v_parametros.id_entidad != 0 THEN
+			IF v_parametros.id_entidad != 'TODOS' THEN
 
                 IF v_parametros.id_sucursal != 0 THEN
                 	v_fil_su = ' pv.id_sucursal = '||v_parametros.id_sucursal||' and ';
                 ELSE
-                	with recursive t1 (
-                          id_l,
-                          id_l_fk
-                          )as (
-                          select id_lugar, id_lugar_fk
-                          from param.tlugar
-                          where id_lugar = v_parametros.id_entidad
-                          union
-                          select l.id_lugar, l.id_lugar_fk
-                          from param.tlugar l
-                          inner join t1 t  on l.id_lugar_fk = t.id_l
-                          )
-                          select pxp.list(su.id_sucursal::text) into v_id_lug
-                          from t1 t
-                          inner join vef.tsucursal su on su.id_lugar =  t.id_l;
+                  select pxp.list(suc.id_sucursal::text) into v_id_lug
+                  from vef.tsucursal suc
+                  left join param.tlugar lug on lug.id_lugar = suc.id_lugar
+                  where lug.codigo = ''||v_parametros.id_entidad||'';
+                	-- with recursive t1 (
+                  --         id_l,
+                  --         id_l_fk
+                  --         )as (
+                  --         select id_lugar, id_lugar_fk
+                  --         from param.tlugar
+                  --         where id_lugar = v_parametros.id_entidad
+                  --         union
+                  --         select l.id_lugar, l.id_lugar_fk
+                  --         from param.tlugar l
+                  --         inner join t1 t  on l.id_lugar_fk = t.id_l
+                  --         )
+                  --         select pxp.list(su.id_sucursal::text) into v_id_lug
+                  --         from t1 t
+                  --         inner join vef.tsucursal su on su.id_lugar =  t.id_l;
 
                 	v_fil_su = ' pv.id_sucursal in ('||v_id_lug||') and ';
                 END IF;
@@ -120,6 +125,10 @@ BEGIN
             	v_fil_fif = ' v.fecha = '''||v_parametros.fecha_fin||'''::date and ';
             END IF;
 
+            IF v_parametros.nit != '' THEN
+              v_fil_nit = 'v.nit = '''||v_parametros.nit||''' and ';
+            END IF;
+
     		--Sentencia de la consulta
 			v_consulta:='select
                                  v.id_venta,
@@ -150,7 +159,7 @@ BEGIN
                           '||v_inner||'
                           where '||v_fil_estado_fr||'
                           '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||'
-                          '||v_fil_fif||' ';
+                          '||v_fil_fif||' '||v_fil_nit||' ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -172,26 +181,30 @@ BEGIN
 
 		begin
 
-			IF v_parametros.id_entidad != 0 THEN
+			IF v_parametros.id_entidad != 'TODOS' THEN
 
                 IF v_parametros.id_sucursal != 0 THEN
                 	v_fil_su = ' pv.id_sucursal = '||v_parametros.id_sucursal||' and ';
                 ELSE
-                	with recursive t1 (
-                          id_l,
-                          id_l_fk
-                          )as (
-                          select id_lugar, id_lugar_fk
-                          from param.tlugar
-                          where id_lugar = v_parametros.id_entidad
-                          union
-                          select l.id_lugar, l.id_lugar_fk
-                          from param.tlugar l
-                          inner join t1 t  on l.id_lugar_fk = t.id_l
-                          )
-                          select pxp.list(su.id_sucursal::text) into v_id_lug
-                          from t1 t
-                          inner join vef.tsucursal su on su.id_lugar =  t.id_l;
+                  select pxp.list(suc.id_sucursal::text) into v_id_lug
+                  from vef.tsucursal suc
+                  left join param.tlugar lug on lug.id_lugar = suc.id_lugar
+                  where lug.codigo = ''||v_parametros.id_entidad||'';
+                	-- with recursive t1 (
+                  --         id_l,
+                  --         id_l_fk
+                  --         )as (
+                  --         select id_lugar, id_lugar_fk
+                  --         from param.tlugar
+                  --         where id_lugar = v_parametros.id_entidad
+                  --         union
+                  --         select l.id_lugar, l.id_lugar_fk
+                  --         from param.tlugar l
+                  --         inner join t1 t  on l.id_lugar_fk = t.id_l
+                  --         )
+                  --         select pxp.list(su.id_sucursal::text) into v_id_lug
+                  --         from t1 t
+                  --         inner join vef.tsucursal su on su.id_lugar =  t.id_l;
 
                 	v_fil_su = ' pv.id_sucursal in ('||v_id_lug||') and ';
                 END IF;
@@ -231,8 +244,15 @@ BEGIN
             	v_fil_fif = ' v.fecha = '''||v_parametros.fecha_fin||'''::date and ';
             END IF;
 
+            IF v_parametros.nit != '' THEN
+            	v_fil_nit = 'v.nit = '''||v_parametros.nit||''' and ';
+            END IF;
+
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(v.id_venta)
+			v_consulta:='select count(v.id_venta),
+                          sum(v.total_venta),
+                          sum(v.excento),
+                          sum(obd.monto_total)
                           from vef.tventa v
                           inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
                           inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
@@ -240,7 +260,7 @@ BEGIN
                           '||v_inner||'
                           where '||v_fil_estado_fr||'
                           '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||'
-                          '||v_fil_fif||' ';
+                          '||v_fil_fif||' '||v_fil_nit||' ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

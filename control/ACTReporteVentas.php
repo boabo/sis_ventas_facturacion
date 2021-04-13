@@ -162,6 +162,13 @@ class ACTReporteVentas extends ACTbase{
 		else {
       $this->objFunc=$this->create('MODReporteVentas');
       $this->res=$this->objFunc->consultaFacturaVenta($this->objParam);
+      $temp = Array();
+      $temp['mt_venta'] = $this->res->extraData['total_venta'];
+      $temp['mt_excento'] = $this->res->extraData['excento'];
+      $temp['mt_total'] = $this->res->extraData['monto_total'];
+      $temp['tipo_reg'] = 'summary';
+      $this->res->total++;
+      $this->res->addLastRecDatos($temp);
 		}
     $this->res->imprimirRespuesta($this->res->generarJson());
   }
@@ -245,9 +252,14 @@ class ACTReporteVentas extends ACTbase{
   }
 
   function filtrosStage(){
-    if($this->objParam->getParametro('id_lugar_pais') != ''  && $this->objParam->getParametro('id_lugar_pais') !='TODOS') {
-      $this->objParam->addFiltro("country_code = ''".$this->objParam->getParametro('id_lugar_pais')."''");
+    if ($this->objParam->getParametro('pais_ini')=='' || $this->objParam->getParametro('pais_ini') == null){
+      if($this->objParam->getParametro('id_lugar_pais') != ''  && $this->objParam->getParametro('id_lugar_pais') !='TODOS') {
+        $this->objParam->addFiltro("country_code = ''".$this->objParam->getParametro('id_lugar_pais')."''");
+      }
+    }else{
+      $this->objParam->addFiltro("country_code = ''".$this->objParam->getParametro('pais_ini')."''");
     }
+
     if($this->objParam->getParametro('id_lugar_ciudad') != ''  && $this->objParam->getParametro('id_lugar_ciudad') !='TODOS') {
       $this->objParam->addFiltro("city_code = ''".$this->objParam->getParametro('id_lugar_ciudad')."''");
     }
