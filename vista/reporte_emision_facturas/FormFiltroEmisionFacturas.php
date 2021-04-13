@@ -147,19 +147,19 @@ Phx.vista.FormFiltroEmisionFacturas=Ext.extend(Phx.frmInterfaz,{
                      id: 'id_auxiliar',
                      root: 'datos',
                      sortInfo: {
-                         field: 'codigo_auxiliar',
+                         field: 'tipo',
                          direction: 'ASC'
                      },
                      totalProperty: 'total',
-                     fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar'],
+                     fields: ['id_auxiliar', 'codigo_auxiliar','nombre_auxiliar', 'tipo'],
                      remoteSort: true,
-                     baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',corriente:'si', '_adicionar':'si'}
+                     baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar',grupos:'si', '_adicionar':'si'}
                  }),
                  valueField: 'id_auxiliar',
                  displayField: 'nombre_auxiliar',
                  gdisplayField: 'codigo_auxiliar',
                  hiddenName: 'id_auxiliar',
-                 tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+                 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Auxiliar: </b>{nombre_auxiliar}</p><p><b>Codigo: </b>{codigo_auxiliar}</p><p><b>Tipo: </b>{tipo}</p> </div></tpl>',
                  forceSelection: true,
                  typeAhead: false,
                  triggerAction: 'all',

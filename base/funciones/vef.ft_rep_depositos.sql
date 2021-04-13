@@ -678,7 +678,8 @@ BEGIN
                                                    tipo_cambio,
                                                    ROUND( (sum(importe_ml) + (sum(importe_usd) * tipo_cambio))::NUMERIC, 2 ) as total_venta_ml,
                                                    ROUND( (sum(deposito_ml) + (sum(deposito_me) * tipo_cambio))::NUMERIC, 2 ) as total_depositos_ml,
-                                                   ROUND(((sum(importe_ml) + (sum(importe_usd) * tipo_cambio)) - (sum(deposito_ml) + (sum(deposito_me) * tipo_cambio))), 2)diferencia
+                                                   ROUND(((sum(deposito_ml) + (sum(deposito_me) * tipo_cambio)) - (sum(importe_ml) + (sum(importe_usd) * tipo_cambio))), 2) as diferencia
+                                                   --ROUND(((sum(importe_ml) + (sum(importe_usd) * tipo_cambio)) - (sum(deposito_ml) + (sum(deposito_me) * tipo_cambio))), 2)diferencia
                                               from reporte_depositos_resumen
                                               group by fecha_venta, tipo_cambio, nro_deposito, fecha_deposito,
                                               cuenta_bancaria,
@@ -1245,7 +1246,8 @@ BEGIN
                                                    tipo_cambio,
                                                    ROUND( (sum(importe_ml) + (sum(importe_usd) * tipo_cambio))::NUMERIC, 2 ) as total_venta_ml,
                                                    ROUND( (sum(deposito_ml) + (sum(deposito_me) * tipo_cambio))::NUMERIC, 2 ) as total_depositos_ml,
-                                                   ROUND(((sum(importe_ml) + (sum(importe_usd) * tipo_cambio)) - (sum(deposito_ml) + (sum(deposito_me) * tipo_cambio))), 2)diferencia
+                                                   ROUND(((sum(deposito_ml) + (sum(deposito_me) * tipo_cambio)) - (sum(importe_ml) + (sum(importe_usd) * tipo_cambio))), 2) as diferencia
+                                                   --ROUND(((sum(importe_ml) + (sum(importe_usd) * tipo_cambio)) - (sum(deposito_ml) + (sum(deposito_me) * tipo_cambio))), 2)diferencia
                                               from reporte_depositos_resumen
                                               group by fecha_venta, tipo_cambio, nro_deposito, fecha_deposito,
                                               cuenta_bancaria,
@@ -1265,7 +1267,7 @@ BEGIN
                                       SUM(coalesce(deposito_me,0))::numeric as total_deposito_me,
                                       SUM(coalesce(total_venta_ml,0))::numeric as totales_venta_ml,
                                       SUM(coalesce(total_venta_me,0))::numeric as totales_venta_me,
-                                      SUM(coalesce(total_venta_ml,0)-COALESCE(total_venta_me,0)) as total_diferencia
+                                      SUM(COALESCE(total_venta_me,0) - coalesce(total_venta_ml,0)) as total_diferencia
                 	           FROM reporte_depositos';
 
 
