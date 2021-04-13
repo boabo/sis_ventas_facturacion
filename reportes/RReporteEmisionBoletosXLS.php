@@ -466,7 +466,8 @@ class RReporteEmisionBoletosXLS
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['cuenta_auxiliar']);
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['debe']);
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['haber']);
-              $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['punto_venta']);
+              $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, ($value['debe'] - $value['haber']));
+              $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['punto_venta']);
 
               $this->docexcel->getActiveSheet()->getStyle("B$fila:C$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
@@ -478,6 +479,7 @@ class RReporteEmisionBoletosXLS
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'TOTAL GENERAL: ');
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $total_sum['total_debe']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $total_sum['total_haber']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, ($total_sum['total_debe']-$total_sum['total_haber']));
 
             $this->docexcel->getActiveSheet()->getStyle("B$fila:C$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
             $this->docexcel->getActiveSheet()->getStyle("A$fila:D$fila")->applyFromArray($styleTotales);
