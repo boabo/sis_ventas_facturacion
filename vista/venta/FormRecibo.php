@@ -2946,7 +2946,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 				fieldLabel: 'Cuenta Corriente',
 				allowBlank: true,
         width:150,
-				emptyText: 'Cuenta Corriente...',
+				emptyText: '',
 				store: new Ext.data.JsonStore({
 					url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
 					id: 'id_auxiliar',

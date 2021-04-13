@@ -2803,7 +2803,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 				fieldLabel: '<img src="../../../lib/imagenes/facturacion/CuentaCorriente.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Cuenta Corriente</span>',
 				allowBlank: true,
         width:150,
-				emptyText: 'Cuenta Corriente...',
+				emptyText: '',
 				store: new Ext.data.JsonStore({
 					url: '../../sis_contabilidad/control/Auxiliar/listarAuxiliar',
 					id: 'id_auxiliar',
