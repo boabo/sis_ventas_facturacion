@@ -468,7 +468,7 @@ BEGIN
                         'El Funcionario no tiene una cuenta de usuario en el Sistema ERP'--4
                       );
           elsif (COALESCE (v_cant_id_usuario_rol,0) > 1) then
-               insert into vef.tfacturas_carga_pendiente(
+               insert into vef.tfacturas_carga_observadas(
                         id_venta,--1
                         id_funcionario,--2
                         estado,--3
