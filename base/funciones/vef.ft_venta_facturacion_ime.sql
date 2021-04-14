@@ -4601,7 +4601,9 @@ BEGIN
         total_venta_msuc = 0,
         nombre_factura = 'ANULADO',
         nit = '0',
-        total_venta = 0
+        total_venta = 0,
+        excento = 0,
+        comision = 0
         where id_venta = v_parametros.id_venta;
 
 		/*AQUI ACTUALIZAR EL ESTADO DE LOS BOLETOS ASOCIADOS*/
