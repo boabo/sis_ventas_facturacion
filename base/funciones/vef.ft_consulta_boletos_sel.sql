@@ -233,7 +233,7 @@ BEGIN
                                    importe_debito_fiscal = 0,
                                    importe_total_venta  = 0,
                                    usuario_mod = '''||usu_mod||''',
-                                   fecha_reg = now()
+                                   fecha_mod = now()
                                    WHERE sistema_origen = ''STAGE DB''
                                        AND TRIM(nro_factura) = TRIM('''||v_parametros.nro_tkt||''')
                                        AND fecha_factura::date = '''||v_parametros.fecha_emision||'''::date
