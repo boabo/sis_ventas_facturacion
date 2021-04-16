@@ -1078,7 +1078,6 @@ BEGIN
 
         v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
 
-        raise exception 'Aqui llega el usuario %',v_cadena_cnx;
         -- raise exception 'v_cadena_cnx %',v_cadena_cnx;
          v_conexion = (SELECT dblink_connect(v_cadena_cnx));
         /*************************************************/
