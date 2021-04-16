@@ -106,6 +106,24 @@ DECLARE
     v_cuenta_usu	varchar;
     v_pass_usu		varchar;
     v_json_data		varchar;
+    v_cant_id_usuario_rol_normal	numeric;
+    v_nom_funcionario	varchar;
+    v_arreglo_funcionario	numeric;
+    v_i integer;
+    v_cuenta_usuario	varchar;
+    v_iniciales			varchar;
+    v_pass_usuario		varchar;
+    v_id_persona		integer;
+    v_usuario_db		varchar;
+    v_consulta_db		varchar;
+    v_id_usuario_insert	integer;
+    v_insertar_nuevo_usuario	varchar;
+    v_existe_user		numeric;
+    v_usuario_nuevo		varchar;
+    v_desc_funcionario	varchar;
+    v_existe_venta		numeric;
+    v_id_moneda_base	integer;
+    v_existe_apertura	numeric;
     /********************/
 
 BEGIN
@@ -182,7 +200,331 @@ BEGIN
         where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
         /***************************************************/
 
-        if (v_cant_id_usuario > 1) then
+
+        /*Cambiando la condicion porq en Carga los tecnicos pueden emitir facturas por tanto puede que no exista
+        un cajero de turno para emision de facturas*/
+
+        if (v_cant_id_usuario = 1) then
+
+        	select usu.id_usuario
+            	   into
+                   v_id_usuario
+            from orga.vfuncionario fun
+            inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+            where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
+
+        elsif (v_cant_id_usuario > 1) then
+
+        	/*Si el usuario tiene mas de dos cuentas tomamos el usuario con rol de cajero*/
+                select count(usu.id_usuario)
+                       into
+                       v_cant_id_usuario_rol
+                from orga.vfuncionario fun
+                inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+                inner join segu.tusuario_rol usurol on usurol.id_usuario = usu.id_usuario
+                inner join segu.trol rol on rol.id_rol = usurol.id_rol and rol.estado_reg = 'activo'
+                where fun.id_funcionario = v_parametros.id_funcionario::INTEGER and rol.rol = 'VEF - Cajero' and usurol.estado_reg = 'activo';
+
+                if (v_cant_id_usuario_rol = 1) then
+
+                 	select usu.id_usuario
+                           into
+                           v_id_usuario
+                    from orga.vfuncionario fun
+                    inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+                    inner join segu.tusuario_rol usurol on usurol.id_usuario = usu.id_usuario
+                    inner join segu.trol rol on rol.id_rol = usurol.id_rol and rol.estado_reg = 'activo'
+                    where fun.id_funcionario = v_parametros.id_funcionario::INTEGER and rol.rol = 'VEF - Cajero' and usurol.estado_reg = 'activo';
+
+                    v_usuario_nuevo = 'NO';
+
+                elsif (v_cant_id_usuario_rol > 1) then
+
+                	select usu.id_usuario
+                           into
+                           v_id_usuario
+                    from orga.vfuncionario fun
+                    inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+                    inner join segu.tusuario_rol usurol on usurol.id_usuario = usu.id_usuario
+                    inner join segu.trol rol on rol.id_rol = usurol.id_rol and rol.estado_reg = 'activo'
+                    where fun.id_funcionario = v_parametros.id_funcionario::INTEGER and rol.rol = 'VEF - Cajero' and usurol.estado_reg = 'activo'
+                    order by usu.id_usuario desc
+                    limit 1;
+
+                    v_usuario_nuevo = 'NO';
+
+                elsif (v_cant_id_usuario_rol = 0) then
+
+                	select count(usu.id_usuario)
+                       into
+                       v_cant_id_usuario_rol_normal
+                from orga.vfuncionario fun
+                inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+                where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
+
+                    if (v_cant_id_usuario_rol_normal = 1) then
+
+                        select usu.id_usuario
+                               into
+                               v_id_usuario
+                        from orga.vfuncionario fun
+                        inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+                        where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
+
+                        v_usuario_nuevo = 'NO';
+
+
+                        select pv.id_punto_venta,
+                               pv.id_sucursal
+                               into
+                               v_id_punto_venta,
+                               v_id_sucursal
+                        from vef.tpunto_venta pv
+                        where pv.codigo = v_parametros.codigo_punto_venta and pv.tipo = 'carga';
+
+                        select mon.id_moneda
+                        	   into
+                               v_id_moneda_base
+                        from param.tmoneda mon
+                        where mon.tipo_moneda = 'base';
+
+                        select count(apc.id_apertura_cierre_caja)
+                        		into
+                                v_existe_apertura
+                        from vef.tapertura_cierre_caja apc
+                        where apc.id_usuario_cajero = v_id_usuario and
+                        apc.fecha_apertura_cierre = now()::date
+                        and apc.estado = 'abierto'
+                        and apc.id_punto_venta = v_id_punto_venta;
+                        /*Comentando momentaneamente para que no se registre la apertura de cierre*/
+                        /*
+                        if (v_existe_apertura = 0) then
+                            /*Aqui insertamos la apertura y cierre de caja para el cajero tecnico ya que en carga no hay un cajero fijo*/
+                            --Sentencia de la insercion
+                            insert into vef.tapertura_cierre_caja(
+                            id_sucursal,
+                            id_punto_venta,
+                            id_usuario_cajero,
+                            id_moneda,
+                            monto_inicial,
+                            obs_apertura,
+                            monto_inicial_moneda_extranjera,
+                            id_usuario_reg,
+                            fecha_apertura_cierre,
+                            estado,
+                            --18-01-2021 (may)
+                            id_apertura_cierre_admin
+
+                            ) values(
+                            v_id_sucursal,
+                            v_id_punto_venta,
+                            v_id_usuario,
+                            v_id_moneda_base,
+                            1,
+                            'Apertura de Caja creada por el cajero Auxiliar de Carga',
+                            0,
+                            v_id_usuario,
+                            now()::date,
+                            'abierto',
+                            --18-01-2021 (may)
+                            NULL
+                            );
+                        end if;*/
+                        /*****************************************************************************************/
+                        /************************************************************************************************************/
+
+                    elsif (v_cant_id_usuario_rol_normal > 1 ) then
+
+                        select usu.id_usuario
+                               into
+                               v_id_usuario
+                        from orga.vfuncionario fun
+                        inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
+                        where fun.id_funcionario = v_parametros.id_funcionario::INTEGER
+                        order by usu.id_usuario desc
+                        limit 1;
+
+                        v_usuario_nuevo = 'NO';
+
+
+                        select pv.id_punto_venta,
+                               pv.id_sucursal
+                               into
+                               v_id_punto_venta,
+                               v_id_sucursal
+                        from vef.tpunto_venta pv
+                        where pv.codigo = v_parametros.codigo_punto_venta and pv.tipo = 'carga';
+
+                        select mon.id_moneda
+                        	   into
+                               v_id_moneda_base
+                        from param.tmoneda mon
+                        where mon.tipo_moneda = 'base';
+
+                        select count(apc.id_apertura_cierre_caja)
+                        		into
+                                v_existe_apertura
+                        from vef.tapertura_cierre_caja apc
+                        where apc.id_usuario_cajero = v_id_usuario and
+                        apc.fecha_apertura_cierre = now()::date
+                        and apc.estado = 'abierto'
+                        and apc.id_punto_venta = v_id_punto_venta;
+                        /*Comentando momentaneamente para que no se registre la apertura de cierre*/
+                        /*
+                        if (v_existe_apertura = 0) then
+                        /*Aqui insertamos la apertura y cierre de caja para el cajero tecnico ya que en carga no hay un cajero fijo*/
+                        --Sentencia de la insercion
+                        insert into vef.tapertura_cierre_caja(
+                        id_sucursal,
+                        id_punto_venta,
+                        id_usuario_cajero,
+                        id_moneda,
+                        monto_inicial,
+                        obs_apertura,
+                        monto_inicial_moneda_extranjera,
+                        id_usuario_reg,
+                        fecha_apertura_cierre,
+                        estado,
+                        --18-01-2021 (may)
+                        id_apertura_cierre_admin
+
+                        ) values(
+                        v_id_sucursal,
+                        v_id_punto_venta,
+                        v_id_usuario,
+                        v_id_moneda_base,
+                        1,
+                        'Apertura de Caja creada por el cajero Auxiliar de Carga',
+                        0,
+                        v_id_usuario,
+                        now()::date,
+                        'abierto',
+                        --18-01-2021 (may)
+                        NULL
+
+                        );
+                        end if;
+                        */
+                        /************************************************************************************************************/
+
+                    end if;
+                end if;
+
+        	 elsif (v_cant_id_usuario = 0) then
+
+             /*Comentando esta para porque se crearan todos los usuarios de los funcionarios*/
+             select fun.desc_funcionario1
+                   into
+                   v_desc_funcionario
+            from orga.vfuncionario fun
+            where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
+
+             raise exception 'EL funcionario % no tiene una cuenta de usuario en ERP. Favor coordinar con encargados del ERP para su registro correspondiente',v_desc_funcionario;
+
+             /********************************************************************************/
+
+
+			 /*Si no se encuentra el usuario se creara el usuario de sistema y el usuario de base de datos*/
+
+             /*Aqui recuperamos la cuenta del usuario*/
+            /* select REPLACE(lower(fun.desc_funcionario1),' ',','),
+             	    fun.id_persona
+             into
+             v_nom_funcionario,
+             v_id_persona
+             from orga.vfuncionario fun
+             where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
+
+
+
+             /*Aqui obtenemos el tamaño del arreglo para hacer el recorrido*/
+             SELECT array_length ((select regexp_split_to_array(v_nom_funcionario, ',')),1)
+             into
+             v_arreglo_funcionario;
+
+             v_cuenta_usuario = '';
+
+
+              FOR v_i IN 1..v_arreglo_funcionario LOOP
+
+                  select left(cue[v_i],1)
+                  INTO
+                  v_iniciales
+                  from (
+                      select regexp_split_to_array(v_nom_funcionario, ',')
+                  ) as cuenta(cue);
+
+                  v_cuenta_usuario = v_cuenta_usuario || v_iniciales;
+
+
+
+             END LOOP;
+
+
+             select md5(v_cuenta_usuario) into v_pass_usuario;
+
+             /****************************************/
+
+
+             v_insertar_nuevo_usuario = vef.ft_registrar_nuevo_usuario_carga(v_cuenta_usuario,v_pass_usuario,v_id_persona);
+
+             v_id_usuario = v_insertar_nuevo_usuario::integer;
+
+             v_usuario_nuevo = 'SI';
+
+
+              select pv.id_punto_venta,
+                     pv.id_sucursal
+                     into
+                     v_id_punto_venta,
+                     v_id_sucursal
+              from vef.tpunto_venta pv
+              where pv.codigo = v_parametros.codigo_punto_venta and pv.tipo = 'carga';
+
+
+             --Sentencia de la insercion
+        	insert into vef.tapertura_cierre_caja(
+                                                  id_sucursal,
+                                                  id_punto_venta,
+                                                  id_usuario_cajero,
+                                                  id_moneda,
+                                                  monto_inicial,
+                                                  obs_apertura,
+                                                  monto_inicial_moneda_extranjera,
+                                                  id_usuario_reg,
+                                                  fecha_apertura_cierre,
+                                                  estado,
+                                                  --18-01-2021 (may)
+                                                  id_apertura_cierre_admin
+
+                                          ) values(
+                                                  v_id_sucursal,
+                                                  v_id_punto_venta,
+                                                  v_id_usuario,
+                                                  v_id_moneda,
+                                                  1,
+                                                  'Apertura caja ',
+                                                  v_parametros.monto_inicial_moneda_extranjera,
+                                                  p_id_usuario,
+                                                  v_parametros.fecha_apertura_cierre,
+                                                  'abierto',
+                                                  --18-01-2021 (may)
+                                                  v_parametros.id_apertura_cierre_admin
+
+                );
+
+             */
+
+
+             /*********************************************************************************************/
+
+
+        end if;
+        /*****************************************************************************************************/
+
+
+
+        /*if (v_cant_id_usuario > 1) then
 
         	select usu.id_usuario
             	   into
@@ -216,7 +558,7 @@ BEGIN
             from orga.vfuncionario fun
             inner join segu.vusuario usu on usu.id_persona = fun.id_persona and usu.estado_reg = 'activo'
             where fun.id_funcionario = v_parametros.id_funcionario::INTEGER;
-        end if;
+        end if;*/
         /******************************************************************/
 
         if (v_existencia_cliente = 0 or v_existencia_cliente is null) then
@@ -467,7 +809,7 @@ BEGIN
                         'pendiente',--3
                         'El Funcionario no tiene una cuenta de usuario en el Sistema ERP'--4
                       );
-          elsif (COALESCE (v_cant_id_usuario_rol,0) > 1) then
+          elsif (COALESCE (v_cant_id_usuario,0) > 1) then
                insert into vef.tfacturas_carga_observadas(
                         id_venta,--1
                         id_funcionario,--2
@@ -715,36 +1057,30 @@ BEGIN
         /*Establecemos la conexion con la base de datos*/
           --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
 
-          v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
-          v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
-          v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
-
-
-          select usu.cuenta,
-                 usu.contrasena
-                 into
-                 v_cuenta_usu,
-                 v_pass_usu
-          from segu.tusuario usu
-          where usu.id_usuario = v_id_usuario;
-
-          p_user= 'dbkerp_'||v_cuenta_usu;
-
-
-         -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+        v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+        v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+        v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+        v_semilla = pxp.f_get_variable_global('semilla_erp');
 
 
 
-          v_semilla = pxp.f_get_variable_global('semilla_erp');
+        select usu.cuenta,
+               usu.contrasena
+               into
+               v_cuenta_usu,
+               v_pass_usu
+        from segu.tusuario usu
+        where usu.id_usuario = v_id_usuario;
+        p_user= 'dbkerp_'||v_cuenta_usu;
 
 
-          select md5(v_semilla||v_pass_usu) into v_password;
+        select md5(v_semilla||v_pass_usu) into v_password;
 
-          v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+        v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
 
-
-         -- raise exception 'v_cadena_cnx %',v_cadena_cnx;
-          v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+        raise exception 'Aqui llega el usuario %',v_cadena_cnx;
+        -- raise exception 'v_cadena_cnx %',v_cadena_cnx;
+         v_conexion = (SELECT dblink_connect(v_cadena_cnx));
         /*************************************************/
 
           select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
@@ -819,295 +1155,314 @@ BEGIN
 
 		begin
 
-
-		/*Aqui recuperaremos la Factura insertada en la tabla tventa*/
-        select 	* into v_respaldo
+        select
+        count (ven.id_venta)
+        into
+        v_existe_venta
         from vef.tventa ven
         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
         where ven.id_sistema_origen = v_parametros.id_origen::integer and ven.tipo_factura = 'carga';
-		/************************************************************/
-
-        /*Aqui recuperamos el nro de Autorizacion*/
-        select cr.nro_autorizacion
-        	   into
-               v_nro_autorizacion
-        from vef.tdatos_carga_recibido cr
-        where cr.id_sistema_origen::integer = v_parametros.id_origen::integer;
-        /*****************************************/
-
-        		insert into vef.trespaldo_facturas_anuladas (
-                                                              id_venta,--1
-                                                              nombre_factura,--2
-                                                              nit,--3
-                                                              cod_control,--4
-                                                              num_factura,--5
-                                                              total_venta,--6
-                                                              total_venta_msuc,--7
-                                                              id_sucursal,--8
-                                                              id_cliente,--9
-                                                              id_punto_venta,--10
-                                                              observaciones,--11
-                                                              id_moneda,--12
-                                                              excento,--13
-                                                              fecha,--14
-
-                                                              /*id_sucursal_producto,--15
-                                                              id_formula,--16
-                                                              id_producto,--17
-                                                              cantidad,--18
-                                                              precio,--19
-                                                              tipo,--20
-                                                              descripcion,--21*/
-
-                                                              id_medio_pago,--22
-                                                              monto,--23
-                                                              monto_transaccion,--24
-                                                              monto_mb_efectivo,--25
-                                                              numero_tarjeta,--26
-                                                              codigo_tarjeta,--27
-                                                              tipo_tarjeta,--28
-                                                              id_auxiliar,--29
-                                                              fecha_reg,--30
-                                                              id_usuario_reg,--31
-                                                              --id_dosificacion,--32
-                                                              nro_autorizacion--33
-                                                              )
-                                                      VALUES (
-                                                              v_respaldo.id_venta,--1
-                                                              v_respaldo.nombre_factura,--2
-                                                              v_respaldo.nit,--3
-                                                              v_respaldo.cod_control,--4
-                                                              v_respaldo.nro_factura,--5
-                                                              v_respaldo.total_venta,--6
-                                                              v_respaldo.total_venta_msuc,--7
-                                                              v_respaldo.id_sucursal,--8
-                                                              v_respaldo.id_cliente,--9
-                                                              v_respaldo.id_punto_venta,--10
-                                                              v_respaldo.observaciones,--11
-                                                              v_respaldo.id_moneda,--12
-                                                              v_respaldo.excento,--13
-                                                              v_respaldo.fecha,--14
-                                                              ---Aqui recupera el detalle
-                                                             /* v_respaldo.id_sucursal_producto,--15
-                                                              v_respaldo.id_formula,--16
-                                                              v_respaldo.id_producto,--17
-                                                              v_respaldo.cantidad,--18
-                                                              v_respaldo.precio,--19
-                                                              v_respaldo.tipo,--20
-                                                              v_respaldo.descripcion,--21*/
-                                                              ----------------------------
-                                                              --Aqui el medio de pago----
-                                                              v_respaldo.id_medio_pago,--22
-                                                              v_respaldo.monto,--23
-                                                              v_respaldo.monto_transaccion,--24
-                                                              v_respaldo.monto_mb_efectivo,--25
-                                                              v_respaldo.numero_tarjeta,--26
-                                                              v_respaldo.codigo_tarjeta,--27
-                                                              v_respaldo.tipo_tarjeta,--28
-                                                              v_respaldo.id_auxiliar,--29
-                                                              now(),--30
-                                                              v_respaldo.id_usuario_cajero,--31
-                                                              --v_respaldo.id_dosificacion,--32
-                                                              v_nro_autorizacion--33
-                                                      		);
-
-          /*Obtenemos los campos de venta el id_entidad y el tipo_base*/
-          select v.* into v_venta
-          from vef.tventa v
-          where v.id_sistema_origen = v_parametros.id_origen::integer;
-          /***********************************************************/
-
-       	   /***Actualizamos la forma de Pago a todo 0***/
-            update vef.tventa_forma_pago set
-            monto_transaccion = 0,
-            monto = 0,
-            cambio = 0,
-            monto_mb_efectivo = 0
-            where id_venta = v_venta.id_venta;
-          /*********************************************/
-
-          /*Cambiamos La factura a Razon Social Anulada*/
-            update vef.tventa set
-            cod_control = Null,
-            total_venta_msuc = 0,
-            nombre_factura = 'ANULADO',
-            nit = '0',
-            total_venta = 0
-            where id_sistema_origen = v_parametros.id_origen::integer;
-	 	  /************************************************/
 
 
-          --obtenemos datos basicos
-          select
-            ven.id_estado_wf,
-            ven.id_proceso_wf,
-            ven.estado,
-            ven.id_venta,
-            ven.nro_tramite
-          into
-            v_registros
+          if (v_existe_venta > 0) then
+
+
+          /*Aqui recuperaremos la Factura insertada en la tabla tventa*/
+          select 	* into v_respaldo
           from vef.tventa ven
-          where ven.id_sistema_origen = v_parametros.id_origen::integer;
+          inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+          where ven.id_sistema_origen = v_parametros.id_origen::integer and ven.tipo_factura = 'carga';
+          /************************************************************/
 
-
-        /*Recuperamos el nombre del cajero que esta finalizando la factura*/
-        SELECT per.nombre_completo2 into v_cajero
-        from segu.tusuario usu
-        inner join segu.vpersona2 per on per.id_persona = usu.id_persona
-        where usu.id_usuario = v_venta.id_usuario_cajero;
-        /******************************************************************/
-
-
-        v_res = vef.f_anula_venta(p_administrador,v_respaldo.id_usuario_cajero,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_respaldo.id_venta);
-
-
-
-			--Sentencia de la modificacion
-			v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
-          v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
-          v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
-
-
-          select usu.cuenta,
-                 usu.contrasena
+          /*Aqui recuperamos el nro de Autorizacion*/
+          select cr.nro_autorizacion
                  into
-                 v_cuenta_usu,
-                 v_pass_usu
-          from segu.tusuario usu
-          where usu.id_usuario = v_venta.id_usuario_cajero;
+                 v_nro_autorizacion
+          from vef.tdatos_carga_recibido cr
+          where cr.id_sistema_origen::integer = v_parametros.id_origen::integer;
+          /*****************************************/
 
-          p_user= 'dbkerp_'||v_cuenta_usu;
+                  insert into vef.trespaldo_facturas_anuladas (
+                                                                id_venta,--1
+                                                                nombre_factura,--2
+                                                                nit,--3
+                                                                cod_control,--4
+                                                                num_factura,--5
+                                                                total_venta,--6
+                                                                total_venta_msuc,--7
+                                                                id_sucursal,--8
+                                                                id_cliente,--9
+                                                                id_punto_venta,--10
+                                                                observaciones,--11
+                                                                id_moneda,--12
+                                                                excento,--13
+                                                                fecha,--14
 
+                                                                /*id_sucursal_producto,--15
+                                                                id_formula,--16
+                                                                id_producto,--17
+                                                                cantidad,--18
+                                                                precio,--19
+                                                                tipo,--20
+                                                                descripcion,--21*/
 
-         -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+                                                                id_medio_pago,--22
+                                                                monto,--23
+                                                                monto_transaccion,--24
+                                                                monto_mb_efectivo,--25
+                                                                numero_tarjeta,--26
+                                                                codigo_tarjeta,--27
+                                                                tipo_tarjeta,--28
+                                                                id_auxiliar,--29
+                                                                fecha_reg,--30
+                                                                id_usuario_reg,--31
+                                                                --id_dosificacion,--32
+                                                                nro_autorizacion--33
+                                                                )
+                                                        VALUES (
+                                                                v_respaldo.id_venta,--1
+                                                                v_respaldo.nombre_factura,--2
+                                                                v_respaldo.nit,--3
+                                                                v_respaldo.cod_control,--4
+                                                                v_respaldo.nro_factura,--5
+                                                                v_respaldo.total_venta,--6
+                                                                v_respaldo.total_venta_msuc,--7
+                                                                v_respaldo.id_sucursal,--8
+                                                                v_respaldo.id_cliente,--9
+                                                                v_respaldo.id_punto_venta,--10
+                                                                v_respaldo.observaciones,--11
+                                                                v_respaldo.id_moneda,--12
+                                                                v_respaldo.excento,--13
+                                                                v_respaldo.fecha,--14
+                                                                ---Aqui recupera el detalle
+                                                               /* v_respaldo.id_sucursal_producto,--15
+                                                                v_respaldo.id_formula,--16
+                                                                v_respaldo.id_producto,--17
+                                                                v_respaldo.cantidad,--18
+                                                                v_respaldo.precio,--19
+                                                                v_respaldo.tipo,--20
+                                                                v_respaldo.descripcion,--21*/
+                                                                ----------------------------
+                                                                --Aqui el medio de pago----
+                                                                v_respaldo.id_medio_pago,--22
+                                                                v_respaldo.monto,--23
+                                                                v_respaldo.monto_transaccion,--24
+                                                                v_respaldo.monto_mb_efectivo,--25
+                                                                v_respaldo.numero_tarjeta,--26
+                                                                v_respaldo.codigo_tarjeta,--27
+                                                                v_respaldo.tipo_tarjeta,--28
+                                                                v_respaldo.id_auxiliar,--29
+                                                                now(),--30
+                                                                v_respaldo.id_usuario_cajero,--31
+                                                                --v_respaldo.id_dosificacion,--32
+                                                                v_nro_autorizacion--33
+                                                              );
 
+            /*Obtenemos los campos de venta el id_entidad y el tipo_base*/
+            select v.* into v_venta
+            from vef.tventa v
+            where v.id_sistema_origen = v_parametros.id_origen::integer;
+            /***********************************************************/
 
+             /***Actualizamos la forma de Pago a todo 0***/
+              update vef.tventa_forma_pago set
+              monto_transaccion = 0,
+              monto = 0,
+              cambio = 0,
+              monto_mb_efectivo = 0
+              where id_venta = v_venta.id_venta;
+            /*********************************************/
 
-          v_semilla = pxp.f_get_variable_global('semilla_erp');
-
-
-          select md5(v_semilla||v_pass_usu) into v_password;
-
-          v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
-
-
-
-        /*Replicacion a la base de datos DB_FACTURAS 2019*/
-   		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
-
-
-          /*Establecemos la conexion con la base de datos*/
-            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
-            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
-
+            /*Cambiamos La factura a Razon Social Anulada*/
+              update vef.tventa set
+              cod_control = Null,
+              total_venta_msuc = 0,
+              nombre_factura = 'ANULADO',
+              nit = '0',
+              total_venta = 0
+              where id_sistema_origen = v_parametros.id_origen::integer;
             /************************************************/
-          		select * FROM dblink(v_cadena_cnx,'
-                								  select f.id_factura,
-                                                  		 f.fecha_factura,
-                                                         f.nro_factura,
-                                                         f.estado,
-                                                         f.nit_ci_cli,
-                                                         f.razon_social_cli,
-                                                         f.importe_total_venta,
-                                                         f.usuario_reg,
-                                                         f.tipo_factura,
-                                                         f.id_origen,
-                                                         f.sistema_origen,
-                                                         f.nro_autorizacion
-                  								  from sfe.tfactura f
-                                                  where f.id_origen = '||v_parametros.id_origen::INTEGER||' and f.sistema_origen = ''CARGA''
-                                                  ',TRUE) AS datos_carga (
-                                                  		id_factura INTEGER,
-                                                        fecha_factura date,
-                                                        nro_factura varchar,
-                                                        estado varchar,
-                                                        nit_ci_cli varchar,
-                                                        razon_social_cli varchar,
-                                                        importe_total_venta numeric,
-                                                        usuario_reg varchar,
-                                                        tipo_factura varchar,
-                                                        id_origen INTEGER,
-                                                        sistema_origen varchar,
-                                                        nro_autorizacion varchar )
-                                                  into v_datos_carga;
 
-              v_consulta = 'update sfe.tfactura set
-                            estado_reg = ''inactivo''
-                            where id_origen = '||v_datos_carga.id_origen||' and sistema_origen = ''CARGA'' and estado <> ''ANULADA'';';
+
+            --obtenemos datos basicos
+            select
+              ven.id_estado_wf,
+              ven.id_proceso_wf,
+              ven.estado,
+              ven.id_venta,
+              ven.nro_tramite
+            into
+              v_registros
+            from vef.tventa ven
+            where ven.id_sistema_origen = v_parametros.id_origen::integer;
+
+
+          /*Recuperamos el nombre del cajero que esta finalizando la factura*/
+          SELECT per.nombre_completo2 into v_cajero
+          from segu.tusuario usu
+          inner join segu.vpersona2 per on per.id_persona = usu.id_persona
+          where usu.id_usuario = v_venta.id_usuario_cajero;
+          /******************************************************************/
+
+          v_tabla = pxp.f_crear_parametro(ARRAY[	'id_origen'	],
+                                          ARRAY[	v_parametros.id_origen],
+                                          ARRAY[	'integer']
+          );
 
 
 
-               select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
-            	into v_id_factura;
-
-              v_consulta_inser = '
-                                INSERT INTO sfe.tfactura(
-                                id_factura,
-                                fecha_factura,
-                                nro_factura,
-                                estado,
-                                nit_ci_cli,
-                                razon_social_cli,
-                                importe_total_venta,
-                                usuario_reg,
-                                tipo_factura,
-                                id_origen,
-                                sistema_origen,
-                                nro_autorizacion
-                                )
-                                values(
-                                '||v_id_factura||',
-                                '''||v_datos_carga.fecha_factura||''',
-                                '''||v_datos_carga.nro_factura::varchar||''',
-                                ''ANULADA'',
-                                ''0'',
-                                ''ANULADA'',
-                                0,
-                                '''||v_cajero||''',
-                                ''computarizada'',
-                                '||v_datos_carga.id_origen||',
-                                ''CARGA'',
-                                '''||v_datos_carga.nro_autorizacion||'''
-                                );';
+          --raise exception 'el p_administradoor %, p_table %',p_administrador,p_tabla;
+          v_res = vef.f_anula_venta(p_administrador,v_respaldo.id_usuario_cajero,v_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_respaldo.id_venta);
 
 
 
-              IF(v_conexion!='OK') THEN
-              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
-              ELSE
-                       perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
-
-                       perform dblink_exec(v_cadena_cnx,v_consulta_inser,TRUE);
-
-              	v_res_cone=(select dblink_disconnect());
-
-              END IF;
-
-          /*Establecemos la conexion con la base de datos*/
-            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
-            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
-          /************************************************/
+              --Sentencia de la modificacion
+              v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+            v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+            v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
 
 
+            select usu.cuenta,
+                   usu.contrasena
+                   into
+                   v_cuenta_usu,
+                   v_pass_usu
+            from segu.tusuario usu
+            where usu.id_usuario = v_venta.id_usuario_cajero;
 
-              IF(v_conexion!='OK') THEN
-              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
-              	ELSE
-                   perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+            p_user= 'dbkerp_'||v_cuenta_usu;
 
-              	v_res_cone=(select dblink_disconnect());
 
-              END IF;
-              /************************************/
-        /*****************************************************************/
+           -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
 
 
 
-			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Fáctura Anulada');
+            v_semilla = pxp.f_get_variable_global('semilla_erp');
 
-            --Devuelve la respuesta
-            return v_resp;
+
+            select md5(v_semilla||v_pass_usu) into v_password;
+
+            v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
+          /*Replicacion a la base de datos DB_FACTURAS 2019*/
+          /*Para migrar los datos a la nueva base de datos db_facturas_2019*/
+
+
+            /*Establecemos la conexion con la base de datos*/
+              --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+              v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+
+              /************************************************/
+                  select * FROM dblink(v_cadena_cnx,'
+                                                    select f.id_factura,
+                                                           f.fecha_factura,
+                                                           f.nro_factura,
+                                                           f.estado,
+                                                           f.nit_ci_cli,
+                                                           f.razon_social_cli,
+                                                           f.importe_total_venta,
+                                                           f.usuario_reg,
+                                                           f.tipo_factura,
+                                                           f.id_origen,
+                                                           f.sistema_origen,
+                                                           f.nro_autorizacion
+                                                    from sfe.tfactura f
+                                                    where f.id_origen = '||v_parametros.id_origen::INTEGER||' and f.sistema_origen = ''CARGA''
+                                                    ',TRUE) AS datos_carga (
+                                                          id_factura INTEGER,
+                                                          fecha_factura date,
+                                                          nro_factura varchar,
+                                                          estado varchar,
+                                                          nit_ci_cli varchar,
+                                                          razon_social_cli varchar,
+                                                          importe_total_venta numeric,
+                                                          usuario_reg varchar,
+                                                          tipo_factura varchar,
+                                                          id_origen INTEGER,
+                                                          sistema_origen varchar,
+                                                          nro_autorizacion varchar )
+                                                    into v_datos_carga;
+
+                v_consulta = 'update sfe.tfactura set
+                              estado_reg = ''inactivo''
+                              where id_origen = '||v_datos_carga.id_origen||' and sistema_origen = ''CARGA'' and estado <> ''ANULADA'';';
+
+
+
+                 select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+                  into v_id_factura;
+
+                v_consulta_inser = '
+                                  INSERT INTO sfe.tfactura(
+                                  id_factura,
+                                  fecha_factura,
+                                  nro_factura,
+                                  estado,
+                                  nit_ci_cli,
+                                  razon_social_cli,
+                                  importe_total_venta,
+                                  usuario_reg,
+                                  tipo_factura,
+                                  id_origen,
+                                  sistema_origen,
+                                  nro_autorizacion
+                                  )
+                                  values(
+                                  '||v_id_factura||',
+                                  '''||v_datos_carga.fecha_factura||''',
+                                  '''||v_datos_carga.nro_factura::varchar||''',
+                                  ''ANULADA'',
+                                  ''0'',
+                                  ''ANULADA'',
+                                  0,
+                                  '''||v_cajero||''',
+                                  ''computarizada'',
+                                  '||v_datos_carga.id_origen||',
+                                  ''CARGA'',
+                                  '''||v_datos_carga.nro_autorizacion||'''
+                                  );';
+
+
+
+                IF(v_conexion!='OK') THEN
+                      raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+                ELSE
+                         perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+                         perform dblink_exec(v_cadena_cnx,v_consulta_inser,TRUE);
+
+                  v_res_cone=(select dblink_disconnect());
+
+                END IF;
+
+            /*Establecemos la conexion con la base de datos*/
+              --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+              v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+            /************************************************/
+
+
+
+                IF(v_conexion!='OK') THEN
+                      raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+                  ELSE
+                     perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+                  v_res_cone=(select dblink_disconnect());
+
+                END IF;
+                /************************************/
+          /*****************************************************************/
+
+
+
+              --Definicion de la respuesta
+              v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Fáctura Anulada');
+
+              --Devuelve la respuesta
+              return v_resp;
+          end if;
 
 		end;
 

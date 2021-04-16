@@ -1737,3 +1737,48 @@ ALTER TABLE vef.tventa_forma_pago
 ALTER TABLE vef.trespaldo_facturas_anuladas
   ADD COLUMN nro_mco VARCHAR(20);
 /***********************************F-SCP-IRVA-VEF-0-31/03/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-01/04/2021****************************************/
+CREATE TABLE vef.tfacturas_pendientes_carga_anuladas (
+  fecha DATE,
+  nro_factura VARCHAR(200),
+  estado VARCHAR(100),
+  nit VARCHAR(200),
+  razon_social VARCHAR(200),
+  importe_total NUMERIC(18,2),
+  id_funcionario INTEGER,
+  id_origen INTEGER,
+  codigo_control VARCHAR(200),
+  nro_autorizacion VARCHAR(500),
+  moneda VARCHAR(20),
+  cod_medio_pago VARCHAR(200),
+  cod_auxiliar VARCHAR(200),
+  cod_punto_venta VARCHAR(200)
+)
+WITH (oids = false);
+
+ALTER TABLE vef.tfacturas_pendientes_carga_anuladas
+  OWNER TO postgres;
+
+
+CREATE TABLE vef.tfacturas_pendientes_carga_validas (
+  fecha DATE,
+  nro_factura VARCHAR(200),
+  estado VARCHAR(100),
+  nit VARCHAR(200),
+  razon_social VARCHAR(200),
+  importe_total NUMERIC(18,2),
+  id_funcionario INTEGER,
+  id_origen INTEGER,
+  codigo_control VARCHAR(200),
+  nro_autorizacion VARCHAR(500),
+  moneda VARCHAR(20),
+  cod_medio_pago VARCHAR(200),
+  cod_auxiliar VARCHAR(200),
+  cod_punto_venta VARCHAR(200)
+)
+WITH (oids = false);
+
+ALTER TABLE vef.tfacturas_pendientes_carga_validas
+  OWNER TO postgres;
+/***********************************F-SCP-IRVA-VEF-0-01/04/2021****************************************/
