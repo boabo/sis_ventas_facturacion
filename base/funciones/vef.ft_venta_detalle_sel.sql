@@ -120,7 +120,9 @@ BEGIN
                         left join segu.vusuario ven on ven.id_usuario = vedet.id_vendedor
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida
                         left join param.tunidad_medida umcig on umcig.id_unidad_medida = cig.id_unidad_medida
-                        left join param.tmoneda mon on mon.id_moneda = cig.id_moneda
+                        --left join param.tmoneda mon on mon.id_moneda = cig.id_moneda
+                        inner join vef.tventa vent on vent.id_venta = vedet.id_venta
+                        left join param.tmoneda mon on mon.id_moneda = vent.id_moneda
                         where  ';
 
 			--Definicion de la respuesta

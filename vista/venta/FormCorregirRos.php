@@ -607,32 +607,32 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
         this.cargarInstanciaPago();
 
        /********************************Aumemtando condicios para el id moneda****************************************/
-       this.Cmp.id_moneda.on('select',function(c,r,i) {
-         /*Aqui aumentamos para tener el cambio correcto en relacion a la moneda del detalle*/
-         // if (this.id_moneda_recibo_cambio) {
-         //    /*Si las monedas son iguales no hacer nada*/
-         //   if ( this.Cmp.id_moneda.getValue() == this.id_moneda_recibo_cambio) {
-         //       this.Cmp.monto_deposito.setValue(this.suma_total);
-         //       this.Cmp.monto_forma_pago.setValue(this.suma_total);
-         //   /*****************************************************/
-         //   /*Si la moneda de pago sera en dolar y la otra no entonces hacemos la conversion*/
-         //    } else if (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2) {
-         //        this.Cmp.monto_deposito.setValue((this.suma_total/this.tipo_cambio));
-         //        this.Cmp.monto_forma_pago.setValue((this.suma_total/this.tipo_cambio));
-         //   /**********************************************************************************/
-         //   /*Si la moneda de pago sera distinto al dolar entonces hacemos la conversion*/
-         //    } else if (this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) {
-         //        this.Cmp.monto_deposito.setValue((this.suma_total*this.tipo_cambio));
-         //        this.Cmp.monto_forma_pago.setValue((this.suma_total*this.tipo_cambio));
-         //    }
-         //    /******************************************************************************/
-         // }
-         /***********************************************************************************/
-
-         //if(r.data.id_moneda == 2){
-            this.devolverCambio('si');
-        //  }
-       },this);
+       // this.Cmp.id_moneda.on('select',function(c,r,i) {
+       //   /*Aqui aumentamos para tener el cambio correcto en relacion a la moneda del detalle*/
+       //   // if (this.id_moneda_recibo_cambio) {
+       //   //    /*Si las monedas son iguales no hacer nada*/
+       //   //   if ( this.Cmp.id_moneda.getValue() == this.id_moneda_recibo_cambio) {
+       //   //       this.Cmp.monto_deposito.setValue(this.suma_total);
+       //   //       this.Cmp.monto_forma_pago.setValue(this.suma_total);
+       //   //   /*****************************************************/
+       //   //   /*Si la moneda de pago sera en dolar y la otra no entonces hacemos la conversion*/
+       //   //    } else if (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2) {
+       //   //        this.Cmp.monto_deposito.setValue((this.suma_total/this.tipo_cambio));
+       //   //        this.Cmp.monto_forma_pago.setValue((this.suma_total/this.tipo_cambio));
+       //   //   /**********************************************************************************/
+       //   //   /*Si la moneda de pago sera distinto al dolar entonces hacemos la conversion*/
+       //   //    } else if (this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) {
+       //   //        this.Cmp.monto_deposito.setValue((this.suma_total*this.tipo_cambio));
+       //   //        this.Cmp.monto_forma_pago.setValue((this.suma_total*this.tipo_cambio));
+       //   //    }
+       //   //    /******************************************************************************/
+       //   // }
+       //   /***********************************************************************************/
+       //
+       //   //if(r.data.id_moneda == 2){
+       //      this.devolverCambio('si');
+       //  //  }
+       // },this);
 
        this.Cmp.id_moneda_2.on('select',function(c,r,i) {
          /*Modificar el monto cambio Ismael Valdivia 2020*/
@@ -3721,7 +3721,7 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
         }
         //console.log("aqui llega el devolver",inicio, this.Cmp.monto_forma_pago.getValue());
 
-        if ( (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2) && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
+        if ( (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2) && ((this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio).toFixed(2)) < this.suma_total) {
 
           /**********************************Cambiamos el Style *****************************************/
           this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
@@ -3754,7 +3754,7 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
           /***************************************/
 
 
-        }else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) && this.Cmp.monto_forma_pago.getValue() < (this.suma_total*this.tipo_cambio)) {
+        }else if ((this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) && this.Cmp.monto_forma_pago.getValue() < ((this.suma_total*this.tipo_cambio).toFixed(2))) {
 
 
           /**********************************Cambiamos el Style *****************************************/
@@ -4180,8 +4180,12 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.monto_deposito.allowBlank = false;
             this.Cmp.cuenta_bancaria.allowBlank = false;
             this.Cmp.cuenta_bancaria.setDisabled(true);
-            this.Cmp.monto_deposito.setValue(this.suma_total);
-            this.Cmp.monto_forma_pago.setValue(this.suma_total);
+            this.Cmp.monto_deposito.setValue(this.Cmp.monto_forma_pago.getValue());
+            //this.Cmp.monto_forma_pago.setValue(this.suma_total);
+
+            this.Cmp.monto_forma_pago.on('keyup', function (cmp, e) {
+               this.Cmp.monto_deposito.setValue(this.Cmp.monto_forma_pago.getValue());
+             }, this);
 
             this.devolverCambio('no');
 
@@ -4212,13 +4216,20 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
            /*************************************************/
            /*Aqui volvemos a llamar a la funcion de acuerdo a la moneda seleccionada para la cuenta*/
             this.Cmp.id_moneda.on('select',function(c,r,i) {
-              if (this.Cmp.id_moneda.getValue() == 2) {
+              if (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio == 2) {
+                this.Cmp.monto_deposito.setValue((this.suma_total));
+                this.Cmp.monto_forma_pago.setValue((this.suma_total));
+              }else if (this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio == 2) {
+                this.Cmp.monto_deposito.setValue((this.suma_total*this.tipo_cambio));
+                this.Cmp.monto_forma_pago.setValue((this.suma_total*this.tipo_cambio));
+              } else if (this.Cmp.id_moneda.getValue() == 2 && this.id_moneda_recibo_cambio != 2) {
                 this.Cmp.monto_deposito.setValue((this.suma_total/this.tipo_cambio));
                 this.Cmp.monto_forma_pago.setValue((this.suma_total/this.tipo_cambio));
-              } else {
+              } else if (this.Cmp.id_moneda.getValue() != 2 && this.id_moneda_recibo_cambio != 2) {
                 this.Cmp.monto_deposito.setValue((this.suma_total));
                 this.Cmp.monto_forma_pago.setValue((this.suma_total));
               }
+
               Ext.Ajax.request({
        					url:'../../sis_ventas_facturacion/control/VentaFacturacion/ObtenerCuentaBancaria',
        					params:{
@@ -4236,7 +4247,7 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
        					timeout:this.timeout,
        					scope:this
        			});
-                //  this.devolverCambio();
+                this.devolverCambio('no');
                  },this);
                  /*Aqui verificaremos si el deposito existe o no existe ya registrado*/
                 this.Cmp.nro_deposito.on('change',function(field,newValue,oldValue){

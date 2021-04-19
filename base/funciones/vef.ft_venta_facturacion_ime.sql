@@ -213,6 +213,7 @@ DECLARE
     v_moneda_base			integer;
 	v_monto_venta					numeric;
     v_id_medio_pago	integer;
+    v_suma_detalle	numeric;
     /***/
 BEGIN
 
@@ -5276,7 +5277,7 @@ BEGIN
 
                  update obingresos.tdeposito set
                  monto_total = v_parametros.monto_deposito,
-                 fecha_deposito = v_parametros.fecha_deposito,
+                 fecha = v_parametros.fecha_deposito::date,
                  nro_deposito = v_parametros.nro_deposito,
                  id_moneda_deposito = v_parametros.id_moneda
                  where nro_deposito = v_parametros.nro_deposito and tipo = 'cuenta_corriente';
@@ -5631,6 +5632,7 @@ BEGIN
           v_moneda_base = param.f_get_moneda_base();
 
 
+
           if (v_venta.id_moneda_venta_recibo = 2 and v_moneda_base != 2) then
               v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
           else
@@ -5697,13 +5699,67 @@ BEGIN
             end if;
           end if;
 
-          if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
-            raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
+
+          /*Aumentando la condicion para la moneda del recibo*/
+          if (v_parametros.id_moneda = 2 and v_venta.id_moneda_venta_recibo = 2) then
+
+          		v_total_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+          		if (v_suma_fp > (v_total_venta - coalesce(v_venta.comision,0))) then
+                  raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
+                end if;
+
+                v_suma_detalle = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_suma_det,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+
+                if (v_suma_detalle != v_total_venta) then
+                  raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',v_suma_detalle ,v_total_venta, v_parametros.id_venta;
+          		end if;
+
+          elsif (v_parametros.id_moneda != 2 and v_venta.id_moneda_venta_recibo = 2) then
+
+          		v_total_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+          		if (v_suma_fp > (v_total_venta - coalesce(v_venta.comision,0))) then
+                  raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
+                end if;
+
+                v_suma_detalle = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_suma_det,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+
+                if (v_suma_detalle != v_total_venta) then
+                  raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',v_suma_detalle ,v_total_venta, v_parametros.id_venta;
+          		end if;
+
+           elsif (v_parametros.id_moneda = 2 and v_venta.id_moneda_venta_recibo != 2) then
+
+          		--v_total_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+          		if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
+                  raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
+                end if;
+
+                --v_suma_detalle = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_suma_det,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+
+                if (v_suma_detalle != v_venta.total_venta) then
+                  raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',v_suma_det ,v_total_venta, v_parametros.id_venta;
+          		end if;
+
+          elsif (v_parametros.id_moneda != 2 and v_venta.id_moneda_venta_recibo != 2 ) then
+
+          		--v_total_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+
+          		if (v_suma_fp > (v_venta.total_venta - coalesce(v_venta.comision,0))) then
+                  raise exception 'El total de la venta no coincide con la división por forma de pago%',v_suma_fp;
+                end if;
+
+                if (v_suma_det != v_venta.total_venta) then
+                  raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',v_suma_det ,v_venta.total_venta, v_parametros.id_venta;
+          		end if;
+
           end if;
 
-          if (v_suma_det != v_venta.total_venta) then
-            raise exception 'El total de la venta no coincide con la suma de los detalles (% = %) en id: %',v_suma_det ,v_venta.total_venta, v_parametros.id_venta;
-          end if;
 
 
         select sum(cambio) into v_suma_fp
