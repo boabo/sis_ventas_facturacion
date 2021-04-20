@@ -166,7 +166,15 @@ BEGIN
                         dos.nro_tramite,
                         dos.nombre_sistema,
                         dos.leyenda,
-                        dos.rnd
+                        dos.rnd,
+
+                        /*Aumentando para recuperar datos de las dosificaciones de Exportacion
+                        (Ismael Valdivia 19/04/2021)*/
+                        dos.caracteristica,
+                        dos.titulo,
+                        dos.subtitulo
+                        /**********************************************************************/
+
 						from vef.tdosificacion dos
 						inner join segu.tusuario usu1 on usu1.id_usuario = dos.id_usuario_reg
                         inner join vef.tsucursal su on su.id_sucursal = dos.id_sucursal
@@ -238,3 +246,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION vef.ft_dosificacion_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

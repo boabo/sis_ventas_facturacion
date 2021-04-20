@@ -18,7 +18,7 @@ class ACTDosificacion extends ACTbase{
 
 		if ($this->objParam->getParametro('tipo') == 'manual') {
             $this->objParam->addFiltro(" dos.tipo = ''F'' ");
-			$this->objParam->addFiltro(" dos.tipo_generacion = ''manual'' ");
+						$this->objParam->addFiltro(" dos.tipo_generacion = ''manual'' and dos.nombre_sistema = ''SISTEMAFACTURACIONBOA'' and dos.titulo = ''FACTURA'' ");
         }
 
 		if ($this->objParam->getParametro('fecha') != '') {

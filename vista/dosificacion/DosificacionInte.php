@@ -38,6 +38,9 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             tooltip: '<b>Facturas Emitida</b>',
             scope:this
         });
+
+				this.bbar.el.dom.style.background='#84BFE7';
+				this.tbar.el.dom.style.background='#84BFE7';
 	},
     Atributos:[
         {
@@ -313,6 +316,154 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             form:true,
             bottom_filter:true
         },
+
+				/*Aumentando Campos para registrar La dosificacion para facturacion por exportacion*/
+				{
+						config: {
+								name: 'caracteristica',
+								fieldLabel: 'Característica',
+								allowBlank: true,
+								emptyText: 'Característica...',
+								gwidth: 400,
+								style: {
+												background: '#AAEEFF',
+												color:'blue',
+												fontWeight: 'bold'
+								},
+								store : new Ext.data.JsonStore({
+								 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+								 id : 'id_catalogo',
+								 root : 'datos',
+								 sortInfo : {
+									 field : 'codigo',
+									 direction : 'ASC'
+								 },
+								 totalProperty : 'total',
+								 fields: ['codigo','descripcion'],
+								 remoteSort : true,
+								 baseParams:{
+									cod_subsistema:'VEF',
+									catalogo_tipo:'carasteristicas_dosificaciones_factura'
+								},
+							 }),
+								valueField: 'descripcion',
+								gdisplayField : 'caracteristica',
+								displayField: 'descripcion',
+								forceSelection: true,
+								typeAhead: false,
+								triggerAction: 'all',
+								lazyRender: true,
+								mode: 'remote',
+								pageSize: 15,
+								width:250,
+								queryDelay: 1000,
+								minChars: 2,
+								resizable:true
+						},
+						type: 'ComboBox',
+						id_grupo: 0,
+						form: true,
+						grid: true
+				},
+
+				{
+						config: {
+								name: 'titulo',
+								fieldLabel: 'Titulo',
+								allowBlank: false,
+								emptyText: 'Titulo...',
+								gwidth: 350,
+								style: {
+												background: '#AAEEFF',
+												color:'blue',
+												fontWeight: 'bold'
+								},
+								store : new Ext.data.JsonStore({
+								 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+								 id : 'id_catalogo',
+								 root : 'datos',
+								 sortInfo : {
+									 field : 'codigo',
+									 direction : 'ASC'
+								 },
+								 totalProperty : 'total',
+								 fields: ['codigo','descripcion'],
+								 remoteSort : true,
+								 baseParams:{
+									cod_subsistema:'VEF',
+									catalogo_tipo:'titulo_dosificacion'
+								},
+							 }),
+								valueField: 'descripcion',
+								gdisplayField : 'titulo',
+								displayField: 'descripcion',
+								forceSelection: true,
+								typeAhead: false,
+								triggerAction: 'all',
+								lazyRender: true,
+								mode: 'remote',
+								pageSize: 15,
+								width:250,
+								queryDelay: 1000,
+								minChars: 2,
+								resizable:true
+						},
+						type: 'ComboBox',
+						id_grupo: 0,
+						form: true,
+						grid: true
+				},
+
+				{
+						config: {
+								name: 'subtitulo',
+								fieldLabel: 'Subtitulo',
+								allowBlank: true,
+								emptyText: 'Subtitulo...',
+								gwidth: 200,
+								style: {
+												background: '#AAEEFF',
+												color:'blue',
+												fontWeight: 'bold'
+								},
+								store : new Ext.data.JsonStore({
+								 url : '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+								 id : 'id_catalogo',
+								 root : 'datos',
+								 sortInfo : {
+									 field : 'codigo',
+									 direction : 'ASC'
+								 },
+								 totalProperty : 'total',
+								 fields: ['codigo','descripcion'],
+								 remoteSort : true,
+								 baseParams:{
+									cod_subsistema:'VEF',
+									catalogo_tipo:'tsubtitulo_dosificacion'
+								},
+							 }),
+								valueField: 'descripcion',
+								gdisplayField : 'subtitulo',
+								displayField: 'descripcion',
+								forceSelection: true,
+								typeAhead: false,
+								triggerAction: 'all',
+								lazyRender: true,
+								mode: 'remote',
+								pageSize: 15,
+								width:250,
+								queryDelay: 1000,
+								minChars: 2,
+								resizable:true
+						},
+						type: 'ComboBox',
+						id_grupo: 0,
+						form: true,
+						grid: true
+				},
+				/**********************************************************************************/
+
+
         {
             config:{
                 name: 'codigo',
@@ -632,6 +783,13 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         }
     ],
 	tam_pag:50,
+
+	/*Aqui para el tamaño de la ventana nuevo*/
+	fheight:'80%',
+	fwidth: '90%',
+	/***/
+
+
 	title:'Dosificación',
 	ActSave:'../../sis_ventas_facturacion/control/Dosificacion/insertarDosificacionExter',
 	ActDel:'../../sis_ventas_facturacion/control/Dosificacion/eliminarDosificacion',
@@ -671,7 +829,15 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         {name:'nro_tramite', type: 'string'},
         {name:'nombre_sistema', type: 'string'},
         {name:'leyenda', type: 'string'},
-        {name:'rnd', type: 'string'}
+        {name:'rnd', type: 'string'},
+
+				/*Aumentando para dosificaciones de facturacion por exportacion
+				Dev: Ismael Valdivia
+				Fecha Mod: 19/04/2021*/
+				{name:'caracteristica', type: 'string'},
+				{name:'titulo', type: 'string'},
+				{name:'subtitulo', type: 'string'}
+				/***************************************************************/
 
 	],
 	sortInfo:{
@@ -689,7 +855,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
                 // columnWidth: '.5',
                 border: false
             },
-            items: [{
+						items: [{
 
                 bodyStyle: 'padding-right:5px;',
                 items: [{
@@ -719,16 +885,15 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
         }
     ],
 
-    fheight:'60%',
-    fwidth:'88%',
+    // fheight:'60%',
+    // fwidth:'88%',
     onButtonNew:function() {
         Phx.vista.DosificacionInte.superclass.onButtonNew.call(this);
         this.Cmp.glosa_impuestos.setValue('ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS. EL USO ILÍCITO DE ÉSTA SERÁ SANCIONADO DE ACUERDO A LEY')
         this.Cmp.leyenda.setValue('Gracias por su preferencia!!!');
     },
     iniciarEventos :  function () {
-			  this.cm.setHidden(15, true);
-
+			  this.cm.setHidden(18, true);
 
         this.Cmp.tipo_generacion.on('select',function (c,r,v) {
             if (this.Cmp.tipo_generacion.getValue() == 'manual') {
@@ -769,6 +934,23 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
     onButtonEdit:function() {
         Phx.vista.DosificacionInte.superclass.onButtonEdit.call(this);
         this.Cmp.tipo_generacion.fireEvent('select');
+
+				/*Para que la actividad economica se seleccion en el boton editar*/
+				if (this.Cmp.id_activida_economica.getValue() != null && this.Cmp.id_activida_economica.getValue() != '') {
+					this.Cmp.id_activida_economica.store.baseParams.id_actividad_economica = this.Cmp.id_activida_economica.getValue();
+		      this.Cmp.id_activida_economica.store.load({params:{start:0,limit:50},
+		        callback : function (r) {
+		          if (r.length == 1 ) {
+									  this.Cmp.id_activida_economica.setValue(r[0].data.id_actividad_economica);
+		                this.Cmp.id_activida_economica.fireEvent('select', this.Cmp.id_activida_economica,r[0],0);
+		                this.Cmp.id_activida_economica.store.baseParams.id_actividad_economica = '';
+		            }
+		         }, scope : this
+		     });
+
+
+				}
+				/*****************************************************************/
     },
     onSubmit : function(o) {
         Phx.vista.DosificacionInte.superclass.onSubmit.call(this,o);

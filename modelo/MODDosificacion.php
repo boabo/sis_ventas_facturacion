@@ -182,6 +182,13 @@ class MODDosificacion extends MODbase{
         $this->captura('nombre_sistema','varchar');
         $this->captura('leyenda','varchar');
         $this->captura('rnd','varchar');
+				/*Aumentando para dosificaciones de facturacion por exportacion
+				Dev: Ismael Valdivia
+				Fecha Mod: 19/04/2021*/
+				$this->captura('caracteristica','varchar');
+        $this->captura('titulo','varchar');
+        $this->captura('subtitulo','varchar');
+				/*************************************************************/
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -217,6 +224,14 @@ class MODDosificacion extends MODbase{
         $this->setParametro('nombre_sistema','nombre_sistema','varchar');
         $this->setParametro('leyenda','leyenda','varchar');
         $this->setParametro('rnd','rnd','varchar');
+
+				/*Aumentando para dosificaciones de facturacion por exportacion
+				Dev: Ismael Valdivia
+				Fecha Mod: 19/04/2021*/
+				$this->setParametro('caracteristica','caracteristica','varchar');
+				$this->setParametro('titulo','titulo','varchar');
+				$this->setParametro('subtitulo','subtitulo','varchar');
+				/*************************************************************/
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -254,6 +269,15 @@ class MODDosificacion extends MODbase{
         $this->setParametro('nombre_sistema','nombre_sistema','varchar');
         $this->setParametro('leyenda','leyenda','varchar');
         $this->setParametro('rnd','rnd','varchar');
+
+
+				/*Aumentando para dosificaciones de facturacion por exportacion
+				Dev: Ismael Valdivia
+				Fecha Mod: 19/04/2021*/
+				$this->setParametro('caracteristica','caracteristica','varchar');
+				$this->setParametro('titulo','titulo','varchar');
+				$this->setParametro('subtitulo','subtitulo','varchar');
+				/*************************************************************/
 
         //Ejecuta la instruccion
         $this->armarConsulta();

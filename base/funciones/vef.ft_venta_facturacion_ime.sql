@@ -214,6 +214,7 @@ DECLARE
 	v_monto_venta					numeric;
     v_id_medio_pago	integer;
     v_suma_detalle	numeric;
+    v_id_moneda_base	numeric;
     /***/
 BEGIN
 
@@ -678,10 +679,26 @@ BEGIN
         if ( v_parametros.id_formula is not null) then
 
           for v_formula  in	(select  form.id_concepto_ingas,
-                                     ing.precio
+                                     ing.precio,
+                                     ing.id_moneda
                                      from vef.tformula_detalle form
                                      left join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
                               		 where form.id_formula = v_parametros.id_formula) LOOP
+
+
+          select mon.id_moneda
+          into
+          v_id_moneda_base
+          from param.tmoneda mon
+          where mon.tipo_moneda = 'base';
+
+          if (v_id_moneda_base != v_formula.id_moneda) then
+
+          		v_monto_venta = param.f_convertir_moneda(v_formula.id_moneda::integer,v_id_moneda_base::integer,v_formula.precio::numeric,now()::date,'CUS',2, NULL,'si');
+          else
+          		v_monto_venta = v_formula.precio;
+
+          end if;
 
           insert into vef.tventa_detalle
           ( id_usuario_reg,
@@ -706,12 +723,7 @@ BEGIN
             v_id_venta,
             v_parametros.id_formula,
             'formula',
-            (case when (v_formula.precio is NULL) then
-            		0
-            	   else
-                   v_formula.precio
-            end
-            )::numeric,
+            v_monto_venta::numeric,
             1,
             v_formula.precio,
             0,
@@ -820,10 +832,25 @@ BEGIN
 
 
               for v_formula  in	(select  form.id_concepto_ingas,
-                                     ing.precio
+                                     ing.precio,
+                                     ing.id_moneda
                                      from vef.tformula_detalle form
                                      left join param.tconcepto_ingas ing on ing.id_concepto_ingas = form.id_concepto_ingas
                               		 where form.id_formula = v_parametros.id_formula) LOOP
+
+                     select mon.id_moneda
+                      into
+                      v_id_moneda_base
+                      from param.tmoneda mon
+                      where mon.tipo_moneda = 'base';
+
+                      if (v_id_moneda_base != v_formula.id_moneda) then
+
+                            v_monto_venta = param.f_convertir_moneda(v_formula.id_moneda::integer,v_id_moneda_base::integer,v_formula.precio::numeric,now()::date,'CUS',2, NULL,'si');
+                      else
+                            v_monto_venta = v_formula.precio;
+
+                      end if;
 
                   insert into vef.tventa_detalle
                       ( id_usuario_reg,
@@ -848,12 +875,7 @@ BEGIN
                         v_parametros.id_venta,
                         v_parametros.id_formula,
                         'formula',
-                        (case when (v_formula.precio is NULL) then
-                                1
-                               else
-                               v_formula.precio
-                        end
-                        )::numeric,
+                        v_monto_venta::numeric,
                         1,
                         v_formula.precio,
                         0,
@@ -2952,6 +2974,10 @@ BEGIN
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                   d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
                   d.id_sucursal = v_venta.id_sucursal and
+                  d.nombre_sistema = 'SISTEMAFACTURACIONBOA' and
+                  /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                  d.titulo = 'FACTURA' AND
+                  /***********************************************************************/
                   d.id_activida_economica @> v_dosificacion_concepto.id_actividad::integer[];
 
               if (v_dosificacion_por_concepto is null) then
@@ -2966,6 +2992,10 @@ BEGIN
             from vef.tdosificacion d
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                   d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
+                  d.nombre_sistema = 'SISTEMAFACTURACIONBOA' and
+                    /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                    d.titulo = 'FACTURA' AND
+                    /***********************************************************************/
                   d.id_sucursal = v_venta.id_sucursal;
 
 			if (v_dosificacion_sucursal is null ) then
@@ -2979,6 +3009,10 @@ BEGIN
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                   d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
                   d.id_sucursal = v_venta.id_sucursal and
+                  d.nombre_sistema = 'SISTEMAFACTURACIONBOA' and
+                  /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                  d.titulo = 'FACTURA' AND
+                  /***********************************************************************/
                   d.id_activida_economica @> v_id_actividad_economica FOR UPDATE;
 
             v_nro_factura = v_dosificacion.nro_siguiente;
@@ -3341,7 +3375,7 @@ BEGIN
                          from vef.tventa v
                          where v.fecha > v_fecha_venta and v.tipo_factura = 'computarizada' and
                                v.estado_reg = 'activo' and v.estado = 'finalizado'))THEN
-              raise exception 'Existen recibos emitidos con fechas posterior a la actual. Por favor revise la fecha y hora del sistema';
+              raise exception 'Existen facturas emitidas con fechas posterior a la actual. Por favor revise la fecha y hora del sistema';
             end if;
           ELSE
             v_fecha_venta = v_venta.fecha;
@@ -3366,6 +3400,10 @@ BEGIN
               from vef.tdosificacion d
               where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                     d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
+                    d.nombre_sistema = 'SISTEMAFACTURACIONBOA' and
+                    /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                    d.titulo = 'FACTURA' AND
+                    /***********************************************************************/
                     d.id_sucursal = v_venta.id_sucursal;
 
               if (v_dosificacion_sucursal is null ) then
@@ -3385,6 +3423,10 @@ BEGIN
               where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                     d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
                     d.id_sucursal = v_venta.id_sucursal and
+                    d.nombre_sistema = 'SISTEMAFACTURACIONBOA' and
+                    /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                    d.titulo = 'FACTURA' AND
+                    /***********************************************************************/
                     d.id_activida_economica @> v_dosificacion_concepto.id_actividad::integer[];
 
                 if (v_dosificacion_por_concepto is null) then
@@ -3401,6 +3443,10 @@ BEGIN
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                   d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
                   d.id_sucursal = v_venta.id_sucursal and
+                  /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                  d.titulo = 'FACTURA' AND
+                  /***********************************************************************/
+                  d.nombre_sistema = 'SISTEMAFACTURACIONBOA' AND
                   d.id_activida_economica @> v_id_actividad_economica FOR UPDATE;
 
             v_nro_factura = v_dosificacion.nro_siguiente;
@@ -4231,6 +4277,9 @@ BEGIN
             where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                   d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
                   d.id_sucursal = v_venta.id_sucursal and
+                  /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                  d.titulo = 'FACTURA' AND
+                  /***********************************************************************/
                   d.id_activida_economica @> v_id_actividad_economica FOR UPDATE;
 
             v_nro_factura = v_dosificacion.nro_siguiente;

@@ -44,6 +44,7 @@ $body$
 	v_clase						varchar;
 	v_parametros_ad				varchar;
 	v_acceso_directo			varchar;
+    v_existe_dosificacion		numeric;
 
   BEGIN
 
@@ -240,6 +241,45 @@ $body$
     elsif(p_transaccion='VF_DOS_INSEX')then
 
       begin
+
+      /*Control para que la dosificacion sea unica*/
+      select count (dosi.id_dosificacion) into
+      v_existe_dosificacion
+      from vef.tdosificacion dosi
+      where dosi.nroaut = TRIM(regexp_replace(v_parametros.nroaut, E'[\\n\\r]+', ' ', 'g' ));
+
+      if (v_existe_dosificacion = 0) then
+      /********************************************/
+
+      --validamos que la fecha de inicio de emision no sea anterior a la fecha de tramite
+        IF(v_parametros.fecha_inicio_emi < v_parametros.fecha_dosificacion )Then
+        	raise exception 'La Fecha de Inicio de Emisión, no puede ser anterior a la Fecha de Tramite. Por favor revise las fechas.';
+        End If;
+
+        --validamos que la fecha limite de emision no sea anterior a la fecha de inicio de emision
+		If(v_parametros.fecha_limite < v_parametros.fecha_inicio_emi) Then
+        	raise exception 'La Fecha Límite de Emisión, no puede ser anterior a la Fecha Inico de Emision. Por favor revise las fechas. ';
+        End If;
+
+        --validamos que las fechas inicio y fin no se sobrepongan a las de otra dosificacion
+        IF EXISTS (Select DISTINCT(1)
+                    From vef.tdosificacion dos
+                    Where dos.id_sucursal = v_parametros.id_sucursal
+                    --and dos.autoimpresor=if_autoimpresor
+                    and dos.tipo = v_parametros.tipo
+
+                    and dos.tipo_generacion = v_parametros.tipo_generacion --Manual Computarizada
+                    and dos.caracteristica = v_parametros.caracteristica --Caracteristica por facturacion exportacion
+
+                    and  (REPLACE(REPLACE(dos.id_activida_economica::varchar,'{',''),'}',''))::integer = v_parametros.id_activida_economica::integer
+                    and v_parametros.fecha_inicio_emi BETWEEN dos.fecha_inicio_emi and dos.fecha_limite
+                    and v_parametros.fecha_limite BETWEEN dos.fecha_inicio_emi and dos.fecha_limite) then
+
+        	raise exception 'La fecha inicio de emision y fecha limite de emision que intenta registrar, se sobreponen a las fechas de una dosificacion anterior para la misma Sucursal, Actividad Economica y Tipo.';
+        END IF;
+
+
+
        insert into vef.tdosificacion(
           id_sucursal,
           final,
@@ -265,7 +305,12 @@ $body$
           nro_tramite,
           nombre_sistema,
           leyenda,
-          rnd
+          rnd,
+          /*Aumentando para registrar dosificacion de exportacion ismael valdivia (19/04/2021)*/
+          caracteristica,
+          titulo,
+          subtitulo
+          /************************************************************************************/
         ) values(
           v_parametros.id_sucursal,
           v_parametros.final,
@@ -295,10 +340,12 @@ $body$
           v_parametros.nro_tramite,
           v_parametros.nombre_sistema,
           v_parametros.leyenda,
-          v_parametros.rnd
-
-
-
+          v_parametros.rnd,
+		  /*Aumentando para registrar dosificacion de exportacion ismael valdivia (19/04/2021)*/
+          v_parametros.caracteristica,
+          v_parametros.titulo,
+          v_parametros.subtitulo
+          /************************************************************************************/
         )RETURNING id_dosificacion into v_id_dosificacion ;
 
 		if (v_parametros.tipo_generacion = 'computarizada') then
@@ -320,8 +367,12 @@ $body$
 
         v_mensaje = '
             	Dosificacion registrada con exito para la sucursal ' || v_nombre_sucursal || '-' || v_codigo_sucursal || '.<br> Por favor valide la siguiente informacion en <b><a href="http://ov.impuestos.gob.bo/Paginas/Publico/VerificacionFactura.aspx">Impuestos</a></b>:<br><br>
-            		NIT Emisor : ' || v_nit || '<br>
+            	<b>Estos datos son de prueba para la verificacion del Codigo de Control.</b><br>
+                	NIT Emisor : ' || v_nit || '<br>
                     Numero Factura : 1 <br>
+                    Característica : ' || v_parametros.caracteristica || ' <br>
+                    Titulo : ' || v_parametros.titulo || ' <br>,
+                    Subtitulo : ' || v_parametros.subtitulo || ' <br>
                     Numero autorizacion : ' || v_parametros.nroaut || ' <br>
                     Fecha de Emision : 	' || to_char(v_parametros.fecha_inicio_emi,'DD/MM/YYYY') || ' <br>
                     NIT Comprador : 196560027 <br>
@@ -330,6 +381,11 @@ $body$
                 <b>Esto garantizara que la informacion de la dosificacion se ha registrado correctamente.</b>
             ';
 		end if ;
+
+        else
+        	Raise exception 'Ya existe una dosificacion registrada con el Nro. Autorizacion: %, Titulo: %, Caracteristica: %.',v_parametros.nroaut,v_parametros.titulo,v_parametros.caracteristica;
+
+        end if;
         --Definicion de la respuesta
 
       v_resp = pxp.f_agrega_clave(v_resp,'id_dosificacion',v_id_dosificacion::varchar);
@@ -348,6 +404,31 @@ $body$
     elsif(p_transaccion='VF_DOS_MODEXT')then
 
       begin
+
+      	IF(v_parametros.fecha_inicio_emi < v_parametros.fecha_dosificacion )Then
+        	raise exception 'La Fecha de Inicio de Emisión, no puede ser anterior a la Fecha de Tramite. Por favor revise las fechas.';
+        End If;
+
+        --validamos que la fecha limite de emision no sea anterior a la fecha de inicio de emision
+		If(v_parametros.fecha_limite < v_parametros.fecha_inicio_emi) Then
+        	raise exception 'La Fecha Límite de Emisión, no puede ser anterior a la Fecha Inico de Emision. Por favor revise las fechas. ';
+        End If;
+
+        --validamos que las fechas inicio y fin no se sobrepongan a las de otra dosificacion
+        /*IF EXISTS (Select DISTINCT(1)
+                    From vef.tdosificacion dos
+                    Where dos.id_sucursal = v_parametros.id_sucursal
+                    --and dos.autoimpresor=if_autoimpresor
+                    and dos.tipo = v_parametros.tipo
+                    and dos.id_actividad_economica = v_parametros.id_actividad_economica
+                    and v_parametros.fecha_inicio_emi BETWEEN dos.fecha_inicio_emi and dos.fecha_limite
+                    and v_parametros.fecha_limite BETWEEN dos.fecha_inicio_emi and dos.fecha_limite) then
+
+        	raise exception 'La fecha inicio de emision y fecha limite de emision que intenta registrar, se sobreponen a las fechas de una dosificacion anterior para la misma Sucursal, Actividad Economica y Tipo.';
+        END IF;*/
+
+
+
 
         --Sentencia de la modificacion
         update vef.tdosificacion set
@@ -375,7 +456,13 @@ $body$
           nro_tramite = v_parametros.nro_tramite,
           nombre_sistema = v_parametros.nombre_sistema,
           leyenda = v_parametros.leyenda,
-          rnd = v_parametros.rnd
+          rnd = v_parametros.rnd,
+
+          /*Aumentando para registrar dosificacion de exportacion ismael valdivia (19/04/2021)*/
+          caracteristica = v_parametros.caracteristica,
+          titulo = v_parametros.titulo,
+          subtitulo = v_parametros.subtitulo
+          /************************************************************************************/
         where id_dosificacion=v_parametros.id_dosificacion;
 
     if (v_parametros.tipo_generacion = 'computarizada') then
@@ -398,8 +485,12 @@ $body$
 
         v_mensaje = '
             	Dosificacion modificada con exito para la sucursal ' || v_nombre_sucursal || '-' || v_codigo_sucursal || '.<br style = "color: red;"> Por favor valide la siguiente información en <b><a href="http://ov.impuestos.gob.bo/Paginas/Publico/VerificacionFactura.aspx">Impuestos </a></b>:<br><br>
-            		NIT Emisor : ' || v_nit || '<br>
+            		<b>Estos datos son de prueba para la verificacion del Codigo de Control.</b><br>
+                    NIT Emisor : ' || v_nit || '<br>
                     Numero Factura : 1 <br>
+                    Característica : ' || v_parametros.caracteristica || ' <br>
+                    Titulo : ' || v_parametros.titulo || ' <br>,
+                    Subtitulo : ' || v_parametros.subtitulo || ' <br>
                     Numero autorizacion : ' || v_parametros.nroaut || ' <br>
                     Fecha de Emision : 	' || to_char(v_parametros.fecha_inicio_emi,'DD/MM/YYYY') || ' <br>
                     NIT Comprador : 196560027 <br>
@@ -435,6 +526,9 @@ end if;
 		where id_actividad_economica = ANY(d.id_activida_economica)) as desc_actividad_economica,
         d.nroaut,
         d.nombre_sistema,
+        d.caracteristica,
+        d.titulo,
+        d.subtitulo,
         CASE
         WHEN d.tipo::text = ANY (ARRAY['n'::character varying,'N'::character varying, 'n'::character varying]::text[]) THEN 'Nota de Credito/Debito'::text
         WHEN d.tipo::text = ANY (ARRAY['f'::character varying,'F'::character varying, 'f'::character varying]::text[]) THEN 'Factura'::text
@@ -458,6 +552,13 @@ end if;
                         <strong>Actividad Económica: </strong>'||v_registros.desc_actividad_economica::varchar||'</strong><br />
                         <strong>Nro Autorización: </strong>'||v_registros.nroaut::varchar||'<br />
                         <strong>Nombre Sistema: </strong>'||v_registros.nombre_sistema::varchar||'<br />
+
+                        <strong>Característica: </strong>'||v_registros.caracteristica||'<br />
+                        <strong>Titulo: </strong>'||v_registros.titulo||'<br />
+                        <strong>subtitulo: </strong>'||v_registros.subtitulo||'<br />
+
+
+
                         <strong>Tipo de Generación: </strong>'||v_registros.tipo_generacion||'<br />
                         <strong>Tipo Dosificacion: </strong>'||v_registros.tipo_dosifiacion::varchar||'<br />
                         <strong>Fecha Límite de Emisión: </strong>'||v_registros.fecha_limite::varchar||'<br />

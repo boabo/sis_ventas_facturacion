@@ -1782,3 +1782,19 @@ WITH (oids = false);
 ALTER TABLE vef.tfacturas_pendientes_carga_validas
   OWNER TO postgres;
 /***********************************F-SCP-IRVA-VEF-0-01/04/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-17/04/2021****************************************/
+ALTER TABLE vef.tdosificacion
+  ADD COLUMN caracteristica VARCHAR(200);
+COMMENT ON COLUMN vef.tdosificacion.caracteristica
+IS 'En las dosificaciones para exportacion se utiliza este campo';
+
+ALTER TABLE vef.tdosificacion
+  ADD COLUMN titulo VARCHAR(200);
+COMMENT ON COLUMN vef.tdosificacion.titulo
+IS 'Se utiliza en facturacion de exportacion y en Factura Normal';
+
+ALTER TABLE vef.tdosificacion
+  ADD COLUMN subtitulo VARCHAR(200);
+COMMENT ON COLUMN vef.tdosificacion.subtitulo
+IS 'Se utiliza en Facturacion de Exportacion';
+/***********************************F-SCP-IRVA-VEF-0-17/04/2021****************************************/
