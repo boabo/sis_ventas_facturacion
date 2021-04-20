@@ -269,7 +269,7 @@ $body$
                     and dos.tipo = v_parametros.tipo
 
                     and dos.tipo_generacion = v_parametros.tipo_generacion --Manual Computarizada
-                    and dos.caracteristica = v_parametros.caracteristica --Caracteristica por facturacion exportacion
+                    and dos.titulo = v_parametros.titulo --Caracteristica por facturacion exportacion
 
                     and  (REPLACE(REPLACE(dos.id_activida_economica::varchar,'{',''),'}',''))::integer = v_parametros.id_activida_economica::integer
                     and v_parametros.fecha_inicio_emi BETWEEN dos.fecha_inicio_emi and dos.fecha_limite
