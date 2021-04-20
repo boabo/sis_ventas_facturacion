@@ -694,9 +694,9 @@ BEGIN
 
           if (v_id_moneda_base != v_formula.id_moneda) then
 
-          		v_monto_venta = param.f_convertir_moneda(v_formula.id_moneda::integer,v_id_moneda_base::integer,v_formula.precio::numeric,now()::date,'CUS',2, NULL,'si');
+          		v_monto_venta = param.f_convertir_moneda(v_formula.id_moneda::integer,v_id_moneda_base::integer,COALESCE(v_formula.precio,0)::numeric,now()::date,'CUS',2, NULL,'si');
           else
-          		v_monto_venta = v_formula.precio;
+          		v_monto_venta = COALESCE(v_formula.precio,0);
 
           end if;
 
