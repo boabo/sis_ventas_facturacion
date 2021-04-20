@@ -1797,4 +1797,8 @@ ALTER TABLE vef.tdosificacion
   ADD COLUMN subtitulo VARCHAR(200);
 COMMENT ON COLUMN vef.tdosificacion.subtitulo
 IS 'Se utiliza en Facturacion de Exportacion';
+
+
+ALTER TABLE vef.tdosificacion
+  ALTER COLUMN titulo SET NOT NULL;
 /***********************************F-SCP-IRVA-VEF-0-17/04/2021****************************************/
