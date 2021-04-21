@@ -370,9 +370,9 @@ $body$
             	<b>Estos datos son de prueba para la verificacion del Codigo de Control.</b><br>
                 	NIT Emisor : ' || v_nit || '<br>
                     Numero Factura : 1 <br>
-                    Característica : ' || v_parametros.caracteristica || ' <br>
-                    Titulo : ' || v_parametros.titulo || ' <br>,
-                    Subtitulo : ' || v_parametros.subtitulo || ' <br>
+                    Característica : ' || COALESCE(v_parametros.caracteristica,'') || ' <br>
+                    Titulo : ' || COALESCE(v_parametros.titulo,'') || ' <br>,
+                    Subtitulo : ' || COALESCE(v_parametros.subtitulo,'') || ' <br>
                     Numero autorizacion : ' || v_parametros.nroaut || ' <br>
                     Fecha de Emision : 	' || to_char(v_parametros.fecha_inicio_emi,'DD/MM/YYYY') || ' <br>
                     NIT Comprador : 196560027 <br>
@@ -488,9 +488,9 @@ $body$
             		<b>Estos datos son de prueba para la verificacion del Codigo de Control.</b><br>
                     NIT Emisor : ' || v_nit || '<br>
                     Numero Factura : 1 <br>
-                    Característica : ' || v_parametros.caracteristica || ' <br>
-                    Titulo : ' || v_parametros.titulo || ' <br>,
-                    Subtitulo : ' || v_parametros.subtitulo || ' <br>
+                    Característica : ' || COALESCE(v_parametros.caracteristica,'') || ' <br>
+                    Titulo : ' || COALESCE(v_parametros.titulo,'') || ' <br>,
+                    Subtitulo : ' || COALESCE(v_parametros.subtitulo,'') || ' <br>
                     Numero autorizacion : ' || v_parametros.nroaut || ' <br>
                     Fecha de Emision : 	' || to_char(v_parametros.fecha_inicio_emi,'DD/MM/YYYY') || ' <br>
                     NIT Comprador : 196560027 <br>
@@ -553,9 +553,9 @@ end if;
                         <strong>Nro Autorización: </strong>'||v_registros.nroaut::varchar||'<br />
                         <strong>Nombre Sistema: </strong>'||v_registros.nombre_sistema::varchar||'<br />
 
-                        <strong>Característica: </strong>'||v_registros.caracteristica||'<br />
-                        <strong>Titulo: </strong>'||v_registros.titulo||'<br />
-                        <strong>subtitulo: </strong>'||v_registros.subtitulo||'<br />
+                        <strong>Característica: </strong>'||COALESCE(v_registros.caracteristica,'')||'<br />
+                        <strong>Titulo: </strong>'||COALESCE(v_registros.titulo,'')||'<br />
+                        <strong>subtitulo: </strong>'||COALESCE(v_registros.subtitulo,'')||'<br />
 
 
 
@@ -570,7 +570,7 @@ end if;
          v_clase = '';
          v_parametros_ad = '{}';
 
-       	v_id_alarma[1]:=param.f_inserta_alarma(		NULL,
+        v_id_alarma[1]:=param.f_inserta_alarma(		NULL,
                                                     v_template ,    --descripcion alarmce
                                                     COALESCE(v_acceso_directo,''),--acceso directo
                                                     now()::date,
