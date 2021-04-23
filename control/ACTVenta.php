@@ -407,6 +407,9 @@ class ACTVenta extends ACTbase{
 		if($this->objParam->getParametro('id_moneda')!=''){
 			$this->objParam->addFiltro(" v.id_moneda = ".$this->objParam->getParametro('id_moneda'));
 		}
+		if($this->objParam->getParametro('id_auxiliar_anticipo')!=''){
+			$this->objParam->addFiltro(" v.id_auxiliar_anticipo = ".$this->objParam->getParametro('id_auxiliar_anticipo'));
+		}
 		$this->objFunc=$this->create('MODVenta');
 		$this->res=$this->objFunc->listarReciboBoletosAmadeus($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
