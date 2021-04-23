@@ -403,6 +403,14 @@ class ACTVenta extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+	function listarReciboBoletosAmadeus(){
+		if($this->objParam->getParametro('id_moneda')!=''){
+			$this->objParam->addFiltro(" v.id_moneda = ".$this->objParam->getParametro('id_moneda'));
+		}
+		$this->objFunc=$this->create('MODVenta');
+		$this->res=$this->objFunc->listarReciboBoletosAmadeus($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 }
 
 ?>

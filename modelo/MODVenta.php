@@ -1323,6 +1323,26 @@ class MODVenta extends MODbase{
         return $this->respuesta;
     }
 
+		function listarReciboBoletosAmadeus() {
+			$this->procedimiento='vef.ft_venta_sel';
+			$this->transaccion='VF_LISRCB_SEL';
+			$this->tipo_procedimiento='SEL';
+
+			$this->captura('id_venta','int4');
+			$this->captura('nro_factura','int4');
+			$this->captura('nombre_factura','varchar');
+			$this->captura('total_venta','text');
+			$this->captura('tex_saldo','text');
+			$this->captura('saldo','numeric');
+			$this->captura('id_moneda','int4');
+			$this->captura('moneda','varchar');
+
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+			//Devuelve la respuesta
+			return $this->respuesta;
+		}
 
 
 }

@@ -938,6 +938,61 @@ BEGIN
 
 		end;
 
+    /*********************************
+   	#TRANSACCION:  'VF_LISRCB_SEL'
+   	#DESCRIPCION:	Lista de recibos para uso en filtros
+   	#AUTOR:		breydi.vasquez
+   	#FECHA:		21/04/2021
+  	***********************************/
+
+      elsif(p_transaccion='VF_LISRCB_SEL')then
+      	begin
+                v_consulta:='select v.id_venta,
+                                    v.nro_factura,
+                                    v.nombre_factura,
+                                    to_char(v.total_venta,''9 999 999D99'')||'' ''||mon.codigo,
+                                    case when(v.total_venta - sum(bafp.importe)) is null then
+                                    ''''
+                                    --''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char(v.total_venta,''9 999 999D99'')||'' ''||mon.codigo
+                                    else
+                                    ''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char((v.total_venta - coalesce(sum(bafp.importe),0)),''9 999 999D99'')||'' ''||mon.codigo
+                                    end tex_saldo,
+                                    (v.total_venta - coalesce(sum(bafp.importe),0)) as saldo,
+                                    v.id_moneda,
+                                    mon.codigo as moneda
+                            from vef.tventa v
+  						  left join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
+                            left join obingresos.tboleto_amadeus_forma_pago  bafp on bafp.id_venta = v.id_venta and vf.id_moneda = bafp.id_moneda
+                            left join param.tmoneda mon on mon.id_moneda = v.id_moneda
+                            where v.tipo_factura = ''recibo''
+                            and v.estado != ''anulado''
+                            and ';
+
+     			v_consulta:=v_consulta||v_parametros.filtro;
+              v_consulta:=v_consulta||'group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, mon.id_moneda,mon.codigo';
+  			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+              raise notice 'resp %',v_consulta;
+              return v_consulta;
+          end;
+
+  	/*********************************
+   	#TRANSACCION:  'VF_LISRCB_CONT'
+   	#DESCRIPCION:	Contador de registros lista de recibos para uso en filtros
+   	#AUTOR:		breydi.vasquez
+   	#FECHA:		21/04/2021
+  	***********************************/
+
+      elsif(p_transaccion='VF_LISRCB_CONT')then
+      	begin
+                v_consulta:='select count(v.id_venta)
+                            from vef.tventa v
+                            where v.tipo_factura = ''recibo''
+                            and v.estado != ''anulado''
+                            and ';
+
+     			v_consulta:=v_consulta||v_parametros.filtro;
+              return v_consulta;
+          end;
 
 	else
 
