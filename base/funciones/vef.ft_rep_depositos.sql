@@ -32,6 +32,19 @@ DECLARE
     v_consulta_depositos_resumen varchar;
 
 
+    v_host 				varchar;
+    v_puerto 			varchar;
+    v_dbname 			varchar;
+    p_user 				varchar;
+    v_password 			varchar;
+    v_semilla			varchar;
+    v_cuenta_usu		varchar;
+    v_pass_usu			varchar;
+    v_cadena_cnx		varchar;
+	v_codigo_pv_carga	varchar;
+    v_filtro_punto_venta_carga	varchar;
+    v_fecha_final		date;
+
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_depositos';
@@ -49,14 +62,39 @@ BEGIN
             begin
 
 
+            /*aqui Armamos la cadena de conexion para la tabla sfe.tfactura*/
+            /*Aqui recuperamos los datos de conexion*/
+                v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+            /***************************************************************/
+
+
+
 
             if (v_parametros.formato_reporte = 'REPORTE DETALLE DE DEPÓSITOS') then
 
-            IF(v_parametros.id_punto_venta = 0) then
-            	v_filtro_punto_venta = '0=0';
-            else
-            	v_filtro_punto_venta = 'pv.id_punto_venta = '||v_parametros.id_punto_venta||'';
-            end if;
+              IF(v_parametros.id_punto_venta = 0) then
+                  v_filtro_punto_venta = '0=0';
+              else
+                  v_filtro_punto_venta = 'pv.id_punto_venta = '||v_parametros.id_punto_venta||'';
+              end if;
 
                 create temp table reporte_depositos (
                                                                 fecha_venta date,
@@ -76,6 +114,8 @@ BEGIN
 
                 CREATE INDEX treporte_depositos_fecha_deposito ON reporte_depositos
                 USING btree (fecha_deposito);
+
+
 
                 v_consulta_depositos = 'insert into reporte_depositos (
                                                                        fecha_venta,
@@ -365,11 +405,28 @@ BEGIN
 
             IF(v_parametros.id_punto_venta = 0) then
             	v_filtro_punto_venta = '0=0';
+
+                v_filtro_punto_venta_carga = '0=0';
+
+
             else
             	v_filtro_punto_venta = 'cdo.id_punto_venta = '||v_parametros.id_punto_venta||'';
+
+                /*AQUI PARA RECUPERAR EL CODIGO DEL PUNTO DE VENTA (ESTO PARA RECUPERAR DATOS DE CARGA)*/
+            	select pv.codigo
+                		into
+                        v_codigo_pv_carga
+                from vef.tpunto_venta pv
+                where pv.id_punto_venta = v_parametros.id_punto_venta and pv.tipo = 'carga';
+            	/***************************************************************************************/
+
+                v_filtro_punto_venta_carga = 'codigo_punto_venta = '''||v_codigo_pv_carga||'''';
+
             end if;
 
-            create temp table reporte_depositos_resumen (
+
+
+            create table reporte_depositos_resumen (
                                                                 fecha_venta date,
                                                                 nro_deposito varchar,
                                                                 fecha_deposito date,
@@ -387,7 +444,7 @@ BEGIN
                                                                 total_venta_ml numeric,
                                                                 total_venta_me numeric,
                                                                 diferencia numeric
-                                                              )on commit drop;
+                                                              );--on commit drop;
                 CREATE INDEX treporte_depositos_resumen_fecha_venta ON reporte_depositos_resumen
                 USING btree (fecha_venta);
 
@@ -420,49 +477,7 @@ BEGIN
                 CREATE INDEX treporte_depositos_fecha_deposito ON reporte_depositos
                 USING btree (fecha_deposito);
 
-           /* v_consulta_depositos = '
-            						insert into reporte_depositos (
-                                                                       fecha_venta,
-                                                                       nro_deposito,
-                                                                       fecha_deposito,
-                                                                       importe_ml,
-                                                                       importe_usd,
-                                                                       cuenta_bancaria,
-                                                                       cajero,
-                                                                       usuario_registro,
-                                                                       observaciones,
-                                                                       tipo_deposito,
-                                                                       punto_venta,
-                                                                       deposito_ml,
-                                                                       deposito_me,
-                                                                       tipo_cambio,
-                                                                       total_venta_ml,
-                                                                       total_venta_me,
-                                                                       diferencia
-                                                                       )
-                                    (select
-                                    		cdo.fecha_venta,
-                                            NULL::varchar as nro_deposito,
-                                            NULL::date as fecha_deposito,
-                                            sum(cdo.arqueo_moneda_local) as arqueo_moneda_local,
-                                            sum(cdo.arqueo_moneda_extranjera) as arqueo_moneda_extranjera,
-                                            NULL::varchar as cuenta_bancaria,
-                                            NULL::varchar as cajero,
-                                            NULL::varchar AS usuario_registro,
-                                            NULL::varchar as observaciones,
-                                            NULL::varchar as tipo_deposito,
-                                            NULL::varchar as punto_venta,
-                                            sum(cdo.deposito_bs) as deposito_bs,
-                                            sum(cdo.deposito_usd) as deposito_usd,
-                                            tc.oficial,
-                                            ((sum(cdo.arqueo_moneda_local) + (sum(cdo.arqueo_moneda_extranjera)*tc.oficial))) as total_venta_ml,
-                                            ((sum(cdo.deposito_bs) + (sum(cdo.deposito_usd)*tc.oficial))) as total_venta_me,
-                                            ((sum(cdo.arqueo_moneda_local) + (sum(cdo.arqueo_moneda_extranjera)*tc.oficial))-((sum(cdo.deposito_bs) + (sum(cdo.deposito_usd)*tc.oficial)))) as diferencia
 
-                                    from vef.vdepositos cdo
-                                    inner join param.ttipo_cambio tc on tc.fecha = cdo.fecha_venta and tc.id_moneda = 2
-                                    where '||v_filtro_punto_venta||' and cdo.fecha_venta between '''||v_parametros.desde||''' and '''||v_parametros.hasta||'''
-                                    group by cdo.fecha_venta, tc.oficial)';  */
 
             	  v_consulta_depositos_resumen = 'insert into reporte_depositos_resumen (
                                                                        fecha_venta,
@@ -639,7 +654,78 @@ BEGIN
                                             where '||v_filtro_punto_venta||' and cdo.fecha_venta between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')';
 
 
-                                    execute v_consulta_depositos_resumen;
+                        execute v_consulta_depositos_resumen;
+
+
+                        /*Aqui Insertamos los datos de carga de las ventas*/
+
+                  		if(v_parametros.desde::date < '19/03/2021')then
+
+
+                        	if (v_parametros.hasta::date >= '19/03/2021') then
+                              v_fecha_final = '18/03/2021'::date;
+                            else
+                              v_fecha_final = v_parametros.hasta::date;
+                            end if;
+
+                        	insert into reporte_depositos_resumen (
+                                                                       fecha_venta,
+                                                                       nro_deposito,
+                                                                       fecha_deposito,
+                                                                       importe_ml,
+                                                                       importe_usd,
+                                                                       cuenta_bancaria,
+                                                                       cajero,
+                                                                       usuario_registro,
+                                                                       observaciones,
+                                                                       tipo_deposito,
+                                                                       punto_venta,
+                                                                       deposito_ml,
+                                                                       deposito_me,
+                                                                       tipo_cambio,
+                                                                       total_venta_ml,
+                                                                       total_venta_me,
+                                                                       diferencia
+                                                                       )
+
+                                                SELECT 	fecha_factura::Date,
+                                                		NULL::varchar as nro_deposito,
+                                                        NULL::date as fecha_deposito,
+                                                        importe_total_venta::numeric,
+                                                        0::numeric as total_me,
+                                                        NULL::varchar as cuenta_bancaria,
+                                                        NULL::varchar as cajero,
+                                                        NULL::varchar AS usuario_registro,
+                                                        NULL::varchar as observaciones,
+                                                        NULL::varchar as tipo_deposito,
+                                                        NULL::varchar as punto_venta,
+                                                        0::NUMERIC as deposito_bs,
+                                                        0::NUMERIC as deposito_usd,
+                                                        6.96::numeric as oficial,
+                                                        0::NUMERIC as total_venta_ml,
+                                                        0::NUMERIC as total_venta_me,
+                                                        0::NUMERIC as diferencia
+                                                FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                                                'select
+                                                		fecha_factura,
+                                                        importe_total_venta
+                                                  from sfe.tfactura
+                                                  where estado_reg = ''activo''
+                                                  and codigo_auxiliar is null
+                                                  and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
+                                                  and sistema_origen = ''CARGA''
+                                                  and estado = ''VÁLIDA''
+                                                  and '||v_filtro_punto_venta_carga||'
+                                                 order by fecha_factura ASC, nro_factura ASC
+                                                ')AS tdatos(
+                                                			fecha_factura date,
+                                                            importe_total_venta numeric);
+
+
+
+
+                        end if;
+
 
 
                         v_consulta_depositos = 'insert into reporte_depositos (

@@ -555,7 +555,7 @@ end if;
 
                         <strong>Característica: </strong>'||COALESCE(v_registros.caracteristica,'')||'<br />
                         <strong>Titulo: </strong>'||COALESCE(v_registros.titulo,'')||'<br />
-                        <strong>subtitulo: </strong>'||COALESCE(v_registros.subtitulo,'')||'<br />
+                        <strong>Subtitulo: </strong>'||COALESCE(v_registros.subtitulo,'')||'<br />
 
 
 

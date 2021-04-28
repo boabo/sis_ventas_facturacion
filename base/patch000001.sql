@@ -1802,3 +1802,37 @@ IS 'Se utiliza en Facturacion de Exportacion';
 ALTER TABLE vef.tdosificacion
   ALTER COLUMN titulo SET NOT NULL;
 /***********************************F-SCP-IRVA-VEF-0-17/04/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-18/04/2021****************************************/
+ALTER TABLE vef.tventa_forma_pago
+  ADD CONSTRAINT tventa_forma_pago_fk FOREIGN KEY (id_medio_pago)
+    REFERENCES obingresos.tmedio_pago_pw(id_medio_pago_pw)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+ALTER TABLE vef.tventa_forma_pago
+  ADD CONSTRAINT tventa_forma_pago_fk1 FOREIGN KEY (id_moneda)
+    REFERENCES param.tmoneda(id_moneda)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+ALTER TABLE vef.tventa_forma_pago
+	ADD CONSTRAINT tventa_forma_pago_fk1 FOREIGN KEY (id_auxiliar)
+	REFERENCES conta.tauxiliar(id_auxiliar)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
+	NOT DEFERRABLE;
+
+
+
+ALTER TABLE vef.tventa_detalle
+  ADD CONSTRAINT tventa_detalle_fk FOREIGN KEY (id_producto)
+    REFERENCES param.tconcepto_ingas(id_concepto_ingas)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+/***********************************F-SCP-IRVA-VEF-0-18/04/2021****************************************/
