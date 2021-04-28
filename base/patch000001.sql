@@ -1841,7 +1841,7 @@ ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN id_venta_recibo INTEGER;
 
 ALTER TABLE vef.tventa_forma_pago
-  ADD CONSTRAINT tventa_forma_pago_fk FOREIGN KEY (id_venta_recibo)
+  ADD CONSTRAINT tventa_forma_pago_fk3 FOREIGN KEY (id_venta_recibo)
     REFERENCES vef.tventa(id_venta)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION

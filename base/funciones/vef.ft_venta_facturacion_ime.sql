@@ -216,6 +216,8 @@ DECLARE
     v_suma_detalle	numeric;
     v_id_moneda_base	numeric;
     /***/
+    v_id_recibo			integer;
+    v_id_recibo_2		integer;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -2136,6 +2138,17 @@ BEGIN
 
 		/*raise exception 'lelga hasta aqui';*/
         --if (v_parametros.id_forma_pago != 0 ) then
+        if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+          v_id_recibo = v_parametros.id_venta_recibo;
+        else
+          v_id_recibo = null;
+        end if;
+
+        if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+          v_id_recibo_2 = v_parametros.id_venta_recibo_2;
+        else
+          v_id_recibo_2 = NULL;
+        end if;
 
 		if (v_parametros.id_medio_pago != 0) then
           insert into vef.tventa_forma_pago(
@@ -2185,7 +2198,7 @@ BEGIN
             /****************************/
             /*Aumentando campo para mco*/
             v_parametros.mco,
-            v_parametros.id_venta_recibo
+            v_id_recibo
           );
         end if;
 
@@ -2287,7 +2300,7 @@ BEGIN
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta,
             v_parametros.mco_2,
-            v_parametros.id_venta_recibo_2
+            v_id_recibo_2
           );
         end if;
 
