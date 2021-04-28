@@ -426,7 +426,7 @@ BEGIN
 
 
 
-            create table reporte_depositos_resumen (
+            create temp table reporte_depositos_resumen (
                                                                 fecha_venta date,
                                                                 nro_deposito varchar,
                                                                 fecha_deposito date,
@@ -444,7 +444,7 @@ BEGIN
                                                                 total_venta_ml numeric,
                                                                 total_venta_me numeric,
                                                                 diferencia numeric
-                                                              );--on commit drop;
+                                                              )on commit drop;
                 CREATE INDEX treporte_depositos_resumen_fecha_venta ON reporte_depositos_resumen
                 USING btree (fecha_venta);
 
@@ -1017,10 +1017,26 @@ BEGIN
 
             else
 
+
             IF(v_parametros.id_punto_venta = 0) then
             	v_filtro_punto_venta = '0=0';
+
+                v_filtro_punto_venta_carga = '0=0';
+
+
             else
             	v_filtro_punto_venta = 'cdo.id_punto_venta = '||v_parametros.id_punto_venta||'';
+
+                /*AQUI PARA RECUPERAR EL CODIGO DEL PUNTO DE VENTA (ESTO PARA RECUPERAR DATOS DE CARGA)*/
+            	select pv.codigo
+                		into
+                        v_codigo_pv_carga
+                from vef.tpunto_venta pv
+                where pv.id_punto_venta = v_parametros.id_punto_venta and pv.tipo = 'carga';
+            	/***************************************************************************************/
+
+                v_filtro_punto_venta_carga = 'codigo_punto_venta = '''||v_codigo_pv_carga||'''';
+
             end if;
 
             create temp table reporte_depositos_resumen (
@@ -1294,6 +1310,75 @@ BEGIN
 
 
                                     execute v_consulta_depositos_resumen;
+
+                  /*Aqui Insertamos los datos de carga de las ventas*/
+
+                  		if(v_parametros.desde::date < '19/03/2021')then
+
+
+                        	if (v_parametros.hasta::date >= '19/03/2021') then
+                              v_fecha_final = '18/03/2021'::date;
+                            else
+                              v_fecha_final = v_parametros.hasta::date;
+                            end if;
+
+                        	insert into reporte_depositos_resumen (
+                                                                       fecha_venta,
+                                                                       nro_deposito,
+                                                                       fecha_deposito,
+                                                                       importe_ml,
+                                                                       importe_usd,
+                                                                       cuenta_bancaria,
+                                                                       cajero,
+                                                                       usuario_registro,
+                                                                       observaciones,
+                                                                       tipo_deposito,
+                                                                       punto_venta,
+                                                                       deposito_ml,
+                                                                       deposito_me,
+                                                                       tipo_cambio,
+                                                                       total_venta_ml,
+                                                                       total_venta_me,
+                                                                       diferencia
+                                                                       )
+
+                                                SELECT 	fecha_factura::Date,
+                                                		NULL::varchar as nro_deposito,
+                                                        NULL::date as fecha_deposito,
+                                                        importe_total_venta::numeric,
+                                                        0::numeric as total_me,
+                                                        NULL::varchar as cuenta_bancaria,
+                                                        NULL::varchar as cajero,
+                                                        NULL::varchar AS usuario_registro,
+                                                        NULL::varchar as observaciones,
+                                                        NULL::varchar as tipo_deposito,
+                                                        NULL::varchar as punto_venta,
+                                                        0::NUMERIC as deposito_bs,
+                                                        0::NUMERIC as deposito_usd,
+                                                        6.96::numeric as oficial,
+                                                        0::NUMERIC as total_venta_ml,
+                                                        0::NUMERIC as total_venta_me,
+                                                        0::NUMERIC as diferencia
+                                                FROM dblink(''||v_cadena_cnx||' options=-csearch_path=',
+                                                'select
+                                                		fecha_factura,
+                                                        importe_total_venta
+                                                  from sfe.tfactura
+                                                  where estado_reg = ''activo''
+                                                  and codigo_auxiliar is null
+                                                  and fecha_factura between '''||v_parametros.desde::date||''' and '''||v_fecha_final||'''
+                                                  and sistema_origen = ''CARGA''
+                                                  and estado = ''VÁLIDA''
+                                                  and '||v_filtro_punto_venta_carga||'
+                                                 order by fecha_factura ASC, nro_factura ASC
+                                                ')AS tdatos(
+                                                			fecha_factura date,
+                                                            importe_total_venta numeric);
+
+
+
+
+                        end if;
 
 
                         v_consulta_depositos = 'insert into reporte_depositos (
