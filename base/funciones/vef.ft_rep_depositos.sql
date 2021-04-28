@@ -821,6 +821,28 @@ BEGIN
 
             begin
 
+            /*aqui Armamos la cadena de conexion para la tabla sfe.tfactura*/
+            /*Aqui recuperamos los datos de conexion*/
+                v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+            /***************************************************************/
 
 
             if (v_parametros.formato_reporte = 'REPORTE DETALLE DE DEPÓSITOS') then
