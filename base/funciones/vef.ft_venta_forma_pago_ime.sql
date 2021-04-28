@@ -245,7 +245,8 @@ BEGIN
             /*Aumentamos el id_instancia*/
             id_medio_pago,
             id_moneda,
-            nro_mco
+            nro_mco,
+            id_venta_recibo
             /****************************/
           )
           values(
@@ -266,7 +267,9 @@ BEGIN
             /*Aumentamos el id_instancia y el id_moneda*/
             v_parametros.id_medio_pago,
             v_parametros.id_moneda,
-            v_parametros.mco
+            v_parametros.mco,
+            /*Aumentamos el id_venta_recibo nuevo medio de pago*/
+            v_parametros.id_venta_recibo
             /****************************/
           )RETURNING id_venta_forma_pago into v_id_venta_forma_pago;
 

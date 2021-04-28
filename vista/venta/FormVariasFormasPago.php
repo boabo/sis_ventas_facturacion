@@ -568,7 +568,8 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                          				displayField: 'nombre_auxiliar',
                                          				gdisplayField: 'codigo_auxiliar',
                                          				hiddenName: 'id_auxiliar',
-                                         				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+                                                tpl:'<tpl for="."><div class="x-combo-list-item"><b><p style="color:red;">{nombre_auxiliar}</p><p>Codigo: <span style="color:green;">{codigo_auxiliar}</span></p></b></div></tpl>',
+                                         				// tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
                                          				forceSelection: true,
                                          				typeAhead: false,
                                          				triggerAction: 'all',
@@ -629,6 +630,42 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                           allowNegative:false,
 
                                   }),
+                      new Ext.form.ComboBox({
+                                          name: 'id_venta_recibo',
+                                          fieldLabel: '<span style="vertical-align: middle;"> Nro. Recibo</span>',
+                                  				allowBlank: true,
+                                          width:450,
+                                          store: new Ext.data.JsonStore({
+                                              url: '../../sis_ventas_facturacion/control/Venta/listarReciboBoletosAmadeus',
+                                              id: 'id_venta',
+                                              root: 'datos',
+                                              sortInfo: {
+                                                  field: 'v.nro_factura, v.nombre_factura ',
+                                                  direction: 'ASC'
+                                              },
+                                              totalProperty: 'total',
+                                              fields: ['id_venta', 'nro_factura','nombre_factura','total_venta','saldo', 'tex_saldo','moneda'],
+                                              remoteSort: true,
+                                              baseParams: {par_filtro: 'v.nro_factura#v.nombre_factura'}
+                                          }),
+                                          valueField: 'id_venta',
+                                          displayField: 'nro_factura',
+                                          gdisplayField: 'nro_factura',
+                                          hiddenName: 'id_venta',
+                                          tpl:'<tpl for="."><div class="x-combo-list-item"><div style="font-weight:bold;">Numero <span style="color:blue;"">&nbsp;{nro_factura}</span><br> Nombre: <span style="color:green;"">{nombre_factura}</span> <br> Monto: <span style="color:red;">&nbsp;&nbsp;{total_venta}&nbsp;&nbsp;&nbsp{tex_saldo}</span><br></div></div></tpl>',
+                                          forceSelection: true,
+                                          typeAhead: false,
+                                          triggerAction: 'all',
+                                          lazyRender: true,
+                                          mode: 'remote',
+                                          pageSize: 15,
+                                          queryDelay: 1000,
+                                          gwidth: 150,
+                                          listWidth:400,
+                                          resizable:true,
+                                          minChars: 1,
+                                          hidden: true
+                                })
                   ]
 
               });
@@ -776,7 +813,8 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                          				displayField: 'nombre_auxiliar',
                                          				gdisplayField: 'codigo_auxiliar',
                                          				hiddenName: 'id_auxiliar',
-                                         				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+                                                tpl:'<tpl for="."><div class="x-combo-list-item"><b><p style="color:red;">{nombre_auxiliar}</p><p>Codigo: <span style="color:green;">{codigo_auxiliar}</span></p></b></div></tpl>',
+                                         				// tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
                                          				forceSelection: true,
                                          				typeAhead: false,
                                          				triggerAction: 'all',
@@ -837,6 +875,42 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
                                           allowNegative:false,
 
                                   }),
+                      new Ext.form.ComboBox({
+                                          name: 'id_venta_recibo',
+                                          fieldLabel: '<span style="vertical-align: middle;"> Nro. Recibo</span>',
+                                  				allowBlank: true,
+                                          width:450,
+                                          store: new Ext.data.JsonStore({
+                                              url: '../../sis_ventas_facturacion/control/Venta/listarReciboBoletosAmadeus',
+                                              id: 'id_venta',
+                                              root: 'datos',
+                                              sortInfo: {
+                                                  field: 'v.nro_factura, v.nombre_factura ',
+                                                  direction: 'ASC'
+                                              },
+                                              totalProperty: 'total',
+                                              fields: ['id_venta', 'nro_factura','nombre_factura','total_venta','saldo', 'tex_saldo','moneda'],
+                                              remoteSort: true,
+                                              baseParams: {par_filtro: 'v.nro_factura#v.nombre_factura'}
+                                          }),
+                                          valueField: 'id_venta',
+                                          displayField: 'nro_factura',
+                                          gdisplayField: 'nro_factura',
+                                          hiddenName: 'id_venta',
+                                          tpl:'<tpl for="."><div class="x-combo-list-item"><div style="font-weight:bold;">Numero <span style="color:blue;"">&nbsp;{nro_factura}</span><br> Nombre: <span style="color:green;"">{nombre_factura}</span> <br> Monto: <span style="color:red;">&nbsp;&nbsp;{total_venta}&nbsp;&nbsp;&nbsp{tex_saldo}</span><br></div></div></tpl>',
+                                          forceSelection: true,
+                                          typeAhead: false,
+                                          triggerAction: 'all',
+                                          lazyRender: true,
+                                          mode: 'remote',
+                                          pageSize: 15,
+                                          queryDelay: 1000,
+                                          gwidth: 150,
+                                          listWidth:400,
+                                          resizable:true,
+                                          minChars: 1,
+                                          hidden: true
+                                })
                   ]
 
               });
@@ -1232,11 +1306,12 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
 
           this.ocultarComponente(this.variables.items.items[2]);
           this.ocultarComponente(this.variables.items.items[5]);
+          this.ocultarComponente(this.variables.items.items[7]);
           this.variables.items.items[2].allowBlank = true;
           this.variables.items.items[5].allowBlank = true;
           this.variables.items.items[2].reset();
           this.variables.items.items[5].reset();
-
+          this.variables.items.items[7].reset();
           this.ventana_detalle.body.dom.style.height = "250px";
 
 
@@ -1247,18 +1322,57 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.variables.items.items[2]);
           this.ocultarComponente(this.variables.items.items[3]);
           this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[7]);
           this.variables.items.items[2].allowBlank = true;
           this.variables.items.items[3].allowBlank = true;
           this.variables.items.items[4].allowBlank = true;
           this.variables.items.items[2].reset();
           this.variables.items.items[3].reset();
           this.variables.items.items[4].reset();
-
+          this.variables.items.items[7].reset();
           this.ventana_detalle.body.dom.style.height = "240px";
 
         } else if (r.data.fop_code.startsWith("CU") || r.data.fop_code.startsWith("CT")) {
 
           this.mostrarComponente(this.variables.items.items[2]);
+          this.variables.items.items[2].allowBlank = false;
+
+          this.ocultarComponente(this.variables.items.items[3]);
+          this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[5]);
+          this.ocultarComponente(this.variables.items.items[7]);
+          this.variables.items.items[3].allowBlank = true;
+          this.variables.items.items[4].allowBlank = true;
+          this.variables.items.items[5].allowBlank = true;
+          this.variables.items.items[3].reset();
+          this.variables.items.items[4].reset();
+          this.variables.items.items[5].reset();
+          this.variables.items.items[7].reset();
+          this.ventana_detalle.body.dom.style.height = "240px";
+          this.variables.items.items[2].label.dom.innerHTML='Cuenta Corriente';
+          this.variables.items.items[2].store.baseParams.ro_activo='no';
+          this.variables.items.items[2].modificado = true;
+        } else if (r.data.fop_code.startsWith("CA")) {
+
+          this.ocultarComponente(this.variables.items.items[2]);
+          this.ocultarComponente(this.variables.items.items[3]);
+          this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[5]);
+          this.ocultarComponente(this.variables.items.items[7]);
+          this.variables.items.items[2].allowBlank = true;
+          this.variables.items.items[3].allowBlank = true;
+          this.variables.items.items[4].allowBlank = true;
+          this.variables.items.items[5].allowBlank = true;
+          this.variables.items.items[2].reset();
+          this.variables.items.items[3].reset();
+          this.variables.items.items[4].reset();
+          this.variables.items.items[5].reset();
+          this.variables.items.items[7].reset();
+          this.ventana_detalle.body.dom.style.height = "170px";
+
+        } else if (r.data.fop_code.startsWith("RANT")) {
+          this.mostrarComponente(this.variables.items.items[2])
+          this.mostrarComponente(this.variables.items.items[7])
           this.variables.items.items[2].allowBlank = false;
 
           this.ocultarComponente(this.variables.items.items[3]);
@@ -1270,30 +1384,47 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           this.variables.items.items[3].reset();
           this.variables.items.items[4].reset();
           this.variables.items.items[5].reset();
-
-          this.ventana_detalle.body.dom.style.height = "240px";
-
-        } else if (r.data.fop_code.startsWith("CA")) {
-
-          this.ocultarComponente(this.variables.items.items[2]);
-          this.ocultarComponente(this.variables.items.items[3]);
-          this.ocultarComponente(this.variables.items.items[4]);
-          this.ocultarComponente(this.variables.items.items[5]);
-          this.variables.items.items[2].allowBlank = true;
-          this.variables.items.items[3].allowBlank = true;
-          this.variables.items.items[4].allowBlank = true;
-          this.variables.items.items[5].allowBlank = true;
           this.variables.items.items[2].reset();
-          this.variables.items.items[3].reset();
-          this.variables.items.items[4].reset();
-          this.variables.items.items[5].reset();
-
-          this.ventana_detalle.body.dom.style.height = "170px";
+          this.ventana_detalle.body.dom.style.height = "240px";
+          this.variables.items.items[2].label.dom.innerHTML='Grupo';
+          this.variables.items.items[2].store.baseParams.ro_activo='si';
+          this.variables.items.items[2].modificado = true;
 
         }
 
       },this);
       /**********************************************************/
+      this.variables.items.items[0].on('select', function(c,r,i) {
+        this.variables.items.items[7].reset()
+        this.variables.items.items[7].store.baseParams.id_moneda=r.data.id_moneda;
+        this.variables.items.items[7].store.baseParams.id_auxiliar_anticipo=this.variables.items.items[2].getValue();
+        this.variables.items.items[7].modificado = true;
+      },this);
+
+      this.variables.items.items[2].on('select', function(c,r,i) {
+        this.variables.items.items[7].reset()
+        this.variables.items.items[7].store.baseParams.id_moneda=this.variables.items.items[0].getValue();
+        this.variables.items.items[7].store.baseParams.id_auxiliar_anticipo=r.data.id_auxiliar;
+        this.variables.items.items[7].modificado = true;
+      },this);
+
+      this.variables.items.items[7].on('select', function(c,r,i) {
+        var saldo = r.data.saldo;
+        var imp1 = this.variables.items.items[6].getValue();
+        var mon_sel = r.data.moneda;
+        var dif = imp1 - saldo;
+
+        if (imp1 > saldo){
+            Ext.Msg.show({
+             title:'<h1 style="color:red"><center>AVISO</center></h1>',
+             msg: '<b>Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago</b>',
+             maxWidth : 400,
+             width: 350,
+             buttons: Ext.Msg.OK,
+             scope:this
+            });
+        }
+      },this);
 
     },
 
@@ -1321,6 +1452,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         if (r.data.fop_code.startsWith("CC")) {
           this.mostrarComponente(this.variables.items.items[3]);
           this.mostrarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[7]);
           this.variables.items.items[3].allowBlank = false;
           this.variables.items.items[4].allowBlank = false;
 
@@ -1330,6 +1462,7 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           this.variables.items.items[5].allowBlank = true;
           this.variables.items.items[2].reset();
           this.variables.items.items[5].reset();
+          this.variables.items.items[7].reset();
 
           this.ventana_detalle.body.dom.style.height = "250px";
 
@@ -1341,12 +1474,14 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.variables.items.items[2]);
           this.ocultarComponente(this.variables.items.items[3]);
           this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[7]);
           this.variables.items.items[2].allowBlank = true;
           this.variables.items.items[3].allowBlank = true;
           this.variables.items.items[4].allowBlank = true;
           this.variables.items.items[2].reset();
           this.variables.items.items[3].reset();
           this.variables.items.items[4].reset();
+          this.variables.items.items[7].reset();
 
           this.ventana_detalle.body.dom.style.height = "240px";
 
@@ -1358,21 +1493,26 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.variables.items.items[3]);
           this.ocultarComponente(this.variables.items.items[4]);
           this.ocultarComponente(this.variables.items.items[5]);
+          this.ocultarComponente(this.variables.items.items[7]);
           this.variables.items.items[3].allowBlank = true;
           this.variables.items.items[4].allowBlank = true;
           this.variables.items.items[5].allowBlank = true;
           this.variables.items.items[3].reset();
           this.variables.items.items[4].reset();
           this.variables.items.items[5].reset();
+          this.variables.items.items[7].reset();
 
           this.ventana_detalle.body.dom.style.height = "240px";
-
+          this.variables.items.items[2].label.dom.innerHTML='Cuenta Corriente';
+          this.variables.items.items[2].store.baseParams.ro_activo='no';
+          this.variables.items.items[2].modificado = true;
         } else if (r.data.fop_code.startsWith("CA")) {
 
           this.ocultarComponente(this.variables.items.items[2]);
           this.ocultarComponente(this.variables.items.items[3]);
           this.ocultarComponente(this.variables.items.items[4]);
           this.ocultarComponente(this.variables.items.items[5]);
+          this.ocultarComponente(this.variables.items.items[7]);
           this.variables.items.items[2].allowBlank = true;
           this.variables.items.items[3].allowBlank = true;
           this.variables.items.items[4].allowBlank = true;
@@ -1381,13 +1521,64 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           this.variables.items.items[3].reset();
           this.variables.items.items[4].reset();
           this.variables.items.items[5].reset();
+          this.variables.items.items[7].reset();
 
           this.ventana_detalle.body.dom.style.height = "170px";
 
+        } else if (r.data.fop_code.startsWith("RANT")) {  // {dev: breydi.vasquez, date: 27:04/2021, desc: nueva forma de pago}
+          this.mostrarComponente(this.variables.items.items[2])
+          this.mostrarComponente(this.variables.items.items[7])
+          this.variables.items.items[2].allowBlank = false;
+
+          this.ocultarComponente(this.variables.items.items[3]);
+          this.ocultarComponente(this.variables.items.items[4]);
+          this.ocultarComponente(this.variables.items.items[5]);
+          this.variables.items.items[3].allowBlank = true;
+          this.variables.items.items[4].allowBlank = true;
+          this.variables.items.items[5].allowBlank = true;
+          this.variables.items.items[3].reset();
+          this.variables.items.items[4].reset();
+          this.variables.items.items[5].reset();
+          this.variables.items.items[2].reset();
+          this.ventana_detalle.body.dom.style.height = "240px";
+          this.variables.items.items[2].label.dom.innerHTML='Grupo';
+          this.variables.items.items[2].store.baseParams.ro_activo='si';
+          this.variables.items.items[2].modificado = true;
         }
 
       },this);
       /**********************************************************/
+      this.variables.items.items[0].on('select', function(c,r,i) {
+        this.variables.items.items[7].reset()
+        this.variables.items.items[7].store.baseParams.id_moneda=r.data.id_moneda;
+        this.variables.items.items[7].store.baseParams.id_auxiliar_anticipo=this.variables.items.items[2].getValue();
+        this.variables.items.items[7].modificado = true;
+      },this);
+
+      this.variables.items.items[2].on('select', function(c,r,i) {
+        this.variables.items.items[7].reset()
+        this.variables.items.items[7].store.baseParams.id_moneda=this.variables.items.items[0].getValue();
+        this.variables.items.items[7].store.baseParams.id_auxiliar_anticipo=r.data.id_auxiliar;
+        this.variables.items.items[7].modificado = true;
+      },this);
+
+      this.variables.items.items[7].on('select', function(c,r,i) {
+        var saldo = r.data.saldo;
+        var imp1 = this.variables.items.items[6].getValue();
+        var mon_sel = r.data.moneda;
+        var dif = imp1 - saldo;
+
+        if (imp1 > saldo){
+            Ext.Msg.show({
+             title:'<h1 style="color:red"><center>AVISO</center></h1>',
+             msg: '<b>Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago</b>',
+             maxWidth : 400,
+             width: 350,
+             buttons: Ext.Msg.OK,
+             scope:this
+            });
+        }
+      },this);
 
     },
 
@@ -1412,7 +1603,9 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           {name:'codigo_autorizacion', type: 'varchar'},
           {name:'mco', type: 'varchar'},
           {name:'monto_total_local', type: 'numeric'},
-          {name:'monto_total_extranjero', type: 'numeric'}
+          {name:'monto_total_extranjero', type: 'numeric'},
+          {name:'id_venta_recibo', type: 'numeric'},
+          {name:'nro_recibo', type: 'numeric'},
     ]);
 
     if (this.variables.items.items[0].lastSelectionText == 'USD') {
@@ -1435,8 +1628,11 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           codigo_autorizacion: this.variables.items.items[4].getValue(),
           mco: this.variables.items.items[5].getValue(),
           monto_total_local: monto_local,
-          monto_total_extranjero: monto_extranjero
+          monto_total_extranjero: monto_extranjero,
+          id_venta_recibo:this.variables.items.items[7].getValue(),
+          nro_recibo:this.variables.items.items[7].lastSelectionText
       });
+
       this.mestore.add(myNewRecord);
       this.guardarDetalles();
       win.hide();
@@ -1459,7 +1655,9 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           {name:'codigo_autorizacion', type: 'varchar'},
           {name:'mco', type: 'varchar'},
           {name:'monto_total_local', type: 'numeric'},
-          {name:'monto_total_extranjero', type: 'numeric'}
+          {name:'monto_total_extranjero', type: 'numeric'},
+          {name:'id_venta_recibo', type: 'numeric'},
+          {name:'nro_recibo', type: 'numeric'}
     ]);
 
     if (this.variables.items.items[0].lastSelectionText == 'USD') {
@@ -1482,7 +1680,9 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           codigo_autorizacion: this.variables.items.items[4].getValue(),
           mco: this.variables.items.items[5].getValue(),
           monto_total_local: monto_local,
-          monto_total_extranjero: monto_extranjero
+          monto_total_extranjero: monto_extranjero,
+          id_venta_recibo: this.variables.items.items[7].getValue(),
+          nro_recibo: this.variables.items.items[7].lastSelectionText
       });
       this.mestore.add(myNewRecord);
       this.guardarDetalles();
@@ -1514,7 +1714,8 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           {name:'codigo_autorizacion', type: 'varchar'},
           {name:'mco', type: 'varchar'},
           {name:'monto_total_local', type: 'numeric'},
-          {name:'monto_total_extranjero', type: 'numeric'}
+          {name:'monto_total_extranjero', type: 'numeric'},
+          {name:'id_venta_recibo', type: 'numeric'}
     ]);
 
     if (this.data.desc_moneda1 == 'USD') {
@@ -1537,7 +1738,8 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           codigo_autorizacion: this.data.codigo_autorizacion_1??"",
           mco: this.data.mco1??"",
           monto_total_local: monto_local,
-          monto_total_extranjero: monto_extranjero
+          monto_total_extranjero: monto_extranjero,
+          id_venta_recibo: this.data.id_venta_recibo??""
       });
       this.mestore.add(myNewRecord);
       this.guardarDetalles();
@@ -1557,7 +1759,8 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           {name:'codigo_autorizacion', type: 'varchar'},
           {name:'mco', type: 'varchar'},
           {name:'monto_total_local', type: 'numeric'},
-          {name:'monto_total_extranjero', type: 'numeric'}
+          {name:'monto_total_extranjero', type: 'numeric'},
+          {name:'id_venta_recibo', type: 'numeric'}
     ]);
 
     if (this.data.desc_moneda2 == 'USD') {
@@ -1580,7 +1783,8 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
           codigo_autorizacion: this.data.codigo_autorizacion_2??"",
           mco: this.data.mco2??"",
           monto_total_local: monto_local,
-          monto_total_extranjero: monto_extranjero
+          monto_total_extranjero: monto_extranjero,
+          id_venta_recibo: this.data.id_venta_recibo_2??"",
       });
       this.mestore.add(myNewRecord);
       this.guardarDetalles();

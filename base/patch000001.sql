@@ -1836,3 +1836,14 @@ ALTER TABLE vef.tventa_detalle
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
 /***********************************F-SCP-IRVA-VEF-0-18/04/2021****************************************/
+/***********************************I-SCP-BVP-VEF-0-28/04/2021****************************************/
+ALTER TABLE vef.tventa_forma_pago
+  ADD COLUMN id_venta_recibo INTEGER;
+
+ALTER TABLE vef.tventa_forma_pago
+  ADD CONSTRAINT tventa_forma_pago_fk FOREIGN KEY (id_venta_recibo)
+    REFERENCES vef.tventa(id_venta)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+/***********************************F-SCP-BVP-VEF-0-28/04/2021****************************************/

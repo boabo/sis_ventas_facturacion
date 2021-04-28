@@ -360,6 +360,8 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('liquidacion','liquidacion','varchar');
 			$this->setParametro('total_suma','total_suma','numeric');
 			$this->setParametro('tipo_interfaz','tipo_interfaz','varchar');
+			$this->setParametro('id_venta_recibo','id_venta_recibo','int4');
+			$this->setParametro('id_venta_recibo_2','id_venta_recibo_2','int4');
 			/****************************************************************************************/
 
             //Ejecuta la instruccion
@@ -1436,6 +1438,7 @@ class MODVentaFacturacion extends MODbase{
 									 $this->arreglo['monto_total_extranjero'] = $p['monto_total_extranjero'];
 									 $this->arreglo['id_venta'] = $id_venta;
 									 $this->arreglo['tipo_factura'] = $tipo_factura;
+									 $this->arreglo['id_venta_recibo'] = $p['id_venta_recibo'];
 
 
 									 //Define los parametros para la funcion
@@ -1449,7 +1452,7 @@ class MODVentaFacturacion extends MODbase{
 									 $this->setParametro('monto_total_local','monto_total_local','numeric');
 									 $this->setParametro('monto_total_extranjero','monto_total_extranjero','numeric');
 									 $this->setParametro('tipo_factura','tipo_factura','varchar');
-
+									 $this->setParametro('id_venta_recibo','id_venta_recibo','int4');
 									 //Ejecuta la instruccion
 									 $this->armarConsulta();
 									 $stmt = $link->prepare($this->consulta);
@@ -1516,6 +1519,7 @@ class MODVentaFacturacion extends MODbase{
 									 $this->arreglo['monto_total_extranjero'] = $p['monto_total_extranjero'];
 									 $this->arreglo['id_venta'] = $id_venta;
 									 $this->arreglo['tipo_factura'] = $tipo_factura;
+									 $this->arreglo['id_venta_recibo'] = $p['id_venta_recibo'];
 
 
 									 //Define los parametros para la funcion
@@ -1529,7 +1533,7 @@ class MODVentaFacturacion extends MODbase{
 									 $this->setParametro('monto_total_local','monto_total_local','numeric');
 									 $this->setParametro('monto_total_extranjero','monto_total_extranjero','numeric');
 									 $this->setParametro('tipo_factura','tipo_factura','varchar');
-
+									 $this->setParametro('id_venta_recibo','id_venta_recibo','int4');
 									 //Ejecuta la instruccion
 									 $this->armarConsulta();
 									 $stmt = $link->prepare($this->consulta);

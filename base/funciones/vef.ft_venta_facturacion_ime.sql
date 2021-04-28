@@ -2159,7 +2159,9 @@ BEGIN
             id_moneda,
             /****************************/
             /*Aumentando campo para mco*/
-            nro_mco
+            nro_mco,
+            /*Aumentado campo para pago con recibo*/
+            id_venta_recibo
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -2182,7 +2184,8 @@ BEGIN
             v_parametros.id_moneda,
             /****************************/
             /*Aumentando campo para mco*/
-            v_parametros.mco
+            v_parametros.mco,
+            v_parametros.id_venta_recibo
           );
         end if;
 
@@ -2261,7 +2264,8 @@ BEGIN
             codigo_tarjeta,
             id_auxiliar,
             tipo_tarjeta,
-            nro_mco
+            nro_mco,
+            id_venta_recibo
           )
 
           values(
@@ -2282,7 +2286,8 @@ BEGIN
             replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta,
-            v_parametros.mco_2
+            v_parametros.mco_2,
+            v_parametros.id_venta_recibo_2
           );
         end if;
 

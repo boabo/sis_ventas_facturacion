@@ -947,32 +947,68 @@ BEGIN
 
       elsif(p_transaccion='VF_LISRCB_SEL')then
       	begin
-                v_consulta:='select v.id_venta,
-                                    v.nro_factura,
-                                    v.nombre_factura,
-                                    to_char(v.total_venta,''9 999 999D99'')||'' ''||mon.codigo,
-                                    case when(v.total_venta - sum(bafp.importe)) is null then
-                                    ''''
-                                    --''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char(v.total_venta,''9 999 999D99'')||'' ''||mon.codigo
-                                    else
-                                    ''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char((v.total_venta - coalesce(sum(bafp.importe),0)),''9 999 999D99'')||'' ''||mon.codigo
-                                    end tex_saldo,
-                                    (v.total_venta - coalesce(sum(bafp.importe),0)) as saldo,
-                                    v.id_moneda,
-                                    mon.codigo as moneda
-                            from vef.tventa v
-  						  left join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
-                            left join obingresos.tboleto_amadeus_forma_pago  bafp on bafp.id_venta = v.id_venta and vf.id_moneda = bafp.id_moneda
-                            left join param.tmoneda mon on mon.id_moneda = v.id_moneda
-                            where v.tipo_factura = ''recibo''
-                            and v.estado != ''anulado''
-                            and ';
+            v_consulta:='
+                      with trecibos_fp as (select
+                                          v.id_venta,
+                                          v.nro_factura,
+                                          v.nombre_factura,
+                                          v.total_venta,
+                                          (v.total_venta - sum(bafp.importe)) as saldo,
+                                          vf.id_moneda,
+                                          mon.codigo as moneda,
+                                          v.id_auxiliar_anticipo
+                                        from vef.tventa v
+                                        inner join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
+                                        left join obingresos.tboleto_amadeus_forma_pago  bafp on bafp.id_venta = v.id_venta and vf.id_moneda = bafp.id_moneda
+                                        inner join param.tmoneda mon on mon.id_moneda = v.id_moneda
+                                        where v.tipo_factura = ''recibo''
+                                        and v.estado != ''anulado''
+                                        group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
 
-     			v_consulta:=v_consulta||v_parametros.filtro;
-              v_consulta:=v_consulta||'group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, mon.id_moneda,mon.codigo';
-  			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-              raise notice 'resp %',v_consulta;
-              return v_consulta;
+                                        union all
+
+                                  select
+                                       v.id_venta,
+                                       v.nro_factura,
+                                       v.nombre_factura,
+                                       v.total_venta,
+                                       case when vf.id_moneda = 1 then
+                                                (v.total_venta - sum(vf.monto_mb_efectivo))
+                                       when vf.id_moneda = 2 then
+                                                (v.total_venta - sum(param.f_convertir_moneda(1, vf.id_moneda, vf.monto_mb_efectivo, v.fecha, ''O'', 50)))
+                                       end as saldo,
+                                       vf.id_moneda,
+                                       mon.codigo as moneda,
+                                       v.id_auxiliar_anticipo
+                                  from vef.tventa v
+                                  left join vef.tventa_forma_pago vf on vf.id_venta_recibo = v.id_venta
+                                  inner join param.tmoneda mon on mon.id_moneda = vf.id_moneda
+                                  where v.tipo_factura = ''recibo''
+                                  and v.estado != ''anulado''
+                                  group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
+
+                        )
+                        select
+                              v.id_venta,
+                              v.nro_factura,
+                              v.nombre_factura,
+                              to_char(v.total_venta,''9 999 999D99'')||'' ''||v.moneda as total_venta,
+                              case when sum(v.saldo) is null then
+                                  ''''
+                              else
+                                  ''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char(sum(v.saldo),''9 999 999D99'')||'' ''||v.moneda
+                              end tex_saldo,
+                              coalesce(round(sum(saldo),2),0) as saldo,
+                              v.id_moneda,
+                              v.moneda
+                        from trecibos_fp v
+                        where ';
+
+          v_consulta:=v_consulta||v_parametros.filtro;
+          v_consulta:=v_consulta||'group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, v.id_moneda, v.moneda';
+          v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+          --raise notice 'resp %',v_consulta;
+          return v_consulta;
           end;
 
   	/*********************************
@@ -984,11 +1020,45 @@ BEGIN
 
       elsif(p_transaccion='VF_LISRCB_CONT')then
       	begin
-                v_consulta:='select count(v.id_venta)
-                            from vef.tventa v
-                            where v.tipo_factura = ''recibo''
-                            and v.estado != ''anulado''
-                            and ';
+        v_consulta:='
+        with trecibos_fp as (select
+                                  v.id_venta,
+                                  v.nro_factura,
+                                  v.nombre_factura,
+                                  v.total_venta,
+                                  vf.id_moneda,
+                                  mon.codigo as moneda,
+                                  v.id_auxiliar_anticipo
+                                from vef.tventa v
+                                inner join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
+                                left join obingresos.tboleto_amadeus_forma_pago  bafp on bafp.id_venta = v.id_venta and vf.id_moneda = bafp.id_moneda
+                                inner join param.tmoneda mon on mon.id_moneda = v.id_moneda
+                                where v.tipo_factura = ''recibo''
+                                and v.estado != ''anulado''
+                                group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
+
+
+                                union all
+
+                          select
+                               v.id_venta,
+                               v.nro_factura,
+                               v.nombre_factura,
+                               v.total_venta,
+                               vf.id_moneda,
+                               mon.codigo as moneda,
+                               v.id_auxiliar_anticipo
+                          from vef.tventa v
+                          left join vef.tventa_forma_pago vf on vf.id_venta_recibo = v.id_venta
+                          inner join param.tmoneda mon on mon.id_moneda = vf.id_moneda
+                          where v.tipo_factura = ''recibo''
+                          and v.estado != ''anulado''
+                          group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
+
+                    )
+                  select count(v.id_venta)
+                  from trecibos_fp v
+                  where ';
 
      			v_consulta:=v_consulta||v_parametros.filtro;
               return v_consulta;
