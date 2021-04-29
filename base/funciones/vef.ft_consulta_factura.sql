@@ -377,11 +377,13 @@ BEGIN
                                         vf.tipo_tarjeta,
                                         mon.codigo_internacional as moneda_fp,
                                         mp.name,
-                                        aux.codigo_auxiliar||'' -> ''||aux.nombre_auxiliar as cod_cuenta
+                                        aux.codigo_auxiliar||'' -> ''||aux.nombre_auxiliar as cod_cuenta,
+                                        venr.nro_factura as nro_recibo
                                       FROM vef.tventa_forma_pago vf
                                       left join param.tmoneda mon on mon.id_moneda = vf.id_moneda
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vf.id_medio_pago
                                       left join conta.tauxiliar aux on aux.id_auxiliar = vf.id_auxiliar
+                                      left join vef.tventa venr on venr.id_venta =  vf.id_venta_recibo
                                       WHERE vf.id_venta = v.id_venta
                                     ) fpago
                                 ),

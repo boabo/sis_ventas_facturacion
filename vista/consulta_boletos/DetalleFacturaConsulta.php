@@ -9,7 +9,12 @@
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
-
+<style>
+#ventanaEmergente:hover {
+  background-color: #91FF81;
+  font-size: 20px;
+}
+</style>
 <script>
     Phx.vista.DetalleFacturaConsulta = Ext.extend(Phx.gridInterfaz, {
         constructor: function (config) {
@@ -36,7 +41,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 100,
                         renderer: function(value,p,record){
                           if(record.data.tipo_reg != 'summary'){
-					                      return String.format('{0}','<i class="fa fa-reply-all" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;'+record.data['nro_factura']);
+                                return String.format('{0}','<b id="ventanaEmergente"><i class="fa fa-share" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;'+record.data['nro_factura']+'</b>');
+					                      // return String.format('{0}','<i class="fa fa-reply-all" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;'+record.data['nro_factura']);
                           }else{
                             return ''
                           }

@@ -291,23 +291,25 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                           <th>N° Tarjeta</th>
                                           <th>Codigo Tarjeta</th>
                                           <th>N° Cuenta</th>
+                                          <th>N° Recibo</th>
                                         </tr>
                                       `;
                                       form_pago.forEach( e => {
-                                        total_fp = total_fp + e.monto_transaccion;
+                                        total_fp = total_fp + e.monto_mb_efectivo;
                                         info += `
                                           <tr>
                                               <td>${e.name}</td>
                                               <td align="center">${e.moneda_fp}</td>
-                                              <td align="center">${Ext.util.Format.number(e.monto_transaccion,'0.000,00/i')}</td>
+                                              <td align="center">${Ext.util.Format.number(e.monto_mb_efectivo,'0.000,00/i')}</td>
                                               <td align="center">${e.tipo_tarjeta}</td>
                                               <td align="center">${e.numero_tarjeta}</td>
                                               <td align="center">${e.codigo_tarjeta}</td>
                                               <td align="center">${(e.cod_cuenta==null)?'':e.cod_cuenta}</td>
+                                              <td align="center">${(e.nro_recibo==null)?'':e.nro_recibo}</td>
                                           </tr>
                                           `;
                                       });
-                                info +=`<tr><td colspan="2" align="center"><b>TOTAL FORMA PAGO</b></td><td align="center"><b>${Ext.util.Format.number(total_fp,'0.000,00/i')}</b></td><td colspan="4"></td></tr>
+                                info +=`<tr><td colspan="2" align="center"><b>TOTAL FORMA PAGO</b></td><td align="center"><b>${Ext.util.Format.number(total_fp,'0.000,00/i')}</b></td><td colspan="5"></td></tr>
                                       </table>
                                     </td>
                                   </tr>
