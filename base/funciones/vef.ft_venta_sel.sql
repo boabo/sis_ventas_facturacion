@@ -953,7 +953,7 @@ BEGIN
                                           v.nro_factura,
                                           v.nombre_factura,
                                           v.total_venta,
-                                          (v.total_venta - sum(bafp.importe)) as saldo,
+                                          (v.total_venta - coalesce(sum(bafp.importe),0)) as saldo,
                                           vf.id_moneda,
                                           mon.codigo as moneda,
                                           v.id_auxiliar_anticipo
@@ -973,9 +973,9 @@ BEGIN
                                        v.nombre_factura,
                                        v.total_venta,
                                        case when vf.id_moneda = 1 then
-                                                (v.total_venta - sum(vf.monto_mb_efectivo))
+                                                (v.total_venta - coalesce(sum(vf.monto_mb_efectivo),0))
                                        when vf.id_moneda = 2 then
-                                                (v.total_venta - sum(param.f_convertir_moneda(1, vf.id_moneda, vf.monto_mb_efectivo, v.fecha, ''O'', 50)))
+                                                (v.total_venta - coalesce(sum(param.f_convertir_moneda(1, vf.id_moneda, vf.monto_mb_efectivo, v.fecha, ''O'', 50)),0))
                                        end as saldo,
                                        vf.id_moneda,
                                        mon.codigo as moneda,
@@ -993,12 +993,8 @@ BEGIN
                               v.nro_factura,
                               v.nombre_factura,
                               to_char(v.total_venta,''9 999 999D99'')||'' ''||v.moneda as total_venta,
-                              case when sum(v.saldo) is null then
-                                  ''''
-                              else
-                                  ''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char(sum(v.saldo),''9 999 999D99'')||'' ''||v.moneda
-                              end tex_saldo,
-                              coalesce(round(sum(saldo),2),0) as saldo,
+                              ''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black;">Saldo:</span> ''||to_char(sum(v.saldo),''9 999 999D99'')||'' ''||v.moneda as tex_saldo,
+                              round(sum(saldo),2) as saldo,
                               v.id_moneda,
                               v.moneda
                         from trecibos_fp v

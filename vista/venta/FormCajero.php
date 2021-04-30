@@ -813,6 +813,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.tipo_tarjeta.allowBlank = false;
           	this.Cmp.mco.allowBlank = true;
             this.Cmp.id_venta_recibo.reset();
+            this.Cmp.saldo_recibo.reset();
           } else if (codigo_forma_pago.startsWith("MCO")) {
             this.mostrarComponente(this.Cmp.mco);
             this.Cmp.numero_tarjeta.allowBlank = true;
@@ -829,6 +830,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar.reset();
             this.Cmp.numero_tarjeta.reset();
             this.Cmp.id_venta_recibo.reset();
+            this.Cmp.saldo_recibo.reset();
           } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
@@ -847,6 +849,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
             this.Cmp.id_venta_recibo.reset();
+            this.Cmp.saldo_recibo.reset();
             this.Cmp.id_auxiliar.label.dom.innerHTML='Cuenta Corriente';
             this.Cmp.id_auxiliar.store.baseParams.ro_activo='no';
             this.Cmp.id_auxiliar.modificado = true;
@@ -869,7 +872,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
             this.Cmp.id_venta_recibo.reset();
-          }else if (codigo_forma_pago.startsWith('RANT')){
+            this.Cmp.saldo_recibo.reset();
+          }else if (codigo_forma_pago.startsWith("RANT")){
             this.mostrarComponente(this.Cmp.id_venta_recibo);
             this.mostrarComponente(this.Cmp.id_auxiliar);
             this.Cmp.numero_tarjeta.allowBlank = true;
@@ -886,6 +890,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar.reset();
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
+            this.Cmp.saldo_recibo.reset();
             this.Cmp.id_auxiliar.label.dom.innerHTML='Grupo';
             this.Cmp.id_auxiliar.store.baseParams.ro_activo='si';
             this.Cmp.id_auxiliar.modificado = true;
@@ -896,6 +901,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco.reset();
             this.Cmp.numero_tarjeta.reset();
             this.Cmp.id_venta_recibo.reset();
+            this.Cmp.saldo_recibo.reset();
           }
         }
 
@@ -916,6 +922,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			      this.Cmp.codigo_tarjeta_2.allowBlank = false;
             this.Cmp.tipo_tarjeta_2.allowBlank = false;
           	this.Cmp.mco_2.allowBlank = true;
+            this.Cmp.saldo_recibo_2.reset();
           } else if (codigo_forma_pago.startsWith("MCO")) {
             this.mostrarComponente(this.Cmp.mco_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
@@ -932,6 +939,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
             this.Cmp.id_venta_recibo_2.reset();
+            this.Cmp.saldo_recibo_2.reset();
           } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
@@ -950,6 +958,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
             this.Cmp.id_venta_recibo_2.reset();
+            this.Cmp.saldo_recibo_2.reset();
             this.Cmp.id_auxiliar_2.label.dom.innerHTML='Cuenta Corriente';
             this.Cmp.id_auxiliar_2.store.baseParams.ro_activo='no';
             this.Cmp.id_auxiliar_2.modificado = true;
@@ -972,7 +981,8 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
             this.Cmp.id_venta_recibo_2.reset();
-          } else if (codigo_forma_pago.startsWith('RANT')){
+            this.Cmp.saldo_recibo_2.reset();
+          } else if (codigo_forma_pago.startsWith("RANT")){
             this.mostrarComponente(this.Cmp.id_venta_recibo_2);
             this.mostrarComponente(this.Cmp.id_auxiliar_2);
             this.Cmp.numero_tarjeta_2.allowBlank = true;
@@ -989,6 +999,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_auxiliar_2.reset();
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
+            this.Cmp.saldo_recibo_2.reset();
             this.Cmp.id_auxiliar_2.label.dom.innerHTML='Grupo';
             this.Cmp.id_auxiliar_2.store.baseParams.ro_activo='si';
             this.Cmp.id_auxiliar_2.modificado = true;
@@ -999,6 +1010,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.mco_2.reset();
             this.Cmp.numero_tarjeta_2.reset();
             this.Cmp.id_venta_recibo_2.reset();
+            this.Cmp.saldo_recibo_2.reset();
           }
 
           if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2 ) {
@@ -1557,13 +1569,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             var imp1 = this.Cmp.monto_forma_pago.getValue();
             var mon_sel = r.data.moneda;
             var dif = imp1 - saldo;
-
+            this.Cmp.saldo_recibo.setValue(saldo);
             if (imp1 > saldo){
                 Ext.Msg.show({
                  title:'<h1 style="color:red"><center>AVISO</center></h1>',
-                 msg: '<b>Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago</b>',
+                 msg: '<b>El saldo del recibo es: <span style="color:red;"> '+mon_sel+ ' '+saldo+'</span> Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago recibo anticipo</b>',
                  maxWidth : 400,
-                 width: 350,
+                 width: 380,
                  buttons: Ext.Msg.OK,
                  scope:this
                 });
@@ -1577,13 +1589,13 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             var imp2 = this.Cmp.monto_forma_pago_2.getValue();
             var mon_sel = r.data.moneda;
             var dif = imp2 - saldo;
-
+            this.Cmp.saldo_recibo_2.setValue(saldo);
             if (imp2 > saldo){
                 Ext.Msg.show({
                  title:'<h1 style="color:red"><center>AVISO</center></h1>',
-                 msg: '<b>Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago</b>',
+                 msg: '<b>El saldo del recibo es: <span style="color:red;"> '+mon_sel+ ' '+saldo+'</span> Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago recibo anticipo</b>',
                  maxWidth : 400,
-                 width: 350,
+                 width: 380,
                  buttons: Ext.Msg.OK,
                  scope:this
                 });
@@ -3475,6 +3487,24 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
 			type:'Field',
 			form:true
 		},
+    {
+        config:{
+            labelSeparator:'',
+            inputType:'hidden',
+            name: 'saldo_recibo'
+        },
+        type:'NumberField',
+        form:true
+    },
+    {
+        config:{
+            labelSeparator:'',
+            inputType:'hidden',
+            name: 'saldo_recibo_2'
+        },
+        type:'NumberField',
+        form:true
+    },
 		{
 			config:{
 				name: 'nit',

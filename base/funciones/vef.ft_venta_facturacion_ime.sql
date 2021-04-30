@@ -216,8 +216,10 @@ DECLARE
     v_suma_detalle	numeric;
     v_id_moneda_base	numeric;
     /***/
-    v_id_recibo			integer;
-    v_id_recibo_2		integer;
+    v_id_venta_recibo			integer;
+    v_id_venta_recibo_2			integer;
+    v_mon_recibo			varchar;
+    v_mon_recibo_2			varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -1522,6 +1524,33 @@ BEGIN
                                 else
                                       NULL
                               end);*/
+          /** control de saldo para medio de pago recibo anticipo si saldos son menores o iguales a 0 no permite el pago***/
+          /******************************************************************************************************************/
+
+         if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+           v_id_venta_recibo = v_parametros.id_venta_recibo;
+
+           select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
+           if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_parametros.saldo_recibo is not null)) then
+              raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+           end if;
+
+         else
+           v_id_venta_recibo = null;
+         end if;
+
+         if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+           	v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
+
+             select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
+             if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_parametros.saldo_recibo_2 is not null)) then
+                raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
+             end if;
+
+         else
+           v_id_venta_recibo_2 = null;
+         end if;
+
         if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
@@ -2138,17 +2167,6 @@ BEGIN
 
 		/*raise exception 'lelga hasta aqui';*/
         --if (v_parametros.id_forma_pago != 0 ) then
-        if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
-          v_id_recibo = v_parametros.id_venta_recibo;
-        else
-          v_id_recibo = null;
-        end if;
-
-        if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
-          v_id_recibo_2 = v_parametros.id_venta_recibo_2;
-        else
-          v_id_recibo_2 = NULL;
-        end if;
 
 		if (v_parametros.id_medio_pago != 0) then
           insert into vef.tventa_forma_pago(
@@ -2198,7 +2216,7 @@ BEGIN
             /****************************/
             /*Aumentando campo para mco*/
             v_parametros.mco,
-            v_id_recibo
+            v_id_venta_recibo
           );
         end if;
 
@@ -2300,7 +2318,7 @@ BEGIN
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta,
             v_parametros.mco_2,
-            v_id_recibo_2
+            v_id_venta_recibo_2
           );
         end if;
 
