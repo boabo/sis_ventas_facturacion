@@ -5622,7 +5622,6 @@ BEGIN
                 v_datos_anteriores_2.tipo_tarjeta,
                 'Modificado',
                 v_datos_anteriores_2.nro_mco,
-                v_datos_anteriores_2.nro_mco,
                 v_datos_anteriores_2.id_moneda,
                 v_datos_anteriores_2.id_medio_pago
                 );
