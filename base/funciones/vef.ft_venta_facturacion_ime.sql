@@ -220,6 +220,11 @@ DECLARE
     v_id_venta_recibo_2			integer;
     v_mon_recibo			varchar;
     v_mon_recibo_2			varchar;
+
+    v_existe_recibo_asociado	numeric;
+    v_id_anticipo_actual		integer;
+    v_desc_nombre_auxiliar		varchar;
+    v_existe_recibo_asociado_boleto	numeric;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -4626,7 +4631,8 @@ BEGIN
                 id_usuario_reg,
                 id_dosificacion,
                 nro_autorizacion,
-                nro_mco
+                nro_mco,
+                id_venta_recibo
                 )
                 VALUES (
                 v_respaldo.id_venta,
@@ -4662,7 +4668,8 @@ BEGIN
                 p_id_usuario,
                 v_respaldo.id_dosificacion,
                 v_respaldo.nroaut,
-                v_respaldo.nro_mco
+                v_respaldo.nro_mco,
+                v_respaldo.id_venta_recibo
                 );
 
        END LOOP;
@@ -4674,7 +4681,11 @@ BEGIN
         monto_transaccion = 0,
         monto = 0,
         cambio = 0,
-        monto_mb_efectivo = 0
+        monto_mb_efectivo = 0,
+        id_venta_recibo = NULL,
+        id_auxiliar = null,
+        id_medio_pago = null,
+        id_moneda = null
         where id_venta = v_parametros.id_venta;
 
         update vef.tventa_detalle set
@@ -5299,6 +5310,71 @@ BEGIN
 	elsif (p_transaccion = 'VF_ROS_CORRE') then
 
   	BEGIN
+
+    /*Control para no modificar los grupos que pertenecen a una venta*/
+    select count(ventfp.id_venta_recibo)
+    		into
+    	   v_existe_recibo_asociado
+    from vef.tventa_forma_pago ventfp
+    where ventfp.id_venta_recibo = v_parametros.id_venta;
+    /*****************************************************************/
+
+
+    select count(bolfp.id_venta)
+                into
+               v_existe_recibo_asociado_boleto
+        from obingresos.tboleto_amadeus_forma_pago bolfp
+        where bolfp.id_venta = v_parametros.id_venta;
+
+    /*Aqui verificamos si existe alguna factura con forma de pago de recibo*/
+	if(v_existe_recibo_asociado > 0) then
+    	/*Verificamos que el id_auxiliar Anticipo no sea diferente a la nueva modificacion*/
+        select ventaAnt.id_auxiliar_anticipo
+        into
+        v_id_anticipo_actual
+        from vef.tventa ventaAnt
+        where ventaAnt.id_venta = v_parametros.id_venta;
+        /**********************************************************************************/
+        if(v_id_anticipo_actual != v_parametros.id_auxiliar_anticipo) THEN
+
+        	select aux.nombre_auxiliar
+            	   into
+                   v_desc_nombre_auxiliar
+            from conta.tauxiliar aux
+            where aux.id_auxiliar = v_parametros.id_auxiliar_anticipo;
+
+
+        	Raise exception 'No se puede modificar el Grupo a la cuenta %, ya que este Recibo esta como una forma de pago en Facturas, favor verificarlo.',v_desc_nombre_auxiliar;
+        end if;
+
+
+    end if;
+    /***********************************************************************/
+
+    /*Aqui verificamos si existe alguna factura con forma de pago de recibo*/
+	if(v_existe_recibo_asociado_boleto > 0) then
+    	/*Verificamos que el id_auxiliar Anticipo no sea diferente a la nueva modificacion*/
+        select ventaAnt.id_auxiliar_anticipo
+        into
+        v_id_anticipo_actual
+        from vef.tventa ventaAnt
+        where ventaAnt.id_venta = v_parametros.id_venta;
+        /**********************************************************************************/
+        if(v_id_anticipo_actual != v_parametros.id_auxiliar_anticipo) THEN
+
+        	select aux.nombre_auxiliar
+            	   into
+                   v_desc_nombre_auxiliar
+            from conta.tauxiliar aux
+            where aux.id_auxiliar = v_parametros.id_auxiliar_anticipo;
+
+
+        	Raise exception 'No se puede modificar el Grupo a la cuenta %, ya que este Recibo esta como una forma de pago en Boletos, favor verificarlo.',v_desc_nombre_auxiliar;
+        end if;
+
+
+    end if;
+    /***********************************************************************/
 
     /*Aqui condiciones para la inserccion de depositos*/
 

@@ -2541,7 +2541,31 @@ $body$
         	raise exception 'No se puede Anular la factura debido a que el periodo %, %, se  			encuentra cerrado',v_fecha_ini,v_fecha_fin;
         end if;
 
+		/*Control para no anular recibos que esten asociados a una forma de pago*/
+             /*Control para no modificar los grupos que pertenecen a una venta*/
+        select count(ventfp.id_venta_recibo)
+                into
+               v_existe_recibo_asociado
+        from vef.tventa_forma_pago ventfp
+        where ventfp.id_venta_recibo = v_parametros.id_venta;
 
+        select count(bolfp.id_venta)
+                into
+               v_existe_recibo_asociado_boleto
+        from obingresos.tboleto_amadeus_forma_pago bolfp
+        where bolfp.id_venta = v_parametros.id_venta;
+        /*****************************************************************/
+
+        /*Aqui verificamos si existe alguna factura con forma de pago de recibo*/
+        if(v_existe_recibo_asociado > 0) then
+            Raise exception 'No se puede Anular el Recibo ya que esta siendo utilizada como una forma de pago en Facturas.';
+        end if;
+
+        if(v_existe_recibo_asociado_boleto > 0) then
+            Raise exception 'No se puede Anular el Recibo ya que esta siendo utilizada como una forma de pago en Boletos.';
+        end if;
+        /***********************************************************************/
+        /************************************************************************/
 
 
         v_tipo_usuario = 'cajero';

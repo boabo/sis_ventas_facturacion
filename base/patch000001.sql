@@ -1851,3 +1851,7 @@ ALTER TABLE vef.tventa_forma_pago
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
 /***********************************F-SCP-BVP-VEF-0-28/04/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-30/04/2021****************************************/
+ALTER TABLE vef.trespaldo_facturas_anuladas
+  ADD COLUMN id_venta_recibo INTEGER;
+/***********************************F-SCP-IRVA-VEF-0-30/04/2021****************************************/
