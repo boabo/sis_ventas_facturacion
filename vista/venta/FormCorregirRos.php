@@ -497,6 +497,7 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
 
       if (this.data.datos_originales.data.id_auxiliar_anticipo != null) {
         this.Cmp.id_auxiliar_anticipo.store.baseParams.id_auxiliar = this.data.datos_originales.data.id_auxiliar_anticipo;
+        this.Cmp.id_auxiliar_anticipo.store.baseParams.ro_activo='si';
         this.instanciasPagoAnticipo = 'si';
       } else {
         this.instanciasPagoAnticipo = 'no';
@@ -2958,7 +2959,7 @@ Phx.vista.FormCorregirRos=Ext.extend(Phx.frmInterfaz,{
     {
 			config: {
 				name: 'id_auxiliar_anticipo',
-				fieldLabel: 'Cuenta Corriente',
+				fieldLabel: 'Grupo',
 				allowBlank: true,
         width:150,
 				emptyText: 'Cuenta Corriente...',
