@@ -1836,6 +1836,10 @@ ALTER TABLE vef.tventa_detalle
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
 /***********************************F-SCP-IRVA-VEF-0-18/04/2021****************************************/
+/***********************************I-SCP-IRVA-VEF-0-19/04/2021****************************************/
+ALTER TABLE vef.tventa_forma_pago_log
+  RENAME COLUMN id_medio_pago TO id_instancia_pago;
+/***********************************F-SCP-IRVA-VEF-0-19/04/2021****************************************/
 /***********************************I-SCP-BVP-VEF-0-28/04/2021****************************************/
 ALTER TABLE vef.tventa_forma_pago
   ADD COLUMN id_venta_recibo INTEGER;

@@ -4969,7 +4969,9 @@ BEGIN
             id_auxiliar,
 			tipo_tarjeta,
             accion,
-            nro_mco
+            nro_mco,
+            id_instancia_pago,
+            id_moneda
           	) values(
 			v_datos_anteriores.id_venta_forma_pago,
 			v_datos_anteriores.id_venta,
@@ -4987,7 +4989,9 @@ BEGIN
             v_datos_anteriores.id_auxiliar,
 			v_datos_anteriores.tipo_tarjeta,
             'Modificado',
-            v_datos_anteriores.nro_mco
+            v_datos_anteriores.nro_mco,
+            v_datos_anteriores.id_instancia_pago,
+            v_datos_anteriores.id_moneda
 			);
          /***********************************************************************/
           if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
@@ -5067,7 +5071,9 @@ BEGIN
                 id_auxiliar,
                 tipo_tarjeta,
                 accion,
-                nro_mco
+                nro_mco,
+                id_medio_pago,
+                id_moneda
                 ) values(
                 v_datos_anteriores_2.id_venta_forma_pago,
                 v_datos_anteriores_2.id_venta,
@@ -5085,7 +5091,9 @@ BEGIN
                 v_datos_anteriores_2.id_auxiliar,
                 v_datos_anteriores_2.tipo_tarjeta,
                 'Modificado',
-                v_datos_anteriores_2.nro_mco
+                v_datos_anteriores_2.nro_mco,
+                v_datos_anteriores_2.id_medio_pago,
+                v_datos_anteriores_2.id_moneda
                 );
              /***********************************************************************/
 
@@ -5461,7 +5469,9 @@ BEGIN
             id_auxiliar,
 			tipo_tarjeta,
             accion,
-            nro_mco
+            nro_mco,
+            id_moneda,
+            id_medio_pago
           	) values(
 			v_datos_anteriores.id_venta_forma_pago,
 			v_datos_anteriores.id_venta,
@@ -5479,7 +5489,9 @@ BEGIN
             v_datos_anteriores.id_auxiliar,
 			v_datos_anteriores.tipo_tarjeta,
             'Modificado',
-            v_datos_anteriores.nro_mco
+            v_datos_anteriores.nro_mco,
+            v_datos_anteriores.id_moneda,
+            v_datos_anteriores.id_medio_pago
 			);
          /***********************************************************************/
           if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
@@ -5589,7 +5601,9 @@ BEGIN
                 id_auxiliar,
                 tipo_tarjeta,
                 accion,
-                nro_mco
+                nro_mco,
+                id_moneda,
+                id_medio_pago
                 ) values(
                 v_datos_anteriores_2.id_venta_forma_pago,
                 v_datos_anteriores_2.id_venta,
@@ -5607,7 +5621,10 @@ BEGIN
                 v_datos_anteriores_2.id_auxiliar,
                 v_datos_anteriores_2.tipo_tarjeta,
                 'Modificado',
-                v_datos_anteriores_2.nro_mco
+                v_datos_anteriores_2.nro_mco,
+                v_datos_anteriores_2.nro_mco,
+                v_datos_anteriores_2.id_moneda,
+                v_datos_anteriores_2.id_medio_pago
                 );
              /***********************************************************************/
 
