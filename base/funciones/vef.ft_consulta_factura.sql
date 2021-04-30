@@ -372,6 +372,11 @@ BEGIN
                                         vf.monto_transaccion,
                                         vf.cambio,
                                         vf.monto_mb_efectivo,
+                                        case when mon.codigo_internacional = ''USD'' then
+                                        	param.f_convertir_moneda(1, vf.id_moneda, vf.monto_mb_efectivo, v.fecha, ''O'', 50)
+                                        else
+	                                        vf.monto_mb_efectivo
+                                        end as monto_forma_pago,
                                         vf.numero_tarjeta,
                                         vf.codigo_tarjeta,
                                         vf.tipo_tarjeta,

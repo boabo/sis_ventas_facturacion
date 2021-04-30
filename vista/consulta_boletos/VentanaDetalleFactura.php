@@ -295,12 +295,12 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                         </tr>
                                       `;
                                       form_pago.forEach( e => {
-                                        total_fp = total_fp + e.monto_mb_efectivo;
+                                        total_fp = total_fp + e.monto_forma_pago;
                                         info += `
                                           <tr>
                                               <td>${e.name}</td>
                                               <td align="center">${e.moneda_fp}</td>
-                                              <td align="center">${Ext.util.Format.number(e.monto_mb_efectivo,'0.000,00/i')}</td>
+                                              <td align="center">${Ext.util.Format.number(e.monto_forma_pago,'0.000,00/i')}</td>
                                               <td align="center">${e.tipo_tarjeta}</td>
                                               <td align="center">${e.numero_tarjeta}</td>
                                               <td align="center">${e.codigo_tarjeta}</td>

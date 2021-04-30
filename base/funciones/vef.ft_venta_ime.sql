@@ -145,6 +145,7 @@ $body$
 
     v_existe_recibo_asociado numeric;
     v_existe_recibo_asociado_boleto numeric;
+    
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
