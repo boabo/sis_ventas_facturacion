@@ -142,6 +142,9 @@ $body$
     v_fecha_ini				varchar;
     v_fecha_fin 			varchar;
     v_respaldo				record;
+
+    v_existe_recibo_asociado numeric;
+    v_existe_recibo_asociado_boleto numeric;
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
