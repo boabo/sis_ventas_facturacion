@@ -1855,3 +1855,34 @@ ALTER TABLE vef.tventa_forma_pago
 ALTER TABLE vef.trespaldo_facturas_anuladas
   ADD COLUMN id_venta_recibo INTEGER;
 /***********************************F-SCP-IRVA-VEF-0-30/04/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-01/05/2021****************************************/
+ALTER TABLE vef.tventa
+  ALTER COLUMN correlativo_venta DROP DEFAULT;
+
+ALTER TABLE vef.tventa
+  ALTER COLUMN correlativo_venta TYPE VARCHAR(200) COLLATE pg_catalog."default";
+
+ALTER TABLE vef.tventa
+  ALTER COLUMN correlativo_venta SET DEFAULT ''::character varying;
+/***********************************F-SCP-IRVA-VEF-0-01/05/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-03/05/2021****************************************/
+ALTER TABLE vef.tdetalle_apertura_cc
+  ADD COLUMN monto_otro_boleto_bs NUMERIC(18,2);
+
+ALTER TABLE vef.tdetalle_apertura_cc
+  ADD COLUMN monto_otro_boleto_usd NUMERIC(18,2);
+
+ ALTER TABLE vef.tdetalle_apertura_cc
+  ADD COLUMN monto_otro_recibo_ml NUMERIC(18,2);
+
+ ALTER TABLE vef.tdetalle_apertura_cc
+  ADD COLUMN monto_otro_recibo_me NUMERIC(18,2);
+
+  ALTER TABLE vef.tdetalle_apertura_cc
+  ADD COLUMN monto_otro_facturacion_bs NUMERIC(18,2);
+
+ ALTER TABLE vef.tdetalle_apertura_cc
+  ADD COLUMN monto_otro_facturacion_usd NUMERIC(18,2);
+  /***********************************F-SCP-IRVA-VEF-0-03/05/2021****************************************/

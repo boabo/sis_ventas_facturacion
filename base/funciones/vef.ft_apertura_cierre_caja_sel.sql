@@ -440,7 +440,7 @@ BEGIN
                                                 0
                                             end)as mco_boletos_me';
 
-                 v_boletos_otros_extranjera = 'sum(case  when fpb.fop_code = ''OTRO'' and bfp.id_moneda = ' || v_id_moneda_tri || ' then
+                 v_boletos_otros_extranjera = 'sum(case  when fpb.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and bfp.id_moneda = ' || v_id_moneda_tri || ' then
                                                   bfp.importe
                                               else
                                                   0
@@ -1070,7 +1070,7 @@ BEGIN
                               '||v_boletos_mco_extranjera||',
 
 
-                              sum(case  when fpb.fop_code = ''OTRO'' and bfp.id_moneda = ' || v_id_moneda_base || ' then
+                              sum(case  when fpb.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and bfp.id_moneda = ' || v_id_moneda_base || ' then
                                       bfp.importe
                                   else
                                       0
@@ -1308,7 +1308,7 @@ BEGIN
 
                               '||v_ventas_mco_extranjera||',
 
-                              sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                              sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                       vfp.monto_mb_efectivo
                                   else
                                       0
@@ -1356,7 +1356,7 @@ BEGIN
                              '||v_deposito_recibo_extranjera||',
                       		  /******************************************************************************************************************************************************/
 
-                              sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                              sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                       vfp.monto_mb_efectivo
                                   else
                                       0
@@ -1705,7 +1705,7 @@ BEGIN
                                        '||v_deposito_recibo_extranjera||',
                                         /******************************************************************************************************************************************************/
 
-                                        sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                                        sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                                 vfp.monto_mb_efectivo
                                             else
                                                 0
@@ -1930,8 +1930,10 @@ BEGIN
             d.monto_cte_boleto_usd as cuenta_corriente_boletos_me,
             d.monto_mco_boleto_bs as mco_boletos_ml,
             d.monto_mco_boleto_usd as mco_boletos_me,
-            0::numeric as otro_boletos_ml,
-            0::numeric as otro_boletos_me,
+
+            d.monto_otro_boleto_bs::numeric as otro_boletos_ml,
+            d.monto_otro_boleto_usd::numeric as otro_boletos_me,
+
             d.monto_ca_facturacion_bs as efectivo_ventas_ml,
             d.monto_ca_facturacion_usd as efectivo_ventas_mle,
             d.monto_cc_facturacion_bs as tarjeta_ventas_ml,
@@ -1940,14 +1942,22 @@ BEGIN
             d.monto_cte_facturacion_usd as cuenta_corriente_ventas_me,
             d.monto_mco_facturacion_bs as mco_ventas_ml,
             d.monto_mco_facturacion_usd as mco_ventas_me,
-            0::numeric as otro_ventas_ml,
-            0::numeric as otro_ventas_me,
+
+            d.monto_otro_facturacion_bs::numeric as otro_ventas_ml,
+        	d.monto_otro_facturacion_usd::numeric as otro_ventas_me,
+
             d.comisiones_ml,
             d.comisiones_me,
             d.monto_ca_recibo_ml,
             d.monto_ca_recibo_me,
             d.monto_cc_recibo_ml,
-            d.monto_cc_recibo_me
+            d.monto_cc_recibo_me,
+
+            d.monto_otro_recibo_ml::numeric,
+            d.monto_otro_recibo_me::numeric
+
+
+
             from vef.tapertura_cierre_caja a
             inner join segu.vusuario u on u.id_usuario = a.id_usuario_cajero
             inner join vef.tdetalle_apertura_cc d on d.id_apertura_cierre_caja = a.id_apertura_cierre_caja
@@ -1961,6 +1971,56 @@ BEGIN
             left join vef.tventa v on v.id_usuario_cajero = u.id_usuario and v.fecha = a.fecha_apertura_cierre and
             v.id_punto_venta = a.id_punto_venta and v.estado = ''finalizado''
             where a.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja;
+
+            v_consulta := v_consulta||'group by
+                                      u.desc_persona,
+                                      a.fecha_apertura_cierre,
+                                      ppv.codigo,
+                                      ps.codigo,
+                                      lpv.codigo,
+                                      ls.codigo,
+                                      pv.codigo,
+                                      s.codigo,
+                                      pv.nombre,
+                                      s.nombre,
+                                      a.obs_cierre::varchar,
+                                      a.arqueo_moneda_local,
+                                      a.arqueo_moneda_extranjera,
+                                      a.monto_inicial,
+                                      a.monto_inicial_moneda_extranjera,
+                                      d.monto_ca_boleto_bs,
+                                      d.monto_ca_boleto_usd,
+                                      d.monto_cc_boleto_bs,
+                                      d.monto_cc_boleto_usd,
+                                      d.monto_cte_boleto_bs,
+                                      d.monto_cte_boleto_usd,
+                                      d.monto_mco_boleto_bs,
+                                      d.monto_mco_boleto_usd,
+
+                                      d.monto_otro_boleto_bs,
+                                      d.monto_otro_boleto_usd,
+
+                                      d.monto_ca_facturacion_bs,
+                                      d.monto_ca_facturacion_usd,
+                                      d.monto_cc_facturacion_bs,
+                                      d.monto_cc_facturacion_usd,
+                                      d.monto_cte_facturacion_bs,
+                                      d.monto_cte_facturacion_usd,
+                                      d.monto_mco_facturacion_bs,
+                                      d.monto_mco_facturacion_usd,
+
+                                      d.monto_otro_facturacion_bs,
+                                      d.monto_otro_facturacion_usd,
+
+                                      d.comisiones_ml,
+                                      d.comisiones_me,
+                                      d.monto_ca_recibo_ml,
+                                      d.monto_ca_recibo_me,
+                                      d.monto_cc_recibo_ml,
+                                      d.monto_cc_recibo_me,
+
+                                      d.monto_otro_recibo_ml,
+                                      d.monto_otro_recibo_me';
 
             --Definicion de la respuesta
             raise notice 'v_consulta %', v_consulta;
@@ -2240,7 +2300,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                       0
                                   end)as mco_ventas_me';
 
-                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -2270,7 +2330,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                     0
                                 end)as deposito_recibo_me';
 
-                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -2306,7 +2366,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                                   0
                                               end)as mco_boletos_me';
 
-                 v_boletos_otros_extranjera = 'sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''carga''  then
+                 v_boletos_otros_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and v.tipo_factura = ''carga''  then
                                                   vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                               else
                                                   0
@@ -2851,7 +2911,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               '||v_boletos_mco_extranjera||',
 
 
-                               sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''carga''  then
+                               sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and v.tipo_factura = ''carga''  then
                                       vfp.monto_mb_efectivo
                                   else
                                       0
@@ -3076,7 +3136,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
 
                               '||v_ventas_mco_extranjera||',
 
-                              sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                              sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                       vfp.monto_mb_efectivo
                                   else
                                       0
@@ -3124,7 +3184,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                              '||v_deposito_recibo_extranjera||',
                       		  /******************************************************************************************************************************************************/
 
-                              sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                              sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                       vfp.monto_mb_efectivo
                                   else
                                       0
@@ -3423,7 +3483,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
 
                                         '||v_ventas_mco_extranjera||',
 
-                                        sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                                        sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                                 vfp.monto_mb_efectivo
                                             else
                                                 0
@@ -3471,7 +3531,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                        '||v_deposito_recibo_extranjera||',
                                         /******************************************************************************************************************************************************/
 
-                                        sum(case  when fp.fop_code = ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                                        sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_base  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                                 vfp.monto_mb_efectivo
                                             else
                                                 0
@@ -3600,8 +3660,8 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                               sum(boletos_cuenta_corriente_extranjera),
                               sum(boletos_mco_extranjera),
 
-                              --sum(otro_boletos_ml),
-                             -- sum(boletos_otros_extranjera),
+                              sum(otro_boletos_ml),
+                              sum(boletos_otros_extranjera),
 
                              sum(monto_ca_recibo_ml),
                              sum(monto_cc_recibo_ml),
@@ -3835,4 +3895,4 @@ SECURITY INVOKER
 COST 100;
 
 ALTER FUNCTION vef.ft_apertura_cierre_caja_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
-  OWNER TO postgres; 
+  OWNER TO postgres;

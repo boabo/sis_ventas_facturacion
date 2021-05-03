@@ -94,17 +94,18 @@ class RAperturaCierrePDF extends  ReportePDF {
         $this->Cell(50,5,number_format($this->datos[0]['mco_boletos_me'],2) ,1,1,'R');
 
         $this->Cell(80,5,'Otros' ,1,0,'L');
-        $this->Cell(50,5,number_format($this->datos[0]['otros_boletos_ml'],2) ,1,0,'R');
-        $this->Cell(50,5,number_format($this->datos[0]['otros_boletos_me'],2) ,1,1,'R');
+        $this->Cell(50,5,number_format($this->datos[0]['otros_boletos_ml'] + $this->datos[0]['otros_ventas_ml'] + $this->datos[0]['monto_otro_recibo_ml'],2) ,1,0,'R');
+        $this->Cell(50,5,number_format($this->datos[0]['otros_boletos_me'] + $this->datos[0]['otros_ventas_me'] + $this->datos[0]['monto_otro_recibo_me'],2) ,1,1,'R');
 
         $total_venta_ml =   $this->datos[0]['otros_boletos_ml'] + $this->datos[0]['mco_boletos_ml'] + $this->datos[0]['cuenta_corriente_boletos_ml'] +
                             $this->datos[0]['comisiones_ml'] + $this->datos[0]['tarjeta_ventas_ml'] + $this->datos[0]['tarjeta_boletos_ml'] +
                             $this->datos[0]['efectivo_boletos_ml'] + $this->datos[0]['efectivo_ventas_ml'] + $this->datos[0]['monto_ca_recibo_ml'] +
-                            $this->datos[0]['monto_cc_recibo_ml']+$this->datos[0]['cuenta_corriente_ventas_ml'];
+                            $this->datos[0]['monto_cc_recibo_ml']+$this->datos[0]['cuenta_corriente_ventas_ml'] + $this->datos[0]['otros_ventas_ml'] + $this->datos[0]['monto_otro_recibo_ml'];
 
         $total_venta_me =   $this->datos[0]['otros_boletos_me'] + $this->datos[0]['mco_boletos_me'] + $this->datos[0]['cuenta_corriente_boletos_me'] +
                             $this->datos[0]['comisiones_me'] + $this->datos[0]['tarjeta_ventas_me'] + $this->datos[0]['tarjeta_boletos_me'] +
-                            $this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['monto_ca_recibo_me'] + $this->datos[0]['efectivo_ventas_me']+$this->datos[0]['cuenta_corriente_boletos_me'];
+                            $this->datos[0]['efectivo_boletos_me'] + $this->datos[0]['monto_ca_recibo_me'] + $this->datos[0]['efectivo_ventas_me']+$this->datos[0]['cuenta_corriente_boletos_me'] +
+                            + $this->datos[0]['otros_ventas_me'] + $this->datos[0]['monto_otro_recibo_me'];
 
         $this->Cell(80,5,'TOTAL VENTA' ,1,0,'C');
         $this->Cell(50,5,number_format($total_venta_ml,2) ,1,0,'R');

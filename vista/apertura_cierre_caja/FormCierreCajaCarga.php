@@ -639,7 +639,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_otro_boleto_bs',
                     fieldLabel: 'Importe Otros Carga M/L',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     style:{
                       width:'60px',
                       background:'#F95454'
@@ -653,7 +653,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'NumberField',
                 id_grupo:0,
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
@@ -749,7 +749,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_otro_boleto_usd',
                     fieldLabel: 'Importe Otros Carga M/E',
                     allowBlank: true,
-                    disabled:true,
+                    disabled:false,
                     style:{
                       width:'60px',
                       background:'#F95454'
@@ -763,7 +763,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'NumberField',
                 id_grupo:1,
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
@@ -885,7 +885,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'NumberField',
                 id_grupo:2,
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
@@ -1005,7 +1005,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'NumberField',
                 id_grupo:3,
                 grid:true,
-                form:false,
+                form:true,
                 valorInicial :0.00
             },
             {
@@ -1120,6 +1120,28 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true,
                 valorInicial :0.00
             },
+            {
+                config:{
+                    name: 'monto_otro_recibo_ml',
+                    fieldLabel: 'Importe Otros Recibos M/L',
+                    allowBlank: true,
+                    disabled:false,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:15,
+                    allowDecimals: true,
+                    decimalPrecision : 2
+                },
+                type:'NumberField',
+                id_grupo:4,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
             //nuevo MMV
             {
                 config:{
@@ -1206,6 +1228,28 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowDecimals: true,
                     decimalPrecision : 2,
                     //style: 'background-color: #f2f23c;  background-image: none;'
+                },
+                type:'NumberField',
+                id_grupo:11,
+                grid:true,
+                form:true,
+                valorInicial :0.00
+            },
+            {
+                config:{
+                    name: 'monto_otro_recibo_me',
+                    fieldLabel: 'Importe Otros Recibos M/E',
+                    allowBlank: true,
+                    disabled:false,
+                    //anchor: '100%',
+                    style:{
+                      width:'60px',
+                      background: '#FFF1B8'
+                    },
+                    gwidth: 100,
+                    maxLength:15,
+                    allowDecimals: true,
+                    decimalPrecision : 2
                 },
                 type:'NumberField',
                 id_grupo:11,
@@ -2037,25 +2081,36 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.CP.loadingHide();
 
             var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            console.log("aqui llega dato",reg.datos[0]);
+
             if(reg.datos.length=1){
                 if (this.mod == 'no'){
                     //Datos de Apertura
                     this.Cmp.id_apertura_cierre_caja.setValue(this.maestro.data.id_apertura_cierre_caja);
                     this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
                     //Totales Ventas
-                    var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']);
-                    var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me']);
+                    var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']) + parseFloat(reg.datos[0]['otros_ventas_ml']);
+                    var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me']) + parseFloat(reg.datos[0]['otros_ventas_me']);
                     //Ventas Nacional
                     this.Cmp.monto_ca_facturacion_bs.setValue(reg.datos[0]['efectivo_ventas_ml']);
                     this.Cmp.monto_cc_facturacion_bs.setValue(reg.datos[0]['tarjeta_ventas_ml']);
                     this.Cmp.monto_cte_facturacion_bs.setValue(reg.datos[0]['cuenta_corriente_ventas_ml']);
                     this.Cmp.monto_mco_facturacion_bs.setValue(reg.datos[0]['mco_ventas_ml']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_facturacion_bs.setValue(reg.datos[0]['otros_ventas_ml']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_moneda_base_fp_facturacion.setValue(total_ventas_ml);
                     //Ventas Internacional
                     this.Cmp.monto_ca_facturacion_usd.setValue(reg.datos[0]['efectivo_ventas_me']);
                     this.Cmp.monto_cc_facturacion_usd.setValue(reg.datos[0]['tarjeta_ventas_me']);
                     this.Cmp.monto_cte_facturacion_usd.setValue(reg.datos[0]['cuenta_corriente_ventas_me']);
                     this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_facturacion_usd.setValue(reg.datos[0]['otros_ventas_me']);
+                    /*********************************************************************/
+
+
                     this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
                     //Total Arqueo
                     this.Cmp.total_efectivo_ml.setValue(parseFloat(reg.datos[0]['monto_ca_boleto_bs']) + parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['efectivo_recibo_ml']) /*+  parseFloat(reg.datos[0]['tarjeta_ventas_ml']) +  parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml'] )+  parseFloat( reg.datos[0]['mco_ventas_ml'])*/);
@@ -2075,33 +2130,52 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.monto_inicial_moneda_extranjera.setValue(this.maestro.data.monto_inicial_moneda_extranjera);
 
                     /**********************Recuperamos el Recibo************************************/
-                    var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']);
-                    var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']);
-                    console.log("Llega aqui el dato",reg.datos[0]);
+                    var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']) + parseFloat(reg.datos[0]['otros_recibo_ml']);
+                    var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']) + parseFloat(reg.datos[0]['otros_recibo_me']);
+
                     this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
                     this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
                     this.Cmp.monto_deposito_recibo_ml.setValue(reg.datos[0]['deposito_recibo_ml']);
                     this.Cmp.monto_cc_recibo_cta_cte_ml.setValue(reg.datos[0]['cuenta_corriente_recibo_ml']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_recibo_ml.setValue(reg.datos[0]['otros_recibo_ml']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_recibo_moneda_base.setValue(total_recibos_ml);
 
                     this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
                     this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_me']);
                     this.Cmp.monto_deposito_recibo_me.setValue(reg.datos[0]['deposito_recibo_me']);
                     this.Cmp.monto_cc_recibo_cta_cte_me.setValue(reg.datos[0]['cuenta_corriente_recibo_me']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_recibo_me.setValue(reg.datos[0]['otros_recibo_me']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_recibo_moneda_extranjera.setValue(total_recibos_me);
                     /****************************************************************************/
 
-                    var total_boletos_ml = parseFloat(reg.datos[0]['monto_ca_boleto_bs']) + parseFloat(reg.datos[0]['monto_cc_boleto_bs']) + parseFloat(reg.datos[0]['monto_cte_boleto_bs']);
-                    var total_boletos_me = parseFloat(reg.datos[0]['monto_ca_boleto_usd']) + parseFloat(reg.datos[0]['monto_cc_boleto_usd']) + parseFloat(reg.datos[0]['monto_cte_boleto_usd']);
+                    var total_boletos_ml = parseFloat(reg.datos[0]['monto_ca_boleto_bs']) + parseFloat(reg.datos[0]['monto_cc_boleto_bs']) + parseFloat(reg.datos[0]['monto_cte_boleto_bs']) + parseFloat(reg.datos[0]['otro_boletos_ml']);
+                    var total_boletos_me = parseFloat(reg.datos[0]['monto_ca_boleto_usd']) + parseFloat(reg.datos[0]['monto_cc_boleto_usd']) + parseFloat(reg.datos[0]['monto_cte_boleto_usd']) + parseFloat(reg.datos[0]['otros_boletos_me']);
                     //Boletos Nacional
                     this.Cmp.monto_ca_boleto_bs.setValue(reg.datos[0]['monto_ca_boleto_bs']);
                     this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['monto_cc_boleto_bs']);
                     this.Cmp.monto_cte_boleto_bs.setValue(reg.datos[0]['monto_cte_boleto_bs']);
+
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_boleto_bs.setValue(reg.datos[0]['otro_boletos_ml']);
+                    /*********************************************************************/
+
+
                     this.Cmp.monto_boleto_moneda_base.setValue(total_boletos_ml);
 
                     this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['monto_ca_boleto_usd']);
                     this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['monto_cc_boleto_usd']);
                     this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['monto_cte_boleto_usd']);
+
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_boleto_usd.setValue(reg.datos[0]['otros_boletos_me']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
 
 
@@ -2112,34 +2186,49 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.id_apertura_cierre_caja.setValue(this.maestro.data.id_apertura_cierre_caja);
                     this.Cmp.id_sucursal.setValue(reg.datos[0]['id_sucursal']);
                     //Totales Boletos
-                    var total_boletos_ml = parseFloat(reg.datos[0]['monto_ca_boleto_bs']) + parseFloat(reg.datos[0]['monto_cc_boleto_bs']) + parseFloat(reg.datos[0]['monto_cte_boleto_bs']);
-                    var total_boletos_me = parseFloat(reg.datos[0]['monto_ca_boleto_usd']) + parseFloat(reg.datos[0]['monto_cc_boleto_usd']) + parseFloat(reg.datos[0]['monto_cte_boleto_usd']);
+                    var total_boletos_ml = parseFloat(reg.datos[0]['monto_ca_boleto_bs']) + parseFloat(reg.datos[0]['monto_cc_boleto_bs']) + parseFloat(reg.datos[0]['monto_cte_boleto_bs']) + parseFloat(reg.datos[0]['otro_boletos_ml']);
+                    var total_boletos_me = parseFloat(reg.datos[0]['monto_ca_boleto_usd']) + parseFloat(reg.datos[0]['monto_cc_boleto_usd']) + parseFloat(reg.datos[0]['monto_cte_boleto_usd']) + parseFloat(reg.datos[0]['otros_boletos_me']);
                     //Boletos Nacional
                     this.Cmp.monto_ca_boleto_bs.setValue(reg.datos[0]['monto_ca_boleto_bs']);
                     this.Cmp.monto_cc_boleto_bs.setValue(reg.datos[0]['monto_cc_boleto_bs']);
                     this.Cmp.monto_cte_boleto_bs.setValue(reg.datos[0]['monto_cte_boleto_bs']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_boleto_bs.setValue(reg.datos[0]['otro_boletos_ml']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_boleto_moneda_base.setValue(total_boletos_ml);
                     //Boletos Internacional
                     this.Cmp.monto_ca_boleto_usd.setValue(reg.datos[0]['monto_ca_boleto_usd']);
                     this.Cmp.monto_cc_boleto_usd.setValue(reg.datos[0]['monto_cc_boleto_usd']);
                     this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['monto_cte_boleto_usd']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_boleto_usd.setValue(reg.datos[0]['otros_boletos_me']);
+                    /*********************************************************************/
                     this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
                     //recibo nacional
 
                     /*Auemntando */
-                    var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']);
-                    var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']);
+                    var total_recibos_ml = parseFloat(reg.datos[0]['efectivo_recibo_ml']) + parseFloat(reg.datos[0]['tarjeta_recibo_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_ml']) + parseFloat(reg.datos[0]['deposito_recibo_ml']) + parseFloat(reg.datos[0]['otros_recibo_ml']);
+                    var total_recibos_me = parseFloat(reg.datos[0]['efectivo_recibo_me']) + parseFloat(reg.datos[0]['tarjeta_recibo_me']) + parseFloat(reg.datos[0]['cuenta_corriente_recibo_me']) + parseFloat(reg.datos[0]['deposito_recibo_me']) + parseFloat(reg.datos[0]['otros_recibo_me']);
 
                     this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
                     this.Cmp.monto_cc_recibo_ml.setValue(reg.datos[0]['tarjeta_recibo_ml']);
                     this.Cmp.monto_deposito_recibo_ml.setValue(reg.datos[0]['deposito_recibo_ml']);
                     this.Cmp.monto_cc_recibo_cta_cte_ml.setValue(reg.datos[0]['cuenta_corriente_recibo_ml']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_recibo_ml.setValue(reg.datos[0]['otros_recibo_ml']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_recibo_moneda_base.setValue(total_recibos_ml);
 
                     this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
                     this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_me']);
                     this.Cmp.monto_deposito_recibo_me.setValue(reg.datos[0]['deposito_recibo_me']);
                     this.Cmp.monto_cc_recibo_cta_cte_me.setValue(reg.datos[0]['cuenta_corriente_recibo_me']);
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_recibo_ml.setValue(reg.datos[0]['otros_recibo_me']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_recibo_moneda_extranjera.setValue(total_recibos_me);
                     /*************/
                     // this.Cmp.monto_ca_recibo_ml.setValue(reg.datos[0]['efectivo_recibo_ml']);
@@ -2148,19 +2237,30 @@ header("content-type: text/javascript; charset=UTF-8");
                     // this.Cmp.monto_ca_recibo_me.setValue(reg.datos[0]['efectivo_recibo_me']);
                     // this.Cmp.monto_cc_recibo_me.setValue(reg.datos[0]['tarjeta_recibo_ml']);
                     //venta total
-                    var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) /*+ parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml'])*/;
-                    var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) /*+ parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me'])*/;
+                    var total_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']) + parseFloat(reg.datos[0]['tarjeta_ventas_ml']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_ml']) + parseFloat(reg.datos[0]['mco_ventas_ml']) + parseFloat(reg.datos[0]['otros_ventas_ml']);
+                    var total_ventas_me = parseFloat(reg.datos[0]['efectivo_ventas_me']) + parseFloat(reg.datos[0]['tarjeta_ventas_me']) + parseFloat(reg.datos[0]['cuenta_corriente_ventas_me']) + parseFloat(reg.datos[0]['mco_ventas_me']) + parseFloat(reg.datos[0]['otros_ventas_me']);
                     //venta nacional
                     this.Cmp.monto_ca_facturacion_bs.setValue(reg.datos[0]['efectivo_ventas_ml']);
                     this.Cmp.monto_cc_facturacion_bs.setValue(reg.datos[0]['tarjeta_ventas_ml']);
                     this.Cmp.monto_cte_facturacion_bs.setValue(reg.datos[0]['cuenta_corriente_ventas_ml']);
                     this.Cmp.monto_mco_facturacion_bs.setValue(reg.datos[0]['mco_ventas_ml']);
+
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_facturacion_bs.setValue(reg.datos[0]['otros_ventas_ml']);
+                    /*********************************************************************/
+
+
                     this.Cmp.monto_moneda_base_fp_facturacion.setValue(total_ventas_ml);
                     //venta Internacional
                     this.Cmp.monto_ca_facturacion_usd.setValue(reg.datos[0]['efectivo_ventas_me']);
                     this.Cmp.monto_cc_facturacion_usd.setValue(reg.datos[0]['tarjeta_ventas_me']);
                     this.Cmp.monto_cte_facturacion_usd.setValue(reg.datos[0]['cuenta_corriente_ventas_me']);
                     this.Cmp.monto_mco_facturacion_usd.setValue(reg.datos[0]['mco_ventas_me']);
+
+                    /******Aumentando para recuperar el monto de otras formas de pago*****/
+                    this.Cmp.monto_otro_facturacion_usd.setValue(reg.datos[0]['otros_ventas_me']);
+                    /*********************************************************************/
+
                     this.Cmp.monto_moneda_ref_fp_facturacion.setValue(total_ventas_me);
 
                     this.efectivo_ventas_ml = parseFloat(reg.datos[0]['efectivo_ventas_ml']);
@@ -2221,15 +2321,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 monto_ca_boleto_bs : this.Cmp.monto_ca_boleto_bs.getValue(),
                 monto_cc_boleto_bs : this.Cmp.monto_cc_boleto_bs.getValue(),
                 monto_cte_boleto_bs : this.Cmp.monto_cte_boleto_bs.getValue(),
+                monto_otro_boleto_bs : this.Cmp.monto_otro_boleto_bs.getValue(),
+
                 //internacional
                 monto_ca_boleto_usd : this.Cmp.monto_ca_boleto_usd.getValue(),
                 monto_cc_boleto_usd : this.Cmp.monto_cc_boleto_usd.getValue(),
                 monto_cte_boleto_usd : this.Cmp.monto_cte_boleto_usd.getValue(),
+                monto_otro_boleto_usd : this.Cmp.monto_otro_boleto_usd.getValue(),
+
 
                 monto_ca_recibo_ml: this.Cmp.monto_ca_recibo_ml.getValue(),
                 monto_ca_recibo_me: this.Cmp.monto_ca_recibo_me.getValue(),
                 monto_cc_recibo_ml: this.Cmp.monto_cc_recibo_ml.getValue(),
                 monto_cc_recibo_me: this.Cmp.monto_cc_recibo_me.getValue(),
+                monto_otro_recibo_ml: this.Cmp.monto_otro_recibo_ml.getValue(),
+                monto_otro_recibo_me: this.Cmp.monto_otro_recibo_me.getValue(),
+
 
                 ///ventas nacioneles
 
@@ -2237,12 +2344,16 @@ header("content-type: text/javascript; charset=UTF-8");
                 monto_cc_facturacion_bs: this.Cmp.monto_cc_facturacion_bs.getValue(),
                 monto_cte_facturacion_bs: this.Cmp.monto_cte_facturacion_bs.getValue(),
                 monto_mco_facturacion_bs: this.Cmp.monto_mco_facturacion_bs.getValue(),
+                monto_otro_facturacion_bs: this.Cmp.monto_otro_facturacion_bs.getValue(),
+
 
                 ///ventas internaciones
 
                 monto_ca_facturacion_usd: this.Cmp.monto_ca_facturacion_usd.getValue(),
                 monto_cc_facturacion_usd: this.Cmp.monto_cc_facturacion_usd.getValue(),
                 monto_cte_facturacion_usd: this.Cmp.monto_cte_facturacion_usd.getValue(),
+                monto_otro_facturacion_usd: this.Cmp.monto_otro_facturacion_usd.getValue(),
+
                 //Comision
                 comisiones_ml: this.Cmp.comisiones_ml.getValue(),
                 comisiones_me: this.Cmp.comisiones_me.getValue()

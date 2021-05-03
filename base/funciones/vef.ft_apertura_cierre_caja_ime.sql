@@ -317,7 +317,6 @@ BEGIN
             where id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja) = 'no')then */
          delete from vef.tdetalle_apertura_cc fo
 		where fo.id_apertura_cierre_caja = v_parametros.id_apertura_cierre_caja;
-
          INSERT INTO vef.tdetalle_apertura_cc ( id_usuario_reg,
                                                 id_usuario_mod,
                                                 fecha_reg,
@@ -352,7 +351,17 @@ BEGIN
                                                 arqueo_moneda_local,
             									arqueo_moneda_extranjera,
                                                 comisiones_ml,
-                                                comisiones_me
+                                                comisiones_me,
+
+                                                /*Aumentnado para los nuevos campos*/
+                                                monto_otro_boleto_bs,
+                                                monto_otro_boleto_usd,
+                                                monto_otro_recibo_ml,
+                                                monto_otro_recibo_me,
+                                                monto_otro_facturacion_bs,
+                                                monto_otro_facturacion_usd
+                                                /***********************************/
+
                                               )
                                               VALUES (
                                                 p_id_usuario,
@@ -391,7 +400,14 @@ BEGIN
                                                 v_parametros.arqueo_moneda_local,
             									v_parametros.arqueo_moneda_extranjera,
                                                 v_parametros.comisiones_ml,
-                                                 v_parametros.comisiones_me);
+                                                v_parametros.comisiones_me,
+                                                /*Aumentando para la forma de pago recibos*/
+                                                v_parametros.monto_otro_boleto_bs,
+                                                v_parametros.monto_otro_boleto_usd,
+                                                v_parametros.monto_otro_recibo_ml,
+                                                v_parametros.monto_otro_recibo_me,
+                                                v_parametros.monto_otro_facturacion_bs,
+                                                v_parametros.monto_otro_facturacion_usd);
 		--else
 
      /*

@@ -228,26 +228,32 @@ class MODAperturaCierreCaja extends MODbase{
         $this->setParametro('monto_cc_boleto_bs','monto_cc_boleto_bs','numeric');
         $this->setParametro('monto_cte_boleto_bs','monto_cte_boleto_bs','numeric');
         $this->setParametro('monto_mco_boleto_bs','monto_mco_boleto_bs','numeric');
+        $this->setParametro('monto_otro_boleto_bs','monto_otro_boleto_bs','numeric');
 
         $this->setParametro('monto_ca_boleto_usd','monto_ca_boleto_usd','numeric');
         $this->setParametro('monto_cc_boleto_usd','monto_cc_boleto_usd','numeric');
         $this->setParametro('monto_cte_boleto_usd','monto_cte_boleto_usd','numeric');
         $this->setParametro('monto_mco_boleto_usd','monto_mco_boleto_usd','numeric');
+        $this->setParametro('monto_otro_boleto_usd','monto_otro_boleto_usd','numeric');
 
         $this->setParametro('monto_ca_recibo_ml','monto_ca_recibo_ml','numeric');
         $this->setParametro('monto_ca_recibo_me','monto_ca_recibo_me','numeric');
         $this->setParametro('monto_cc_recibo_ml','monto_cc_recibo_ml','numeric');
         $this->setParametro('monto_cc_recibo_me','monto_cc_recibo_me','numeric');
+        $this->setParametro('monto_otro_recibo_ml','monto_otro_recibo_ml','numeric');
+        $this->setParametro('monto_otro_recibo_me','monto_otro_recibo_me','numeric');
 
         $this->setParametro('monto_ca_facturacion_bs', 'monto_ca_facturacion_bs','numeric');
         $this->setParametro('monto_cc_facturacion_bs', 'monto_cc_facturacion_bs','numeric');
         $this->setParametro('monto_cte_facturacion_bs','monto_cte_facturacion_bs','numeric');
         $this->setParametro('monto_mco_facturacion_bs','monto_mco_facturacion_bs','numeric');
+        $this->setParametro('monto_otro_facturacion_bs','monto_otro_facturacion_bs','numeric');
 
         $this->setParametro('monto_ca_facturacion_usd','monto_ca_facturacion_usd','numeric');
         $this->setParametro('monto_cc_facturacion_usd','monto_cc_facturacion_usd','numeric');
         $this->setParametro('monto_cte_facturacion_usd','monto_cte_facturacion_usd','numeric');
         $this->setParametro('monto_mco_facturacion_usd','monto_mco_facturacion_usd','numeric');
+        $this->setParametro('monto_otro_facturacion_usd','monto_otro_facturacion_usd','numeric');
 
         $this->setParametro('comisiones_ml','comisiones_ml','numeric');
         $this->setParametro('comisiones_me','comisiones_me','numeric');
@@ -455,6 +461,10 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('monto_cte_boleto_usd','numeric');
         $this->captura('monto_mco_boleto_usd','numeric');
         $this->captura('monto_ca_recibo_ml','numeric');
+
+        $this->captura('otro_boletos_ml','numeric');
+        $this->captura('otros_boletos_me','numeric');
+
         $this->captura('monto_cc_recibo_ml','numeric');
         $this->captura('monto_ca_recibo_me','numeric');
         $this->captura('monto_cc_recibo_me','numeric');
@@ -524,6 +534,9 @@ class MODAperturaCierreCaja extends MODbase{
         $this->captura('monto_ca_recibo_me','numeric');
         $this->captura('monto_cc_recibo_ml','numeric');
         $this->captura('monto_cc_recibo_me','numeric');
+
+        $this->captura('monto_otro_recibo_ml','numeric');
+        $this->captura('monto_otro_recibo_me','numeric');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

@@ -506,7 +506,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 } else {
                   this.mostrarComponente(this.Cmp.monto_inicial_moneda_extranjera);
                   this.Cmp.monto_inicial.setValue(0);
-                }              
+                }
                 /*************************************************************/
 
                 console.log('lleganewthis',this);
@@ -637,27 +637,37 @@ header("content-type: text/javascript; charset=UTF-8");
                         monto_cc_boleto_bs : resp.monto_cc_boleto_bs,
                         monto_cte_boleto_bs : resp.monto_cte_boleto_bs,
                         monto_mco_boleto_bs : resp.monto_mco_boleto_bs,
+                        monto_otro_boleto_bs : resp.monto_otro_boleto_bs,
+
                         //internaciona
                         monto_ca_boleto_usd: resp.monto_ca_boleto_usd,
                         monto_cc_boleto_usd: resp.monto_cc_boleto_usd,
                         monto_cte_boleto_usd: resp.monto_cte_boleto_usd,
                         monto_mco_boleto_usd: resp.monto_mco_boleto_usd,
+                        monto_otro_boleto_usd : resp.monto_otro_boleto_usd,
 
                         monto_ca_recibo_ml : resp.monto_ca_recibo_ml,
                         monto_ca_recibo_me : resp.monto_ca_recibo_me,
                         monto_cc_recibo_ml : resp.monto_cc_recibo_ml,
                         monto_cc_recibo_me : resp.monto_cc_recibo_me,
+                        monto_otro_recibo_ml: resp.monto_otro_recibo_ml,
+                        monto_otro_recibo_me: resp.monto_otro_recibo_me,
+
                         //nacional_ventas
 
                         monto_ca_facturacion_bs : resp.monto_ca_facturacion_bs,
                         monto_cc_facturacion_bs : resp.monto_cc_facturacion_bs,
                         monto_cte_facturacion_bs : resp.monto_cte_facturacion_bs,
                         monto_mco_facturacion_bs : resp.monto_mco_facturacion_bs,
+                        monto_otro_facturacion_bs: resp.monto_otro_facturacion_bs,
+
                         //interncionl_ventas
                         monto_ca_facturacion_usd : resp.monto_ca_facturacion_usd,
                         monto_cc_facturacion_usd : resp.monto_cc_facturacion_usd,
                         monto_cte_facturacion_usd : resp.monto_cte_facturacion_usd,
                         monto_mco_facturacion_usd : resp.monto_mco_facturacion_usd,
+                        monto_otro_facturacion_usd: resp.monto_otro_facturacion_usd,
+
                         comisiones_ml : resp.comisiones_ml,
                         comisiones_me : resp.comisiones_me
 
