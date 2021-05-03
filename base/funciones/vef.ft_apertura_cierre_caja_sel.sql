@@ -372,7 +372,7 @@ BEGIN
                                       0
                                   end)as mco_ventas_me';
 
-                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -402,7 +402,7 @@ BEGIN
                                     0
                                 end)as deposito_recibo_me';
 
-                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0

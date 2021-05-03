@@ -2207,7 +2207,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.monto_cte_boleto_usd.setValue(reg.datos[0]['cuenta_corriente_boletos_me']);
                 this.Cmp.monto_mco_boleto_usd.setValue(reg.datos[0]['mco_boletos_me']);
                 /******Aumentando para recuperar el monto de otras formas de pago*****/
-                this.Cmp.monto_otro_boleto_bs.setValue(reg.datos[0]['otros_boletos_me']);
+                this.Cmp.monto_otro_boleto_usd.setValue(reg.datos[0]['otros_boletos_me']);
                 /*********************************************************************/
                 this.Cmp.monto_boleto_moneda_usd.setValue(total_boletos_me);
 
