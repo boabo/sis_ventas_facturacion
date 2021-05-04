@@ -372,7 +372,7 @@ BEGIN
                                       0
                                   end)as mco_ventas_me';
 
-                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -402,7 +402,7 @@ BEGIN
                                     0
                                 end)as deposito_recibo_me';
 
-                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -1971,56 +1971,6 @@ BEGIN
             left join vef.tventa v on v.id_usuario_cajero = u.id_usuario and v.fecha = a.fecha_apertura_cierre and
             v.id_punto_venta = a.id_punto_venta and v.estado = ''finalizado''
             where a.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja;
-
-            v_consulta := v_consulta||'group by
-                                      u.desc_persona,
-                                      a.fecha_apertura_cierre,
-                                      ppv.codigo,
-                                      ps.codigo,
-                                      lpv.codigo,
-                                      ls.codigo,
-                                      pv.codigo,
-                                      s.codigo,
-                                      pv.nombre,
-                                      s.nombre,
-                                      a.obs_cierre::varchar,
-                                      a.arqueo_moneda_local,
-                                      a.arqueo_moneda_extranjera,
-                                      a.monto_inicial,
-                                      a.monto_inicial_moneda_extranjera,
-                                      d.monto_ca_boleto_bs,
-                                      d.monto_ca_boleto_usd,
-                                      d.monto_cc_boleto_bs,
-                                      d.monto_cc_boleto_usd,
-                                      d.monto_cte_boleto_bs,
-                                      d.monto_cte_boleto_usd,
-                                      d.monto_mco_boleto_bs,
-                                      d.monto_mco_boleto_usd,
-
-                                      d.monto_otro_boleto_bs,
-                                      d.monto_otro_boleto_usd,
-
-                                      d.monto_ca_facturacion_bs,
-                                      d.monto_ca_facturacion_usd,
-                                      d.monto_cc_facturacion_bs,
-                                      d.monto_cc_facturacion_usd,
-                                      d.monto_cte_facturacion_bs,
-                                      d.monto_cte_facturacion_usd,
-                                      d.monto_mco_facturacion_bs,
-                                      d.monto_mco_facturacion_usd,
-
-                                      d.monto_otro_facturacion_bs,
-                                      d.monto_otro_facturacion_usd,
-
-                                      d.comisiones_ml,
-                                      d.comisiones_me,
-                                      d.monto_ca_recibo_ml,
-                                      d.monto_ca_recibo_me,
-                                      d.monto_cc_recibo_ml,
-                                      d.monto_cc_recibo_me,
-
-                                      d.monto_otro_recibo_ml,
-                                      d.monto_otro_recibo_me';
 
             --Definicion de la respuesta
             raise notice 'v_consulta %', v_consulta;
