@@ -1886,3 +1886,8 @@ ALTER TABLE vef.tdetalle_apertura_cc
  ALTER TABLE vef.tdetalle_apertura_cc
   ADD COLUMN monto_otro_facturacion_usd NUMERIC(18,2);
   /***********************************F-SCP-IRVA-VEF-0-03/05/2021****************************************/
+
+/***********************************I-SCP-BVP-VEF-0-04/05/2021****************************************/
+ALTER TABLE vef.tventa_forma_pago_log
+  ADD COLUMN id_venta_recibo INTEGER;
+/***********************************F-SCP-BVP-VEF-0-04/05/2021****************************************/
