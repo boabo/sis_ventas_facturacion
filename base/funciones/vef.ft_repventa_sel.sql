@@ -1162,7 +1162,7 @@ $body$
                     end as monto_cash_usd,
 
                      /*Aumentando*/
-                     CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpusd.id_boleto_amadeus is null then
+                     CASE WHEN (b.forma_pago = ''CC'' and b.id_moneda_boleto = 2 and b.voided != ''si'' and fpusd.id_boleto_amadeus is null and fpmb.id_boleto_amadeus is null) then
                         (b.total - COALESCE(b.comision,0))
                      else
                         case
@@ -1201,7 +1201,7 @@ $body$
              case when b.voided != ''si'' then coalesce(fpmb.monto_cash_mb,0) else 0 end as monto_cash_mb,
 
              /*Aumentando*/
-             CASE WHEN b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 and b.voided != ''si'' and fpmb.id_boleto_amadeus is null then
+             CASE WHEN (b.forma_pago = ''CC'' and b.id_moneda_boleto != 2 and b.voided != ''si'' and fpmb.id_boleto_amadeus is null and fpusd.id_boleto_amadeus is null) then
 
              	(b.total - COALESCE(b.comision,0))
 
