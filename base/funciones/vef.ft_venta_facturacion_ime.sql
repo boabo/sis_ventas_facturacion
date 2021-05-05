@@ -5048,7 +5048,7 @@ BEGIN
 			v_datos_anteriores.tipo_tarjeta,
             'Modificado',
             v_datos_anteriores.nro_mco,
-            v_datos_anteriores.id_instancia_pago,
+            v_datos_anteriores.id_medio_pago,
             v_datos_anteriores.id_moneda,
             v_datos_anteriores.id_venta_recibo
 			);
