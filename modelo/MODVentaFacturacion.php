@@ -1160,6 +1160,8 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('tipo_tarjeta_2','tipo_tarjeta_2','varchar');
 			$this->setParametro('id_venta_recibo','id_venta_recibo','int4');
 			$this->setParametro('id_venta_recibo_2','id_venta_recibo_2','int4');
+			$this->setParametro('saldo_recibo','saldo_recibo','numeric');
+			$this->setParametro('saldo_recibo_2','saldo_recibo_2','numeric');
 			//Ejecuta la instruccion
 			$this->armarConsulta();
 			$this->ejecutarConsulta();
