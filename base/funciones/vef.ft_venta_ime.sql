@@ -145,7 +145,12 @@ $body$
 
     v_existe_recibo_asociado numeric;
     v_existe_recibo_asociado_boleto numeric;
-    
+
+    v_id_venta_recibo			integer;
+    v_id_venta_recibo_2			integer;
+    v_mon_recibo			varchar;
+    v_mon_recibo_2			varchar;
+
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
@@ -173,6 +178,34 @@ $body$
                                 else
                                       NULL
                               end);*/
+        /** control de saldo para medio de pago recibo anticipo si saldos son menores o iguales a 0 no permite el pago
+        breydi.vasquez 06/05/2021***/
+        /******************************************************************************************************************/
+
+       if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+         v_id_venta_recibo = v_parametros.id_venta_recibo;
+
+         select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
+         if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_parametros.saldo_recibo is not null)) then
+            raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+         end if;
+
+       else
+         v_id_venta_recibo = null;
+       end if;
+
+       if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+         	v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
+
+           select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
+           if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_parametros.saldo_recibo_2 is not null)) then
+              raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
+           end if;
+
+       else
+         v_id_venta_recibo_2 = null;
+       end if;
+         /****fin**************/
         if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
@@ -813,7 +846,8 @@ $body$
             codigo_tarjeta,
             id_auxiliar,
             tipo_tarjeta,
-            nro_mco
+            nro_mco,
+            id_venta_recibo
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -833,7 +867,8 @@ $body$
             replace(upper(v_parametros.codigo_tarjeta),' ',''),
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
-            v_parametros.mco
+            v_parametros.mco,
+            v_id_venta_recibo
           );
         end if;
 
@@ -909,7 +944,8 @@ $body$
             codigo_tarjeta,
             id_auxiliar,
             tipo_tarjeta,
-            nro_mco
+            nro_mco,
+            id_venta_recibo
           )
 
           values(
@@ -930,7 +966,8 @@ $body$
             replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             v_parametros.id_auxiliar_2,
             v_parametros.tipo_tarjeta,
-            v_parametros.mco_2
+            v_parametros.mco_2,
+            v_id_venta_recibo_2
           );
         end if;
 

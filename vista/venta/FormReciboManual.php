@@ -750,6 +750,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
         this.ocultarComponente(this.Cmp.id_auxiliar_2);
         this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+        this.ocultarComponente(this.Cmp.id_venta_recibo);
+        this.ocultarComponente(this.Cmp.id_venta_recibo_2);
         this.cargarInstanciaPago();
 
        /********************************Aumemtando condicios para el id moneda****************************************/
@@ -765,7 +767,20 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
          //if(r.data.id_moneda == 2){
             this.devolverCambio();
         //  }
+        // filtro de nro de recibo segun la moneda seleccionada
+        this.Cmp.id_venta_recibo.reset()
+        this.Cmp.id_venta_recibo.store.baseParams.id_moneda=r.data.id_moneda;
+        this.Cmp.id_venta_recibo.store.baseParams.id_auxiliar_anticipo=this.Cmp.id_auxiliar.getValue();
+        this.Cmp.id_venta_recibo.modificado = true;
        },this);
+
+       // filtro de nro de recibo segun la cuenta corriente seleccionada
+       this.Cmp.id_auxiliar.on('select', function(c,r){
+           this.Cmp.id_venta_recibo.reset()
+           this.Cmp.id_venta_recibo.store.baseParams.id_moneda=this.Cmp.id_moneda.getValue();
+           this.Cmp.id_venta_recibo.store.baseParams.id_auxiliar_anticipo=r.data.id_auxiliar;
+           this.Cmp.id_venta_recibo.modificado = true;
+       },this)
 
        this.Cmp.id_moneda_2.on('select',function(c,r,i) {
          /*Modificar el monto cambio Ismael Valdivia 2020*/
@@ -792,7 +807,21 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
              this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
          }
 
+         // filtro de nro de recibo segun la moneda seleccionada
+         this.Cmp.id_venta_recibo_2.reset()
+         this.Cmp.id_venta_recibo_2.store.baseParams.id_moneda=r.data.id_moneda;
+         this.Cmp.id_venta_recibo_2.store.baseParams.id_auxiliar_anticipo=this.Cmp.id_auxiliar_2.getValue();
+         this.Cmp.id_venta_recibo_2.modificado = true;
+
        },this);
+
+       // filtro de nro de recibo segun la cuenta corriente seleccionada
+       this.Cmp.id_auxiliar_2.on('select', function(c,r){
+           this.Cmp.id_venta_recibo_2.reset()
+           this.Cmp.id_venta_recibo_2.store.baseParams.id_moneda=this.Cmp.id_moneda_2.getValue();
+           this.Cmp.id_venta_recibo_2.store.baseParams.id_auxiliar_anticipo=r.data.id_auxiliar;
+           this.Cmp.id_venta_recibo_2.modificado = true;
+       },this)
 
        this.Cmp.monto_forma_pago.on('keyup', function (cmp, e){
        this.obtenersuma();
@@ -877,6 +906,46 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
         // },this);
 
         this.iniciarEventosProducto();
+
+        // seleccion de id_venta_recibo para controles con importe registrado
+        this.Cmp.id_venta_recibo.on('select', function(d, r, i){
+            var saldo = r.data.saldo;
+            var imp1 = this.Cmp.monto_forma_pago.getValue();
+            var mon_sel = r.data.moneda;
+            var dif = imp1 - saldo;
+            this.Cmp.saldo_recibo.setValue(saldo);
+            if (imp1 > saldo){
+                Ext.Msg.show({
+                 title:'<h1 style="color:red"><center>AVISO</center></h1>',
+                 msg: '<b>El saldo del recibo es: <span style="color:red;"> '+mon_sel+ ' '+saldo+'</span> Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago recibo anticipo</b>',
+                 maxWidth : 400,
+                 width: 380,
+                 buttons: Ext.Msg.OK,
+                 scope:this
+                });
+            }
+
+        },this)
+
+        // seleccion de id_venta_2 para controles con monto de recibo
+        this.Cmp.id_venta_recibo_2.on('select', function(d, r, i){
+            var saldo = r.data.saldo;
+            var imp2 = this.Cmp.monto_forma_pago_2.getValue();
+            var mon_sel = r.data.moneda;
+            var dif = imp2 - saldo;
+            this.Cmp.saldo_recibo_2.setValue(saldo);
+            if (imp2 > saldo){
+                Ext.Msg.show({
+                 title:'<h1 style="color:red"><center>AVISO</center></h1>',
+                 msg: '<b>El saldo del recibo es: <span style="color:red;"> '+mon_sel+ ' '+saldo+'</span> Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago recibo anticipo</b>',
+                 maxWidth : 400,
+                 width: 380,
+                 buttons: Ext.Msg.OK,
+                 scope:this
+                });
+            }
+
+        },this)
 
     },
 
@@ -2237,6 +2306,24 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 			form:true
 		},
     {
+        config:{
+            labelSeparator:'',
+            inputType:'hidden',
+            name: 'saldo_recibo'
+        },
+        type:'NumberField',
+        form:true
+    },
+    {
+        config:{
+            labelSeparator:'',
+            inputType:'hidden',
+            name: 'saldo_recibo_2'
+        },
+        type:'NumberField',
+        form:true
+    },
+    {
       config : {
         name: 'anulado',
         fieldLabel: '<img src="../../../lib/imagenes/facturacion/aceptarVerde.svg" style="width:15px; vertical-align: middle;">   <img src="../../../lib/imagenes/facturacion/cancelarRojo.svg" style="width:15px; vertical-align: middle;"><span style="vertical-align: middle;"> Estado</span>',
@@ -2776,7 +2863,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
 				displayField: 'nombre_auxiliar',
 				gdisplayField: 'codigo_auxiliar',
 				hiddenName: 'id_auxiliar',
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+        tpl:'<tpl for="."><div class="x-combo-list-item"><b><p style="color:red;">{nombre_auxiliar}</p><p>Codigo: <span style="color:green;">{codigo_auxiliar}</span></p></b></div></tpl>',
+				// tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
 				forceSelection: true,
 				typeAhead: false,
 				triggerAction: 'all',
@@ -2944,6 +3032,48 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
             type:'NumberField',
             id_grupo:2,
             form:true,
+    },
+    {
+        config: {
+            name: 'id_venta_recibo',
+            fieldLabel: 'Nro. Recibo',
+            allowBlank: true,
+            emptyText: '',
+            width:150,
+            store: new Ext.data.JsonStore({
+                url: '../../sis_ventas_facturacion/control/Venta/listarReciboBoletosAmadeus',
+                id: 'id_venta',
+                root: 'datos',
+                sortInfo: {
+                    field: 'v.nro_factura, v.nombre_factura ',
+                    direction: 'ASC'
+                },
+                totalProperty: 'total',
+                fields: ['id_venta', 'nro_factura','nombre_factura','total_venta','saldo', 'tex_saldo','moneda'],
+                remoteSort: true,
+                baseParams: {par_filtro: 'v.nro_factura#v.nombre_factura'}
+            }),
+            valueField: 'id_venta',
+            displayField: 'nro_factura',
+            gdisplayField: 'nro_factura',
+            hiddenName: 'id_venta',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><div style="font-weight:bold;">Numero <span style="color:blue;"">&nbsp;{nro_factura}</span><br> Nombre: <span style="color:green;"">{nombre_factura}</span> <br> Monto: <span style="color:red;">&nbsp;&nbsp;{total_venta}&nbsp;&nbsp;&nbsp{tex_saldo}</span><br></div></div></tpl>',
+            forceSelection: true,
+            typeAhead: false,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'remote',
+            pageSize: 15,
+            queryDelay: 1000,
+            gwidth: 150,
+            listWidth:370,
+            resizable:true,
+            minChars: 1,
+        },
+        type: 'ComboBox',
+        id_grupo: 2,
+        grid: false,
+        form: true
     },
     {
         config:{
@@ -3275,7 +3405,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
     				displayField: 'nombre_auxiliar',
     				gdisplayField: 'codigo_auxiliar',
     				hiddenName: 'id_auxiliar',
-    				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><b><p style="color:red;">{nombre_auxiliar}</p><p>Codigo: <span style="color:green;">{codigo_auxiliar}</span></p></b></div></tpl>',
+    				// tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_auxiliar}</p><p>Codigo:{codigo_auxiliar}</p> </div></tpl>',
     				forceSelection: true,
     				typeAhead: false,
     				triggerAction: 'all',
@@ -3367,6 +3498,48 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
             id_grupo:10,
             grid:true,
             form:true
+        },
+        {
+            config: {
+                name: 'id_venta_recibo_2',
+                fieldLabel: 'Nro. Recibo',
+                allowBlank: true,
+                emptyText: '',
+                width:150,
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_ventas_facturacion/control/Venta/listarReciboBoletosAmadeus',
+                    id: 'id_venta',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'v.nro_factura, v.nombre_factura ',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_venta', 'nro_factura','nombre_factura','total_venta','saldo', 'tex_saldo','moneda'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'v.nro_factura#v.nombre_factura'}
+                }),
+                valueField: 'id_venta',
+                displayField: 'nro_factura',
+                gdisplayField: 'nro_factura',
+                hiddenName: 'id_venta',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><div style="font-weight:bold;">Numero <span style="color:blue;"">&nbsp;{nro_factura}</span><br> Nombre: <span style="color:green;"">{nombre_factura}</span> <br> Monto: <span style="color:red;">&nbsp;&nbsp;{total_venta}&nbsp;&nbsp;&nbsp{tex_saldo}</span><br></div></div></tpl>',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                gwidth: 150,
+                listWidth:370,
+                resizable:true,
+                minChars: 1,
+            },
+            type: 'ComboBox',
+            id_grupo: 10,
+            grid: false,
+            form: true
         },
         {
             config:{
@@ -3698,6 +3871,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.tipo_tarjeta);
           this.mostrarComponente(this.Cmp.numero_tarjeta);
           this.ocultarComponente(this.Cmp.id_auxiliar);
+          this.ocultarComponente(this.Cmp.id_venta_recibo);
           this.Cmp.id_auxiliar_anticipo.allowBlank=true;
           this.Cmp.id_auxiliar_anticipo.reset();
           this.ocultarComponente(this.Cmp.mco);
@@ -3729,6 +3903,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.fecha_deposito.reset();
           this.Cmp.monto_deposito.reset();
           this.Cmp.cuenta_bancaria.reset();
+          this.Cmp.id_venta_recibo.reset();
+          this.Cmp.saldo_recibo.reset();
 
         } else if (codigo_forma_pago.startsWith("MCO")) {
           Ext.getCmp('segunda_forma_pago').show();
@@ -3740,6 +3916,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.codigo_tarjeta);
           this.ocultarComponente(this.Cmp.tipo_tarjeta);
           this.ocultarComponente(this.Cmp.id_auxiliar);
+          this.ocultarComponente(this.Cmp.id_venta_recibo);
+          this.ocultarComponente(this.Cmp.numero_tarjeta);
           this.Cmp.id_auxiliar.allowBlank=true;
           this.Cmp.id_auxiliar.reset();
           this.Cmp.codigo_tarjeta.reset();
@@ -3770,7 +3948,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.fecha_deposito.reset();
           this.Cmp.monto_deposito.reset();
           this.Cmp.cuenta_bancaria.reset();
-
+          this.Cmp.id_venta_recibo.reset();
+          this.Cmp.saldo_recibo.reset();
 
         } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
           Ext.getCmp('segunda_forma_pago').show();
@@ -3783,11 +3962,17 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.codigo_tarjeta);
           this.ocultarComponente(this.Cmp.tipo_tarjeta);
           this.ocultarComponente(this.Cmp.numero_tarjeta);
+          this.ocultarComponente(this.Cmp.id_venta_recibo);
+          this.ocultarComponente(this.Cmp.mco);
           this.Cmp.codigo_tarjeta.reset();
           this.Cmp.tipo_tarjeta.reset();
           this.Cmp.id_auxiliar.reset();
           this.Cmp.mco.reset();
           this.Cmp.numero_tarjeta.reset();
+
+          this.Cmp.id_auxiliar.label.dom.innerHTML='Cuenta Corriente';
+          this.Cmp.id_auxiliar.store.baseParams.ro_activo='no';
+          this.Cmp.id_auxiliar.modificado = true;
 
           if (this.instanciasPagoAnticipo == 'si') {
             this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
@@ -3812,7 +3997,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.fecha_deposito.reset();
           this.Cmp.monto_deposito.reset();
           this.Cmp.cuenta_bancaria.reset();
-
+          this.Cmp.id_venta_recibo.reset();
+          this.Cmp.saldo_recibo.reset();
 
         }else if (codigo_forma_pago.startsWith("CA")) {
           Ext.getCmp('segunda_forma_pago').show();
@@ -3825,6 +4011,7 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.tipo_tarjeta);
           this.ocultarComponente(this.Cmp.numero_tarjeta);
           this.ocultarComponente(this.Cmp.id_auxiliar);
+          this.ocultarComponente(this.Cmp.id_venta_recibo);
           this.Cmp.id_auxiliar.allowBlank=true;
           this.Cmp.id_auxiliar.reset();
           this.ocultarComponente(this.Cmp.mco);
@@ -3857,7 +4044,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.fecha_deposito.reset();
           this.Cmp.monto_deposito.reset();
           this.Cmp.cuenta_bancaria.reset();
-
+          this.Cmp.id_venta_recibo.reset();
+          this.Cmp.saldo_recibo.reset();
 
         }
         /*Aumentando esta parte para la forma de pago*/
@@ -3875,11 +4063,13 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.codigo_tarjeta);
           this.ocultarComponente(this.Cmp.tipo_tarjeta);
           this.ocultarComponente(this.Cmp.numero_tarjeta);
+          this.ocultarComponente(this.Cmp.id_venta_recibo);
           this.Cmp.mco.reset();
           this.Cmp.codigo_tarjeta.reset();
           this.Cmp.tipo_tarjeta.reset();
           this.Cmp.numero_tarjeta.reset();
-
+          this.Cmp.id_venta_recibo.reset();
+          this.Cmp.saldo_recibo.reset();
           /**Aqui ponemos las condiciones**/
           Ext.getCmp('segunda_forma_pago').hide();
           this.mostrarComponente(this.Cmp.nro_deposito);
@@ -4053,12 +4243,59 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           // this.Cmp.mco.allowBlank = true;
         /*********************************************/
 
-        } else {
+      }else if (codigo_forma_pago.startsWith("RANT")) {
+          Ext.getCmp('segunda_forma_pago').show();
+          this.mostrarComponente(this.Cmp.id_auxiliar);
+          this.mostrarComponente(this.Cmp.id_venta_recibo);
+          this.Cmp.numero_tarjeta.allowBlank = true;
+          this.Cmp.codigo_tarjeta.allowBlank = true;
+          this.Cmp.tipo_tarjeta.allowBlank = true;
+          this.Cmp.mco.allowBlank = true;
+          this.Cmp.id_auxiliar.allowBlank = false;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta);
+          this.ocultarComponente(this.Cmp.numero_tarjeta);
           this.Cmp.codigo_tarjeta.reset();
           this.Cmp.tipo_tarjeta.reset();
           this.Cmp.id_auxiliar.reset();
           this.Cmp.mco.reset();
           this.Cmp.numero_tarjeta.reset();
+
+          this.Cmp.id_auxiliar.label.dom.innerHTML='Grupo';
+          this.Cmp.id_auxiliar.store.baseParams.ro_activo='si';
+          this.Cmp.id_auxiliar.modificado = true;
+
+          if (this.instanciasPagoAnticipo == 'si') {
+            this.mostrarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank = false;
+            Ext.getCmp('datos_deposito').show();
+          }else{
+            Ext.getCmp('datos_deposito').hide();
+            this.ocultarComponente(this.Cmp.id_auxiliar_anticipo);
+            this.Cmp.id_auxiliar_anticipo.allowBlank=true;
+            this.Cmp.id_auxiliar_anticipo.reset();
+          }
+
+          this.ocultarComponente(this.Cmp.nro_deposito);
+          this.ocultarComponente(this.Cmp.fecha_deposito);
+          this.ocultarComponente(this.Cmp.monto_deposito);
+          this.ocultarComponente(this.Cmp.cuenta_bancaria);
+          this.Cmp.nro_deposito.allowBlank=true;
+          this.Cmp.fecha_deposito.allowBlank=true;
+          this.Cmp.monto_deposito.allowBlank=true;
+          this.Cmp.cuenta_bancaria.allowBlank=true;
+          this.Cmp.nro_deposito.reset();
+          this.Cmp.fecha_deposito.reset();
+          this.Cmp.monto_deposito.reset();
+          this.Cmp.cuenta_bancaria.reset();
+        }else {
+          this.Cmp.codigo_tarjeta.reset();
+          this.Cmp.tipo_tarjeta.reset();
+          this.Cmp.id_auxiliar.reset();
+          this.Cmp.mco.reset();
+          this.Cmp.numero_tarjeta.reset();
+          this.Cmp.id_venta_recibo.reset();
+          this.Cmp.saldo_recibo.reset();
         }
       }
 
@@ -4073,10 +4310,13 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.mostrarComponente(this.Cmp.numero_tarjeta_2);
           this.ocultarComponente(this.Cmp.id_auxiliar_2);
           this.ocultarComponente(this.Cmp.mco_2);
+          this.ocultarComponente(this.Cmp.id_venta_recibo_2);
           this.Cmp.tipo_tarjeta_2.setValue(r.data.nombre);
           this.Cmp.codigo_tarjeta_2.allowBlank = false;
           this.Cmp.tipo_tarjeta_2.allowBlank = false;
           this.Cmp.mco_2.allowBlank = true;
+          this.Cmp.id_venta_recibo_2.reset();
+          this.Cmp.saldo_recibo_2.reset();
         } else if (codigo_forma_pago.startsWith("MCO")) {
           this.mostrarComponente(this.Cmp.mco_2);
           this.Cmp.numero_tarjeta_2.allowBlank = true;
@@ -4086,10 +4326,14 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
           this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
           this.ocultarComponente(this.Cmp.id_auxiliar_2);
+          this.ocultarComponente(this.Cmp.id_venta_recibo_2);
+          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
           this.Cmp.codigo_tarjeta_2.reset();
           this.Cmp.tipo_tarjeta_2.reset();
           this.Cmp.id_auxiliar_2.reset();
           this.Cmp.numero_tarjeta_2.reset();
+          this.Cmp.id_venta_recibo_2.reset();
+          this.Cmp.saldo_recibo_2.reset();
         } else if (codigo_forma_pago.startsWith("CU") || codigo_forma_pago.startsWith("CT")) {
           this.mostrarComponente(this.Cmp.id_auxiliar_2);
           this.Cmp.numero_tarjeta_2.allowBlank = true;
@@ -4097,14 +4341,20 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.Cmp.tipo_tarjeta_2.allowBlank = true;
           this.Cmp.mco_2.allowBlank = true;
           this.Cmp.id_auxiliar_2.allowBlank = false;
+          this.Cmp.id_auxiliar_2.label.dom.innerHTML='Cuenta Corriente';
+          this.Cmp.id_auxiliar_2.store.baseParams.ro_activo='no';
+          this.Cmp.id_auxiliar_2.modificado = true;
           this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
           this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
           this.ocultarComponente(this.Cmp.numero_tarjeta_2);
+          this.ocultarComponente(this.Cmp.id_venta_recibo_2);
           this.Cmp.codigo_tarjeta_2.reset();
           this.Cmp.tipo_tarjeta_2.reset();
           this.Cmp.id_auxiliar_2.reset();
           this.Cmp.mco_2.reset();
           this.Cmp.numero_tarjeta_2.reset();
+          this.Cmp.id_venta_recibo_2.reset();
+          this.Cmp.saldo_recibo_2.reset();
         }else if (codigo_forma_pago.startsWith("CA")) {
           this.mostrarComponente(this.Cmp.id_auxiliar_2);
           this.Cmp.numero_tarjeta_2.allowBlank = true;
@@ -4117,17 +4367,41 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
           this.ocultarComponente(this.Cmp.numero_tarjeta_2);
           this.ocultarComponente(this.Cmp.id_auxiliar_2);
           this.ocultarComponente(this.Cmp.mco_2);
+          this.ocultarComponente(this.Cmp.id_venta_recibo_2);
           this.Cmp.codigo_tarjeta_2.reset();
           this.Cmp.tipo_tarjeta_2.reset();
           this.Cmp.id_auxiliar_2.reset();
           this.Cmp.mco_2.reset();
           this.Cmp.numero_tarjeta_2.reset();
-        } else {
+          this.Cmp.id_venta_recibo_2.reset();
+          this.Cmp.saldo_recibo_2.reset();
+        }else if (codigo_forma_pago.startsWith("RANT")) {
+          this.mostrarComponente(this.Cmp.id_auxiliar_2);
+          this.mostrarComponente(this.Cmp.id_venta_recibo_2);
+          this.Cmp.numero_tarjeta_2.allowBlank = true;
+          this.Cmp.codigo_tarjeta_2.allowBlank = true;
+          this.Cmp.tipo_tarjeta_2.allowBlank = true;
+          this.Cmp.mco_2.allowBlank = true;
+          this.Cmp.id_auxiliar_2.allowBlank = false;
+          this.Cmp.id_auxiliar_2.label.dom.innerHTML='Grupo';
+          this.Cmp.id_auxiliar_2.store.baseParams.ro_activo='si';
+          this.Cmp.id_auxiliar_2.modificado = true;
+          this.ocultarComponente(this.Cmp.codigo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.tipo_tarjeta_2);
+          this.ocultarComponente(this.Cmp.numero_tarjeta_2);
           this.Cmp.codigo_tarjeta_2.reset();
           this.Cmp.tipo_tarjeta_2.reset();
           this.Cmp.id_auxiliar_2.reset();
           this.Cmp.mco_2.reset();
           this.Cmp.numero_tarjeta_2.reset();
+        }else {
+          this.Cmp.codigo_tarjeta_2.reset();
+          this.Cmp.tipo_tarjeta_2.reset();
+          this.Cmp.id_auxiliar_2.reset();
+          this.Cmp.mco_2.reset();
+          this.Cmp.numero_tarjeta_2.reset();
+          this.Cmp.id_venta_recibo_2.reset();
+          this.Cmp.saldo_recibo_2.reset();
         }
 
         if (this.Cmp.id_moneda.value != 2 && this.Cmp.id_moneda_2.value == 2) {
@@ -4248,6 +4522,8 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
        var desc_id_auxiliar = this.Cmp.id_auxiliar.lastSelectionText;
        var id_auxiliar_2 = this.Cmp.id_auxiliar_2.getValue();
        var desc_id_auxiliar2 = this.Cmp.id_auxiliar_2.lastSelectionText;
+       var id_venta_recibo = this.Cmp.id_venta_recibo.getValue();
+       var id_venta_recibo_2 = this.Cmp.id_venta_recibo_2.getValue();
        /****************************************/
          Phx.CP.loadWindows(this.formUrl,
                                   '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
@@ -4303,7 +4579,9 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
                                     id_auxiliar:id_auxiliar,
                                     desc_id_auxiliar:desc_id_auxiliar,
                                     id_auxiliar_2:id_auxiliar_2,
-                                    desc_id_auxiliar2:desc_id_auxiliar2
+                                    desc_id_auxiliar2:desc_id_auxiliar2,
+                                    id_venta_recibo:  id_venta_recibo,
+                                    id_venta_recibo_2:  id_venta_recibo_2
                                   }
                                  },
                                   this.idContenedor,
