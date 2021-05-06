@@ -1417,9 +1417,9 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         if (imp1 > saldo){
             Ext.Msg.show({
              title:'<h1 style="color:red"><center>AVISO</center></h1>',
-             msg: '<b>Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago</b>',
+             msg: '<b>El saldo del recibo es: <span style="color:red;"> '+mon_sel+ ' '+saldo+'</span> Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago recibo anticipo</b>',
              maxWidth : 400,
-             width: 350,
+             width: 380,
              buttons: Ext.Msg.OK,
              scope:this
             });
@@ -1571,9 +1571,9 @@ Phx.vista.FormVariasFormasPago=Ext.extend(Phx.frmInterfaz,{
         if (imp1 > saldo){
             Ext.Msg.show({
              title:'<h1 style="color:red"><center>AVISO</center></h1>',
-             msg: '<b>Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago</b>',
+             msg: '<b>El saldo del recibo es: <span style="color:red;"> '+mon_sel+ ' '+saldo+'</span> Falta un monto de <span style="color:red;">'+ mon_sel +' '+ dif +'</span> para la forma de pago recibo anticipo</b>',
              maxWidth : 400,
-             width: 350,
+             width: 380,
              buttons: Ext.Msg.OK,
              scope:this
             });

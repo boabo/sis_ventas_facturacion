@@ -304,6 +304,10 @@ class MODVenta extends MODbase{
 						/*Aumentando para registrar correo electronico en MIAMI (Ismael Valdivia 14/10/2020)*/
 						$this->setParametro('correo_electronico', 'correo_electronico', 'varchar');
 						$this->setParametro('nombre_factura', 'nombre_factura', 'varchar');
+						$this->setParametro('id_venta_recibo', 'id_venta_recibo', 'int4');
+						$this->setParametro('id_venta_recibo_2', 'id_venta_recibo_2', 'int4');
+						$this->setParametro('saldo_recibo', 'saldo_recibo', 'numeric');
+						$this->setParametro('saldo_recibo_2', 'saldo_recibo_2', 'numeric');
 						/***********************************************************************************/
 
             //Ejecuta la instruccion
