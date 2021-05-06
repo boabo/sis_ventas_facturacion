@@ -763,6 +763,7 @@ BEGIN
                                                         from vef.tventa ven
                                                         where ven.tipo_factura = 'carga'
                                                         and ven.estado_reg = 'activo'
+                                                        and ven.estado = 'anulado'
                                                         and ven.fecha between p_fecha_inicio and p_fecha_fin
                               )
                               order by fv.id_origen ASC
