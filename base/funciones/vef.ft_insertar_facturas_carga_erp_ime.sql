@@ -1142,6 +1142,227 @@ BEGIN
 
 
           end;
+  /*********************************
+  #TRANSACCION:  'VEF_MODFOP_FCA_ERP'
+  #DESCRIPCION: Servicio para modificacion de forma de pago
+  #AUTOR:   breydi.vasquez
+  #FECHA:   22-04-2021
+  ***********************************/
+  elsif(p_transaccion='VEF_MODFOP_FCA_ERP')then
+      begin
+
+      /*Inserccion de los datos recibidos por el servicio*/
+      INSERT INTO vef.tdatos_carga_recibido
+              (
+                  id_sistema_origen,
+                  observaciones,
+                  json_venta_forma_pago
+              )
+      VALUES (
+              v_parametros.id_origen::integer,
+              'MODIFICACION FORMAS DE PAGO',
+              '['||v_parametros.json_venta_forma_pago||']'--14
+          );
+      /***************************************************/
+         --raise 'resp %',v_parametros.id_origen;
+          select
+          count (ven.id_venta)
+          into
+          v_existe_venta
+          from vef.tventa ven
+          inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+          where ven.id_sistema_origen = v_parametros.id_origen::integer and ven.tipo_factura = 'carga';
+
+          if (v_existe_venta > 0) then
+
+              /*Recuperacion del dato anterior que se encontraba*/
+             FOR v_respaldo IN (select ven.total_venta, fp.*
+                                  from vef.tventa ven
+                                  inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                                  where ven.id_sistema_origen = v_parametros.id_origen::integer and ven.tipo_factura = 'carga')
+             LOOP
+
+                  v_monto_total = v_respaldo.total_venta;
+
+                  /**************************************************/
+                  /*Inserccion de datos*/
+                  insert into vef.tventa_forma_pago_log(
+                    id_venta_forma_pago,
+                    id_venta,
+                    monto_mb_efectivo,
+                    estado_reg,
+                    cambio,
+                    monto_transaccion,
+                    monto,
+                    fecha_reg,
+                    id_usuario_reg,
+                    fecha_mod,
+                    id_usuario_mod,
+                    numero_tarjeta,
+                    codigo_tarjeta,
+                    id_auxiliar,
+                    tipo_tarjeta,
+                    accion,
+                    nro_mco,
+                    id_instancia_pago,
+                    id_venta_recibo
+                    ) values(
+                    v_respaldo.id_venta_forma_pago,
+                    v_respaldo.id_venta,
+                    v_respaldo.monto_mb_efectivo,
+                    v_respaldo.estado_reg,
+                    v_respaldo.cambio,
+                    v_respaldo.monto_transaccion,
+                    v_respaldo.monto,
+                    v_respaldo.fecha_reg,
+                    v_respaldo.id_usuario_reg,
+                    v_respaldo.fecha_mod,
+                    v_respaldo.id_usuario_mod,
+                    v_respaldo.numero_tarjeta,
+                    v_respaldo.codigo_tarjeta,
+                    v_respaldo.id_auxiliar,
+                    v_respaldo.tipo_tarjeta,
+                    'Modificado',
+                    v_respaldo.nro_mco,
+                    v_respaldo.id_medio_pago,
+                    v_respaldo.id_venta_recibo
+                  );
+              END LOOP;
+
+
+          /*Elimnacion de formas de pago anteriores*/
+          delete from vef.tventa_forma_pago where id_venta = v_respaldo.id_venta;
+
+          /*Aqui Insertamos los Medios de Pago que nos enviara Carga*/
+          v_acumulado_fp = 0;
+
+          v_json_data = '['||v_parametros.json_venta_forma_pago||']';
+
+
+          for v_medio_pago in (select *
+                              from json_populate_recordset(null::vef.medio_pago_venta,v_json_data::json))loop
+
+           /*Recuperamos el id moneda en base al codigo que nos manda el servicio*/
+           select mon.id_moneda
+                  into
+                  v_id_moneda_fp
+           from param.tmoneda mon
+           where mon.codigo_internacional = v_medio_pago.moneda;
+           /**********************************************************************/
+
+           /*Recuperamos el id auxiliar en base al codigo que nos envia el servicio*/
+           IF (v_medio_pago.cod_auxiliar is not null and v_medio_pago.cod_auxiliar !='') then
+             select aux.id_auxiliar into
+                    v_id_auxiliar_fp
+             from conta.tauxiliar aux
+             where (aux.codigo_auxiliar = v_medio_pago.cod_auxiliar OR aux.cod_antiguo = v_medio_pago.cod_auxiliar);
+
+           end if;
+           /************************************************************************/
+
+           /*Recuperamos el id_medio_pago en base al codigo que nos envia el servicio*/
+           select mp.id_medio_pago_pw
+                  into
+                  v_id_medio_pago
+           from obingresos.tmedio_pago_pw mp
+           where mp.mop_code = v_medio_pago.cod_medio_pago;
+           /**************************************************************************/
+
+           if (v_id_medio_pago is null) then
+              insert into vef.tfacturas_carga_observadas(
+                      id_venta,--1
+                      id_funcionario,--2
+                      estado,--3
+                      observacion--4
+                    ) values(
+                      v_respaldo.id_venta,--1
+                      NULL,--2
+                      'fp_error modificacion forma de pago',--3
+                      'El medio de pago no esta parametrizado en la tabla obingresos.tmedio_pago_pw'--4
+                    );
+           end if;
+
+           /*Aqui realizamos la inserccion de los medios de pago*/
+           insert into vef.tventa_forma_pago(
+                                              usuario_ai,--1
+                                              fecha_reg,--2
+                                              id_usuario_reg,--3
+                                              id_usuario_ai,--4
+                                              estado_reg,--5
+                                              id_venta,--6
+                                              monto_transaccion,--7
+                                              monto,--8
+                                              cambio,--9
+                                              monto_mb_efectivo,--10
+                                              numero_tarjeta,--11
+                                              codigo_tarjeta,--12
+                                              id_auxiliar,--13
+                                              tipo_tarjeta,--14
+                                              id_medio_pago,--15
+                                              id_moneda--16
+                                            )
+                                      values(
+                                              v_parametros._nombre_usuario_ai,--1
+                                              now(),--2
+                                              p_id_usuario,--3
+                                              v_parametros._id_usuario_ai,--4
+                                              'activo',--5
+                                              v_respaldo.id_venta,--6
+                                              v_medio_pago.importe,--7
+                                              0,--8
+                                              0,--9
+                                              0,--10
+                                              v_medio_pago.numero_tarjeta,--11
+                                              v_medio_pago.codigo_tarjeta,--12
+                                              v_id_auxiliar_fp,--13
+                                              NULL,--14
+                                              v_id_medio_pago,--15
+                                              v_id_moneda_fp--16
+                                            )returning id_venta_forma_pago into v_id_venta_forma_pago;
+
+          /*********************************************************************************************/
+
+          /*Aqui realizamos la conversion de la moneda en caso que llegue en dolar*/
+          if (v_id_moneda != v_id_moneda_fp) then
+                v_monto_fp = param.f_convertir_moneda(v_id_moneda_fp,v_id_moneda,v_medio_pago.importe,v_parametros.fecha::date,'O',2,NULL,'si');
+          else
+              v_monto_fp = v_medio_pago.importe;
+          end if;
+          /************************************************************************/
+
+          /*Realizamos la Actualizacion de la forma de pago con la nueva conversion*/
+          update vef.tventa_forma_pago set
+
+              monto = v_monto_fp,
+              cambio = (case when (v_monto_fp + v_acumulado_fp - v_monto_total::numeric) > 0 then
+                (v_monto_fp + v_acumulado_fp - v_monto_total::numeric)
+                        else
+                          0
+                        end),
+              monto_mb_efectivo = (case when (v_monto_fp + v_acumulado_fp - v_monto_total::numeric) > 0 then
+                (v_monto_fp - (v_monto_fp + v_acumulado_fp - v_monto_total::numeric))
+                                   else
+                                     v_monto_fp
+                                   end)
+            where id_venta_forma_pago = v_id_venta_forma_pago;
+            v_acumulado_fp = v_acumulado_fp + v_monto_fp;
+          /*************************************************************************/
+          end loop;
+
+          --Definicion de la respuesta
+          v_resp = pxp.f_agrega_clave(v_resp,'msm','mensaje');
+          v_resp = pxp.f_agrega_clave(v_resp,'tipo_mensaje','exito');
+          v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Forma de pago modificada con exito, para el id_origen '||v_parametros.id_origen||' enviado');
+       else
+          --Definicion de la respuesta
+          v_resp = pxp.f_agrega_clave(v_resp,'msm','mensaje');
+          v_resp = pxp.f_agrega_clave(v_resp,'tipo_mensaje','no_exito');
+          v_resp = pxp.f_agrega_clave(v_resp,'mensaje','no se encontro una factura relacionanda al id_origen '||v_parametros.id_origen||' enviado');
+	     end if;
+
+          --Devuelve la respuesta
+          return v_resp;
+      end;
 
     /*********************************
  	#TRANSACCION:  'VEF_ANULAR_FCA_ERP'

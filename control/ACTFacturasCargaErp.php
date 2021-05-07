@@ -23,7 +23,12 @@ class ACTFacturasCargaErp extends ACTbase{
 
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-
+	// {dev:breydi.vasquez, date: 23/04/2021, desc: 'servicio carga modificacion forma pago'}
+	function modFormaPagoFacturasErp(){
+		$this->objFunc=$this->create('MODFacturasCargaErp');		
+		$this->res=$this->objFunc->modFormaPagoFacturasErp($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 
 }
 
