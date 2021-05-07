@@ -1188,8 +1188,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		}
 	],
 	tam_pag:50,
-	fheight:600,
-  fwidth:1500,
+	fheight:'80%',
+  fwidth:'90%',
 	title:'Ingresos gastos',
 	ActSave:'../../sis_ventas_facturacion/control/Servicios/insertarServicios',
 	ActDel:'../../sis_ventas_facturacion/control/Servicios/eliminarServicios',
