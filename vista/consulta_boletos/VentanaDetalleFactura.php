@@ -301,7 +301,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                               <td>${e.name}</td>
                                               <td align="center">${e.moneda_fp}</td>
                                               <td align="center">${Ext.util.Format.number(e.monto_forma_pago,'0.000,00/i')}</td>
-                                              <td align="center">${e.tipo_tarjeta}</td>
+                                              <td align="center">${(e.tipo_tarjeta==null)?'':e.tipo_tarjeta}</td>
                                               <td align="center">${e.numero_tarjeta}</td>
                                               <td align="center">${e.codigo_tarjeta}</td>
                                               <td align="center">${(e.cod_cuenta==null)?'':e.cod_cuenta}</td>

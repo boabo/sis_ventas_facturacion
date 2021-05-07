@@ -955,7 +955,7 @@ BEGIN
                                           v.total_venta,
                                           coalesce(sum(bafp.importe),0) as totales,
                                           vf.id_moneda,
-                                          mon.codigo as moneda,
+                                          mon.codigo_internacional as moneda,
                                           v.id_auxiliar_anticipo
                                         from vef.tventa v
                                         inner join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
@@ -963,7 +963,7 @@ BEGIN
                                         inner join param.tmoneda mon on mon.id_moneda = v.id_moneda
                                         where v.tipo_factura = ''recibo''
                                         and v.estado != ''anulado''
-                                        group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
+                                        group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo_internacional,v.id_auxiliar_anticipo
 
                                         union all
 
@@ -978,14 +978,14 @@ BEGIN
                                                 coalesce(sum(param.f_convertir_moneda(1, vf.id_moneda, vf.monto_mb_efectivo, v.fecha, ''O'', 50)),0)
                                        end as totales,
                                        vf.id_moneda,
-                                       mon.codigo as moneda,
+                                       mon.codigo_internacional as moneda,
                                        v.id_auxiliar_anticipo
                                   from vef.tventa v
                                   left join vef.tventa_forma_pago vf on vf.id_venta_recibo = v.id_venta
                                   inner join param.tmoneda mon on mon.id_moneda = vf.id_moneda
                                   where v.tipo_factura = ''recibo''
                                   and v.estado != ''anulado''
-                                  group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
+                                  group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo_internacional,v.id_auxiliar_anticipo
 
                         )
                         select

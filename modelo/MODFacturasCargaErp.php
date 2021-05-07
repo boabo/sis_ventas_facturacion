@@ -64,6 +64,20 @@ class MODFacturasCargaErp extends MODbase{
 		return $this->respuesta;
 	}
 
+	function modFormaPagoFacturasErp(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='vef.ft_insertar_facturas_carga_erp_ime';
+		$this->transaccion='VEF_MODFOP_FCA_ERP';
+		$this->tipo_procedimiento='IME';
 
+		$this->setParametro('id_origen','id_origen','varchar');
+		$this->setParametro('json_venta_forma_pago','json_venta_forma_pago','text');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 }
 ?>
