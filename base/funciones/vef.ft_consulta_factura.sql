@@ -157,7 +157,7 @@ BEGIN
                           inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
                           left join obingresos.tdeposito obd on obd.id_deposito =v.id_deposito
                           '||v_inner||'
-                          where '||v_fil_estado_fr||'
+                          where v.estado_reg = ''activo'' and '||v_fil_estado_fr||'
                           '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||'
                           '||v_fil_fif||' '||v_fil_nit||' ';
 
@@ -258,7 +258,7 @@ BEGIN
                           inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
                           left join obingresos.tdeposito obd on obd.id_deposito =v.id_deposito
                           '||v_inner||'
-                          where '||v_fil_estado_fr||'
+                          where v.estado_reg = ''activo'' and '||v_fil_estado_fr||'
                           '||v_fil_su||' '|| v_fil_pv ||' '|| v_fil_td||' '||v_fil_nro_doc||' '||v_nro_autor||'
                           '||v_fil_fif||' '||v_fil_nit||' ';
 
