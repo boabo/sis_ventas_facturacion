@@ -1891,3 +1891,19 @@ ALTER TABLE vef.tdetalle_apertura_cc
 ALTER TABLE vef.tventa_forma_pago_log
   ADD COLUMN id_venta_recibo INTEGER;
 /***********************************F-SCP-BVP-VEF-0-04/05/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-07/05/2021****************************************/
+
+ALTER TABLE vef.tventa
+  ADD COLUMN direccion_cliente TEXT;
+
+COMMENT ON COLUMN vef.tventa.direccion_cliente
+IS 'Almacenamos la direccion del cliente';
+
+
+ALTER TABLE vef.tventa_forma_pago
+  ADD COLUMN monto_dolar_efectivo NUMERIC(18,2);
+
+COMMENT ON COLUMN vef.tventa_forma_pago.monto_dolar_efectivo
+IS 'Monto donde se almacena el total de la transacccion en dolar';
+/***********************************F-SCP-IRVA-VEF-0-07/05/2021****************************************/

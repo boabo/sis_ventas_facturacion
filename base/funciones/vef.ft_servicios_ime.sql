@@ -75,13 +75,17 @@ BEGIN
             boleto_asociado,
             agrupador,
             comision,
-            id_concepto_ingas_fk
+            id_concepto_ingas_fk,
+            /*Nuevo campor para listar solo conceptos de factura, recibos, devoluciones, exportacion*/
+            listado,
+            id_unidad_medida,
+            nandina
 
           	) values(
 			'activo',
 			v_parametros.tipo,
 			v_parametros.desc_ingas,
-			NULL,
+			'recurso',
 			NULL,
 			NULL,
 			NULL,
@@ -106,7 +110,10 @@ BEGIN
 			v_parametros.boleto_asociado,
             v_parametros.agrupador,
             v_parametros.comision,
-            v_parametros.id_concepto_ingas_fk
+            v_parametros.id_concepto_ingas_fk,
+            'ventas',
+            v_parametros.id_unidad_medida,
+            v_parametros.nandina
 
 			)RETURNING id_concepto_ingas into v_id_concepto_ingas;
 
@@ -153,8 +160,10 @@ BEGIN
             boleto_asociado = v_parametros.boleto_asociado,
             agrupador = v_parametros.agrupador,
             comision  = v_parametros.comision,
-            id_concepto_ingas_fk = v_parametros.id_concepto_ingas_fk
+            id_concepto_ingas_fk = v_parametros.id_concepto_ingas_fk,
             /********************************************************************************************/
+            id_unidad_medida = v_parametros.id_unidad_medida,
+            nandina = v_parametros.nandina
 
 			where id_concepto_ingas=v_parametros.id_concepto_ingas;
 

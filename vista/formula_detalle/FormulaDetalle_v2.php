@@ -102,7 +102,7 @@ Phx.vista.FormulaDetalle_v2=Ext.extend(Phx.gridInterfaz,{
 						totalProperty: 'total',
 						fields: ['id_concepto_ingas', 'tipo','desc_ingas','desc_moneda','requiere_descripcion','precio','excento','contabilizable'],
 						remoteSort: true,
-						baseParams: {par_filtro: 'ingas.desc_ingas', servicios_productos:'SI'}
+						baseParams: {par_filtro: 'ingas.desc_ingas', listarConceptosVentas: 'ventas'}
 				}),
 				valueField: 'id_concepto_ingas',
 				displayField: 'desc_ingas',

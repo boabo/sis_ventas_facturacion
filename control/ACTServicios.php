@@ -49,6 +49,16 @@ class ACTServicios extends ACTbase{
 			}
 		}
 
+		if($this->objParam->getParametro('ListaConceptos') != '') {
+				$this->objParam->addFiltro("ingas.listado = ''".$this->objParam->getParametro('ListaConceptos')."''");
+		}
+
+		if($this->objParam->getParametro('listaConceptoEmision') != '') {
+			$this->objParam->addFiltro("''".$this->objParam->getParametro('listaConceptoEmision')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales) AND ''".$this->objParam->getParametro('tipo_pv')."''=ANY (ingas.nivel_permiso)");
+		}
+
+
+
 		if($this->objParam->getParametro('id_actividad_economica')!=''){
 			$this->objParam->addFiltro("ingas.id_actividad_economica = ".$this->objParam->getParametro('id_actividad_economica'));
 		}
@@ -57,7 +67,7 @@ class ACTServicios extends ACTbase{
 		if($this->objParam->getParametro('tipo_documento')!=''){
 
 			if ($this->objParam->getParametro('tipo_documento') == 'Factura') {
-				$this->objParam->addFiltro("(''FACTCOMP''=ANY (ingas.sw_autorizacion))");				
+				$this->objParam->addFiltro("(''FACTCOMP''=ANY (ingas.sw_autorizacion))");
 			} elseif ($this->objParam->getParametro('tipo_documento') == 'Recibo') {
 				$this->objParam->addFiltro("(''RO''=ANY (ingas.sw_autorizacion))");
 			}
@@ -89,6 +99,12 @@ class ACTServicios extends ACTbase{
 			if ($this->objParam->getParametro('tipo_serv') != '') {
 					$this->objParam->addFiltro("ser.tipo = ''".$this->objParam->getParametro('tipo_serv')."''");
 			}
+		}
+
+		if($this->objParam->getParametro('listarConceptosVentas') != '') {
+
+			$this->objParam->addFiltro("ingas.listado = ''".$this->objParam->getParametro('listarConceptosVentas')."''");
+
 		}
 		/***************************************************************************************************************/
 

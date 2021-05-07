@@ -19,7 +19,8 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.Servicios.superclass.constructor.call(this,config);
 		this.init();
 		this.iniciarEventos(that);
-		this.store.baseParams.Facturacion = 'conceptos_facturacion';
+		//this.store.baseParams.Facturacion = 'conceptos_facturacion';
+		this.store.baseParams.ListaConceptos = 'ventas';
 		/*Fondo color tbar (IRVA)*/
 		this.bbar.el.dom.style.background='#84BFE7';
 		this.tbar.el.dom.style.background='#84BFE7';
@@ -354,7 +355,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
       },
       type:'TextArea',
       filters:{pfiltro:'ingas.desc_ingas',type:'string'},
-      id_grupo:1,
+      id_grupo:0,
       grid:true,
       form:true,
 			bottom_filter:true
@@ -402,7 +403,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 	 		 //enableMultiSelect: true
 	 	 },
 	 	 type : 'ComboBox',
-	 	 id_grupo : 2,
+	 	 id_grupo : 1,
 	 	 grid: true,
 	 	 form: true
 	  },
@@ -465,7 +466,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
  			enableMultiSelect: true
  		},
  		type : 'AwesomeCombo',
- 		id_grupo : 2,
+ 		id_grupo : 1,
  		grid: true,
  		form: true
  	},
@@ -512,7 +513,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
  		 enableMultiSelect: true
  	 },
  	 type : 'AwesomeCombo',
- 	 id_grupo : 2,
+ 	 id_grupo : 1,
  	 grid: true,
  	 form: true
   },
@@ -560,7 +561,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 	 		 enableMultiSelect: true
 	 	 },
 	 	 type : 'AwesomeCombo',
-	 	 id_grupo : 2,
+	 	 id_grupo : 1,
 	 	 grid: true,
 	 	 form: true
 	  },
@@ -622,7 +623,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 						return String.format('{0}', record.data['nombre_actividad']);}
       },
 	      type : 'ComboBox',
-	      id_grupo : 2,
+	      id_grupo : 0,
 	      filters:{pfiltro:'acteco.nombre',type:'string'},
 	      form : true,
 	      grid:true
@@ -658,7 +659,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 						}
 				},
 				type: 'ComboRec',
-				id_grupo: 1,
+				id_grupo: 0,
 				filters: {
 						pfiltro: 'mon.codigo',
 						type: 'string'
@@ -684,7 +685,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'NumberField',
 				filters:{pfiltro:'ingas.precio',type:'string'},
-				id_grupo:1,
+				id_grupo:0,
 				grid:true,
 				form:true
 		},
@@ -790,7 +791,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 },
 			 type:'ComboBox',
 			 //filters:{pfiltro:'promac.inicio',type:'string'},
-			 id_grupo:2,
+			 id_grupo:1,
 			 filters:{
 										type: 'list',
 										pfiltro:'sprod.requiere_descripcion',
@@ -846,7 +847,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 					 msgTarget: 'side'
 			 },
 			 type:'ComboBox',
-			 id_grupo:1,
+			 id_grupo:0,
 			 grid:true,
 			 form:true
 	 },
@@ -869,7 +870,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 },
 			 type:'ComboBox',
 			 //filters:{pfiltro:'promac.inicio',type:'string'},
-			 id_grupo:2,
+			 id_grupo:1,
 			 grid:true,
 			 form:true
 	 },
@@ -892,7 +893,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 },
 			 type:'ComboBox',
 			 //filters:{pfiltro:'promac.inicio',type:'string'},
-			 id_grupo:2,
+			 id_grupo:1,
 			 filters:{
 										type: 'list',
 										pfiltro:'sprod.excento',
@@ -920,7 +921,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 },
 			 type:'ComboBox',
 			 //filters:{pfiltro:'promac.inicio',type:'string'},
-			 id_grupo:2,
+			 id_grupo:1,
 			 filters:{
 										type: 'list',
 										pfiltro:'sprod.contabilizable',
@@ -948,7 +949,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 },
 			 type:'ComboBox',
 			 //filters:{pfiltro:'promac.inicio',type:'string'},
-			 id_grupo:2,
+			 id_grupo:1,
 			 filters:{
 										type: 'list',
 										pfiltro:'sprod.boleto_asociado',
@@ -957,6 +958,49 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 			 grid:true,
 			 form:true
 	 },
+
+	 {
+			 config:{
+				 name:'id_unidad_medida',
+				 tipo: 'All',
+				 origen:'UNIDADMEDIDA',
+				 allowBlank:true,
+				 fieldLabel:'Unidad',
+				 gdisplayField:'desc_unidad_medida',//mapea al store del grid
+				 gwidth:200,
+				 width:200,
+				 listWidth: 350,
+				 //anchor: '80%',
+				 renderer:function (value, p, record){return String.format('{0}', record.data['desc_unidad_medida']);}
+						},
+			 type:'ComboRec',
+			 id_grupo:2,
+			 filters:{
+					 pfiltro:'um.codigo#um.descripcion',
+			 type:'string'
+		 },
+
+			 grid:true,
+			 form:true
+		 },
+
+		 {
+ 			config:{
+ 				name: 'nandina',
+ 				fieldLabel: 'Nandina',
+ 				qtip: 'Código de partida presupuestaria',
+ 				allowBlank: true,
+ 				width:200,
+ 				gwidth: 100,
+ 				maxLength:100
+ 			},
+ 			type:'TextField',
+ 			filters:{pfiltro:'conig.nandina',type:'string'},
+ 			id_grupo:2,
+ 			grid:true,
+ 			form:true,
+ 			bottom_filter : true
+ 		},
 
 	 // {
 		//  config: {
@@ -1145,7 +1189,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 	],
 	tam_pag:50,
 	fheight:600,
-  fwidth:450,
+  fwidth:1500,
 	title:'Ingresos gastos',
 	ActSave:'../../sis_ventas_facturacion/control/Servicios/insertarServicios',
 	ActDel:'../../sis_ventas_facturacion/control/Servicios/eliminarServicios',
@@ -1182,6 +1226,11 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		{name: 'contabilizable', type: 'string'},
 		{name: 'boleto_asociado', type: 'string'},
 		{name: 'agrupador', type: 'string'},
+		{name: 'id_unidad_medida', type: 'numeric'},
+		{name: 'nandina', type: 'string'},
+		{name: 'desc_unidad_medida', type: 'string'},
+
+
 		'sw_autorizacion','regionales','nivel_permiso','comision','id_concepto_ingas_fk','desc_ingasfk'
 	],
 	sortInfo:{
@@ -1189,7 +1238,75 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
 		direction: 'DESC'
 	},
 	bdel:true,
-	bsave:true
+	bsave:true,
+
+	Grupos: [
+			{
+					layout: 'column',
+					border: false,
+					xtype: 'fieldset',
+					// defaults are applied to all child items unless otherwise specified by child item
+					defaults: {
+							border: false
+					},
+
+					items: [{
+							xtype: 'fieldset',
+							title: '<b style="color:#001AAE; font-size:14px; background-color:#FFB167; padding:5px; ">Datos Básicos Concepto<b>',
+							autoHeight: true,
+							border: true,
+							style:{
+								 background:'#FFB167',
+								 height : '300px',
+								 marginLeft:'7px',
+								 padding:'10'
+							 },
+							defaults: {
+									anchor: '23' // leave room for error icon
+							},
+							items: [],
+							id_grupo:0
+					},
+					{
+							xtype: 'fieldset',
+							title: '<b style="color:#001AAE; font-size:14px; background-color:#98FF5D; padding:5px;">Permisos Conceptos<b>',
+							autoHeight: true,
+							border: true,
+							style:{
+												background:'#98FF5D',
+												height : '300px',
+												marginLeft:'7px',
+												padding:'10'
+							//
+									 },
+							defaults: {
+									anchor: '23' // leave room for error icon
+							},
+							items: [],
+							id_grupo:1
+					},
+					{
+							xtype: 'fieldset',
+							title: '<b style="color:#001AAE; font-size:14px; background-color:#E9EF31; padding:5px;">Datos Exportación<b>',
+							autoHeight: true,
+							border: true,
+							style:{
+												background:'#E9EF31',
+												height : '300px',
+												marginLeft:'7px',
+												padding:'10'
+							//
+									 },
+							defaults: {
+									anchor: '23' // leave room for error icon
+							},
+							items: [],
+							id_grupo:2
+					},
+				]
+			}
+	],
+
 	}
 )
 </script>

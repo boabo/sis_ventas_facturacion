@@ -63,6 +63,8 @@ class MODServicios extends MODbase{
 		$this->captura('id_concepto_ingas_fk','int4');
 		$this->captura('desc_ingasfk','varchar');
 
+		$this->captura('desc_unidad_medida','varchar');	
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -130,6 +132,9 @@ class MODServicios extends MODbase{
 		$this->setParametro('comision','comision','varchar');
 		$this->setParametro('id_concepto_ingas_fk','id_concepto_ingas_fk','int4');
 
+		$this->setParametro('id_unidad_medida','id_unidad_medida','int4');
+		$this->setParametro('nandina','nandina','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -169,6 +174,9 @@ class MODServicios extends MODbase{
 		$this->setParametro('agrupador','agrupador','varchar');
 		$this->setParametro('comision','comision','varchar');
 		$this->setParametro('id_concepto_ingas_fk','id_concepto_ingas_fk','int4');
+
+		$this->setParametro('id_unidad_medida','id_unidad_medida','int4');
+		$this->setParametro('nandina','nandina','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
