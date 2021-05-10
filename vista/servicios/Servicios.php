@@ -999,7 +999,7 @@ Phx.vista.Servicios=Ext.extend(Phx.gridInterfaz,{
  			id_grupo:2,
  			grid:true,
  			form:true,
- 			bottom_filter : true
+ 			//bottom_filter : true
  		},
 
 	 // {
