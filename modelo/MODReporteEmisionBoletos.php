@@ -41,7 +41,7 @@ class MODReporteEmisionBoletos extends MODbase
         //Definicion de la lista del resultado del query
         $this->captura('fecha_factura', 'date');
         $this->captura('nro_factura', 'numeric');
-        $this->captura('nro_documento', 'varchar');
+        $this->captura('tipo_documento', 'varchar');
         $this->captura('ruta', 'varchar');
         $this->captura('pasajero', 'varchar');
         $this->captura('debe', 'numeric');

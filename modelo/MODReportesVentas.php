@@ -232,6 +232,7 @@ class MODReportesVentas extends MODbase{
 		$this->captura('estado','varchar');
 		$this->captura('tipo_factura','varchar');
 		$this->captura('cajero','varchar');
+		$this->captura('cod_control','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

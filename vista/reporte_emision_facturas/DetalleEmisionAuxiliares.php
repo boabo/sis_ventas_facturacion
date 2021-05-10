@@ -118,7 +118,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'nro_factura',
-                        fieldLabel: 'Nro. Factura',
+                        fieldLabel: 'Nro. Documento',
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 130,
@@ -140,11 +140,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
-                        name: 'nro_documento',
-                        fieldLabel: 'Nro. Documento',
+                        name: 'tipo_documento',
+                        fieldLabel: 'Tipo de Documento',
                         allowBlank: true,
-                        width: '100%',
-                        gwidth: 130,
+                        //width: '100%',
+                        gwidth: 500,
                         //galign: 'right ',
                         maxLength: 100,
                     },
@@ -336,7 +336,7 @@ header("content-type: text/javascript; charset=UTF-8");
             //{name:'fecha_factura', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
             {name: 'fecha_factura', type: 'varchar'},
             {name: 'nro_factura', type: 'numeric'},
-            {name: 'nro_documento', type: 'varchar'},
+            {name: 'tipo_documento', type: 'varchar'},
             {name: 'ruta', type: 'varchar'},
             {name: 'pasajero', type: 'varchar'},
             {name: 'debe', type: 'numeric'},

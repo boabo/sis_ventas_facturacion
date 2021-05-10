@@ -171,6 +171,32 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
+
+                {
+                    config: {
+                        name: 'cod_control',
+                        fieldLabel: 'Cod. Control',
+                        allowBlank: true,
+                        width: '100%',
+                        gwidth: 200,
+                        maxLength: 100,
+                        renderer: function (value, p, record) {
+
+                        if (value != null && value != 'cabecera') {
+                          return value;
+                        } else {
+                          return '';
+                        }
+
+                      },
+                    },
+                    type: 'TextField',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+
                 {
                     config: {
                         name: 'total_venta',
@@ -465,6 +491,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name:'totales_comision', type: 'numeric'},
             {name:'totales_exento', type: 'numeric'},
             {name:'totales_venta', type: 'numeric'},
+            {name:'cod_control', type: 'numeric'},
         ],
 
 
@@ -517,6 +544,15 @@ header("content-type: text/javascript; charset=UTF-8");
             //Se obtiene la gestión en función de la fecha del comprobante para filtrar partidas, cuentas, etc.
             var me = this;
             this.initFiltro(param);
+
+            if (this.store.baseParams.formato_reporte == 'REPORTE DE FACTURAS') {
+              this.cm.setHidden(5, false);
+            } else {
+              this.cm.setHidden(5, true);
+            }
+
+
+
         },
 
         initFiltro: function (param) {

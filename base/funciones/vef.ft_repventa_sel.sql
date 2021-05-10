@@ -1659,7 +1659,8 @@ $body$
                                                                 pais varchar,
                                                                 estado varchar,
                                                                 tipo_factura varchar,
-                                                                cajero varchar
+                                                                cajero varchar,
+                                                                cod_control varchar
                                                               )on commit drop;
 
                 CREATE INDEX treporte_facturacion_computarizada_id_venta ON reporte_facturacion_computarizada
@@ -1697,7 +1698,8 @@ $body$
                                                     pais,
                                                     estado,
                                                     tipo_factura,
-                                                    cajero
+                                                    cajero,
+                                                    cod_control
         								)
                                         (WITH  cabecera AS (select vent.id_venta,
                                                  vent.total_venta,
@@ -1716,7 +1718,8 @@ $body$
                                                  lug.id_lugar_fk,
                                                  vent.estado,
                                                  vent.tipo_factura,
-                                                 usu.desc_persona
+                                                 usu.desc_persona,
+                                                 vent.cod_control
                                           from vef.tventa vent
                                           left join vef.tventa_detalle det on det.id_venta = vent.id_venta
                                           left join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
@@ -1796,7 +1799,8 @@ $body$
                                                   WHEN ca.tipo_factura = ''carga''  THEN
                                                   ''Facturación Carga Computarizada''
                                                END)::varchar as tipo_factura,
-                                               ca.desc_persona
+                                               ca.desc_persona,
+                                               ca.cod_control
                                         from cabecera ca
                                         inner join detalle det on det.id_venta = ca.id_venta
                                         inner join param.tlugar lug on lug.id_lugar = ca.id_lugar_fk
@@ -1825,7 +1829,8 @@ $body$
                                 pais,
                                 estado,
                                 tipo_factura,
-                                cajero
+                                cajero,
+                                cod_control
         			from reporte_facturacion_computarizada
                     where '||v_parametros.filtro||')
 
@@ -1853,7 +1858,8 @@ $body$
                                 NULL::varchar as pais,
                                 NULL::varchar as estado,
                                 ''cabecera''::varchar as tipo_factura,
-                                NULL::varchar as cajero
+                                NULL::varchar as cajero,
+                                NULL::varchar as cod_control
                         from reporte_facturacion_computarizada
                         where '||v_parametros.filtro||'
                         group by nombre, codigo))
@@ -1962,7 +1968,8 @@ $body$
                                                                 pais varchar,
                                                                 estado varchar,
                                                                 tipo_factura varchar,
-                                                                cajero varchar
+                                                                cajero varchar,
+                                                                cod_control varchar
                                                               )on commit drop;
 
                 CREATE INDEX treporte_facturacion_computarizada_id_venta ON reporte_facturacion_computarizada
@@ -2000,7 +2007,8 @@ $body$
                                                     pais,
                                                     estado,
                                                     tipo_factura,
-                                                    cajero
+                                                    cajero,
+                                                    cod_control
         								)
                                         (WITH  cabecera AS (select vent.id_venta,
                                                  vent.total_venta,
@@ -2019,7 +2027,8 @@ $body$
                                                  lug.id_lugar_fk,
                                                  vent.estado,
                                                  vent.tipo_factura,
-                                                 usu.desc_persona
+                                                 usu.desc_persona,
+                                                 vent.cod_control
                                           from vef.tventa vent
                                           left join vef.tventa_detalle det on det.id_venta = vent.id_venta
                                           left join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
@@ -2099,7 +2108,8 @@ $body$
                                                   WHEN ca.tipo_factura = ''carga''  THEN
                                                   ''Facturación Carga Computarizada''
                                                END)::varchar as tipo_factura,
-                                               ca.desc_persona
+                                               ca.desc_persona,
+                                               ca.cod_control
                                         from cabecera ca
                                         inner join detalle det on det.id_venta = ca.id_venta
                                         inner join param.tlugar lug on lug.id_lugar = ca.id_lugar_fk

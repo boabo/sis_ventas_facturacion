@@ -195,7 +195,7 @@ class RReporteEmisionBoletosXLS
           } else {
             $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
             $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
-            $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(20);
+            $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(50);
             $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(70);
             $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(45);
             $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(45);
@@ -228,8 +228,8 @@ class RReporteEmisionBoletosXLS
 
         } else {
           $this->docexcel->getActiveSheet()->setCellValue('A6','Fecha');
-          $this->docexcel->getActiveSheet()->setCellValue('B6','Nro. Factura');
-          $this->docexcel->getActiveSheet()->setCellValue('C6','Nro. Documento.');
+          $this->docexcel->getActiveSheet()->setCellValue('B6','Nro. Documento');
+          $this->docexcel->getActiveSheet()->setCellValue('C6','Tipo de Documento.');
           $this->docexcel->getActiveSheet()->setCellValue('D6','Observaciones');
           $this->docexcel->getActiveSheet()->setCellValue('E6','Rutas');
 
@@ -495,14 +495,14 @@ class RReporteEmisionBoletosXLS
             // var_dump("aqui el value",$value[0]);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, date("d/m/Y", strtotime($value['fecha_factura'])));
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nro_factura']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_documento']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['tipo_documento']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, rtrim(ltrim($value['observaciones'])));
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['ruta']);
 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['debe']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['haber']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['cuenta_auxiliar']);
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:C$fila")->applyFromArray($style_datos);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:B$fila")->applyFromArray($style_datos);
 
 
             if ($value['tipo_factura'] == null && $value['pasajero'] != 'DEPOSITO') {
@@ -522,7 +522,7 @@ class RReporteEmisionBoletosXLS
             else {
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['pasajero']);
               $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleFondoBlanco);
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:C$fila")->applyFromArray($style_datos);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:B$fila")->applyFromArray($style_datos);
             }
 
 
