@@ -179,12 +179,21 @@ class RFacturaExportacionA4 extends  ReportePDF{
       $this->Cell(15,$textypos,$this->cabecera_factura['moneda_venta']/*,'T'*/);
 
       $this->SetFont('','B',$size_font+1);
-      $this->setX(150);
+      $this->setX(135);
       $this->Cell(15,$textypos,'Tipo de Cambio:'/*,'T'*/);
 
-      $this->SetFont('','',$size_font+1);
-      $this->setX(180);
-      $this->Cell(15,$textypos,$this->cabecera_factura['tipo_cambio_venta'],0,1/*,'T'*/);
+      if ($this->cabecera_factura['moneda_venta'] == 'Dólares Americanos') {
+        $this->SetFont('','',$size_font+1);
+        $this->setX(165);
+        $this->Cell(15,$textypos,'1'.$this->totales['codigo_moneda_extranjera'].': '.$this->cabecera_factura['tipo_cambio_venta'].$this->totales['codigo_moneda_local'],0,1/*,'T'*/);
+
+      } else {
+        $this->SetFont('','',$size_font+1);
+        $this->setX(165);
+        $this->Cell(15,$textypos,'1'.$this->totales['codigo_moneda_local'].': '.$this->cabecera_factura['tipo_cambio_venta'].$this->totales['codigo_moneda_local'],0,1/*,'T'*/);
+
+      }
+
 
       $this->ln();
 
@@ -246,14 +255,14 @@ class RFacturaExportacionA4 extends  ReportePDF{
       $this->SetFillColor(230 , 230, 230);
       $this->Cell(115,6,'','LTB',0,'L',1);
       $this->SetFont('','B',9);
-      $this->Cell(37,6,'TOTAL $us.','TBR',0,'R',1);
+      $this->Cell(37,6,'TOTAL '.$this->totales['codigo_moneda_extranjera'].'.','TBR',0,'R',1);
       $this->Cell(25,6,number_format($this->totales['total_extranjera'],2),'TBR',1,'R');
 
       $this->setX(16);
       $this->SetFillColor(230 , 230, 230);
       $this->Cell(115,6,'','LTB',0,'L',1);
       $this->SetFont('','B',9);
-      $this->Cell(37,6,'TOTAL Bs.','TBR',0,'R',1);
+      $this->Cell(37,6,'TOTAL '.$this->totales['codigo_moneda_local'].'.','TBR',0,'R',1);
       $this->Cell(25,6,number_format($this->totales['total_local'],2),'TBR',1,'R');
 
       $this->SetFont('','B',8);
