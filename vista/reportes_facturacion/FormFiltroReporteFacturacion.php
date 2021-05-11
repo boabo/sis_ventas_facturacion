@@ -24,6 +24,13 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
     						this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
 
                 this.Cmp.id_punto_venta.store.baseParams.tipo_usuario = this.tipo_usuario;
+                if (this.tipo_usuario == 'administrador_facturacion') {
+                  this.Cmp.id_punto_venta.store.baseParams._adicionar='si';
+                } else {
+                  this.Cmp.id_punto_venta.store.baseParams._adicionar='';
+                }
+
+
 
     				},
     				failure: this.conexionFailure,

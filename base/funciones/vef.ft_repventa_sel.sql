@@ -1591,7 +1591,7 @@ $body$
         	v_filtro_fecha_hasta = '0=0';
         end if;
 
-        if (v_parametros.id_punto_venta is not null) then
+        if (v_parametros.id_punto_venta is not null and v_parametros.id_punto_venta != 0) then
         	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
         else
         	v_filtro_id_punto_venta = '0=0';
@@ -1863,7 +1863,7 @@ $body$
                         from reporte_facturacion_computarizada
                         where '||v_parametros.filtro||'
                         group by nombre, codigo))
-                    	order by id_venta ASC NULLS FIRST';
+                    	order by nombre ASC, id_venta ASC NULLS FIRST';
 
         if (v_parametros.imprimir_reporte != 'si') then
 
@@ -1899,7 +1899,7 @@ $body$
         	v_filtro_fecha_hasta = '0=0';
         end if;
 
-        if (v_parametros.id_punto_venta is not null) then
+        if (v_parametros.id_punto_venta is not null and v_parametros.id_punto_venta != 0) then
         	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
         else
         	v_filtro_id_punto_venta = '0=0';
@@ -2207,7 +2207,7 @@ $body$
         	v_filtro_fecha_hasta = '0=0';
         end if;
 
-        if (v_parametros.id_punto_venta is not null) then
+        if (v_parametros.id_punto_venta is not null and v_parametros.id_punto_venta != 0) then
         	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
         else
         	v_filtro_id_punto_venta = '0=0';
@@ -2303,7 +2303,7 @@ $body$
                       where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       group by pv.nombre, pv.codigo, ingas.desc_ingas)
                       )
-                      order by desc_ingas ASC, id_venta ASC NULLS FIRST';
+                      order by nombre ASC, id_venta ASC NULLS FIRST';
 
 		raise notice '%',v_consulta;
         --Devuelve la respuesta
@@ -2333,7 +2333,7 @@ $body$
         	v_filtro_fecha_hasta = '0=0';
         end if;
 
-        if (v_parametros.id_punto_venta is not null) then
+        if (v_parametros.id_punto_venta is not null and v_parametros.id_punto_venta != 0) then
         	v_filtro_id_punto_venta = 'vent.id_punto_venta = '||v_parametros.id_punto_venta||'';
         else
         	v_filtro_id_punto_venta = '0=0';
@@ -2399,7 +2399,7 @@ $body$
                         inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
                         where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       	group by pv.nombre, pv.codigo))
-                        order by desc_ingas ASC NULLS FIRST';
+                        order by nombre ASC, desc_ingas ASC NULLS FIRST';
 		raise notice '%',v_consulta;
         --Devuelve la respuesta
         return v_consulta;
