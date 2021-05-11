@@ -15,6 +15,23 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
     {
 
         Phx.vista.FormFiltroReporteFacturacion.superclass.constructor.call(this,config);
+
+        Ext.Ajax.request({
+    				url:'../../sis_ventas_facturacion/control/Cajero/getTipoUsuario',
+    				params: {'vista':'cajero'},
+    				success: function(resp){
+    						var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+    						this.tipo_usuario = reg.ROOT.datos.v_tipo_usuario;
+
+                this.Cmp.id_punto_venta.store.baseParams.tipo_usuario = this.tipo_usuario;
+
+    				},
+    				failure: this.conexionFailure,
+    				timeout:this.timeout,
+    				scope:this
+    		});
+
+
         this.init();
         this.iniciarEventos();
 
@@ -161,7 +178,7 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
 	                    totalProperty: 'total',
 	                    fields: ['id_punto_venta', 'nombre', 'codigo'],
 	                    remoteSort: true,
-	                    baseParams: {tipo_usuario : 'todos',par_filtro: 'puve.nombre#puve.codigo'}
+	                    baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
 	                }),
 	                valueField: 'id_punto_venta',
 	                displayField: 'nombre',
@@ -420,8 +437,6 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
     iniciarEventos: function(){
 
       this.Cmp.formato_reporte.on('select',function(a,b,c) {
-
-        console.log("aqui llega el combo data",b.data);
 
 				if (b.data.cod == 'REPORTE DE FACTURAS') {
 				      this.mostrarComponente(this.Cmp.id_punto_venta);
