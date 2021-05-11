@@ -5599,7 +5599,7 @@ BEGIN
             accion,
             nro_mco,
             id_moneda,
-            id_medio_pago
+            id_instancia_pago
           	) values(
 			v_datos_anteriores.id_venta_forma_pago,
 			v_datos_anteriores.id_venta,
@@ -5731,7 +5731,7 @@ BEGIN
                 accion,
                 nro_mco,
                 id_moneda,
-                id_medio_pago
+                id_instancia_pago
                 ) values(
                 v_datos_anteriores_2.id_venta_forma_pago,
                 v_datos_anteriores_2.id_venta,
