@@ -2746,7 +2746,11 @@ $body$
         monto_transaccion = 0,
         monto = 0,
         cambio = 0,
-        monto_mb_efectivo = 0
+        monto_mb_efectivo = 0,
+        id_venta_recibo = NULL,
+        id_auxiliar = null,
+        id_medio_pago = null,
+        id_moneda = null
         where id_venta = v_parametros.id_venta;
 
         update vef.tventa_detalle set
