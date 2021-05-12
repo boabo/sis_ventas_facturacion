@@ -372,7 +372,7 @@ BEGIN
                                       0
                                   end)as mco_ventas_me';
 
-                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
+                  v_ventas_otros_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''computarizada'' or v.tipo_factura = ''manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -402,7 +402,7 @@ BEGIN
                                     0
                                 end)as deposito_recibo_me';
 
-                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code not similar to ''(CA|CC|CUEC|MCO)%'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
+                 v_otro_recibo_extranjera = 'sum(case  when fp.fop_code like ''OTRO'' and vfp.id_moneda = ' || v_id_moneda_tri  || ' and (v.tipo_factura = ''recibo'' or v.tipo_factura = ''recibo_manual'') then
                                       vfp.monto_mb_efectivo/' || v_tipo_cambio || '
                                   else
                                       0
@@ -1380,13 +1380,13 @@ BEGIN
                                   where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
                                           ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                           and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                          ven.estado = ''finalizado''),0) as comisiones_ml,
+                                          ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_ml,
 
                               COALESCE((	select sum(ven.comision) from vef.tventa ven
                                   where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
                                           ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                           and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                          ven.estado = ''finalizado''),0) as comisiones_me,
+                                          ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_me,
 
                               acc.monto_ca_recibo_ml,
                               acc.monto_cc_recibo_ml
@@ -1402,6 +1402,7 @@ BEGIN
                       left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                       and v.fecha = acc.fecha_apertura_cierre and
                                                       v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
+                                                      and v.estado_reg = ''activo''
 
                       left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
@@ -1729,13 +1730,13 @@ BEGIN
                                             where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
                                                     ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                                     and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                                    ven.estado = ''finalizado''),0) as comisiones_ml,
+                                                    ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_ml,
 
                                         COALESCE((	select sum(ven.comision) from vef.tventa ven
                                             where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
                                                     ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                                     and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                                    ven.estado = ''finalizado''),0) as comisiones_me,
+                                                    ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_me,
 
                                         acc.monto_ca_recibo_ml,
                                         acc.monto_cc_recibo_ml
@@ -1751,6 +1752,7 @@ BEGIN
                                 left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                                 and v.fecha = acc.fecha_apertura_cierre and
                                                                 v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
+																and v.estado_reg = ''activo''
 
                                 left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
@@ -1971,6 +1973,7 @@ BEGIN
             left join vef.tventa v on v.id_usuario_cajero = u.id_usuario and v.fecha = a.fecha_apertura_cierre and
             v.id_punto_venta = a.id_punto_venta and v.estado = ''finalizado''
             where a.id_apertura_cierre_caja = '||v_parametros.id_apertura_cierre_caja;
+
 
             --Definicion de la respuesta
             raise notice 'v_consulta %', v_consulta;
@@ -2948,7 +2951,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                       left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                       and v.fecha = acc.fecha_apertura_cierre and
                                                       v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
-
+														and v.estado_reg = ''activo''
                       left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
                       /*********************************Aumentando para recuperar Instancias de pago**********************************/
@@ -3158,13 +3161,13 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                   where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
                                           ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                           and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                          ven.estado = ''finalizado''),0) as comisiones_ml,
+                                          ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_ml,
 
                               COALESCE((	select sum(ven.comision) from vef.tventa ven
                                   where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
                                           ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                           and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                          ven.estado = ''finalizado''),0) as comisiones_me,
+                                          ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_me,
 
                               acc.monto_ca_recibo_ml,
                               acc.monto_cc_recibo_ml
@@ -3180,6 +3183,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                       left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                       and v.fecha = acc.fecha_apertura_cierre and
                                                       v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
+                                                      and v.estado_reg = ''activo''
 
                       left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
@@ -3505,13 +3509,13 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                             where coalesce(ven.comision,0) > 0 and ven.id_moneda = 1 and
                                                     ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta= acc.id_punto_venta
                                                     and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                                    ven.estado = ''finalizado''),0) as comisiones_ml,
+                                                    ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_ml,
 
                                         COALESCE((	select sum(ven.comision) from vef.tventa ven
                                             where coalesce(ven.comision,0) > 0 and ven.id_moneda = 2 and
                                                     ven.fecha = acc.fecha_apertura_cierre and ven.id_punto_venta=acc.id_punto_venta
                                                     and ven.id_usuario_cajero = acc.id_usuario_cajero and
-                                                    ven.estado = ''finalizado''),0) as comisiones_me,
+                                                    ven.estado = ''finalizado'' and ven.estado_reg = ''activo''),0) as comisiones_me,
 
                                         acc.monto_ca_recibo_ml,
                                         acc.monto_cc_recibo_ml
@@ -3527,6 +3531,7 @@ estado_abierto as ( select  a.fecha_apertura_cierre,
                                 left join vef.tventa v on v.id_usuario_cajero = u.id_usuario
                                                                 and v.fecha = acc.fecha_apertura_cierre and
                                                                 v.id_punto_venta = acc.id_punto_venta and v.estado = ''finalizado''
+                                                                and v.estado_reg = ''activo''
 
                                 left join vef.tventa_forma_pago vfp on vfp.id_venta = v.id_venta
 
