@@ -2367,6 +2367,32 @@ BEGIN
 
       begin
 
+      /** control de saldo para medio de pago recibo anticipo si saldos son menores o iguales a 0 no permite el pago***/
+      /******************************************************************************************************************/
+
+     if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+       v_id_venta_recibo = v_parametros.id_venta_recibo;
+
+       select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
+       if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_parametros.saldo_recibo is not null)) then
+          raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+       end if;
+
+     else
+       v_id_venta_recibo = null;
+     end if;
+
+     if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+        v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
+
+         select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
+         if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_parametros.saldo_recibo_2 is not null)) then
+            raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
+         end if;
+
+     else
+       v_id_venta_recibo_2 = null;
+     end if;
 
         select
           v.*
@@ -2717,7 +2743,8 @@ BEGIN
             id_medio_pago,
             id_moneda,
             /*********************************/
-            nro_mco
+            nro_mco,
+            id_venta_recibo
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -2739,7 +2766,8 @@ BEGIN
             v_parametros.id_medio_pago,
             v_parametros.id_moneda,
             /*********************************/
-            v_parametros.mco
+            v_parametros.mco,
+            v_id_venta_recibo
           );
             --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
              --if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
@@ -2816,7 +2844,8 @@ BEGIN
             tipo_tarjeta,
             id_medio_pago,
             id_moneda,
-            nro_mco
+            nro_mco,
+            id_venta_recibo
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -2836,7 +2865,8 @@ BEGIN
             v_parametros.tipo_tarjeta_2,
             v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2,
-            v_parametros.mco_2
+            v_parametros.mco_2,
+            v_id_venta_recibo_2
           );
           end if;
         end if;
