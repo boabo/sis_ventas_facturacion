@@ -1018,7 +1018,7 @@ $body$
 		IF(pxp.f_get_variable_global('vef_facturacion_endesis')='true')THEN
             v_consulta = v_consulta || ' left join forma_pago_mb fpmb
                           on v.id_venta = fpmb.id_venta
-                      where v.estado = ''finalizado'' and
+                      where v.estado_reg = ''activo'' and v.estado = ''finalizado'' and
                         (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                         '|| v_filtro_cajero_boleto_1 ||'
                       group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,
