@@ -241,31 +241,7 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
-        {
-            config : {
-                name : 'nombre_sistema',
-                fieldLabel : 'Nombre Sistema de Facturación',
-                anchor : '90%',
-                tinit : false,
-                allowBlank : false,
-                origen : 'CATALOGO',
-                gdisplayField : 'nombre_sistema',
 
-
-                gwidth : 200,
-                anchor : '100%',
-                baseParams : {
-                    cod_subsistema : 'VEF',
-                    catalogo_tipo : 'sistema_facturacion'
-                },
-                renderer:function(value, p, record){return String.format('{0}', record.data['nombre_sistema']);}
-            },
-            type : 'ComboRec',
-            id_grupo : 0,
-            filters : {pfiltro : 'dos.nombre_sistema', type : 'string'},
-            grid : true,
-            form : true
-        },
         {
             config:{
                 name: 'nro_tramite',
@@ -545,6 +521,31 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
             form:true
         },
 
+				{
+            config : {
+                name : 'nombre_sistema',
+                fieldLabel : 'Nombre Sistema de Facturación',
+                anchor : '90%',
+                tinit : false,
+                allowBlank : false,
+                origen : 'CATALOGO',
+                gdisplayField : 'nombre_sistema',
+
+
+                gwidth : 200,
+                anchor : '100%',
+                baseParams : {
+                    cod_subsistema : 'VEF',
+                    catalogo_tipo : 'sistema_facturacion'
+                },
+                renderer:function(value, p, record){return String.format('{0}', record.data['nombre_sistema']);}
+            },
+            type : 'ComboRec',
+            id_grupo : 0,
+            filters : {pfiltro : 'dos.nombre_sistema', type : 'string'},
+            grid : true,
+            form : true
+        },
 
         //INI ES COMPUTARIZADA
         {
@@ -911,6 +912,23 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
                 this.Cmp.fecha_inicio_emi.allowBlank = true;
                 this.Cmp.fecha_inicio_emi.reset();
 
+								this.ocultarComponente(this.Cmp.nombre_sistema);
+                this.Cmp.nombre_sistema.allowBlank = true;
+
+
+								this.Cmp.nombre_sistema.store.load({params:{start:0,limit:50},
+		                   callback : function (r) {
+												 this.Cmp.nombre_sistema.reset();
+		                     for (var i = 0; i < r.length; i++) {
+		                       if (r[i].data.descripcion == 'SISTEMAFACTURACIONBOA') {
+		                         this.Cmp.nombre_sistema.setValue(r[i].data.descripcion);
+		                         this.Cmp.nombre_sistema.fireEvent('select', this.Cmp.nombre_sistema,this.Cmp.nombre_sistema.store.getById(r[i].data.descripcion));
+
+		                       }
+		                     }
+		                    }, scope : this
+		                });
+
 
             } else {
                 this.ocultarComponente(this.Cmp.inicial);
@@ -926,6 +944,10 @@ Phx.vista.DosificacionInte=Ext.extend(Phx.gridInterfaz,{
 
                 this.mostrarComponente(this.Cmp.fecha_inicio_emi);
                 this.Cmp.fecha_inicio_emi.allowBlank = false;
+
+								this.mostrarComponente(this.Cmp.nombre_sistema);
+                this.Cmp.nombre_sistema.allowBlank = false;
+								this.Cmp.nombre_sistema.reset();
 
             }
         },this);
