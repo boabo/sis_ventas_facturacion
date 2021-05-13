@@ -180,7 +180,8 @@ BEGIN
                         '||v_columnas_destino||',
 
                         usua.desc_persona::varchar as cajero,
-                        ven.tipo_factura,ven.id_auxiliar_anticipo
+                        ven.tipo_factura,ven.id_auxiliar_anticipo,
+                        aux.nombre_auxiliar
 
 						from vef.tventa ven
 						inner join segu.tusuario usu1 on usu1.id_usuario = ven.id_usuario_reg
@@ -189,13 +190,13 @@ BEGIN
 				        inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
                         '||v_join_destino||'
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
-
+                        left join conta.tauxiliar aux on aux.id_auxiliar =  ven.id_auxiliar_anticipo
 
                         inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
                         inner join param.tmoneda mon on mon.id_moneda = ven.id_moneda
 
-                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
-                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                        left join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        left join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
 
                         left join segu.vusuario usua on usua.id_usuario = ven.id_usuario_cajero
 
@@ -277,11 +278,12 @@ BEGIN
 					    inner join vef.vcliente cli on cli.id_cliente = ven.id_cliente
                         '||v_join_destino||'
                         inner join vef.tsucursal suc on suc.id_sucursal = ven.id_sucursal
+                        left join conta.tauxiliar aux on aux.id_auxiliar =  ven.id_auxiliar_anticipo
                         inner join vef.tpunto_venta puve on puve.id_punto_venta = ven.id_punto_venta
                         inner join param.tmoneda mon on mon.id_moneda = ven.id_moneda
 
-                        inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
-                        inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
+                        left join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                        left join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
 
                         left join segu.vusuario usua on usua.id_usuario = ven.id_usuario_cajero
 

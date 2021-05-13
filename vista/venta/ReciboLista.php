@@ -459,20 +459,18 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-        // {
-        //     config:{
-        //         name: 'monto_forma_pago',
-        //         fieldLabel: 'Importe Recibido',
-        //         allowBlank: false,
-        //         gwidth: 120,
-        //         maxLength:5,
-        //         disabled:true
-        //     },
-        //         type:'NumberField',
-        //         id_grupo:1,
-        //         grid:true,
-        //         form:false
-        // },
+        {
+            config:{
+                name: 'nombre_auxiliar',
+                fieldLabel: 'Auxiliar',
+                allowBlank: false,
+                gwidth: 210,
+            },
+                type:'TextField',
+                id_grupo:0,
+                grid:true,
+                form:false
+        },
         {
             config:{
                 name: 'comision',
@@ -680,7 +678,7 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
 		'id_moneda','total_venta_msuc','transporte_fob','seguros_fob',
 		'otros_fob','transporte_cif','seguros_cif','otros_cif',
 		'tipo_cambio_venta','desc_moneda','valor_bruto',
-		'descripcion_bulto','cliente_destino','id_cliente_destino','cajero'
+		'descripcion_bulto','cliente_destino','id_cliente_destino','cajero','nombre_auxiliar'
 
 
 	],

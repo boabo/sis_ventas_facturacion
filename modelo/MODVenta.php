@@ -126,7 +126,7 @@ class MODVenta extends MODbase{
 		$this->captura('cajero','varchar');
 		$this->captura('tipo_factura','varchar');
 		$this->captura('id_auxiliar_anticipo','int4');
-
+		$this->captura('nombre_auxiliar','varchar');
 
 
 		//Ejecuta la instruccion
