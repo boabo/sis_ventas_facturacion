@@ -762,7 +762,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             } else {
                 this.ocultarComponente(this.Cmp.mco);
             }
-
             if (r.data.codigo == 'CCVI') {
                //console.log("llega aqui el tipo de tarjeta",this);
                this.Cmp.tipo_tarjeta.setValue('VI');
@@ -778,9 +777,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                 } else {
                 this.Cmp.tipo_tarjeta.reset();
               }
-
-
-
             this.moneda = r.data.desc_moneda;
             this.Cmp.moneda_tarjeta.setValue(this.moneda);
             //console.log("aqui recuperar codigo moneda",this.moneda);
@@ -1049,7 +1045,6 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
               } else {
               this.Cmp.tipo_tarjeta_2.reset();
             }
-
           if (r.data.registrar_tarjeta == 'si' || r.data.registrar_cc == 'si') {
           this.mostrarComponente(this.Cmp.numero_tarjeta_2);
           this.Cmp.numero_tarjeta_2.allowBlank = false;
@@ -1097,22 +1092,18 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
         }
         this.moneda_2 = r.data.desc_moneda;
         this.Cmp.moneda_tarjeta_2.setValue(this.moneda_2);
-
         // console.log("llega los parametros aqui",this.Cmp.moneda_tarjeta_2.value);
         // console.log("llega el tipo de cambio aqui",this.tipo_cambio);
          if (this.Cmp.moneda_tarjeta.value != 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD' ) {
             this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue())/this.tipo_cambio);
-
          }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value == 'USD') {
            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio)/this.tipo_cambio);
-
          }else if (this.Cmp.moneda_tarjeta.value == 'USD' && this.Cmp.moneda_tarjeta_2.value != 'USD') {
            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio));
          }
          else{
              this.Cmp.monto_forma_pago_2.setValue(this.suma_total-this.Cmp.monto_forma_pago.getValue());
          }
-
        },this);*/
         /**************************************************************************************************************/
         /********************************Aumemtando condicios para el id moneda****************************************/
@@ -1264,9 +1255,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.cambio_moneda_extranjera.setValue((this.Cmp.monto_forma_pago.getValue()-this.suma_total)/this.tipo_cambio);
           }
 
-          if (this.Cmp.id_moneda.getValue() == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio) < this.suma_total) {
-
-
+          if (this.Cmp.id_moneda.getValue() == 2 && (this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio).toFixed(2) < this.suma_total) {
             /**********************************Cambiamos el Style *****************************************/
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.color = "red";
             this.Cmp.cambio_moneda_extranjera.label.dom.control.style.background = "#FFE4E4";
@@ -1277,7 +1266,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
             this.Cmp.id_moneda_2.enable();
             this.Cmp.id_medio_pago_2.enable();
             this.Cmp.monto_forma_pago_2.enable();
-            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio))/this.tipo_cambio);
+            this.Cmp.monto_forma_pago_2.setValue((this.suma_total-(this.Cmp.monto_forma_pago.getValue()*this.tipo_cambio).toFixed(2))/this.tipo_cambio);
 
             /*Aqui para que moneda esta por defecto*/
             this.Cmp.id_moneda_2.store.load({params:{start:0,limit:50},
