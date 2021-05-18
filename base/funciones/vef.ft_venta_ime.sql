@@ -150,6 +150,7 @@ $body$
     v_id_venta_recibo_2			integer;
     v_mon_recibo			varchar;
     v_mon_recibo_2			varchar;
+    v_tipo_cambio_local		numeric;
 
   BEGIN
 
@@ -507,6 +508,10 @@ $body$
         	if(pxp.f_is_positive_integer(v_parametros.id_cliente))then
               v_id_cliente = v_parametros.id_cliente::integer;
 
+              IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
+                raise exception 'La razón social no puede ser vacio verifique los datos';
+              end if;
+
               update vef.tcliente
               set nit = v_parametros.nit,
               correo = v_parametros.correo_electronico
@@ -518,6 +523,11 @@ $body$
             end if;
         -- bvp
         elsif(v_tipo_base = 'recibo' or v_tipo_base = 'recibo_manual')then
+
+
+        IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
+          raise exception 'La razón social no puede ser vacio verifique los datos';
+        end if;
 
         INSERT INTO
             vef.tcliente
@@ -531,10 +541,10 @@ $body$
             p_id_usuario,
             now(),
             'activo',
-            upper(v_parametros.nombre_factura)
+            trim(upper(v_parametros.nombre_factura))
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = UPPER(v_parametros.nombre_factura);
+          v_nombre_factura = trim(upper(v_parametros.nombre_factura));
         -- bvp
         else
           INSERT INTO
@@ -636,9 +646,11 @@ $body$
           v_descripcion_bulto = v_parametros.descripcion_bulto;
         end if;
 
-        if (pxp.f_existe_parametro(p_tabla,'tipo_cambio_venta')) then
-          v_tipo_cambio_venta = v_parametros.tipo_cambio_venta;
-        end if;
+
+
+        select tc.oficial  into v_tipo_cambio_venta
+        from param.ttipo_cambio tc
+        where tc.fecha = v_fecha::date and tc.id_moneda = v_parametros.id_moneda_venta_recibo;
 
 
    /*if (v_tipo_factura = 'recibo') then
@@ -739,7 +751,7 @@ $body$
           v_excento,
 
 
-          v_id_moneda_venta,
+          v_parametros.id_moneda_venta_recibo,
           COALESCE(v_transporte_fob,0),
           COALESCE(v_seguros_fob,0),
           COALESCE(v_otros_fob,0),
@@ -1551,10 +1563,11 @@ $body$
         /*Aumentamos la condicion para la moneda base*/
 
           if (v_venta.id_moneda_venta_recibo = 2 and v_moneda_base != 2) then
-              v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_id_moneda_venta,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
+              v_monto_venta = param.f_convertir_moneda(v_venta.id_moneda_venta_recibo,v_moneda_base,v_venta.total_venta,v_venta.fecha::date,'CUS',2, NULL,'si');
           else
               v_monto_venta = v_venta.total_venta;
           end if;
+
 
         /********************************************************************/
 
@@ -1657,6 +1670,12 @@ $body$
                                             inner join vef.tforma_pago fp on fp.id_forma_pago = vfp.id_forma_pago
                                           where vfp.id_venta = v_parametros.id_venta)loop */
 
+            select tc.oficial
+            		into
+                    v_tipo_cambio_local
+            from param.ttipo_cambio tc
+            where tc.id_moneda = 2 and tc.fecha = v_venta.fecha;
+
 
           	 for v_registros in (select vfp.id_venta_forma_pago, vfp.id_moneda,vfp.monto_transaccion
                               from vef.tventa_forma_pago vfp
@@ -1666,7 +1685,7 @@ $body$
             /*Aqui aumentamos para hacer el tipo de cambio de las formas de pago*/
               if (v_registros.id_moneda = 2 and v_moneda_base != 2) then
                /*Convertimos a Bs*/
-               v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, NULL,'si');
+               v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_moneda_base,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, NULL,'si');
               else
                /*si es Bs mantenemos a Bs*/
                v_monto_fp = v_registros.monto_transaccion;
@@ -1704,6 +1723,14 @@ $body$
                                      v_monto_fp
                                    end)
             where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
+            /*Para mantener en dolar la moneda*/
+            update vef.tventa_forma_pago set
+              monto_dolar_efectivo = round((monto_mb_efectivo / v_tipo_cambio_local),2)
+            where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
+
+
             v_acumulado_fp = v_acumulado_fp + v_monto_fp;
           end loop;
 

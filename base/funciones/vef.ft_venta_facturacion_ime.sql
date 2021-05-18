@@ -225,6 +225,9 @@ DECLARE
     v_id_anticipo_actual		integer;
     v_desc_nombre_auxiliar		varchar;
     v_existe_recibo_asociado_boleto	numeric;
+
+    v_tipo_cambio_local		numeric;
+    v_id_moneda_venta_factura	integer;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -250,6 +253,10 @@ BEGIN
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
 
+        IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
+          	raise exception 'La razón social no puede ser vacio verifique los datos';
+          end if;
+
 
 
           update vef.tcliente
@@ -263,9 +270,15 @@ BEGIN
 
         else
 
+
           IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
+
+          IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
+          	raise exception 'La razón social no puede ser vacio verifique los datos';
+          end if;
+
 
           INSERT INTO
             vef.tcliente
@@ -314,7 +327,7 @@ BEGIN
           /******************************************************************************/
 
         /***********************Recuperamos el id_moneda*******************************/
-          if (pxp.f_existe_parametro(p_tabla,'id_moneda')) then
+          /*if (pxp.f_existe_parametro(p_tabla,'id_moneda')) then
             	v_id_moneda_venta = v_parametros.id_moneda;
           else
             	if (v_parametros.id_sucursal is not null ) then
@@ -329,7 +342,11 @@ BEGIN
               		where pv.id_punto_venta = v_parametros.id_punto_venta
                     and sm.estado_reg = 'activo' and sm.tipo_moneda = 'moneda_base';
             	end if;
-          end if;
+          end if;*/
+
+          select mon.id_moneda into v_id_moneda_venta
+        from param.tmoneda mon
+        where mon.tipo_moneda = 'base';
 		/******************************************************************************/
 
          if (pxp.f_existe_parametro(p_tabla,'tipo_factura')) then
@@ -672,7 +689,7 @@ BEGIN
           COALESCE(v_transporte_cif,0),
           COALESCE(v_seguros_cif,0),
           COALESCE(v_otros_cif,0),
-          COALESCE(v_tipo_cambio_venta,0),
+          1,
           COALESCE(v_valor_bruto,0),
           COALESCE(v_descripcion_bulto,''),
           trim(v_parametros.nit),
@@ -1872,6 +1889,10 @@ BEGIN
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
 
+          IF(trim(v_parametros.nombre_factura) = '' or trim(v_parametros.nombre_factura) is null)then
+          raise exception 'La razón social no puede ser vacio verifique los datos';
+          end if;
+
           update vef.tcliente
           set nit = trim(v_parametros.nit),
               nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
@@ -1884,6 +1905,10 @@ BEGIN
           IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
+
+            IF(trim(v_parametros.nombre_factura) = '' or trim(v_parametros.nombre_factura) is null)then
+            raise exception 'La razón social no puede ser vacio verifique los datos';
+            end if;
 
 
           INSERT INTO
@@ -2058,6 +2083,11 @@ BEGIN
         end if;
 
 
+		select mon.id_moneda into v_id_moneda_venta_factura
+        from param.tmoneda mon
+        where mon.tipo_moneda = 'base';
+
+
 
         --Sentencia de la insercion
         insert into vef.tventa(
@@ -2140,16 +2170,14 @@ BEGIN
           v_nro_factura,
           v_id_dosificacion,
           v_excento,
-
-
-          1,
+          v_id_moneda_venta_factura,
           COALESCE(v_transporte_fob,0),
           COALESCE(v_seguros_fob,0),
           COALESCE(v_otros_fob,0),
           COALESCE(v_transporte_cif,0),
           COALESCE(v_seguros_cif,0),
           COALESCE(v_otros_cif,0),
-          COALESCE(v_tipo_cambio_venta,0),
+          1,
           COALESCE(v_valor_bruto,0),
           COALESCE(v_descripcion_bulto,''),
           trim(v_parametros.nit),
@@ -2643,7 +2671,7 @@ BEGIN
           id_dosificacion = v_id_dosificacion,
           excento = v_excento,
 
-          id_moneda = v_id_moneda_venta,
+          --id_moneda = v_id_moneda_venta,
           transporte_fob = COALESCE(v_transporte_fob,0),
           seguros_fob = COALESCE(v_seguros_fob,0),
           otros_fob = COALESCE(v_otros_fob,0),
@@ -4218,6 +4246,14 @@ BEGIN
           --lo que ya se pago es igual a lo que se tenia a cuenta, suponiendo q esta en la moneda base
           v_acumulado_fp = v_venta.a_cuenta;
 
+
+          /*Recuperamos el tipo de cambio para hacer la conversion a dolar*/
+          select tc.oficial into v_tipo_cambio_local
+          from param.ttipo_cambio tc
+          where tc.fecha = v_venta.fecha and tc.id_moneda = 2;
+          /****************************************************************/
+
+
 		  /*******************************Obtenemos la moneda para realizar la converision si es en dolar (IRVA)****************************************/
                       /*for v_registros in (select vfp.id_venta_forma_pago, fp.id_moneda,vfp.monto_transaccion
                                           from vef.tventa_forma_pago vfp
@@ -4231,11 +4267,11 @@ BEGIN
 
 
             if (v_registros.id_moneda != v_id_moneda_venta) then
-              IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
-              	v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
-              ELSE
+              --IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
+              --	v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
+             -- ELSE
                 v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'O',2,NULL,'si');
-              END IF;
+             -- END IF;
             else
               v_monto_fp = v_registros.monto_transaccion;
             end if;
@@ -4258,7 +4294,15 @@ BEGIN
                                      v_monto_fp
                                    end)
             where id_venta_forma_pago = v_registros.id_venta_forma_pago;
-            v_acumulado_fp = v_acumulado_fp + v_monto_fp;
+
+
+            /*Aumentando para la moneda dolar*/
+            update vef.tventa_forma_pago set
+              monto_dolar_efectivo = round((monto_mb_efectivo / v_tipo_cambio_local),2)
+            where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
+
+                        v_acumulado_fp = v_acumulado_fp + v_monto_fp;
           end loop;
           /************************************************************************************************************************************************************/
 
