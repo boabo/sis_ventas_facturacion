@@ -82,7 +82,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                       name: 'habilitar_edicion',
                       fieldLabel: '<img src="../../../lib/imagenes/facturacion/LapizPapel.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Editar?</span>',
                       allowBlank: true,
-                      width:200,
+                      width:100,
                       emptyText:'Editar...',
                       triggerAction: 'all',
                       lazyRender:true,
@@ -3019,7 +3019,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                     layout: 'form',
                                     style: {
                                            height:'160px',
-                                           width:'300px',
+                                           // width:'300px',
                                         },
                                     padding: '0 0 0 10',
                                     bodyStyle: 'padding-left:5px;',
@@ -3037,12 +3037,12 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                       layout: 'form',
                                       style: {
                                              height:'160px',
-                                             width:'320px'
+                                             // width:'320px'
                                             },
                                       border: false,
                                       padding: '0 0 0 20',
                                       bodyStyle: 'padding-left:5px;',
-                                      id_grupo: 1,
+                                      id_grupo: 8,
                                       items: [],
                                    }]
                                },
@@ -3061,7 +3061,7 @@ Phx.vista.FormCajero=Ext.extend(Phx.frmInterfaz,{
                                       border: false,
                                       // padding: '0 0 0 20',
                                       // bodyStyle: 'padding-left:5px;',
-                                      id_grupo: 8,
+                                      id_grupo: 1,
                                       items: [],
                                    }]
                                },
