@@ -44,7 +44,7 @@ DECLARE
 	v_codigo_pv_carga	varchar;
     v_filtro_punto_venta_carga	varchar;
     v_fecha_final		date;
-
+	v_filtro_punto_venta_fact	varchar;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_depositos';
@@ -412,6 +412,8 @@ BEGIN
             else
             	v_filtro_punto_venta = 'cdo.id_punto_venta = '||v_parametros.id_punto_venta||'';
 
+                v_filtro_punto_venta_fact = 'ven.id_punto_venta = '||v_parametros.id_punto_venta||'';
+
                 /*AQUI PARA RECUPERAR EL CODIGO DEL PUNTO DE VENTA (ESTO PARA RECUPERAR DATOS DE CARGA)*/
             	select pv.codigo
                 		into
@@ -598,7 +600,7 @@ BEGIN
 
                                             union all
 
-                                            (select cdo.fecha_apertura_cierre,
+                                            (select ven.fecha,
                                                    NULL::varchar as nro_deposito,
                                                    NULL::date as fecha_deposito,
                                                     venfp.monto_mb_efectivo as total_ml,
@@ -620,13 +622,15 @@ BEGIN
                                             --inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
                                             inner join vef.tventa_forma_pago venfp on venfp.id_venta = ven.id_venta
                                             inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = venfp.id_medio_pago
-                                            inner join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha and ven.id_punto_venta = cdo.id_punto_venta
-                                            inner join param.ttipo_cambio tc on tc.fecha = cdo.fecha_apertura_cierre and tc.id_moneda = 2
-
+                                            left join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha and ven.id_punto_venta = cdo.id_punto_venta
                                             and cdo.id_usuario_cajero = ven.id_usuario_cajero
                                             and cdo.estado_reg = ''activo''
+
+                                            inner join param.ttipo_cambio tc on tc.fecha = ven.fecha and tc.id_moneda = 2
+
+
                                             where ven.estado = ''finalizado'' and mp.name = ''CASH'' and ven.id_deposito is null
-                                            and '||v_filtro_punto_venta||' and cdo.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')
+                                            and '||v_filtro_punto_venta_fact||' and ven.fecha between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')
 
                                             union all
 
@@ -1049,6 +1053,8 @@ BEGIN
             else
             	v_filtro_punto_venta = 'cdo.id_punto_venta = '||v_parametros.id_punto_venta||'';
 
+                v_filtro_punto_venta_fact = 'ven.id_punto_venta = '||v_parametros.id_punto_venta||'';
+
                 /*AQUI PARA RECUPERAR EL CODIGO DEL PUNTO DE VENTA (ESTO PARA RECUPERAR DATOS DE CARGA)*/
             	select pv.codigo
                 		into
@@ -1275,7 +1281,7 @@ BEGIN
 
                                             union all
 
-                                            (select cdo.fecha_apertura_cierre,
+                                            (select ven.fecha,
                                                    NULL::varchar as nro_deposito,
                                                    NULL::date as fecha_deposito,
                                                     venfp.monto_mb_efectivo as total_ml,
@@ -1297,13 +1303,15 @@ BEGIN
                                             --inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
                                             inner join vef.tventa_forma_pago venfp on venfp.id_venta = ven.id_venta
                                             inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = venfp.id_medio_pago
-                                            inner join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha and ven.id_punto_venta = cdo.id_punto_venta
-                                            inner join param.ttipo_cambio tc on tc.fecha = cdo.fecha_apertura_cierre and tc.id_moneda = 2
-
+                                            left join vef.tapertura_cierre_caja cdo on cdo.fecha_apertura_cierre = ven.fecha and ven.id_punto_venta = cdo.id_punto_venta
                                             and cdo.id_usuario_cajero = ven.id_usuario_cajero
                                             and cdo.estado_reg = ''activo''
+
+                                            inner join param.ttipo_cambio tc on tc.fecha = ven.fecha and tc.id_moneda = 2
+
+
                                             where ven.estado = ''finalizado'' and mp.name = ''CASH'' and ven.id_deposito is null
-                                            and '||v_filtro_punto_venta||' and cdo.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')
+                                            and '||v_filtro_punto_venta_fact||' and ven.fecha between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')
 
                                             union all
 
