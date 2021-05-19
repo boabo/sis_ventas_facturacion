@@ -392,20 +392,20 @@ class RResumenVentasBoaXLS
 
 		for ($i=6; $i <= $fila_general; $i++) {
 			$inicio = 6;
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $total, "=SUM((L$inicio:L$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $total, "=SUM((M$inicio:M$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $total, "=SUM((N$inicio:N$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $total, "=SUM((O$inicio:O$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $total, "=SUM((P$inicio:P$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $total, "=SUM((Q$inicio:Q$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $total, "=SUM((R$inicio:R$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $total, "=SUM((S$inicio:S$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $total, "=SUM((T$inicio:T$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $total, "=SUM((U$inicio:U$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(20, $total, "=SUM((V$inicio:V$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(21, $total, "=SUM((W$inicio:W$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(22, $total, "=SUM((X$inicio:X$i))");
-			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(23, $total, "=SUM((Y$inicio:Y$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $total, "=SUM((L$inicio:L$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $total, "=SUM((M$inicio:M$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $total, "=SUM((N$inicio:N$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $total, "=SUM((O$inicio:O$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $total, "=SUM((P$inicio:P$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $total, "=SUM((Q$inicio:Q$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $total, "=SUM((R$inicio:R$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $total, "=SUM((S$inicio:S$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $total, "=SUM((T$inicio:T$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(20, $total, "=SUM((U$inicio:U$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(21, $total, "=SUM((V$inicio:V$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(22, $total, "=SUM((W$inicio:W$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(23, $total, "=SUM((X$inicio:X$i))");
+			$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(24, $total, "=SUM((Y$inicio:Y$i))");
 			$this->docexcel->getActiveSheet()->getStyle("L$i:Y$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			// $this->docexcel->getActiveSheet()->getStyle("L$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 			// $this->docexcel->getActiveSheet()->getStyle("M$i")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
