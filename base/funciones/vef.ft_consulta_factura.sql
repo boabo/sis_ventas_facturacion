@@ -308,6 +308,7 @@ BEGIN
                               v.comision,
                               v.estado,
                               v.tipo_factura,
+                              aux.nombre_auxiliar,
                               v.id_auxiliar_anticipo as anticipo,
                               case when v.tipo_factura = ''recibo'' then
 	                              	''Recibo''
@@ -408,11 +409,20 @@ BEGIN
                                       FROM vef.tboletos_asociados_fact ba
                                       WHERE ba.id_venta = v.id_venta
                                     ) boas
+                                ),
+                                (
+                                  SELECT ROW_TO_JSON(grupo) as grupo
+                                  FROM ( SELECT  vau.id_venta  as id_venta_grupo_padre
+                                         FROM vef.tventa_forma_pago vfau
+                                         inner join vef.tventa vau on vau.id_venta = vfau.id_venta_recibo
+                                         WHERE vfau.id_venta = v.id_venta
+                                  ) grupo
                                 )
                                 from vef.tventa v
                                 inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
                                 inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
                                 left join vef.tsucursal su on su.id_sucursal = pv.id_sucursal
+                                left join conta.tauxiliar aux on aux.id_auxiliar = v.id_auxiliar_anticipo
                                 '||v_inner||'
                                 where v.id_venta = '||v_parametros.id_venta||'
                                )tvalue_data
