@@ -491,7 +491,8 @@ $body$
                       0::numeric as comision,
                       0::numeric,
                       0::numeric,
-                      '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
+                      '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta,
+                      ''''::varchar as estado_emision
                       from vef.tventa v
                       inner join vef.tventa_detalle vd
                           on v.id_venta = vd.id_venta and vd.estado_reg = ''activo''
@@ -513,7 +514,8 @@ $body$
                           0::numeric as ccomision
                           0::numeric,
                           0::numeric,
-                          '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
+                          '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta,
+                          ''''::varchar as estado_emision
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -695,7 +697,8 @@ $body$
              b.comision,
              0::numeric,
              0::numeric,
-             '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
+             '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta,
+             ''''::varchar as estado_emision
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then
@@ -975,8 +978,21 @@ $body$
                       /*Aumentnado para depositos*/
                       coalesce(fpmb.monto_deposito_mb,0)::numeric,
                       coalesce(fpusd.monto_deposito_usd,0)::numeric,
-                      '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
+                      '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta,
                       /***************************/
+
+                      /*Aumentando el estado de las facturas*/
+                      (CASE
+                        WHEN (v.estado = ''anulado'' ) THEN
+
+                        ''ANULADA''
+
+                        else
+
+                        ''EMITIDA''
+
+                      END)::varchar AS estado_emision
+                      /***************************************/
 
                       from vef.tventa v
                       left join vef.tventa_detalle vd
@@ -1000,6 +1016,7 @@ $body$
                           0::numeric depo_mb,
                           0::numeric depo_ml,
                           '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
+                          ''''::varchar as estado_emision
                   from vef.tfactucom_endesis v
                   inner join vef.tpunto_venta pv on pv.codigo=v.agt::varchar
                        inner join vef.tfactucompag_endesis vd on vd.id_factucom=v.id_factucom ';
@@ -1021,7 +1038,7 @@ $body$
                       where v.estado_reg = ''activo'' and v.estado = ''finalizado'' and
                         (v.fecha::date between ''' || v_parametros.fecha_desde || ''' and ''' || v_parametros.fecha_hasta || ''')
                         '|| v_filtro_cajero_boleto_1 ||'
-                      group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,
+                      group by v.fecha,v.nro_factura,v.tipo_factura,cli.nombre_factura,v.observaciones,v.estado,
                                 fpmb.forma_pago, fpmb.monto_cash_mb,fpmb.monto_cc_mb,fpmb.monto_cte_mb,fpmb.monto_mco_mb,fpmb.monto_otro_mb,v.total_venta_msuc,fpmb.monto_deposito_mb,v.total_venta ' || v_group_by || '
                       )
             union ALL --3
@@ -1224,7 +1241,21 @@ $body$
              b.comision,
              0::numeric,
              0::numeric,
-             '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta
+             '''||COALESCE(v_nombre_pv,'')||'''::varchar as punto_venta,
+
+             /*Aumentando para el estado de los boletos*/
+              (CASE
+                WHEN (b.voided = ''si'' ) THEN
+
+                ''ANULADO''
+
+                else
+
+                ''EMITIDO''
+
+              END)::varchar AS estado_emision
+             /******************************************/
+
              from obingresos.tboleto_amadeus b
              ';
         if (v_cod_moneda != 'USD') then

@@ -57,12 +57,13 @@ class MODReportesVentas extends MODbase{
 		$this->captura('monto_deposito_mb','numeric');
     $this->captura('monto_deposito_usd','numeric');
 		$this->captura('nombre_pv','varchar');
+		$this->captura('estado_emision','varchar');
 
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-        //var_dump($this->respuesta);exit;
+      //  var_dump($this->respuesta);exit;
 
 		//Devuelve la respuesta
 		return $this->respuesta;
