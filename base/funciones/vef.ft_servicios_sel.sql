@@ -109,8 +109,25 @@ BEGIN
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-			raise notice '%',v_consulta;
+
+
+            if (v_parametros.ordenacion = 'nombre_actividad') then
+
+			v_consulta:=v_consulta||' order by act.nombre ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+            elsif (v_parametros.ordenacion = 'sw_autorizacion' or v_parametros.ordenacion = 'regionales' or v_parametros.ordenacion = 'nivel_permiso' or v_parametros.ordenacion = 'precio') then
+
+            v_consulta:=v_consulta||' order by ingas.' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+            else
+
+            v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+            end if;
+
+
+
+            raise notice '%',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 
