@@ -115,9 +115,14 @@
   color: #1F3656;
   font-weight: bold;
 }
+.grupoAnticipo:hover {
+  background-color: #91FF81;
+  font-size: 20px;
+}
 </style>
 <script>
 
+var me = null
 if(screen.width<=1440){
   wdf=1250;
 }else if (screen.width<=1920) {
@@ -133,6 +138,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
     this.tbar.el.dom.parentNode.style.height=0;
     this.bbar.container.dom.firstChild.style.height=0;
     this.grid.view.innerHd.style.height=0;
+    me = this
 	},
 	Atributos:[
 
@@ -153,6 +159,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                   var bolasoc = obj.bolasoc;
                   var deposito = obj.deposito;
                   var total_depo = 0;
+                  if (obj.grupo != null ){me.grupo_ant = obj.grupo}
                   (obj.anticipo != null)?title_ant = 'ANTICIPO':title_ant='';
                   var info =`	<div class="lista">
                             <table width="100%">
@@ -164,7 +171,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                           info += `
                                           <td width="2%" style="font-size:14px;">
                                               <b>N° ${obj.tit_fac}: </b><span class="f_text">${obj.nro_factura}</span>`;
-                                              if (obj.nit!='' || obj.nit!=null){
+                                              if (obj.nit!='' && obj.nit!=null){
                                                   info +=  `<br><br><b>Nit: </b><span class="f_text">${obj.nit}</span>`;
                                               }
                             info +=`<br><br>
@@ -224,6 +231,10 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                           </td>
                                           `;
                                         }
+
+                                      if (obj.nombre_auxiliar != '' && obj.nombre_auxiliar != null){
+                                          info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span><br></td></tr>`;
+                                      }
 
                           info +=`  </tr>
                                     </table>
@@ -305,7 +316,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                               <td align="center">${e.numero_tarjeta}</td>
                                               <td align="center">${e.codigo_tarjeta}</td>
                                               <td align="center">${(e.cod_cuenta==null)?'':e.cod_cuenta}</td>
-                                              <td align="center">${(e.nro_recibo==null)?'':e.nro_recibo}</td>
+                                              <td align="center">${(e.nro_recibo==null)?'':`<b class="grupoAnticipo"><i class="fa fa-share" aria-hidden="true" onclick="formAnti()"></i> &nbsp;&nbsp;&nbsp;${e.nro_recibo}</b>`}</td>
                                           </tr>
                                           `;
                                       });
@@ -414,5 +425,24 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
   bedit:false,
   bact:false,
   bexport:false,
-})
+  openAnticipo: function(){
+      if(me.grupo_ant!=null){
+        Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/consulta_boletos/VentanaDetalleFactura.php',
+        '<span style="font-size:14pt;padding-left: 35%;letter-spacing: 12px;">DETALLE RECIBO GRUPO</span>', {
+          width:'90%',
+          height:'80%'
+          }, {
+            id_venta: me.grupo_ant.id_venta_grupo_padre,
+            link: true
+          },
+          me.idContenedor,
+          'VentanaDetalleFactura'
+        );
+      }
+  }
+});
+function formAnti(){
+  me.openAnticipo();
+}
+
 </script>

@@ -462,7 +462,7 @@ Phx.vista.ReciboLista=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'nombre_auxiliar',
-                fieldLabel: 'Auxiliar',
+                fieldLabel: 'Grupo',
                 allowBlank: false,
                 gwidth: 210,
             },
