@@ -159,7 +159,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                   var bolasoc = obj.bolasoc;
                   var deposito = obj.deposito;
                   var total_depo = 0;
-                  if (obj.grupo != null ){me.grupo_ant = obj.grupo}                  
+                  if (obj.grupo != null ){me.grupo_ant = obj.grupo}
                   (obj.anticipo != null)?title_ant = 'ANTICIPO':title_ant='';
                   var info =`	<div class="lista">
                             <table width="100%">
@@ -177,12 +177,8 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                             info +=`<br><br>
                                           <b>Razon Social: </b><span class="f_text">${obj.nombre_factura}</span>
                                               <br><br>
-                                              <b>Sucursal: </b><span class="f_text">${obj.sucursal}</span><br><br>`;
-                                              if (obj.nombre_auxiliar != '' && obj.nombre_auxiliar != null){
-                                                  info += `<b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span><br>`;
-                                              }
-
-                            info += `</td>
+                                              <b>Sucursal: </b><span class="f_text">${obj.sucursal}</span>
+                                          </td>
                                           <td width="3%" style="font-size:14px;">
                                               <b>Fecha: </b><span class="f_text">${obj.fecha_factura.split("-").reverse().join("/")}</span>
                                               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<b>Estado: </b> ${(obj.estado=='anulado')?'<span class="f_text" style="background:#E74C3C;color:white;">ANULADO</span>':'<span class="f_text" style="background:#28B463;color:white;">VALIDA</span>'}
@@ -235,6 +231,10 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                           </td>
                                           `;
                                         }
+
+                                      if (obj.nombre_auxiliar != '' && obj.nombre_auxiliar != null){
+                                          info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span><br></td></tr>`;
+                                      }
 
                           info +=`  </tr>
                                     </table>

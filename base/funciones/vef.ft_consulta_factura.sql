@@ -308,7 +308,7 @@ BEGIN
                               v.comision,
                               v.estado,
                               v.tipo_factura,
-                              aux.nombre_auxiliar,
+                              aux.nombre_auxiliar ||'' ''||aux.codigo_auxiliar as nombre_auxiliar,
                               v.id_auxiliar_anticipo as anticipo,
                               case when v.tipo_factura = ''recibo'' then
 	                              	''Recibo''
