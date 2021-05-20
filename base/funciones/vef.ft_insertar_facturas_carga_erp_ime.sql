@@ -1156,11 +1156,13 @@ BEGIN
               (
                   id_sistema_origen,
                   observaciones,
+                  fecha,
                   json_venta_forma_pago
               )
       VALUES (
               v_parametros.id_origen::integer,
               'MODIFICACION FORMAS DE PAGO',
+              to_char(CURRENT_DATE,'DD/MM/YYYY'),
               '['||v_parametros.json_venta_forma_pago||']'--14
           );
       /***************************************************/
