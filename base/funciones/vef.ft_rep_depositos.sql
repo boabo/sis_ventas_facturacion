@@ -176,6 +176,7 @@ BEGIN
                                         and acc.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||'''
                                         and '||v_filtro_punto_venta||'
                                         and ven.estado = ''finalizado''
+                                        and ven.estado_reg = ''activo''
                                         group by acc.fecha_apertura_cierre,
                                         usucaja.desc_persona,
                                         ingas.desc_ingas,
@@ -186,7 +187,8 @@ BEGIN
                                         depo.id_moneda_deposito,
                                         depo.monto_deposito,
                                         cuen.nro_cuenta,
-                                        usu.desc_persona)
+                                        usu.desc_persona,
+                                        ven.estado_reg)
 
                                        UNION ALL
 
@@ -272,6 +274,7 @@ BEGIN
                                         and depo.tipo = ''cuenta_corriente''
                                         and acc.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||'''
                                         and ven.estado = ''finalizado''
+                                        and ven.estado_reg = ''activo''
                                         and '||v_filtro_punto_venta||'
                                         order by depo.fecha asc)
 
@@ -322,6 +325,7 @@ BEGIN
                                         and depo.tipo = ''cuenta_corriente''
                                         and acc.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||'''
                                         and ven.estado = ''finalizado''
+                                        and ven.estado_reg = ''activo''
                                         and '||v_filtro_punto_venta||'
                                         order by depo.fecha asc)
 
@@ -629,7 +633,7 @@ BEGIN
                                             inner join param.ttipo_cambio tc on tc.fecha = ven.fecha and tc.id_moneda = 2
 
 
-                                            where ven.estado = ''finalizado'' and mp.name = ''CASH'' and ven.id_deposito is null
+                                            where ven.estado_reg=''activo'' and ven.estado = ''finalizado'' and mp.name = ''CASH'' and ven.id_deposito is null
                                             and '||v_filtro_punto_venta_fact||' and ven.fecha between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')
 
                                             union all
@@ -971,6 +975,7 @@ BEGIN
                                         and depo.tipo = ''cuenta_corriente''
                                         and acc.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||'''
                                         and ven.estado = ''finalizado''
+                                        and ven.estado_reg = ''activo''
                                         and '||v_filtro_punto_venta||'
                                         order by depo.fecha asc)
 
@@ -1021,6 +1026,7 @@ BEGIN
                                         and depo.tipo = ''cuenta_corriente''
                                         and acc.fecha_apertura_cierre between '''||v_parametros.desde||''' and '''||v_parametros.hasta||'''
                                         and ven.estado = ''finalizado''
+                                        and ven.estado_reg = ''activo''
                                         and '||v_filtro_punto_venta||'
                                         order by depo.fecha asc)
 
@@ -1310,7 +1316,7 @@ BEGIN
                                             inner join param.ttipo_cambio tc on tc.fecha = ven.fecha and tc.id_moneda = 2
 
 
-                                            where ven.estado = ''finalizado'' and mp.name = ''CASH'' and ven.id_deposito is null
+                                            where ven.estado_reg=''activo'' and ven.estado = ''finalizado'' and mp.name = ''CASH'' and ven.id_deposito is null
                                             and '||v_filtro_punto_venta_fact||' and ven.fecha between '''||v_parametros.desde||''' and '''||v_parametros.hasta||''')
 
                                             union all
