@@ -124,6 +124,7 @@ DECLARE
     v_existe_venta		numeric;
     v_id_moneda_base	integer;
     v_existe_apertura	numeric;
+    v_id_dosificacion	integer;
     /********************/
 
 BEGIN
@@ -693,6 +694,17 @@ BEGIN
         v_parametros.codigo_punto_venta
         );
 
+
+
+        /*Aumentando para recuperar el id_dosificacion para que se haga la relacion*/
+        select dosi.id_dosificacion
+        		into
+                v_id_dosificacion
+        from vef.tdosificacion dosi
+        where dosi.nroaut = v_parametros.nro_autorizacion;
+        /***************************************************************************/
+
+
         /*Se procede a la inserccion del registro en la tabla vef.tventa*/
         insert into vef.tventa(
                       id_venta,--1
@@ -770,7 +782,7 @@ BEGIN
                       'carga',--23
                       v_parametros.fecha::date,--24
                       v_parametros.nro_factura::integer,--25
-                      null,--26
+                      v_id_dosificacion,--26
                       v_exento,--27--Excento por el momento 0
                       v_id_moneda,--28
                       0,--29
@@ -1156,11 +1168,13 @@ BEGIN
               (
                   id_sistema_origen,
                   observaciones,
+                  fecha,
                   json_venta_forma_pago
               )
       VALUES (
               v_parametros.id_origen::integer,
               'MODIFICACION FORMAS DE PAGO',
+              to_char(CURRENT_DATE,'DD/MM/YYYY'),
               '['||v_parametros.json_venta_forma_pago||']'--14
           );
       /***************************************************/
@@ -1436,7 +1450,7 @@ BEGIN
                                                                 id_auxiliar,--29
                                                                 fecha_reg,--30
                                                                 id_usuario_reg,--31
-                                                                --id_dosificacion,--32
+                                                                id_dosificacion,--32
                                                                 nro_autorizacion--33
                                                                 )
                                                         VALUES (
@@ -1474,7 +1488,7 @@ BEGIN
                                                                 v_respaldo.id_auxiliar,--29
                                                                 now(),--30
                                                                 v_respaldo.id_usuario_cajero,--31
-                                                                --v_respaldo.id_dosificacion,--32
+                                                                v_respaldo.id_dosificacion,--32
                                                                 v_nro_autorizacion--33
                                                               );
 
