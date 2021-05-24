@@ -102,6 +102,7 @@ DECLARE
     v_punto_venta_bol 	varchar;
     v_punto_venta_carga	varchar;
     v_codigo_pv	varchar;
+    v_punto_venta_bol_externa	varchar;
 BEGIN
 
 	v_nombre_funcion = 'vef.ft_rep_emision_boletos';
@@ -342,6 +343,48 @@ BEGIN
                               where bol.estado = 'revisado' and bol.voided = 'no'
                               and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+                              /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                              insert into facturas_recibos_temporal (
+                                                                      fecha_factura,
+                                                                      nro_factura,
+                                                                      tipo_documento,
+                                                                      ruta,
+                                                                      pasajero,
+                                                                      debe,
+                                                                      haber,
+                                                                      tipo_factura,
+                                                                      punto_venta,
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
+
+
+                              select
+                                    bol.fecha_emision,
+                                    bol.nro_boleto as nro_factura,
+                                    'BOLETO EXTERNO'::varchar as tipo_documento,
+                                    ''::varchar as ruta ,
+                                    bol.pasajero,
+                                    (CASE
+                                      WHEN bolfp.id_moneda = 2
+
+                                      THEN
+                                        param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                      ELSE
+                                        bolfp.importe
+                                    END) as debe,
+                                    0::numeric as haber,
+                                    'boletos'::varchar as tipo_factura,
+                                    pv.nombre,
+                                    ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                    ''::varchar as observaciones
+                              from obingresos.tboleto_stage bol
+                              inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                              inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                              and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                              /********************************************/
+
 
                               /*Aqui Recuperamos los datos de Carga*/
 
@@ -480,6 +523,29 @@ BEGIN
                                       and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
 
                                       union
+                                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+                                      union
 
                                       (SELECT distinct (pb.nombre),
                                               NULL::date as fecha_factura,
@@ -574,7 +640,35 @@ BEGIN
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
                                       inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado = 'revisado' and bol.voided = 'no'
-                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date));
+                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                                      union
+
+                                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+
+
+                                      );
                                       end if;
               -----------------/*Fin del Reporte de Formas de pago*/
                 else
@@ -739,6 +833,49 @@ BEGIN
                               where bol.estado = 'revisado' and bol.voided = 'no'
                               and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+                		       /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                              insert into facturas_recibos_temporal (
+                                                                      fecha_factura,
+                                                                      nro_factura,
+                                                                      tipo_documento,
+                                                                      ruta,
+                                                                      pasajero,
+                                                                      debe,
+                                                                      haber,
+                                                                      tipo_factura,
+                                                                      punto_venta,
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
+
+
+                              select
+                                    bol.fecha_emision,
+                                    bol.nro_boleto as nro_factura,
+                                    'BOLETO EXTERNO'::varchar as tipo_documento,
+                                    ''::varchar as ruta ,
+                                    bol.pasajero,
+                                    (CASE
+                                      WHEN bolfp.id_moneda = 2
+
+                                      THEN
+                                        param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                      ELSE
+                                        bolfp.importe
+                                    END) as debe,
+                                    0::numeric as haber,
+                                    'boletos'::varchar as tipo_factura,
+                                    pv.nombre,
+                                    ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                    ''::varchar as observaciones
+                              from obingresos.tboleto_stage bol
+                              inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                              inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                              and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                              /********************************************/
+
+
 
                               /*Aqui Recuperamos los datos de Carga*/
 
@@ -879,6 +1016,31 @@ BEGIN
 
                                       union
 
+                                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+
+                                      union
+
                                       (SELECT distinct (pb.nombre),
                                               NULL::date as fecha_factura,
                                               '0'::varchar nro_factura,
@@ -972,6 +1134,33 @@ BEGIN
                                       inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado = 'revisado' and bol.voided = 'no'
                                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                                      union
+
+                                       /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+
+
                                       );
                              end if;
 
@@ -1007,7 +1196,7 @@ BEGIN
                             '' as ruta,
                             aux.nombre_auxiliar::varchar as nombre_factura,
                             0::numeric as monto_debe,
-                            param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                            param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                             'deposito'::varchar as tipo_factura,
                             'DEPOSITO'::varchar AS nombre,
                             ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -1130,7 +1319,7 @@ BEGIN
                         '' as ruta,
                         aux.nombre_auxiliar::varchar as nombre_factura,
                         0::numeric as monto_debe,
-                        param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                        param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -1265,7 +1454,7 @@ BEGIN
                         '' as ruta,
                         aux.nombre_auxiliar::varchar as nombre_factura,
                         0::numeric as monto_debe,
-                        param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                        param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -1468,6 +1657,50 @@ BEGIN
                 where bol.estado = 'revisado' and bol.voided = 'no'
                 and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+                /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                insert into facturas_recibos_temporal (
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        tipo_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura,
+                                                        punto_venta,
+                                                        cuenta_auxiliar,
+                                                        observaciones)
+
+
+                select
+                      bol.fecha_emision,
+                      bol.nro_boleto as nro_factura,
+                      'BOLETO EXTERNO'::varchar as tipo_documento,
+                      ''::varchar as ruta ,
+                      bol.pasajero,
+                      (CASE
+                        WHEN bolfp.id_moneda = 2
+
+                        THEN
+                          param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                        ELSE
+                          bolfp.importe
+                      END) as debe,
+                      0::numeric as haber,
+                      'boletos'::varchar as tipo_factura,
+                      pv.nombre,
+                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                      ''::varchar as observaciones
+                from obingresos.tboleto_stage bol
+                inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                /********************************************/
+
+
+
 
                 /*Aqui Recuperamos los datos de Carga*/
                 if(v_parametros.desde::date < '19/03/2021')then
@@ -1600,6 +1833,29 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
 
                         union
 
@@ -1752,6 +2008,32 @@ BEGIN
 
                         union
 
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
+
+
+
+
+                        union
+
                         (select
                           DISTINCT(pv.nombre),
                           NULL::date as fecha_factura,
@@ -1823,7 +2105,7 @@ BEGIN
                         '' as ruta,
                         aux.nombre_auxiliar::varchar as nombre_factura,
                         0::numeric as monto_debe,
-                        param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                        param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -2032,6 +2314,51 @@ BEGIN
                 and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
 
+
+                /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                insert into facturas_recibos_temporal (
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        tipo_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura,
+                                                        punto_venta,
+                                                        cuenta_auxiliar,
+                                                        observaciones)
+
+
+                select
+                      bol.fecha_emision,
+                      bol.nro_boleto as nro_factura,
+                      'BOLETO EXTERNO'::varchar as tipo_documento,
+                      ''::varchar as ruta ,
+                      bol.pasajero,
+                      (CASE
+                        WHEN bolfp.id_moneda = 2
+
+                        THEN
+                          param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                        ELSE
+                          bolfp.importe
+                      END) as debe,
+                      0::numeric as haber,
+                      'boletos'::varchar as tipo_factura,
+                      pv.nombre,
+                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                      ''::varchar as observaciones
+                from obingresos.tboleto_stage bol
+                inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                /********************************************/
+
+
+
                 /*Aqui Recuperamos los datos de Carga*/
 
                 if(v_parametros.desde::date < '19/03/2021')then
@@ -2162,6 +2489,29 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
 
                         union
 
@@ -2306,6 +2656,29 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
 
                         union
 
@@ -2544,6 +2917,49 @@ BEGIN
                       /************************************************/
 
 
+                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                        /********************************************/
+
+
                       /*Aqui recuperamos el id codigo punto de venta para filtrar carga*/
                       select pv.codigo
                       	     into
@@ -2686,6 +3102,30 @@ BEGIN
 
                         union
 
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+                        /***************************************************************************/
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -2782,7 +3222,31 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
-                        and bol.id_punto_venta = v_parametros.id_punto_venta));
+                        and bol.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+						(select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        );
 
 
                     end if;
@@ -2964,6 +3428,53 @@ BEGIN
                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
+
+
+                      insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta;
+                        /********************************************/
+
+
+
+
                       /*Aqui recuperamos el id codigo punto de venta para filtrar carga*/
 
                       select pv.codigo
@@ -3106,6 +3617,28 @@ BEGIN
 
                         union
 
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -3202,7 +3735,33 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
-                        and bol.id_punto_venta = v_parametros.id_punto_venta));
+                        and bol.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+
+
+                        );
                 	end if;
                 end if;
 -------------------------------------
@@ -3231,7 +3790,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -3352,7 +3911,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -3478,7 +4037,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -3663,6 +4222,50 @@ BEGIN
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
 
+
+                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta;
+                        /********************************************/
+
                       insert into facturas_recibos_temporal (
                                                                 fecha_factura,
                                                                 nro_factura,
@@ -3840,6 +4443,28 @@ BEGIN
 
                         union
 
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -3987,6 +4612,28 @@ BEGIN
                         union
 
                         (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
                                 DISTINCT(pv.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar as nro_factura,
@@ -4055,7 +4702,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -4241,6 +4888,50 @@ BEGIN
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
 
+
+                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta;
+                        /********************************************/
+
                       insert into facturas_recibos_temporal (
                                                                 fecha_factura,
                                                                 nro_factura,
@@ -4419,6 +5110,28 @@ BEGIN
 
                         union
 
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -4563,6 +5276,28 @@ BEGIN
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
 
                         union
 
@@ -4735,6 +5470,7 @@ BEGIN
                 if (v_parametros.id_punto_venta != 0) then
                 	v_punto_venta_fac = 'ven.id_punto_venta = '||v_parametros.id_punto_venta;
                     v_punto_venta_bol = 'bol.id_punto_venta = '||v_parametros.id_punto_venta;
+                    v_punto_venta_bol_externa = 'bol.id_agencia = '||v_parametros.id_punto_venta;
                 /*Para Recuperar Datos de tfactura para carga*/
 
                 	select pv.codigo
@@ -4751,6 +5487,7 @@ BEGIN
                 	v_punto_venta_fac = '0=0';
                     v_punto_venta_bol = '0=0';
                     v_punto_venta_carga = '0=0';
+                    v_punto_venta_bol_externa = '0=0';
 
                 end if;
 
@@ -4859,10 +5596,6 @@ BEGIN
                       /*******************************************************************************/
 
 
-
-
-
-
                 v_insertar_boletos = 'insert into reporte_resumen_totalizado_cta_cte (
                                                                       fecha_factura,
                                                                       nro_factura,
@@ -4875,7 +5608,7 @@ BEGIN
                                                                       punto_venta,
                                                                       cuenta_auxiliar)
                                         /*CUENTA CORRIENTE BOLETOS*/
-                                        select
+                                       ( (select
                                                 bol.fecha_emision,
                                                 bol.nro_boleto as nro_factura,
                                                 bol.nro_boleto as nro_documento,
@@ -4902,7 +5635,40 @@ BEGIN
                                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                         where bol.estado_reg = ''activo'' and bol.estado = ''revisado'' and bol.voided = ''no''
                                         and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                        and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol||'';
+                                        and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol||')
+
+                                        UNION
+
+                                        (select
+                                                bol.fecha_emision,
+                                                bol.nro_boleto as nro_factura,
+                                                bol.nro_boleto as nro_documento,
+                                                ''''::varchar as ruta,
+                                                bol.pasajero,
+                                                (CASE
+                                                  WHEN bolfp.id_moneda = 2
+
+                                                  THEN
+                                                    param.f_convertir_moneda(bolfp.id_moneda,'||v_id_moneda_base||',bolfp.importe,bol.fecha_emision,''O'',2,NULL,''si'')
+                                                  ELSE
+                                                    bolfp.importe
+                                                END) as debe,
+                                                0::numeric as haber,
+                                                ''boletos''::varchar as tipo_factura,
+                                                pv.nombre,
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                          from obingresos.tboleto_stage bol
+                                          inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                          inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                          where bol.estado_reg = ''activo'' and bol.voided = ''no'' and bolfp.id_auxiliar is not null
+                                          and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                                          and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol_externa||')
+
+                                        )';
+
+
+				RAISE NOTICE 'aQUI LLEGA %',v_insertar_boletos;
 
                 execute v_insertar_boletos;
 
@@ -5339,6 +6105,48 @@ BEGIN
                               where bol.estado = 'revisado' and bol.voided = 'no'
                               and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+                              /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                              insert into facturas_recibos_temporal (
+                                                                      fecha_factura,
+                                                                      nro_factura,
+                                                                      tipo_documento,
+                                                                      ruta,
+                                                                      pasajero,
+                                                                      debe,
+                                                                      haber,
+                                                                      tipo_factura,
+                                                                      punto_venta,
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
+
+
+                              select
+                                    bol.fecha_emision,
+                                    bol.nro_boleto as nro_factura,
+                                    'BOLETO EXTERNO'::varchar as tipo_documento,
+                                    ''::varchar as ruta ,
+                                    bol.pasajero,
+                                    (CASE
+                                      WHEN bolfp.id_moneda = 2
+
+                                      THEN
+                                        param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                      ELSE
+                                        bolfp.importe
+                                    END) as debe,
+                                    0::numeric as haber,
+                                    'boletos'::varchar as tipo_factura,
+                                    pv.nombre,
+                                    ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                    ''::varchar as observaciones
+                              from obingresos.tboleto_stage bol
+                              inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                              inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                              and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                              /********************************************/
+
 
                               /*Aqui Recuperamos los datos de Carga*/
 
@@ -5477,6 +6285,29 @@ BEGIN
                                       and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
 
                                       union
+                                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+                                      union
 
                                       (SELECT distinct (pb.nombre),
                                               NULL::date as fecha_factura,
@@ -5571,7 +6402,35 @@ BEGIN
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
                                       inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado = 'revisado' and bol.voided = 'no'
-                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date));
+                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                                      union
+
+                                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+
+
+                                      );
                                       end if;
               -----------------/*Fin del Reporte de Formas de pago*/
                 else
@@ -5736,6 +6595,49 @@ BEGIN
                               where bol.estado = 'revisado' and bol.voided = 'no'
                               and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+                		       /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                              insert into facturas_recibos_temporal (
+                                                                      fecha_factura,
+                                                                      nro_factura,
+                                                                      tipo_documento,
+                                                                      ruta,
+                                                                      pasajero,
+                                                                      debe,
+                                                                      haber,
+                                                                      tipo_factura,
+                                                                      punto_venta,
+                                                                      cuenta_auxiliar,
+                                                                      observaciones)
+
+
+                              select
+                                    bol.fecha_emision,
+                                    bol.nro_boleto as nro_factura,
+                                    'BOLETO EXTERNO'::varchar as tipo_documento,
+                                    ''::varchar as ruta ,
+                                    bol.pasajero,
+                                    (CASE
+                                      WHEN bolfp.id_moneda = 2
+
+                                      THEN
+                                        param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                      ELSE
+                                        bolfp.importe
+                                    END) as debe,
+                                    0::numeric as haber,
+                                    'boletos'::varchar as tipo_factura,
+                                    pv.nombre,
+                                    ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                                    ''::varchar as observaciones
+                              from obingresos.tboleto_stage bol
+                              inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                              inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                              and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                              /********************************************/
+
+
 
                               /*Aqui Recuperamos los datos de Carga*/
 
@@ -5876,6 +6778,31 @@ BEGIN
 
                                       union
 
+                                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+
+                                      union
+
                                       (SELECT distinct (pb.nombre),
                                               NULL::date as fecha_factura,
                                               '0'::varchar nro_factura,
@@ -5969,6 +6896,33 @@ BEGIN
                                       inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado = 'revisado' and bol.voided = 'no'
                                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                                      union
+
+                                       /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                                      (select
+                                      		distinct (pv.nombre),
+                                            NULL::date as fecha_factura,
+                                            '0'::varchar as nro_factura,
+                                            NULL::varchar as tipo_documento,
+                                            null::varchar as ruta,
+                                            pv.nombre as pasajero,
+                                            NULL::numeric as debe,
+                                            NULL::numeric as haber,
+                                            NULL::varchar as tipo_factura,
+                                            NULL::varchar as cuenta_auxiliar,
+                                            NULL::varchar as observaciones
+                                      from obingresos.tboleto_stage bol
+                                      inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                      inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                                      and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                                      /***************************************************************************/
+
+
+
+
                                       );
                              end if;
 
@@ -6004,7 +6958,7 @@ BEGIN
                             '' as ruta,
                             aux.nombre_auxiliar::varchar as nombre_factura,
                             0::numeric as monto_debe,
-                            param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                            param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                             'deposito'::varchar as tipo_factura,
                             'DEPOSITO'::varchar AS nombre,
                             ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -6044,7 +6998,7 @@ BEGIN
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
                   inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
-                  where ven.estado = 'finalizado' and ven.estado_reg = 'activo' and (ven.tipo_factura = 'recibo' or ven.tipo_factura = 'recibo_manual')
+                  where ven.estado = 'finalizado'  and ven.estado_reg = 'activo' and (ven.tipo_factura = 'recibo' or ven.tipo_factura = 'recibo_manual')
                   and ven.id_auxiliar_anticipo is not null
                   and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date;
 
@@ -6127,7 +7081,7 @@ BEGIN
                         '' as ruta,
                         aux.nombre_auxiliar::varchar as nombre_factura,
                         0::numeric as monto_debe,
-                        param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                        param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -6166,7 +7120,7 @@ BEGIN
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
                   inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
-                  where ven.estado = 'finalizado' and ven.estado_reg = 'activo' and (ven.tipo_factura = 'recibo' or ven.tipo_factura = 'recibo_manual')
+                  where ven.estado = 'finalizado'  and ven.estado_reg = 'activo' and (ven.tipo_factura = 'recibo' or ven.tipo_factura = 'recibo_manual')
                   and ven.id_auxiliar_anticipo is not null
                   and aux.codigo_auxiliar = v_parametros.codigo_auxiliar
                   and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date;
@@ -6262,7 +7216,7 @@ BEGIN
                         '' as ruta,
                         aux.nombre_auxiliar::varchar as nombre_factura,
                         0::numeric as monto_debe,
-                        param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                        param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -6465,6 +7419,50 @@ BEGIN
                 where bol.estado = 'revisado' and bol.voided = 'no'
                 and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
+                /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                insert into facturas_recibos_temporal (
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        tipo_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura,
+                                                        punto_venta,
+                                                        cuenta_auxiliar,
+                                                        observaciones)
+
+
+                select
+                      bol.fecha_emision,
+                      bol.nro_boleto as nro_factura,
+                      'BOLETO EXTERNO'::varchar as tipo_documento,
+                      ''::varchar as ruta ,
+                      bol.pasajero,
+                      (CASE
+                        WHEN bolfp.id_moneda = 2
+
+                        THEN
+                          param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                        ELSE
+                          bolfp.importe
+                      END) as debe,
+                      0::numeric as haber,
+                      'boletos'::varchar as tipo_factura,
+                      pv.nombre,
+                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                      ''::varchar as observaciones
+                from obingresos.tboleto_stage bol
+                inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                /********************************************/
+
+
+
 
                 /*Aqui Recuperamos los datos de Carga*/
                 if(v_parametros.desde::date < '19/03/2021')then
@@ -6597,6 +7595,29 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
 
                         union
 
@@ -6749,6 +7770,32 @@ BEGIN
 
                         union
 
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
+
+
+
+
+                        union
+
                         (select
                           DISTINCT(pv.nombre),
                           NULL::date as fecha_factura,
@@ -6820,7 +7867,7 @@ BEGIN
                         '' as ruta,
                         aux.nombre_auxiliar::varchar as nombre_factura,
                         0::numeric as monto_debe,
-                        param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                        param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                         'deposito'::varchar as tipo_factura,
                         'DEPOSITO'::varchar AS nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -7029,6 +8076,51 @@ BEGIN
                 and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
 
 
+
+                /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                insert into facturas_recibos_temporal (
+                                                        fecha_factura,
+                                                        nro_factura,
+                                                        tipo_documento,
+                                                        ruta,
+                                                        pasajero,
+                                                        debe,
+                                                        haber,
+                                                        tipo_factura,
+                                                        punto_venta,
+                                                        cuenta_auxiliar,
+                                                        observaciones)
+
+
+                select
+                      bol.fecha_emision,
+                      bol.nro_boleto as nro_factura,
+                      'BOLETO EXTERNO'::varchar as tipo_documento,
+                      ''::varchar as ruta ,
+                      bol.pasajero,
+                      (CASE
+                        WHEN bolfp.id_moneda = 2
+
+                        THEN
+                          param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                        ELSE
+                          bolfp.importe
+                      END) as debe,
+                      0::numeric as haber,
+                      'boletos'::varchar as tipo_factura,
+                      pv.nombre,
+                      ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                      ''::varchar as observaciones
+                from obingresos.tboleto_stage bol
+                inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                /********************************************/
+
+
+
                 /*Aqui Recuperamos los datos de Carga*/
 
                 if(v_parametros.desde::date < '19/03/2021')then
@@ -7159,6 +8251,29 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
 
                         union
 
@@ -7303,6 +8418,29 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+
+                        union
+
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
+                        /***************************************************************************/
 
                         union
 
@@ -7541,6 +8679,49 @@ BEGIN
                       /************************************************/
 
 
+                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
+                        /********************************************/
+
+
                       /*Aqui recuperamos el id codigo punto de venta para filtrar carga*/
                       select pv.codigo
                       	     into
@@ -7683,6 +8864,30 @@ BEGIN
 
                         union
 
+                        /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+                        /***************************************************************************/
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -7779,7 +8984,31 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
-                        and bol.id_punto_venta = v_parametros.id_punto_venta));
+                        and bol.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+						(select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        );
 
 
                     end if;
@@ -7961,6 +9190,53 @@ BEGIN
                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
+
+
+                      insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta;
+                        /********************************************/
+
+
+
+
                       /*Aqui recuperamos el id codigo punto de venta para filtrar carga*/
 
                       select pv.codigo
@@ -8103,6 +9379,28 @@ BEGIN
 
                         union
 
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -8199,7 +9497,33 @@ BEGIN
                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado = 'revisado' and bol.voided = 'no'
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
-                        and bol.id_punto_venta = v_parametros.id_punto_venta));
+                        and bol.id_punto_venta = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+
+
+                        );
                 	end if;
                 end if;
 -------------------------------------
@@ -8228,7 +9552,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -8267,7 +9591,7 @@ BEGIN
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
                           inner join vef.tpunto_venta pv on pv.id_punto_venta = ven.id_punto_venta
-                          where ven.estado = 'finalizado'  and ven.estado_reg = 'activo' and (ven.tipo_factura = 'recibo' or ven.tipo_factura = 'recibo_manual')
+                          where ven.estado = 'finalizado' and ven.estado_reg = 'activo' and (ven.tipo_factura = 'recibo' or ven.tipo_factura = 'recibo_manual')
                           and ven.id_auxiliar_anticipo is not null
                           and ven.fecha between v_parametros.desde::date and v_parametros.hasta::date
                           and ven.id_punto_venta = v_parametros.id_punto_venta;
@@ -8349,7 +9673,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -8475,7 +9799,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -8660,6 +9984,50 @@ BEGIN
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
 
+
+                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta;
+                        /********************************************/
+
                       insert into facturas_recibos_temporal (
                                                                 fecha_factura,
                                                                 nro_factura,
@@ -8837,6 +10205,28 @@ BEGIN
 
                         union
 
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -8984,6 +10374,28 @@ BEGIN
                         union
 
                         (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
                                 DISTINCT(pv.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar as nro_factura,
@@ -9052,7 +10464,7 @@ BEGIN
                                   '' as ruta,
                                   aux.nombre_auxiliar::varchar as nombre_factura,
                                   0::numeric as monto_debe,
-                                  param.f_convertir_moneda(depo.id_moneda_deposito,1,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
+                                  param.f_convertir_moneda(depo.id_moneda_deposito,v_id_moneda_base,depo.monto_deposito,depo.fecha,'O',2,NULL,'si') as monto_haber,
                                   'deposito'::varchar as tipo_factura,
                                   'DEPOSITO'::varchar AS nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
@@ -9238,6 +10650,50 @@ BEGIN
                       and bol.id_punto_venta = v_parametros.id_punto_venta;
                       /************************************************/
 
+
+                      /*Aqui Recuperamos para los boletos externos Ejemplo Caso YACIMIENTOS*/
+                        insert into facturas_recibos_temporal (
+                                                                fecha_factura,
+                                                                nro_factura,
+                                                                tipo_documento,
+                                                                ruta,
+                                                                pasajero,
+                                                                debe,
+                                                                haber,
+                                                                tipo_factura,
+                                                                punto_venta,
+                                                                cuenta_auxiliar,
+                                                                observaciones)
+
+
+                        select
+                              bol.fecha_emision,
+                              bol.nro_boleto as nro_factura,
+                              'BOLETO EXTERNO'::varchar as tipo_documento,
+                              ''::varchar as ruta ,
+                              bol.pasajero,
+                              (CASE
+                                WHEN bolfp.id_moneda = 2
+
+                                THEN
+                                  param.f_convertir_moneda(bolfp.id_moneda,v_id_moneda_base,bolfp.importe,bol.fecha_emision,'O',2,NULL,'si')
+                                ELSE
+                                  bolfp.importe
+                              END) as debe,
+                              0::numeric as haber,
+                              'boletos'::varchar as tipo_factura,
+                              pv.nombre,
+                              ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
+                              ''::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta;
+                        /********************************************/
+
                       insert into facturas_recibos_temporal (
                                                                 fecha_factura,
                                                                 nro_factura,
@@ -9416,6 +10872,28 @@ BEGIN
 
                         union
 
+                        (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
                         (SELECT distinct (pb.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar nro_factura,
@@ -9564,6 +11042,28 @@ BEGIN
                         union
 
                         (select
+                              distinct (pv.nombre),
+                              NULL::date as fecha_factura,
+                              '0'::varchar as nro_factura,
+                              NULL::varchar as tipo_documento,
+                              null::varchar as ruta,
+                              pv.nombre as pasajero,
+                              NULL::numeric as debe,
+                              NULL::numeric as haber,
+                              NULL::varchar as tipo_factura,
+                              NULL::varchar as cuenta_auxiliar,
+                              NULL::varchar as observaciones
+                        from obingresos.tboleto_stage bol
+                        inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                        inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
+                        and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
+                        and bol.id_agencia = v_parametros.id_punto_venta)
+
+                        union
+
+                        (select
                                 DISTINCT(pv.nombre),
                                 NULL::date as fecha_factura,
                                 '0'::varchar as nro_factura,
@@ -9618,23 +11118,21 @@ BEGIN
                 end if;
 
 
-                    --Sentencia de la consulta de conteo de registros
-                    v_consulta:='select
+
+                v_consulta:='select
                                           count(tipo_factura),
                                           sum(COALESCE (debe,0)) as total_debe,
                                           sum(COALESCE (haber,0)) as total_haber
                                   from facturas_recibos_temporal';
 
-                    --Definicion de la respuesta
-                    --v_consulta:=v_consulta||v_parametros.filtro;
+				if (v_parametros.generar_reporte = 'no') then
+                	v_consulta:=v_consulta||' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+				end if;
 
-                    --Devuelve la respuesta
-                    return v_consulta;
+                return v_consulta;
+/***************/ELSE
 
-
-                ELSE
-
-                /*Recuperamos la moneda base para sacar la conversion*/
+            	/*Recuperamos la moneda base para sacar la conversion*/
                 select mon.id_moneda
                 	   into
                        v_id_moneda_base
@@ -9701,6 +11199,7 @@ BEGIN
                 if (v_parametros.id_punto_venta != 0) then
                 	v_punto_venta_fac = 'ven.id_punto_venta = '||v_parametros.id_punto_venta;
                     v_punto_venta_bol = 'bol.id_punto_venta = '||v_parametros.id_punto_venta;
+                    v_punto_venta_bol_externa = 'bol.id_agencia = '||v_parametros.id_punto_venta;
                 /*Para Recuperar Datos de tfactura para carga*/
 
                 	select pv.codigo
@@ -9717,6 +11216,7 @@ BEGIN
                 	v_punto_venta_fac = '0=0';
                     v_punto_venta_bol = '0=0';
                     v_punto_venta_carga = '0=0';
+                    v_punto_venta_bol_externa = '0=0';
 
                 end if;
 
@@ -9841,7 +11341,7 @@ BEGIN
                                                                       punto_venta,
                                                                       cuenta_auxiliar)
                                         /*CUENTA CORRIENTE BOLETOS*/
-                                        select
+                                        (select
                                                 bol.fecha_emision,
                                                 bol.nro_boleto as nro_factura,
                                                 bol.nro_boleto as nro_documento,
@@ -9868,7 +11368,35 @@ BEGIN
                                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                         where bol.estado_reg = ''activo'' and bol.estado = ''revisado'' and bol.voided = ''no''
                                         and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                        and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol||'';
+                                        and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol||')
+
+                                        union
+
+                                        (select
+                                                bol.fecha_emision,
+                                                bol.nro_boleto as nro_factura,
+                                                bol.nro_boleto as nro_documento,
+                                                ''''::varchar as ruta,
+                                                bol.pasajero,
+                                                (CASE
+                                                  WHEN bolfp.id_moneda = 2
+
+                                                  THEN
+                                                    param.f_convertir_moneda(bolfp.id_moneda,'||v_id_moneda_base||',bolfp.importe,bol.fecha_emision,''O'',2,NULL,''si'')
+                                                  ELSE
+                                                    bolfp.importe
+                                                END) as debe,
+                                                0::numeric as haber,
+                                                ''boletos''::varchar as tipo_factura,
+                                                pv.nombre,
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                          from obingresos.tboleto_stage bol
+                                          inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                          inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                          where bol.estado_reg = ''activo'' and bol.voided = ''no'' and bolfp.id_auxiliar is not null
+                                          and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                                          and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol_externa||')';
 
                 execute v_insertar_boletos;
 

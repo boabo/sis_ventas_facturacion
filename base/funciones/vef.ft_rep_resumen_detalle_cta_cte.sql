@@ -259,7 +259,7 @@ BEGIN
                                                                       punto_venta,
                                                                       cuenta_auxiliar)
                                         /*CUENTA CORRIENTE BOLETOS*/
-                                        select
+                                       ( (select
                                                 bol.fecha_emision,
                                                 bol.nro_boleto as nro_factura,
                                                 bol.nro_boleto as nro_documento,
@@ -286,7 +286,36 @@ BEGIN
                                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                         where bol.estado_reg = ''activo'' and bol.estado = ''revisado'' and bol.voided = ''no''
                                         and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                        and '||v_codigo_auxiliar_venta||'';
+                                        and '||v_codigo_auxiliar_venta||')
+
+                                        union
+
+                                         (select
+                                                bol.fecha_emision,
+                                                bol.nro_boleto as nro_factura,
+                                                bol.nro_boleto as nro_documento,
+                                                ''''::varchar as ruta,
+                                                bol.pasajero,
+                                                (CASE
+                                                  WHEN bolfp.id_moneda = 2
+
+                                                  THEN
+                                                    param.f_convertir_moneda(bolfp.id_moneda,'||v_id_moneda_base||',bolfp.importe,bol.fecha_emision,''O'',2,NULL,''si'')
+                                                  ELSE
+                                                    bolfp.importe
+                                                END) as debe,
+                                                0::numeric as haber,
+                                                ''boletos''::varchar as tipo_factura,
+                                                pv.nombre,
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                          from obingresos.tboleto_stage bol
+                                          inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                          inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                          where bol.estado_reg = ''activo'' and bol.voided = ''no'' and bolfp.id_auxiliar is not null
+                                          and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                                          and '||v_codigo_auxiliar_venta||')  )
+                                        ';
 
                 execute v_insertar_boletos;
 
@@ -642,7 +671,7 @@ BEGIN
                                                                       punto_venta,
                                                                       cuenta_auxiliar)
                                         /*CUENTA CORRIENTE BOLETOS*/
-                                        select
+                                        ((select
                                                 bol.fecha_emision,
                                                 bol.nro_boleto as nro_factura,
                                                 bol.nro_boleto as nro_documento,
@@ -669,7 +698,36 @@ BEGIN
                                         inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                         where bol.estado_reg = ''activo'' and bol.estado = ''revisado'' and bol.voided = ''no''
                                         and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
-                                        and '||v_codigo_auxiliar_venta||'';
+                                        and '||v_codigo_auxiliar_venta||')
+
+                                        union
+
+                                         (select
+                                                bol.fecha_emision,
+                                                bol.nro_boleto as nro_factura,
+                                                bol.nro_boleto as nro_documento,
+                                                ''''::varchar as ruta,
+                                                bol.pasajero,
+                                                (CASE
+                                                  WHEN bolfp.id_moneda = 2
+
+                                                  THEN
+                                                    param.f_convertir_moneda(bolfp.id_moneda,'||v_id_moneda_base||',bolfp.importe,bol.fecha_emision,''O'',2,NULL,''si'')
+                                                  ELSE
+                                                    bolfp.importe
+                                                END) as debe,
+                                                0::numeric as haber,
+                                                ''boletos''::varchar as tipo_factura,
+                                                pv.nombre,
+                                                (''(''||aux.codigo_auxiliar||'') - ''||aux.nombre_auxiliar) as cuenta_auxiliar
+                                          from obingresos.tboleto_stage bol
+                                          inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
+                                          inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                          where bol.estado_reg = ''activo'' and bol.voided = ''no'' and bolfp.id_auxiliar is not null
+                                          and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
+                                          and '||v_codigo_auxiliar_venta||')
+                                          )';
 
                 execute v_insertar_boletos;
 
