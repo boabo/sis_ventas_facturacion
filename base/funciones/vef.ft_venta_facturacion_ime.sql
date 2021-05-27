@@ -2678,7 +2678,7 @@ BEGIN
           transporte_cif = COALESCE(v_transporte_cif,0),
           seguros_cif = COALESCE(v_seguros_cif,0),
           otros_cif = COALESCE(v_otros_cif,0),
-          tipo_cambio_venta = COALESCE(v_tipo_cambio_venta,0),
+          --tipo_cambio_venta = COALESCE(v_tipo_cambio_venta,0),
           valor_bruto = COALESCE(v_valor_bruto,0),
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
           nit = trim(v_parametros.nit),
