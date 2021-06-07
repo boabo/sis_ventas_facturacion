@@ -35,7 +35,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'nro_factura',
-                        fieldLabel: 'Nro. Factura',
+                        fieldLabel: 'Nro. Documento',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -128,6 +128,27 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'TextField',
                     bottom_filter: true,
                     filters: {pfiltro: 'v.tipo_factura', type: 'string'},
+                    id_grupo: 1,
+                    grid: true
+                },
+                {
+                    config: {
+                        name: 'estado',
+                        fieldLabel: 'Estado',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                        renderer:function (value,p,record){
+                          if(record.data.tipo_reg != 'summary'){
+                            return  String.format('<div style="text-align:center;">{0}</div>',(record.data['estado']=='finalizado')?'VALIDA':'ANULADO');
+                          }else{
+                            return '';
+                          }
+                        }
+                    },
+                    type: 'TextField',
+                    bottom_filter: true,
+                    filters: {pfiltro: 'v.estado', type: 'string'},
                     id_grupo: 1,
                     grid: true
                 },
@@ -319,6 +340,13 @@ header("content-type: text/javascript; charset=UTF-8");
             ];
             //llama al constructor de la clase padre
             Phx.vista.DetalleFacturaConsulta.superclass.constructor.call(this, config);
+            this.addButton('btnRepExcel', {
+              text: '<center>Generar Reporte Excel</center>',
+              iconCls: 'bexcel',
+              disabled: false,
+              handler: this.ReporteEXCEL,
+              tooltip: '<b>Generar Reporte Excel'
+            });
             this.grid.getTopToolbar().disable();
             this.grid.getBottomToolbar().disable();
             this.init();
@@ -355,6 +383,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'mt_venta', type: 'numeric'},
             {name: 'mt_excento', type: 'numeric'},
             {name: 'mt_total', type: 'numeric'},
+            {name: 'estado', type: 'string'},
 
         ],
 
@@ -380,14 +409,14 @@ header("content-type: text/javascript; charset=UTF-8");
         bnew: false,
         bedit: false,
         bdel: false,
-        bexcel:true,
+        bexcel:false,
       	btest:false,
         abrirEnlace: function(cell,rowIndex,columnIndex,e){
           var data = this.sm.getSelected().data;
       		if(columnIndex==1 && data.id_venta != ''){
       			Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/consulta_boletos/VentanaDetalleFactura.php',
       			'<span style="font-size:14pt;padding-left: 35%;letter-spacing: 12px;">DETALLE DEL DOCUMENTO</span>', {
-      				width:'90%',
+      				width:'91%',
       				height:'90%'
       		    }, {
       		    	id_venta: data.id_venta,
@@ -398,5 +427,29 @@ header("content-type: text/javascript; charset=UTF-8");
       			);
       		}
       	},
+        ReporteEXCEL: function () {
+              Phx.CP.loadingShow();
+              Ext.Ajax.request({
+                  url: '../../sis_ventas_facturacion/control/ReporteVentas/RepConsultaDocumento',
+                  params: {
+                      id_entidad: this.store.baseParams.id_entidad,
+                      id_sucursal: this.store.baseParams.id_sucursal,
+                      id_punto_venta: this.store.baseParams.id_punto_venta,
+                      tipo_documento: this.store.baseParams.tipo_documento,
+                      nro_documento: this.store.baseParams.nro_documento,
+                      nro_autorizacion: this.store.baseParams.nro_autorizacion,
+                      estado_documento: this.store.baseParams.estado_documento,
+                      fecha_ini: this.store.baseParams.fecha_ini,
+                      fecha_fin: this.store.baseParams.fecha_fin,
+                      nit: this.store.baseParams.nit,
+                      re_count: 'no'
+                  },
+                  success: this.successExport,
+                  failure: this.conexionFailure,
+                  timeout: this.timeout,
+                  scope: this
+              });
+
+        },
     })
 </script>

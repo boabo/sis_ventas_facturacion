@@ -100,6 +100,28 @@
   font-size: 14px;
   font-weight: bold;
 }
+#pago_recibo {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#pago_recibo td, #pago_recibo th {
+  border: 1px solid #ddd;
+  padding: 5px;
+}
+
+#pago_recibo tr{background-color: #f2f2f2;}
+
+#pago_recibo th {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: center;
+  background-color: #5fb0a8;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
 .capti{
   text-align: center;
   font-weight: bold;
@@ -158,8 +180,9 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                   var total_fp = 0;
                   var bolasoc = obj.bolasoc;
                   var deposito = obj.deposito;
+                  var pagos_con_recibo = obj.pagos_con_recibo;
                   var total_depo = 0;
-                  if (obj.grupo != null ){me.grupo_ant = obj.grupo}
+                  var total_ros = 0;
                   (obj.anticipo != null)?title_ant = 'ANTICIPO':title_ant='';
                   var info =`	<div class="lista">
                             <table width="100%">
@@ -233,7 +256,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                         }
 
                                       if (obj.nombre_auxiliar != '' && obj.nombre_auxiliar != null){
-                                          info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span><br></td></tr>`;
+                                          info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span></td></tr>`;
                                       }
 
                           info +=`  </tr>
@@ -316,7 +339,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                               <td align="center">${e.numero_tarjeta}</td>
                                               <td align="center">${e.codigo_tarjeta}</td>
                                               <td align="center">${(e.cod_cuenta==null)?'':e.cod_cuenta}</td>
-                                              <td align="center">${(e.nro_recibo==null)?'':`<b class="grupoAnticipo"><i class="fa fa-share" aria-hidden="true" onclick="formAnti()"></i> &nbsp;&nbsp;&nbsp;${e.nro_recibo}</b>`}</td>
+                                              <td align="center">${(e.nro_recibo==null)?'':`<b class="grupoAnticipo"><i class="fa fa-share" aria-hidden="true" onclick="formAnti(${e.id_venta_recibo})"></i> &nbsp;&nbsp;&nbsp;${e.nro_recibo}</b>`}</td>
                                           </tr>
                                           `;
                                       });
@@ -386,7 +409,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                   info += `
                                   <tr>
                                       <td align="center">${e.nro_boleto}</td>
-                                      <td align="center">${e.nit == null && ''}</td>
+                                      <td align="center">${(e.nit == null)?'':e.nit}</td>
                                       <td>${(e.pasajero == null)?'':e.pasajero}</td>
                                       <td align="center">${(e.fecha_emision==null)?'':e.fecha_emision.split("-").reverse().join("/")}</td>
                                       <td>${(e.razon == null)?'':e.razon}</td>
@@ -397,8 +420,51 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                   });
                                 info += `</table>
                                  </td>
-                               </tr>`;
+                               </tr>
+                               <tr>
+                                   <td>
+                                     <hr>
+                                   </td>
+                               </tr>
+                               `;
                              }
+                             if (pagos_con_recibo != null){
+                               info += `
+                               <tr>
+                                   <td class="item2">
+                                   <table id="pago_recibo">
+                                   <caption class="capti">DOCUMENTOS PAGADOS CON RECIBO</caption>
+                                   <tr>
+                                     <th>Razon</th>
+                                     <th>Nit</th>
+                                     <th>N° Documento</th>
+                                     <th>Moneda</th>
+                                     <th>Total Venta</th>
+                                     <th>Fecha</th>
+                                     <th>Tipo Documento</th>
+                                   </tr>
+                                   `;
+                               pagos_con_recibo.forEach( e => {
+                                 var mon_ro=`<span>${e.mon_fp_ro}</span>`;
+                                 if (e.mon_fp_ro!='BOB'){mon_ro=`<span style="color:blue;">${e.mon_fp_ro}</span>`}
+                                 total_ros = total_ros + e.total_venta;
+                                 info += `
+                                 <tr>
+                                     <td align="left">${e.nombre_factura}</td>
+                                     <td align="center">${(e.nit == null)?'':e.nit}</td>
+                                     <td align="center">${e.nro_factura}</td>
+                                     <td align="center">${mon_ro}</td>
+                                     <td align="center">${Ext.util.Format.number(e.total_venta,'0.000,00/i')}</td>
+                                     <td align="center">${(e.fecha==null)?'':e.fecha.split("-").reverse().join("/")}</td>
+                                     <td align="center">${e.tipo_factura}</td>
+                                 </tr>
+                                 `;
+                                 });
+                               info += `<tr><td colspan="4" align="center"><b>TOTAL RECIBOS</b></td><td align="center"><b>${Ext.util.Format.number(total_ros,'0.000,00/i')}</b></td><td align="center"><b>SALDO GRUPO</b></td><td align="center"><b>${Ext.util.Format.number(obj.total_venta-total_ros,'0.000,00/i')}</b></td></tr>`
+                               info += `</table>
+                                </td>
+                              </tr>`;
+                            }
 
                 info +=`</table>
                   </div>
@@ -425,14 +491,14 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
   bedit:false,
   bact:false,
   bexport:false,
-  openAnticipo: function(){
-      if(me.grupo_ant!=null){
+  openAnticipo: function(id_venta){
+      if(id_venta!=null){
         Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/consulta_boletos/VentanaDetalleFactura.php',
         '<span style="font-size:14pt;padding-left: 35%;letter-spacing: 12px;">DETALLE RECIBO GRUPO</span>', {
           width:'90%',
           height:'80%'
           }, {
-            id_venta: me.grupo_ant.id_venta_grupo_padre,
+            id_venta: id_venta,
             link: true
           },
           me.idContenedor,
@@ -441,8 +507,8 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
       }
   }
 });
-function formAnti(){
-  me.openAnticipo();
+function formAnti(id){
+  me.openAnticipo(id);
 }
 
 </script>

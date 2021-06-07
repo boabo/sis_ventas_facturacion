@@ -161,11 +161,13 @@ class MODReporteVentas extends MODbase {
 		$this->transaccion='VF_CONSFACX_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 		//Definicion de la lista del resultado del query
-
-		$this->capturaCount('total_venta','numeric');
-		$this->capturaCount('excento','numeric');
-		$this->capturaCount('monto_total','numeric');
-
+		if ($this->objParam->getParametro('re_count') != null){
+			$this->setCount(false);
+		}else{
+			$this->capturaCount('total_venta','numeric');
+			$this->capturaCount('excento','numeric');
+			$this->capturaCount('monto_total','numeric');
+		}
 		$this->setParametro('id_entidad', 'id_entidad', 'varchar');
 		$this->setParametro('id_sucursal', 'id_sucursal', 'int4');
 		$this->setParametro('id_punto_venta', 'id_punto_venta', 'int4');
@@ -176,6 +178,7 @@ class MODReporteVentas extends MODbase {
 		$this->setParametro('fecha_ini', 'fecha_ini', 'date');
 		$this->setParametro('fecha_fin', 'fecha_fin', 'date');
 		$this->setParametro('nit', 'nit', 'varchar');
+		$this->setParametro('re_count', 're_count', 'varchar');
 
 		$this->captura('id_venta','integer');
 		$this->captura('nro_factura','integer');
@@ -194,6 +197,7 @@ class MODReporteVentas extends MODbase {
 		$this->captura('monto_total','numeric');
 		$this->captura('fecha_dep','date');
 		$this->captura('nro_boleto','text');
+		$this->captura('estado','varchar');		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		// echo $this->consulta;exit;

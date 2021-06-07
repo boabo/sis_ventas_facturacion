@@ -150,7 +150,8 @@ BEGIN
                                  (select pxp.list(bas.nro_boleto::text)
                                  from vef.tboletos_asociados_fact bas
                                  where bas.id_venta = v.id_venta
-                                 and bas.estado_reg = ''activo'') as nro_boleto
+                                 and bas.estado_reg = ''activo'') as nro_boleto,
+                                 v.estado
 
                           from vef.tventa v
                           inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
@@ -163,7 +164,11 @@ BEGIN
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+      if pxp.f_existe_parametro(p_tabla,'re_count')then
+        v_consulta:=v_consulta||' order by v.nombre_factura asc ';
+      else
+			  v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+      end if;
 			raise notice 'resp %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
@@ -297,6 +302,7 @@ BEGIN
                           SELECT ROW_TO_JSON(tvalue_data) as data
                           FROM(
                               select
+                              v.id_venta,
                               v.nro_factura,
                               v.nit,
                               v.nombre_factura,
@@ -384,7 +390,8 @@ BEGIN
                                         mon.codigo_internacional as moneda_fp,
                                         mp.name,
                                         aux.codigo_auxiliar||'' -> ''||aux.nombre_auxiliar as cod_cuenta,
-                                        venr.nro_factura as nro_recibo
+                                        venr.nro_factura as nro_recibo,
+                                        vf.id_venta_recibo
                                       FROM vef.tventa_forma_pago vf
                                       left join param.tmoneda mon on mon.id_moneda = vf.id_moneda
                                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = vf.id_medio_pago
@@ -411,13 +418,42 @@ BEGIN
                                     ) boas
                                 ),
                                 (
-                                  SELECT ROW_TO_JSON(grupo) as grupo
-                                  FROM ( SELECT  vau.id_venta  as id_venta_grupo_padre
-                                         FROM vef.tventa_forma_pago vfau
-                                         inner join vef.tventa vau on vau.id_venta = vfau.id_venta_recibo
-                                         WHERE vfau.id_venta = v.id_venta
-                                  ) grupo
-                                )
+                                  SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(doc_pag_c_rec))) as pagos_con_recibo
+                                      FROM (
+                                        (SELECT
+                                              rvfp.id_venta,
+                                              vpr.nit,
+                                              vpr.nombre_factura,
+                                              vpr.nro_factura::varchar,
+                                              vpr.fecha,
+                                              vpr.total_venta,
+                                              vpr.tipo_factura,
+                                              mon.codigo_internacional as mon_fp_ro
+                                        FROM vef.tventa_forma_pago rvfp
+                                        INNER join vef.tventa vpr on vpr.id_venta = rvfp.id_venta
+                                        INNER join param.tmoneda mon on mon.id_moneda = rvfp.id_moneda
+                                        WHERE rvfp.id_venta_recibo = v.id_venta
+                                        ORDER BY vpr.nombre_factura ASC)
+
+                                        UNION ALL
+
+                                        (SELECT
+                                             bfp.id_venta,
+                                             ''''::varchar,
+                                             boam.pasajero,
+                                             boam.nro_boleto,
+                                             boam.fecha_emision,
+                                             boam.total,
+                                             ''Boleto'',
+                                             mon.codigo_internacional as mon_fp_ro
+
+                                        FROM obingresos.tboleto_amadeus_forma_pago bfp
+                                        INNER join obingresos.tboleto_amadeus boam on boam.id_boleto_amadeus = bfp.id_boleto_amadeus
+                                        INNER join param.tmoneda mon on mon.id_moneda = bfp.id_moneda
+                                        WHERE bfp.id_venta = v.id_venta
+                                        ORDER BY boam.pasajero ASC)
+                                      ) doc_pag_c_rec
+                                  )
                                 from vef.tventa v
                                 inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
                                 inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
