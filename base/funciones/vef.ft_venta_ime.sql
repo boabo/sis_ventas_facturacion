@@ -504,8 +504,8 @@ $body$
         end if;
 
 
-        if (pxp.f_existe_parametro(p_tabla,'id_cliente')) THEN
-        	if(pxp.f_is_positive_integer(v_parametros.id_cliente))then
+        if (pxp.f_existe_parametro(p_tabla,'id_cliente') and pxp.f_is_positive_integer(v_parametros.id_cliente))then
+
               v_id_cliente = v_parametros.id_cliente::integer;
 
               IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
@@ -520,7 +520,7 @@ $body$
               select c.nombre_factura into v_nombre_factura
               from vef.tcliente c
               where c.id_cliente = v_id_cliente;
-            end if;
+            --end if;
         -- bvp
         elsif(v_tipo_base = 'recibo' or v_tipo_base = 'recibo_manual')then
 
@@ -1003,6 +1003,36 @@ $body$
     elsif(p_transaccion='VF_VEN_MOD')then
 
       begin
+
+          /** control de saldo para medio de pago recibo anticipo si saldos son menores o iguales a 0 no permite el pago
+          breydi.vasquez 06/05/2021***/
+          /******************************************************************************************************************/
+
+         if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+           v_id_venta_recibo = v_parametros.id_venta_recibo;
+
+           select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
+           if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_parametros.saldo_recibo is not null)) then
+              raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+           end if;
+
+         else
+           v_id_venta_recibo = null;
+         end if;
+
+         if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+           	v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
+
+             select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
+             if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_parametros.saldo_recibo_2 is not null)) then
+                raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
+             end if;
+
+         else
+           v_id_venta_recibo_2 = null;
+         end if;
+           /****fin**************/
+
         select
           v.*
         into
@@ -1030,6 +1060,10 @@ $body$
         if (pxp.f_existe_parametro(p_tabla,'tipo_factura')) then
           v_tipo_factura = v_parametros.tipo_factura;
         else
+          v_tipo_factura = 'recibo';
+        end if;
+
+        if(v_tipo_factura = '') then
           v_tipo_factura = 'recibo';
         end if;
 
@@ -1283,7 +1317,8 @@ $body$
             /*Aumentando instancia y moneda*/
             id_medio_pago,
             id_moneda,
-            nro_mco
+            nro_mco,
+            id_venta_recibo
             /*******************************/
           )
           values(
@@ -1305,7 +1340,8 @@ $body$
             /*Aumentando instancia de pago y id_moneda*/
             v_parametros.id_medio_pago,
             v_parametros.id_moneda,
-            v_parametros.mco
+            v_parametros.mco,
+            v_id_venta_recibo
             /*****************************************/
           );
 
@@ -1387,7 +1423,8 @@ $body$
             /*Aumentando la instancia de pago y el id_moneda*/
             id_medio_pago,
             id_moneda,
-            nro_mco
+            nro_mco,
+            id_venta_recibo_2
           )
           values(
             v_parametros._nombre_usuario_ai,
@@ -1408,7 +1445,8 @@ $body$
             /*Aumentando la instancia de pago y el id_moneda*/
             v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2,
-            v_parametros.mco_2
+            v_parametros.mco_2,
+            v_id_venta_recibo_2
           );
           end if;
         end if;
@@ -2328,6 +2366,20 @@ $body$
        -- v_estado_finalizado = (v_id_tipo_estado+1);
         /****************************************/
 
+        /**breydi vasquez 17/05/2021*/
+        if (pxp.f_existe_parametro(p_tabla,'ins_edit')) then
+        	if (v_parametros.ins_edit='edicion')then
+              v_estado_finalizado = (v_id_tipo_estado-2);
+              v_anulado =  'NO';
+            else
+              v_estado_finalizado = (v_id_tipo_estado+1);
+              v_anulado =  v_venta.anulado;
+            end if;
+         else
+        	v_anulado =  v_venta.anulado;
+         end if;
+         /*****/
+
         /*Obtenemnos el codigo finalizado*/
         select te.codigo into v_codigo_estado
         from wf.ttipo_estado te
@@ -2346,7 +2398,7 @@ $body$
                                         v_venta.id_venta::varchar,
                                         v_venta.tipo_factura,
                                         v_codigo_estado,
-                                        v_venta.anulado],
+                                        v_anulado],
                                         ARRAY[	'varchar',
                                         'integer',
                                         'integer',

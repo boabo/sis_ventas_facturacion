@@ -53,11 +53,13 @@ BEGIN
                                 vedet.id_sucursal_producto
                             when vedet.id_formula is not null then
                                 vedet.id_formula
+                            else
+                            	vedet.id_producto
                             end) as id_producto,
                             vedet.tipo,
                             vedet.estado_reg,
                             vedet.cantidad,
-                            vedet.precio_sin_descuento,
+                            COALESCE(vedet.precio,0), --vedet.precio_sin_descuento
                             vedet.id_usuario_ai,
                             vedet.usuario_ai,
                             vedet.fecha_reg,
@@ -66,7 +68,7 @@ BEGIN
                             vedet.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            round(vedet.precio*vedet.cantidad,2) as precio_total,
+                            round(COALESCE(vedet.precio,0)*vedet.cantidad,2) as precio_total,
                             (case when vedet.id_item is not null then
                                 item.codigo  || '' - '' ||  item.nombre
                             when vedet.id_sucursal_producto is not null then

@@ -89,7 +89,15 @@ class ACTVenta extends ACTbase{
 										$this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."''");
 								}
 
-            }
+            }elseif ($this->objParam->getParametro('pes_estado') == 'caja') {
+								if ($this->objParam->getParametro('fecha') !=''){
+										$this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."'' and ven.fecha = ''".$this->objParam->getParametro('fecha')."''");
+								}
+						}elseif ($this->objParam->getParametro('pes_estado') == 'registro') {
+									if ($this->objParam->getParametro('fecha') !=''){
+											$this->objParam->addFiltro(" ven.estado = ''".$this->objParam->getParametro('pes_estado')."'' and ven.fecha = ''".$this->objParam->getParametro('fecha')."''");
+									}
+								}
         }
 
 

@@ -78,10 +78,14 @@ class MODVentaFacturacion extends MODbase{
 		$this->captura('excento_verificado','varchar');
 		$this->captura('nombre','varchar');
 		$this->captura('id_formula','int4');
-		//$this->captura('nombre_sucursal','varchar');
+		$this->captura('nro_pnr','varchar');
+		$this->captura('id_auxiliar_anticipo','int4');
+		$this->captura('nombre_auxiliar','varchar');
+		$this->captura('codigo_auxiliar','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
+		// echo ($this->consulta);exit;
 		$this->ejecutarConsulta();
 
 		//Devuelve la respuesta
@@ -139,6 +143,20 @@ class MODVentaFacturacion extends MODbase{
 		$this->setParametro('otros_fob','otros_fob','numeric');
 		$this->setParametro('fecha_estimada_entrega','fecha_estimada_entrega','date');
 		$this->setParametro('id_formula','id_formula','integer');
+
+		if ($this->arreglo['id_producto'] != null && $this->arreglo['id_producto'] != ''){
+			$this->setParametro('nro_pnr','nro_pnr','varchar');
+			$this->setParametro('descripcion','descripcion','text');
+			$this->setParametro('cantidad_det','cantidad','numeric');
+			$this->setParametro('tipo','tipo','varchar');
+			$this->setParametro('id_producto','id_producto','int4');
+			$this->setParametro('precio','precio','numeric');
+			$this->setParametro('total','total','numeric');
+			$this->setParametro('id_moneda_venta_recibo','id_moneda_venta_recibo','int4');
+			$this->setParametro('monto_exacto','monto_exacto','numeric');
+			$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
+		}
+
 		//$this->setParametro('nombre_factura','nombre_factura','varchar');
 
 		//Ejecuta la instruccion
@@ -161,7 +179,8 @@ class MODVentaFacturacion extends MODbase{
 		$this->setParametro('observaciones','observaciones','text');
 		$this->setParametro('nombre_factura','nombre_factura','varchar');
 		$this->setParametro('nit','nit','varchar');
-		$this->setParametro('id_formula','id_formula','int4');
+		$this->setParametro('id_formula','id_formula','int4');		
+		$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -959,7 +978,7 @@ class MODVentaFacturacion extends MODbase{
 							$this->setParametro('id_venta_recibo', 'id_venta_recibo', 'int4');
 							$this->setParametro('id_venta_recibo_2', 'id_venta_recibo_2', 'int4');
 							$this->setParametro('saldo_recibo', 'saldo_recibo', 'numeric');
-							$this->setParametro('saldo_recibo_2', 'saldo_recibo_2', 'numeric');							
+							$this->setParametro('saldo_recibo_2', 'saldo_recibo_2', 'numeric');
 							/***********************************************************************************/
 
 

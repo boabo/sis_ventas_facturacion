@@ -29,7 +29,6 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     {
 
 		Ext.apply(this,config);
-
     if (this.data.objPadre.variables_globales.vef_tiene_punto_venta === 'true') {
 			this.Atributos.push({
 	            config: {
@@ -259,7 +258,12 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
         this.addEvents('successsave');
 
         this.buildComponentesDetalle();
-        this.buildDetailGrid();
+
+        if (this.data.tipo_form=='edit'){
+          this.buildDetailGridEdit();
+        }else{
+          this.buildDetailGrid();
+        }
         this.buildGrupos();
 
         if (this.data.objPadre.variables_globales.codigo_moneda_base=='USD') {
@@ -945,68 +949,69 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       		        });
         }
         if (this.accionFormulario == 'EDIT') {
-          this.mostrarComponente(this.Cmp.habilitar_edicion);
+          // this.mostrarComponente(this.Cmp.habilitar_edicion);
           this.Cmp.cambio.setValue(0);
           this.Cmp.cambio_moneda_extranjera.setValue(0);
           /*******************Mostramos si se tiene excento***********************/
-          if (this.Cmp.excento.getValue() == 0) {
-            this.ocultarComponente(this.Cmp.excento);
-          } else {
-            this.mostrarComponente(this.Cmp.excento);
-          }
+          // if (this.Cmp.excento.getValue() == 0) {
+          //   this.ocultarComponente(this.Cmp.excento);
+          // } else {
+          //   this.mostrarComponente(this.Cmp.excento);
+          // }
           /**********************************************************************/
 
           /*****************Habilitamos los campos si se pone editar***************/
-          this.Cmp.habilitar_edicion.setValue('NO');
+          // this.Cmp.habilitar_edicion.setValue('NO');
 
-          this.Cmp.nit.setDisabled(true);
-          this.Cmp.id_cliente.setDisabled(true);
-          this.Cmp.id_formula.setDisabled(true);
+          // this.Cmp.nit.setDisabled(true);
+          // this.Cmp.id_cliente.setDisabled(true);
+          // this.Cmp.id_formula.setDisabled(true);
           this.Cmp.observaciones.setDisabled(true);
-          this.Cmp.id_punto_venta.setDisabled(true);
-          this.Cmp.excento.setDisabled(true);
+          this.Cmp.nombre_factura.setDisabled(true);
+          // this.Cmp.id_punto_venta.setDisabled(true);
+          // this.Cmp.excento.setDisabled(true);
 
 
 
 
                 //  this.Cmp.id_formula.fireEvent('select',this.Cmp.id_formula, this.Cmp.id_formula.store.getById(this.data.datos_originales.data.id_formula));
-          this.Cmp.habilitar_edicion.on('select',function(c,r,i) {
-
-            if (r.data.value == 'NO') {
-              this.Cmp.nit.setDisabled(true);
-              this.Cmp.id_cliente.setDisabled(true);
-              this.Cmp.id_formula.setDisabled(true);
-              this.Cmp.observaciones.setDisabled(true);
-              this.Cmp.id_punto_venta.setDisabled(true);
-              this.Cmp.excento.setDisabled(true);
-              this.megrid.topToolbar.items.items[0].setDisabled(true);
-              this.megrid.topToolbar.items.items[1].setDisabled(true);
-              this.megrid.topToolbar.items.items[2].setDisabled(true);
-              this.megrid.topToolbar.items.items[3].setDisabled(true);
-              this.megrid.colModel.config[3].editor='';
-              this.megrid.colModel.config[4].editor='';
-              this.megrid.colModel.config[5].editor='';
-              //this.mestore.rollbChanges();
-
-            } else {
-              this.Cmp.nit.setDisabled(false);
-              this.Cmp.id_cliente.setDisabled(false);
-              this.Cmp.id_formula.setDisabled(false);
-              this.Cmp.observaciones.setDisabled(false);
-              this.Cmp.id_punto_venta.setDisabled(false);
-              this.Cmp.excento.setDisabled(false);
-              this.megrid.topToolbar.items.items[0].setDisabled(false);
-              this.megrid.topToolbar.items.items[1].setDisabled(false);
-              this.megrid.topToolbar.items.items[2].setDisabled(false);
-              this.megrid.topToolbar.items.items[3].setDisabled(false);
-
-              /*************************Habilitar la grilla para editar*************************/
-              this.megrid.colModel.config[3].editor=this.editarDescripcion;
-              this.megrid.colModel.config[4].editor=this.detCmp.cantidad;
-              this.megrid.colModel.config[5].editor=this.detCmp.precio_unitario;
-
-            }
-          },this);
+          // this.Cmp.habilitar_edicion.on('select',function(c,r,i) {
+          //
+          //   if (r.data.value == 'NO') {
+          //     this.Cmp.nit.setDisabled(true);
+          //     this.Cmp.id_cliente.setDisabled(true);
+          //     this.Cmp.id_formula.setDisabled(true);
+          //     this.Cmp.observaciones.setDisabled(true);
+          //     this.Cmp.id_punto_venta.setDisabled(true);
+          //     this.Cmp.excento.setDisabled(true);
+          //     this.megrid.topToolbar.items.items[0].setDisabled(true);
+          //     this.megrid.topToolbar.items.items[1].setDisabled(true);
+          //     this.megrid.topToolbar.items.items[2].setDisabled(true);
+          //     this.megrid.topToolbar.items.items[3].setDisabled(true);
+          //     this.megrid.colModel.config[3].editor='';
+          //     this.megrid.colModel.config[4].editor='';
+          //     this.megrid.colModel.config[5].editor='';
+          //     //this.mestore.rollbChanges();
+          //
+          //   } else {
+          //     this.Cmp.nit.setDisabled(false);
+          //     this.Cmp.id_cliente.setDisabled(false);
+          //     this.Cmp.id_formula.setDisabled(false);
+          //     this.Cmp.observaciones.setDisabled(false);
+          //     this.Cmp.id_punto_venta.setDisabled(false);
+          //     this.Cmp.excento.setDisabled(false);
+          //     this.megrid.topToolbar.items.items[0].setDisabled(false);
+          //     this.megrid.topToolbar.items.items[1].setDisabled(false);
+          //     this.megrid.topToolbar.items.items[2].setDisabled(false);
+          //     this.megrid.topToolbar.items.items[3].setDisabled(false);
+          //
+          //     /*************************Habilitar la grilla para editar*************************/
+          //     this.megrid.colModel.config[3].editor=this.editarDescripcion;
+          //     this.megrid.colModel.config[4].editor=this.detCmp.cantidad;
+          //     this.megrid.colModel.config[5].editor=this.detCmp.precio_unitario;
+          //
+          //   }
+          // },this);
           /**************************************************************************/
           /*Aqui cargamos el combo q se selecciono*/
           this.Cmp.id_formula.store.load({params:{start:0,limit:50},
@@ -2507,7 +2512,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
           textTransform:'uppercase',
         },
         width:200,
-				allowBlank : false,
+				allowBlank : true,
         listeners: {
           afterrender: function(field) {
             field.focus(false);
@@ -2551,12 +2556,13 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
 				cls:'uppercase',
 				tcls:'Cliente',
 				gwidth : 170,
+        hidden: true,
 				minChars : 2,
 				//style:';'
 			},
 			type : 'TrigguerCombo',
 			id_grupo : 0,
-			form : false
+			form : true
 		},
     {
  		 config:{
@@ -2650,7 +2656,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             config : {
                 name : 'id_cliente_destino',
                 fieldLabel : 'Destino',
-                allowBlank : false,
+                allowBlank : true,
                 emptyText : 'Destino...',
                 qtip:'Cliente Destino',
                 store : new Ext.data.JsonStore({
@@ -3684,7 +3690,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
             id_grupo: 10,
             grid: false,
             form: true
-        },        
+        },
         {
             config:{
                 name: 'tipo_tarjeta_2',
@@ -3795,9 +3801,11 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     	this.loadForm(this.data.datos_originales);
         //load detalle de conceptos
         this.mestore.baseParams.id_venta = this.Cmp.id_venta.getValue();
+        this.Cmp.id_medio_pago.store.baseParams.defecto = 'si';
+        this.Cmp.id_moneda.store.baseParams.filtrar_base = 'si';
         this.mestore.load();
-        this.Cmp.id_forma_pago.reset();
-        this.crearStoreFormaPago();
+        // this.Cmp.id_forma_pago.reset();
+        // this.crearStoreFormaPago();
 
     },
     onNew: function(){
@@ -4764,7 +4772,12 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     },
 
     registrarVariasFormasPago: function(){
-
+      var ins_edit = '';
+      if (this.accionFormulario == "EDIT"){
+          ins_edit = 'edicion';
+      }else{
+          ins_edit = 'nuevo';
+      }
       /*Datos a enviar al siguiente Formulario*/
       // var cliente = this.Cmp.id_cliente.getValue();
       var cliente = this.Cmp.nombre_factura.getValue();
@@ -4804,6 +4817,11 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
       var id_venta_recibo = this.Cmp.id_venta_recibo.getValue();
       var id_venta_recibo_2 = this.Cmp.id_venta_recibo_2.getValue();
 
+      if (this.data.datos_originales == undefined) {
+        var  id_venta = '';
+      } else {
+        var  id_venta = this.data.datos_originales.data.id_venta;
+      }
       /****************************************/
         Phx.CP.loadWindows(this.formUrl,
                                  '<center><img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:35px; vertical-align: middle;"> <span style="vertical-align: middle; font-size:30px; text-shadow: 3px 0px 0px #000000;"> REGISTRAR FORMAS DE PAGO</span></center>',
@@ -4860,7 +4878,9 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                                    id_auxiliar_2:id_auxiliar_2,
                                    desc_id_auxiliar2:desc_id_auxiliar2,
                                    id_venta_recibo:  id_venta_recibo,
-                                   id_venta_recibo_2:  id_venta_recibo_2
+                                   id_venta_recibo_2:  id_venta_recibo_2,
+                                   id_venta:id_venta,
+                                   ins_edit:ins_edit
                                  }
                                 },
                                  this.idContenedor,
@@ -4915,7 +4935,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
               }
     },
     saverecibo: function(o){
-      console.log("aqui llega data 2222 irva");
+      console.log("aqui llega data save");
       var arra = [], i, me = this;
       var formapa = [];
       for (i = 0; i < me.megrid.store.getCount(); i++) {
@@ -4945,6 +4965,7 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
                       'tipo_factura':this.data.objPadre.tipo_factura};
 
       if( i > 0 &&  !this.editorDetail.isVisible()){
+
            Phx.vista.FormRecibo.superclass.onSubmit.call(this,o);
       }
       else{
@@ -4955,7 +4976,12 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     successSave:function(resp)
     {
     	var datos_respuesta = JSON.parse(resp.responseText);
-
+      var ins_edit = '';
+      if (this.accionFormulario == "EDIT"){
+          ins_edit = 'edicion';
+      }else{
+          ins_edit = 'nuevo';
+      }
     	Phx.CP.loadingHide();
       if (this.generar == 'generar') {
         Phx.CP.loadingShow();
@@ -4964,7 +4990,8 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
   					url:'../../sis_ventas_facturacion/control/Venta/siguienteEstadoRecibo',
   					params:{id_estado_wf_act:d.id_estado_wf,
   									id_proceso_wf_act:d.id_proceso_wf,
-  								  tipo:'recibo'},
+  								  tipo:'recibo',
+                    ins_edit: ins_edit},
   					success:this.successWizard,
   					failure: this.conexionFailure,
   					timeout:this.timeout,
@@ -4992,7 +5019,169 @@ Phx.vista.FormRecibo=Ext.extend(Phx.frmInterfaz,{
     	}
 
     },
+    buildDetailGridEdit: function(){
 
+      var Items = Ext.data.Record.create([{
+                        name: 'cantidad',
+                        type: 'int'
+                    }, {
+                        name: 'id_producto',
+                        type: 'int'
+                    },{
+                        name: 'tipo',
+                        type: 'string'
+                    }
+                    ]);
+
+        this.mestore = new Ext.data.JsonStore({
+                    url: '../../sis_ventas_facturacion/control/VentaDetalle/listarVentaDetalle',
+                    id: 'id_venta_detalle',
+                    root: 'datos',
+                    totalProperty: 'total',
+                    fields: [
+                        {name:'id_venta_detalle', type: 'numeric'},
+                        {name:'id_venta', type: 'numeric'},
+                        {name:'nombre_producto', type: 'string'},
+                        {name:'id_producto', type: 'numeric'},
+                        {name:'tipo', type: 'string'},
+                        {name:'descripcion', type: 'string'},
+                        {name:'requiere_descripcion', type: 'string'},
+                        {name:'estado_reg', type: 'string'},
+                        {name:'cantidad', type: 'numeric'},
+                        {name:'precio_unitario', type: 'numeric'},
+                        {name:'precio_total', type: 'numeric'},
+                        {name:'id_usuario_ai', type: 'numeric'},
+                        {name:'usuario_ai', type: 'string'},
+                        {name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+                        {name:'id_usuario_reg', type: 'numeric'},
+                        {name:'id_usuario_mod', type: 'numeric'},
+                        {name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+                        {name:'usr_reg', type: 'string'},
+                        {name:'usr_mod', type: 'string'},
+
+                    ],
+                    remoteSort: true,
+                    baseParams: {dir:'ASC',sort:'id_venta_detalle',limit:'50',start:'0'}
+                });
+
+            this.editorDetail = new Ext.ux.grid.RowEditor({
+
+                });
+
+
+        this.summary = new Ext.ux.grid.GridSummary();
+
+        this.megrid = new Ext.grid.EditorGridPanel({
+                    layout: 'fit',
+                    store:  this.mestore,
+                    region: 'center',
+                    split: true,
+                    border: false,
+                    loadMask : true,
+                    clicksToEdit: 2,
+                    plain: true,
+                    plugins: [this.summary],
+                    stripeRows: true,
+                    tbar: [
+                      {
+                  	    text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Guardar</div>',
+                        scope: this,
+                        disabled:true,
+                        id:'botonGuardar',
+                      },
+                      {
+                      text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Agregar Detalle</div>',
+                      scope: this,
+                      disabled:true,
+                      id:'botonAgregar'
+                      },
+                      {
+                        text: '<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Eliminar</div>',
+                        scope: this,
+                        disabled:true,
+                        id:'botonEliminar'
+                        },
+                  ],
+                  columns: [
+                  new Ext.grid.RowNumberer(),
+                  {
+                      header: 'Tipo',
+                      dataIndex: 'tipo',
+                      width: 90,
+                      sortable: false,
+                      //editor: this.detCmp.tipo
+                  },
+                  {
+                      header: ' Producto/Servicio',
+                      dataIndex: 'id_producto',
+                      width: 350,
+                      editable: true,
+                      sortable: false,
+                      renderer:function(value, p, record){
+                        return String.format('{0}', record.data['nombre_producto']);
+                      },
+                  },
+                  {
+                      header: 'Descripción',
+                      dataIndex: 'descripcion',
+                      width: 300,
+                      //sortable: false,
+                      editor: ''
+                  },
+                  {
+                      header: ' Cantidad',
+                      dataIndex: 'cantidad',
+                      align: 'right',
+                      width: 130,
+                      summaryType: 'sum',
+                      editor: ''
+                  },
+                  {
+                      xtype: 'numbercolumn',
+                      header: ' P / Unit',
+                      dataIndex: 'precio_unitario',
+                      align: 'right',
+                      selectOnFocus: true,
+                      width: 100,
+                      decimalPrecision : 2,
+                      summaryType: 'sum',
+                      format: '0,0.00',
+                      editor: '',
+                      renderer:function(value, p, record){
+                        return String.format('{0}', record.data['precio_unitario']);
+                      },
+
+                  },
+                  {
+                      xtype: 'numbercolumn',
+                      header: 'Total',
+                      dataIndex: 'precio_total',
+                      align: 'right',
+                      width: 150,
+                      format: '0,0.00',
+                      summaryType: 'sum',
+                  },
+                  {
+                    header: 'Moneda',
+                    dataIndex: 'id_moneda_recibo',
+                    width: 350,
+                    editable: true,
+                    sortable: false,
+                    renderer:function(value, p, record){
+                      return String.format('{0}', record.json['desc_moneda_recibo']);
+                    },
+                  }
+                ]
+                });
+
+
+                if (this.data.objPadre.variables_globales.codigo_moneda_base == 'USD') {
+                  Ext.getCmp('botonGuardar').text='<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/guardar.png" style="width:30px; vertical-align: middle;"> Save </div>';
+                  Ext.getCmp('botonAgregar').text='<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/anadir.png" style="width:30px; vertical-align: middle;"> Add Detail </div>';
+                  Ext.getCmp('botonEliminar').text='<div style="font-weight:bold; font-size:15px;"><img src="../../../lib/imagenes/facturacion/eliminar.png" style="width:30px; vertical-align: middle;"> Delete </div>';
+
+                }
+    },
 
 })
 </script>

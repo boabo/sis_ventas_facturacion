@@ -1907,3 +1907,11 @@ ALTER TABLE vef.tventa_forma_pago
 COMMENT ON COLUMN vef.tventa_forma_pago.monto_dolar_efectivo
 IS 'Monto donde se almacena el total de la transacccion en dolar';
 /***********************************F-SCP-IRVA-VEF-0-07/05/2021****************************************/
+
+/***********************************I-SCP-BVP-VEF-0-02/06/2021****************************************/
+ALTER TABLE vef.tventa
+  ADD COLUMN nro_pnr VARCHAR(20);
+
+COMMENT ON COLUMN vef.tventa.nro_pnr
+IS 'PNR de reserva de vuelo, recibo oficial inicial.';
+/***********************************F-SCP-BVP-VEF-0-02/06/2021****************************************/

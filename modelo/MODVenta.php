@@ -807,6 +807,7 @@ class MODVenta extends MODbase{
 				$this->setParametro('id_estado_wf_act','id_estado_wf_act','int4');
 				$this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
         $this->setParametro('tipo','tipo','varchar');
+				$this->setParametro('ins_edit','ins_edit','varchar');
 
 
         //Ejecuta la instruccion

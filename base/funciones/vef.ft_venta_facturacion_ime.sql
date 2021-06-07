@@ -228,6 +228,9 @@ DECLARE
 
     v_tipo_cambio_local		numeric;
     v_id_moneda_venta_factura	integer;
+
+    v_pnr					varchar;
+    v_id_aux_ant			integer;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -270,7 +273,10 @@ BEGIN
 
         else
 
-
+        if (pxp.f_existe_parametro(p_tabla, 'id_producto'))then
+		    -- incremento de pnr
+        	v_pnr = upper(v_parametros.nro_pnr);
+        else
           IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
@@ -279,6 +285,7 @@ BEGIN
           	raise exception 'La razón social no puede ser vacio verifique los datos';
           end if;
 
+        end if;
 
           INSERT INTO
             vef.tcliente
@@ -652,7 +659,8 @@ BEGIN
           hora_estimada_entrega,
           tiene_formula,
           forma_pedido,
-          id_formula
+          id_formula,
+          nro_pnr
 
         ) values(
           v_id_venta,
@@ -698,8 +706,8 @@ BEGIN
           v_hora_estimada_entrega,
           v_tiene_formula,
           v_forma_pedido,
-          v_parametros.id_formula
-
+          v_parametros.id_formula,
+          v_pnr
         ) returning id_venta into v_id_venta;
 
         if ( v_parametros.id_formula is not null) then
@@ -781,10 +789,27 @@ BEGIN
             where id_venta = v_id_venta;
           end if;
 
+          elsif (pxp.f_existe_parametro(p_tabla, 'id_producto'))then
 
+              if (v_parametros.precio < v_parametros.monto_exacto) then
+              	raise 'El precio unitario: % es menor menor al total % de la venta recuperada segun el PNR: % ingresado',v_parametros.precio, v_parametros.monto_exacto, v_pnr;
+              end if;
+              update vef.tventa set
+              id_moneda_venta_recibo = v_parametros.id_moneda_venta_recibo,
+              id_auxiliar_anticipo = v_parametros.id_auxiliar_anticipo
+  	        where id_venta = v_id_venta ;
 
+              create temporary table tt_det_venta(_id_usuario_ai int4, _nombre_usuario_ai varchar,
+              id_venta int4, id_producto int4, precio numeric, cantidad_det numeric, tipo varchar, descripcion varchar) on commit drop;
 
+              insert into tt_det_venta
+              values (null, 'null', v_id_venta, v_parametros.id_producto, v_parametros.precio, v_parametros.cantidad_det, 'Servicio', v_parametros.descripcion);
 
+              v_resp = vef.ft_venta_detalle_facturacion_ime (
+              p_administrador,
+              p_id_usuario,
+              'tt_det_venta',
+              'VF_FACTDETIND_INS');
 
         end if;
 
@@ -842,13 +867,18 @@ BEGIN
 
               end if;
 
+              -- incremento de pnr
+              if (pxp.f_existe_parametro(p_tabla, 'id_auxiliar_anticipo'))then
+                  v_id_aux_ant = v_parametros.id_auxiliar_anticipo;
+              end if;
 
 			--Sentencia de la modificacion
 			update vef.tventa set
 			id_cliente = v_parametros.id_cliente::integer,
 			observaciones = v_parametros.observaciones,
 			nit = trim(v_parametros.nit),
-            nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'))
+            nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+      id_auxiliar_anticipo = v_id_aux_ant
 			where id_venta=v_parametros.id_venta;
 
             if ( v_parametros.id_formula is not null) then

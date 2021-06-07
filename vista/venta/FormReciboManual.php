@@ -2372,6 +2372,15 @@ Phx.vista.FormReciboManual=Ext.extend(Phx.frmInterfaz,{
  			 bottom_filter:true,
  			 form:true
  	 },
+   {
+       config:{
+           labelSeparator:'',
+           inputType:'hidden',
+           name: 'id_cliente'
+       },
+       type:'TextField',
+       form:true
+   },
 		// {
 		// 	config : {
 		// 		name : 'id_cliente',

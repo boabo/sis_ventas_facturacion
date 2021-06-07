@@ -108,6 +108,9 @@ BEGIN
                         fact.excento_verificado,
                     	fo.nombre,
 					    fo.id_formula
+              ,fact.nro_pnr
+              ,fact.id_auxiliar_anticipo
+              ,aux.nombre_auxiliar,aux.codigo_auxiliar
                         --sucu.nombre
                         --det.id_formula
 						from vef.tventa fact
@@ -115,6 +118,7 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = fact.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = fact.id_usuario_mod
                         left  join vef.tformula fo on fo.id_formula = fact.id_formula
+                        left join conta.tauxiliar aux on aux.id_auxiliar = fact.id_auxiliar_anticipo
                         --inner join vef.tsucursal sucu on sucu.id_sucursal = fact.id_sucursal
 				        where fact.estado_reg = ''activo'' and  ';
 
