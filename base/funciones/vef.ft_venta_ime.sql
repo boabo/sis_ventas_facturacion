@@ -152,6 +152,9 @@ $body$
     v_mon_recibo_2			varchar;
     v_tipo_cambio_local		numeric;
 
+    v_code_fp				varchar;
+    v_code_fp_2				varchar;
+
   BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_ime';
@@ -206,6 +209,20 @@ $body$
        else
          v_id_venta_recibo_2 = null;
        end if;
+
+       -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+        select mop_code into v_code_fp
+        from obingresos.tmedio_pago_pw
+        where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+        select mop_code into v_code_fp_2
+        from obingresos.tmedio_pago_pw
+        where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+        if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+           raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
+        end if;
          /****fin**************/
         if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
@@ -1031,6 +1048,20 @@ $body$
          else
            v_id_venta_recibo_2 = null;
          end if;
+
+         -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+          select mop_code into v_code_fp
+          from obingresos.tmedio_pago_pw
+          where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+          select mop_code into v_code_fp_2
+          from obingresos.tmedio_pago_pw
+          where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+          if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+             raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
+          end if;
            /****fin**************/
 
         select

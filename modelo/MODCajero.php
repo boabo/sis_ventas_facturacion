@@ -601,6 +601,8 @@ class MODCajero extends MODbase{
 		$this->captura('id_venta_forma_pago','int4');
 		$this->captura('deposito','varchar');
 		$this->captura('id_auxiliar','numeric');
+		$this->captura('id_venta_recibo','int4');
+		$this->captura('mop_code','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

@@ -179,7 +179,7 @@ class MODVentaFacturacion extends MODbase{
 		$this->setParametro('observaciones','observaciones','text');
 		$this->setParametro('nombre_factura','nombre_factura','varchar');
 		$this->setParametro('nit','nit','varchar');
-		$this->setParametro('id_formula','id_formula','int4');		
+		$this->setParametro('id_formula','id_formula','int4');
 		$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -1226,6 +1226,10 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('fecha_deposito', 'fecha_deposito', 'varchar');
 			$this->setParametro('id_moneda_venta_recibo', 'id_moneda_venta_recibo', 'integer');
 			$this->setParametro('id_auxiliar_anticipo', 'id_auxiliar_anticipo', 'integer');
+			$this->setParametro('id_venta_recibo','id_venta_recibo','int4');
+			$this->setParametro('id_venta_recibo_2','id_venta_recibo_2','int4');
+			$this->setParametro('saldo_recibo','saldo_recibo','numeric');
+			$this->setParametro('saldo_recibo_2','saldo_recibo_2','numeric');
 			/***********************************************************************************/
 
 

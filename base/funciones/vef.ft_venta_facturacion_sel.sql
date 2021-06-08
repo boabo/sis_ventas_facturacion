@@ -773,6 +773,7 @@ BEGIN
                                 fp.id_venta_forma_pago,
                                 ''no''::varchar as deposito,
                                 fp.id_auxiliar::numeric
+                                ,fp.id_venta_recibo,ip.mop_code
                         from obingresos.tmedio_pago_pw ip
                         inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
                         inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda
@@ -791,6 +792,7 @@ BEGIN
                                 fp.id_venta_forma_pago,
                                 ''si''::varchar as deposito,
                                 null::numeric as id_auxiliar
+                                ,fp.id_venta_recibo,ip.mop_code
                         from obingresos.tmedio_pago_pw ip
                         inner join vef.tventa_forma_pago fp on fp.id_medio_pago = ip.id_medio_pago_pw
                         inner join param.tmoneda mon on mon.id_moneda = fp.id_moneda

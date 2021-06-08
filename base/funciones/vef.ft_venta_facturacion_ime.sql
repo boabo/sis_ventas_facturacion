@@ -231,6 +231,9 @@ DECLARE
 
     v_pnr					varchar;
     v_id_aux_ant			integer;
+
+    v_code_fp				varchar;
+    v_code_fp_2				varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -1603,6 +1606,20 @@ BEGIN
            v_id_venta_recibo_2 = null;
          end if;
 
+         -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+         select mop_code into v_code_fp
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+         select mop_code into v_code_fp_2
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+         if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+            raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
+         end if;
+
         if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
 
@@ -2450,6 +2467,20 @@ BEGIN
 
      else
        v_id_venta_recibo_2 = null;
+     end if;
+
+     -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+     select mop_code into v_code_fp
+     from obingresos.tmedio_pago_pw
+     where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+     select mop_code into v_code_fp_2
+     from obingresos.tmedio_pago_pw
+     where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+     if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+     	raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
      end if;
 
         select
@@ -5038,6 +5069,20 @@ BEGIN
            v_id_venta_recibo_2 = null;
          end if;
 
+         -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+         select mop_code into v_code_fp
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+         select mop_code into v_code_fp_2
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+         if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+            raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
+         end if;
+
     	/*Controlamos si se agrega una nueva forma de pago*/
         if (v_parametros.id_venta_forma_pago_2 is not null and v_parametros.monto_forma_pago_2 is null) THEN
         	delete from vef.tventa_forma_pago
@@ -5449,6 +5494,44 @@ BEGIN
 
   	BEGIN
 
+    if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+      v_id_venta_recibo = v_parametros.id_venta_recibo;
+
+      select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
+      if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_id_venta_recibo is not null)) then
+         raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+      end if;
+
+    else
+      v_id_venta_recibo = null;
+    end if;
+
+    if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+       v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
+
+        select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
+        if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_id_venta_recibo_2 is not null)) then
+           raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
+        end if;
+
+    else
+      v_id_venta_recibo_2 = null;
+    end if;
+
+    -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+    select mop_code into v_code_fp
+    from obingresos.tmedio_pago_pw
+    where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+    select mop_code into v_code_fp_2
+    from obingresos.tmedio_pago_pw
+    where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+    if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+     raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
+    end if;
+
     /*Control para no modificar los grupos que pertenecen a una venta*/
     select count(ventfp.id_venta_recibo)
     		into
@@ -5658,7 +5741,8 @@ BEGIN
             codigo_tarjeta,
             id_usuario_reg,
             nro_mco,
-            id_auxiliar
+            id_auxiliar,
+            id_venta_recibo
             )VALUES(
             v_parametros.id_medio_pago_2,
             v_parametros.id_moneda_2,
@@ -5671,7 +5755,8 @@ BEGIN
             replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
             p_id_usuario,
             v_parametros.mco_2,
-            v_parametros.id_auxiliar_2
+            v_parametros.id_auxiliar_2,
+            v_id_venta_recibo_2
             );
 
         end if;
@@ -5703,7 +5788,8 @@ BEGIN
             accion,
             nro_mco,
             id_moneda,
-            id_instancia_pago
+            id_instancia_pago,
+            id_venta_recibo
           	) values(
 			v_datos_anteriores.id_venta_forma_pago,
 			v_datos_anteriores.id_venta,
@@ -5723,7 +5809,8 @@ BEGIN
             'Modificado',
             v_datos_anteriores.nro_mco,
             v_datos_anteriores.id_moneda,
-            v_datos_anteriores.id_medio_pago
+            v_datos_anteriores.id_medio_pago,
+            v_datos_anteriores.id_venta_recibo
 			);
          /***********************************************************************/
           if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
@@ -5803,7 +5890,8 @@ BEGIN
           numero_tarjeta = v_parametros.numero_tarjeta,
           codigo_tarjeta = replace(upper(v_parametros.codigo_tarjeta),' ',''),
           nro_mco = v_parametros.mco,
-          id_auxiliar = v_parametros.id_auxiliar
+          id_auxiliar = v_parametros.id_auxiliar,
+          id_venta_recibo = v_id_venta_recibo
           where id_venta_forma_pago = v_parametros.id_venta_forma_pago_1;
           end if;
 
@@ -5835,7 +5923,8 @@ BEGIN
                 accion,
                 nro_mco,
                 id_moneda,
-                id_instancia_pago
+                id_instancia_pago,
+                id_venta_recibo
                 ) values(
                 v_datos_anteriores_2.id_venta_forma_pago,
                 v_datos_anteriores_2.id_venta,
@@ -5855,7 +5944,8 @@ BEGIN
                 'Modificado',
                 v_datos_anteriores_2.nro_mco,
                 v_datos_anteriores_2.id_moneda,
-                v_datos_anteriores_2.id_medio_pago
+                v_datos_anteriores_2.id_medio_pago,
+                v_datos_anteriores_2.id_venta_recibo
                 );
              /***********************************************************************/
 
@@ -5905,7 +5995,8 @@ BEGIN
               numero_tarjeta = v_parametros.numero_tarjeta_2,
               codigo_tarjeta = replace(upper(v_parametros.codigo_tarjeta_2),' ',''),
               nro_mco = v_parametros.mco_2,
-              id_auxiliar = v_parametros.id_auxiliar_2
+              id_auxiliar = v_parametros.id_auxiliar_2,
+              id_venta_recibo = v_id_venta_recibo_2
               where id_venta_forma_pago = v_parametros.id_venta_forma_pago_2;
           end if;
           /**********************************************************/
