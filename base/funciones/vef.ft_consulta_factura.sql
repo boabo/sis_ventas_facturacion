@@ -165,7 +165,7 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
       if pxp.f_existe_parametro(p_tabla,'re_count')then
-        v_consulta:=v_consulta||' order by v.nombre_factura asc ';
+        v_consulta:=v_consulta||' order by v.fecha asc ';
       else
 			  v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
       end if;
