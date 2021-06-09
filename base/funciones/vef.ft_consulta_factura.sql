@@ -289,7 +289,7 @@ BEGIN
             from vef.tventa
             where id_venta =  v_parametros.id_venta;
 
-            IF v_tf = 'computarizada' THEN
+            IF v_tf in('computarizada','carga') THEN
                 v_inner = 'inner join vef.tdosificacion dos on dos.id_dosificacion = v.id_dosificacion';
                 v_nroaut = 'dos.nroaut';
             ELSE
