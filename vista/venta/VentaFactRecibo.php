@@ -564,15 +564,20 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 		 if(n){
 			 this.Cmp.nro_pnr.setVisible(true);
 			 this.Cmp.porcentaje_pnr.setVisible(true);
+			  this.Cmp.porcentaje_pnr.setValue(30);
 			 this.Cmp.nro_pnr.allowBlank = false;
 			 this.Cmp.porcentaje_pnr.allowBlank = false;
 		 }else{
 			 this.Cmp.nro_pnr.setValue(null);
-			 this.Cmp.porcentaje_pnr.setValue(30);
+			 this.Cmp.porcentaje_pnr.setValue(0);
 			 this.Cmp.nro_pnr.setVisible(false);
 			 this.Cmp.porcentaje_pnr.setVisible(false);
 			 this.Cmp.nro_pnr.allowBlank = true;
 			 this.Cmp.porcentaje_pnr.allowBlank = true;
+			 this.Cmp.observaciones.setValue('');
+			 this.Cmp.precio.setValue(null);
+			 this.Cmp.total.setValue(null);
+			 this.Cmp.id_moneda_venta_recibo.setDisabled(false)
 		 }
 	 },this);
 
@@ -581,15 +586,18 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 	 },this);
 
 	 this.Cmp.porcentaje_pnr.on('change',function(field,newValue,oldValue){
-		 this.consultPnrData(this.Cmp.porcentaje_pnr.getValue(), newValue,this.Cmp.anticipo_inicial.getValue())
+		 this.consultPnrData(this.Cmp.nro_pnr.getValue(), newValue,this.Cmp.anticipo_inicial.getValue())
 	 },this);
 
 	},
 
 
 		onButtonNew:function () {
+
+			this.Cmp.id_auxiliar_anticipo.triggerConfig.cn[1].src='../../../lib/imagenes/icono_awesome/awe_new.png';
       this.window.setSize(550, 550);
 			this.Cmp.monto_exacto.setValue(0);
+			this.Cmp.nro_pnr.setVisible(false);
 			Phx.vista.VentaFactRecibo.superclass.onButtonNew.call(this);
 			this.Cmp.cantidad.setValue(1);
 			this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
@@ -649,6 +657,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			this.Cmp.cantidad.allowBlank = true;
 			this.Cmp.precio.allowBlank = true;
 			this.Cmp.total.allowBlank = true;
+			this.Cmp.id_auxiliar_anticipo.triggers[1].dom.style.background='#99bbe8';
 		},
 			onButtonEdit:function () {
 				this.window.setSize(500, 350);
@@ -974,13 +983,14 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
  			gwidth: 150,
 			selectOnFocus: true,
  			style:'text-transform:uppercase',
-			hidden:true
+			hidden:false
  		},
  			type:'TextField',
  			filters:{pfiltro:'fact.nro_pnr',type:'string'},
  			id_grupo:1,
  			grid:true,
  			bottom_filter:true,
+			grid:true,
  			form:true
  		},
 		{
@@ -1214,7 +1224,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 					totalProperty: 'total',
 					fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable'],
 					remoteSort: true,
-					baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO', emision:'recibo'}
+					baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO', emision:'recibo',anticipo_ro_grupo:'si'}
 			}),
 			valueField: 'id_concepto_ingas',
 			displayField: 'desc_ingas',
@@ -1259,7 +1269,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 	{
 		config: {
 			name: 'id_auxiliar_anticipo',
-			fieldLabel: 'Grupo',
+			fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Grupo</span>',
 			allowBlank: false,
 			anchor:'100%',
 			emptyText: '',
@@ -1741,7 +1751,8 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			this.Cmp.id_moneda_venta_recibo.setRawValue(data.moneda);
 			this.Cmp.monto_exacto.setValue(data.importe_total);
 			this.Cmp.id_moneda_venta_recibo.setDisabled(true);
-			this.Cmp.observaciones.setValue(this.Cmp.observaciones.getValue()+' ANTICIPO INICIAL ASOCIADO AL PNR '+this.Cmp.nro_pnr.getValue()+' ');
+			var obs_onr = 'ANTICIPO INICIAL DEL '+this.Cmp.porcentaje_pnr.getValue()+'% ASOCIADO AL PNR '+this.Cmp.nro_pnr.getValue();
+			this.Cmp.observaciones.setValue(obs_onr);
 		}else{
 			this.Cmp.precio.setValue(0);
 			this.Cmp.total.setValue(null);

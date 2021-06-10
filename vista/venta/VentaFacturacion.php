@@ -445,12 +445,11 @@ Phx.vista.VentaFacturacion=Ext.extend(Phx.gridInterfaz,{
 
 
 		/*********Actualizacion automatica*******/
-		this.Ftimer()
-		// this.timer_id=Ext.TaskMgr.start({
-		// 	 run: Ftimer,
-		// 	 interval:3000,
-		// 	 scope:this
-	 // });
+		this.timer_id=Ext.TaskMgr.start({
+			 run: Ftimer,
+			 interval:3000,
+			 scope:this
+	 });
 
 	//  this.timer_id=Ext.TaskMgr.start({
 	// 		run: Ftimer2,
