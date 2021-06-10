@@ -426,7 +426,11 @@ BEGIN
                                               vpr.nombre_factura,
                                               vpr.nro_factura::varchar,
                                               vpr.fecha,
-                                              vpr.total_venta,
+                                              case when mon.codigo_internacional = ''USD'' then
+                                              	param.f_convertir_moneda(1, rvfp.id_moneda, vpr.total_venta, vpr.fecha, ''O'', 50)
+                                              else
+                                              	vpr.total_venta
+                                              end total_venta,
                                               vpr.tipo_factura,
                                               mon.codigo_internacional as mon_fp_ro
                                         FROM vef.tventa_forma_pago rvfp
@@ -443,7 +447,11 @@ BEGIN
                                              boam.pasajero,
                                              boam.nro_boleto,
                                              boam.fecha_emision,
-                                             boam.total,
+                                             case when mon.codigo_internacional = ''USD'' then
+                                                param.f_convertir_moneda(1, bfp.id_moneda, boam.total, boam.fecha_emision, ''O'', 50)
+                                             else
+	                                             boam.total
+                                             end total_venta,
                                              ''Boleto'',
                                              mon.codigo_internacional as mon_fp_ro
 
