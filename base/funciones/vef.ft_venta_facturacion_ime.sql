@@ -5445,6 +5445,7 @@ BEGIN
           where id_venta =   v_parametros.id_venta;
 
           if v_parametros.id_moneda = 2 then
+              v_suma_fp = param.f_convertir_moneda(v_parametros.id_moneda,v_id_moneda_venta,v_suma_fp,v_venta.fecha::date,'O',2,NULL,'si');
             if (round(v_suma_fp,0) < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
               raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
             end if;
@@ -6096,6 +6097,7 @@ BEGIN
           where id_venta =   v_parametros.id_venta;
 
           if v_parametros.id_moneda = 2 then
+              v_suma_fp = param.f_convertir_moneda(v_parametros.id_moneda,v_id_moneda_venta,v_suma_fp,v_venta.fecha::date,'O',2,NULL,'si');
             if (round(v_suma_fp,0) < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
               raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
             end if;
