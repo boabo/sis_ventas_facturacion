@@ -5384,6 +5384,12 @@ BEGIN
         from vef.tventa_detalle vd
         where vd.id_venta = v_parametros.id_venta;
 
+        /*Recuperamos el tipo de cambio para hacer la conversion a dolar*/
+          select tc.oficial into v_tipo_cambio_local
+          from param.ttipo_cambio tc
+          where tc.fecha = v_venta.fecha and tc.id_moneda = 2;
+          /****************************************************************/
+
         --raise exception 'v_codigo_estado %', v_venta.estado;
 
         --raise exception 'entra %', v_codigo_estado;
@@ -5403,11 +5409,11 @@ BEGIN
 
 
             if (v_registros.id_moneda != v_id_moneda_venta) then
-              IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
-              	v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
-              ELSE
+              --IF  v_venta.tipo_cambio_venta is not null and v_venta.tipo_cambio_venta != 0 THEN
+              	--v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'CUS',2, v_venta.tipo_cambio_venta,'si');
+              --ELSE
                 v_monto_fp = param.f_convertir_moneda(v_registros.id_moneda,v_id_moneda_venta,v_registros.monto_transaccion,v_venta.fecha::date,'O',2,NULL,'si');
-              END IF;
+              --END IF;
             else
               v_monto_fp = v_registros.monto_transaccion;
             end if;
@@ -5432,6 +5438,11 @@ BEGIN
                                      v_monto_fp
                                    end)
             where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
+            update vef.tventa_forma_pago set
+              monto_dolar_efectivo = round((monto_mb_efectivo / v_tipo_cambio_local),2)
+            where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
             v_acumulado_fp = v_acumulado_fp + v_monto_fp;
           end loop;
           /************************************************************************************************************************************************************/
@@ -5445,7 +5456,7 @@ BEGIN
           where id_venta =   v_parametros.id_venta;
 
           if v_parametros.id_moneda = 2 then
-              v_suma_fp = param.f_convertir_moneda(v_parametros.id_moneda,v_id_moneda_venta,v_suma_fp,v_venta.fecha::date,'O',2,NULL,'si');
+              --v_suma_fp = param.f_convertir_moneda(v_parametros.id_moneda,v_id_moneda_venta,v_suma_fp,v_venta.fecha::date,'O',2,NULL,'si');
             if (round(v_suma_fp,0) < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
               raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
             end if;
@@ -6046,6 +6057,11 @@ BEGIN
               v_monto_venta = v_venta.total_venta;
           end if;
 
+          select tc.oficial
+              into
+                  v_tipo_cambio_local
+          from param.ttipo_cambio tc
+          where tc.id_moneda = 2 and tc.fecha = v_venta.fecha;
 
 
 		  /*******************************Obtenemos la moneda para realizar la converision si es en dolar (IRVA)****************************************/
@@ -6084,6 +6100,11 @@ BEGIN
                                      v_monto_fp
                                    end)
             where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
+            update vef.tventa_forma_pago set
+              monto_dolar_efectivo = round((monto_mb_efectivo / v_tipo_cambio_local),2)
+            where id_venta_forma_pago = v_registros.id_venta_forma_pago;
+
             v_acumulado_fp = v_acumulado_fp + v_monto_fp;
           end loop;
           /************************************************************************************************************************************************************/
@@ -6097,7 +6118,7 @@ BEGIN
           where id_venta =   v_parametros.id_venta;
 
           if v_parametros.id_moneda = 2 then
-              v_suma_fp = param.f_convertir_moneda(v_parametros.id_moneda,v_id_moneda_venta,v_suma_fp,v_venta.fecha::date,'O',2,NULL,'si');
+              --v_suma_fp = param.f_convertir_moneda(v_parametros.id_moneda,v_id_moneda_venta,v_suma_fp,v_venta.fecha::date,'O',2,NULL,'si');
             if (round(v_suma_fp,0) < (v_venta.total_venta - coalesce(v_venta.comision,0))) then
               raise exception 'El importe recibido es menor al valor de la venta, falta %', v_venta.total_venta - v_suma_fp;
             end if;
