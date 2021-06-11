@@ -962,7 +962,7 @@ BEGIN
                                         from vef.tventa v
                                         inner join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
                                         left join obingresos.tboleto_amadeus_forma_pago  bafp on bafp.id_venta = v.id_venta and vf.id_moneda = bafp.id_moneda
-                                        inner join param.tmoneda mon on mon.id_moneda = v.id_moneda
+                                        inner join param.tmoneda mon on mon.id_moneda = vf.id_moneda
                                         where v.estado_reg = ''activo'' and v.tipo_factura in (''recibo'', ''recibo_manual'')
                                         and v.estado != ''anulado''
                                         group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo_internacional,v.id_auxiliar_anticipo
@@ -1030,7 +1030,7 @@ BEGIN
                                 from vef.tventa v
                                 inner join vef.tventa_forma_pago vf on vf.id_venta = v.id_venta
                                 left join obingresos.tboleto_amadeus_forma_pago  bafp on bafp.id_venta = v.id_venta and vf.id_moneda = bafp.id_moneda
-                                inner join param.tmoneda mon on mon.id_moneda = v.id_moneda
+                                inner join param.tmoneda mon on mon.id_moneda = vf.id_moneda
                                 where v.tipo_factura = ''recibo''
                                 and v.estado != ''anulado''
                                 group by v.id_venta, v.nro_factura, v.nombre_factura, v.total_venta, vf.id_moneda,mon.codigo,v.id_auxiliar_anticipo
