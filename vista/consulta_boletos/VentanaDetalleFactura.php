@@ -183,6 +183,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                   var pagos_con_recibo = obj.pagos_con_recibo;
                   var total_depo = 0;
                   var total_ros = 0;
+                  var moneda_venta = (obj.moneda_venta=='USD')?`<span style="color:blue;font-weight:bold;">${obj.moneda_venta}</span>`:`<span style="color:green;font-weight:bold;">${obj.moneda_venta}</span>`;
                   (obj.anticipo != null)?title_ant = 'ANTICIPO':title_ant='';
                   var info =`	<div class="lista">
                             <table width="100%">
@@ -212,7 +213,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
 
                                           </td>
                                               <td width="3%" style="font-size:14px;">
-                                              <b>Total: </b><span class="f_text">${Ext.util.Format.number(obj.total_venta,'0.000,00/i')}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Exento: </b><span class="f_text">${Ext.util.Format.number(obj.excento,'0.000,00/i')}</span>
+                                              <b>Total: </b><span class="f_text">${Ext.util.Format.number(obj.total_venta,'0.000,00/i')}</span>&nbsp;&nbsp;${moneda_venta}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Exento: </b><span class="f_text">${Ext.util.Format.number(obj.excento,'0.000,00/i')}</span>
                                               ${(obj.comision>0)?'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<b>Comision: </b><span class="f_text">'+Ext.util.Format.number(obj.comision,'0.000,00/i')+'</span>':''}
                                               <br><br>
                                               <b>Importe Base Para Credito Fiscal: </b> <span class="f_text">${Ext.util.Format.number((obj.total_venta - obj.excento),'0.000,00/i')}</span>
@@ -243,7 +244,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
 
                                           </td>
                                               <td width="3%" style="font-size:14px;">
-                                              <b>Total: </b><span class="f_text">${Ext.util.Format.number(obj.total_venta,'0.000,00/i')}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Exento: </b><span class="f_text">${Ext.util.Format.number(obj.excento,'0.000,00/i')}</span>
+                                              <b>Total: </b><span class="f_text">${Ext.util.Format.number(obj.total_venta,'0.000,00/i')}</span>&nbsp;&nbsp;&nbsp;${moneda_venta}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Exento: </b><span class="f_text">${Ext.util.Format.number(obj.excento,'0.000,00/i')}</span>
                                               ${(obj.comision>0)?'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Comision: </b><span class="f_text">'+Ext.util.Format.number(obj.comision,'0.000,00/i')+'</span>':''}
                                               <br><br>
                                               <b>Importe Base Para Credito Fiscal: </b> <span class="f_text">${Ext.util.Format.number((obj.total_venta - obj.excento),'0.000,00/i')}</span>

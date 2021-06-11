@@ -331,6 +331,7 @@ BEGIN
                               us.desc_persona,
                               su.codigo ||''-''|| su.nombre as sucursal,
                               '||v_nroaut||',
+                              vemon.codigo_internacional as moneda_venta,
                               case when v.id_deposito is not null then
                               (
                             	SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(dep))) as detalle_depo
@@ -467,6 +468,7 @@ BEGIN
                                 inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
                                 left join vef.tsucursal su on su.id_sucursal = pv.id_sucursal
                                 left join conta.tauxiliar aux on aux.id_auxiliar = v.id_auxiliar_anticipo
+                                inner join param.tmoneda vemon on vemon.id_moneda = v.id_moneda
                                 '||v_inner||'
                                 where v.id_venta = '||v_parametros.id_venta||'
                                )tvalue_data
