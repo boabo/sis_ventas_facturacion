@@ -98,6 +98,23 @@ DECLARE
     v_id_proceso_wf_venta	integer;
     v_cod_dosificacion		varchar;
     v_tc_erp				numeric;
+
+     v_host varchar;
+    v_puerto varchar;
+    v_dbname varchar;
+    p_user varchar;
+    v_password varchar;
+    v_semilla	varchar;
+
+    v_cuenta_usu	varchar;
+    v_pass_usu		varchar;
+    v_cadena_cnx	varchar;
+    v_conexion varchar;
+    v_id_factura	integer;
+    v_cajero		varchar;
+    v_tipo_pv		VARCHAR;
+    v_consulta	varchar;
+    v_res_cone	varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_facturacion_externa_ime';
@@ -799,6 +816,114 @@ BEGIN
                                                       );
 
 
+				 IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
+                  /*Establecemos la conexion con la base de datos*/
+                    --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+                        v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                        v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                        v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                        select usu.cuenta,
+                               usu.contrasena
+                               into
+                               v_cuenta_usu,
+                               v_pass_usu
+                        from segu.tusuario usu
+                        where usu.id_usuario = p_id_usuario;
+
+                        p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+                       -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                        v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                        select md5(v_semilla||v_pass_usu) into v_password;
+
+                        v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
+
+
+
+
+                    v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+                  /*************************************************/
+
+                    select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+                    into v_id_factura;
+
+                    /*Recuperamos el nombre del cajero que esta finalizando la factura*/
+                    SELECT per.nombre_completo2 into v_cajero
+                    from segu.tusuario usu
+                    inner join segu.vpersona2 per on per.id_persona = usu.id_persona
+                    where usu.id_usuario = p_id_usuario;
+                    /******************************************************************/
+
+                   -- IF  pxp.f_existe_parametro(p_tabla,'tipo_pv') THEN
+                        v_tipo_pv= 'FAC.BOL.COMPUT.CONTABLE.DEVOLUCIONES';
+                    -- ELSE
+                   --     v_tipo_pv='';
+                   --  END IF;
+
+                        v_consulta = '
+                                    INSERT INTO sfe.tfactura(
+                                    id_factura,
+                                    fecha_factura,
+                                    nro_factura,
+                                    nro_autorizacion,
+                                    estado,
+                                    nit_ci_cli,
+                                    razon_social_cli,
+                                    importe_total_venta,
+                                    importe_otros_no_suj_iva,
+                                    codigo_control,
+                                    usuario_reg,
+                                    tipo_factura,
+                                    id_origen,
+                                    sistema_origen,
+                                    desc_ruta
+                                    )
+                                    values(
+                                    '||v_id_factura||',
+                                    '''||v_venta.fecha||''',
+                                    '''||v_nro_factura::varchar||''',
+                                    '''||v_dosificacion.nroaut::varchar||''',
+                                    ''VÁLIDA'',
+                                    '''||trim(v_venta.nit)::varchar||''',
+                                    '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
+                                    '||v_venta.total_venta::numeric||',
+                                    '||v_venta.excento||',
+                                    '''||pxp.f_gen_cod_control(v_dosificacion.llave,
+                                                          v_dosificacion.nroaut,
+                                                          v_nro_factura::varchar,
+                                                          trim(v_venta.nit),
+                                                          to_char(v_fecha_venta,'YYYYMMDD')::varchar,
+                                                          round(v_venta.total_venta_msuc,0))||''',
+                                    '''||v_cajero||''',
+                                    '''||v_venta.tipo_factura||''',
+                                    '||v_venta.id_venta||',
+                                    ''ERP'',
+                                    '''||v_tipo_pv::varchar||'''
+                                    );';
+
+
+                        IF(v_conexion!='OK') THEN
+                              raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+                        ELSE
+
+                          perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+                          v_res_cone=(select dblink_disconnect());
+
+                        END IF;
+                  end if;
 
 
                 /*Aqui insertamos en la alarma para que nos salga la notificacion*/
