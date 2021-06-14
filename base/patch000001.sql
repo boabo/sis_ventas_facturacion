@@ -1915,3 +1915,13 @@ ALTER TABLE vef.tventa
 COMMENT ON COLUMN vef.tventa.nro_pnr
 IS 'PNR de reserva de vuelo, recibo oficial inicial.';
 /***********************************F-SCP-BVP-VEF-0-02/06/2021****************************************/
+
+/***********************************I-SCP-IRVA-VEF-0-14/06/2021****************************************/
+ALTER TYPE vef.detalle_venta
+  RENAME ATTRIBUTE precio TO precio_unitario;
+
+ALTER TYPE vef.detalle_venta
+  ADD ATTRIBUTE cantidad INTEGER,
+  ADD ATTRIBUTE desc_ingas TEXT,
+  ADD ATTRIBUTE id_liquidacion INTEGER;
+/***********************************F-SCP-IRVA-VEF-0-14/06/2021****************************************/

@@ -97,6 +97,7 @@ DECLARE
     v_recuperados_factura	record;
     v_id_proceso_wf_venta	integer;
     v_cod_dosificacion		varchar;
+    v_tc_erp				numeric;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_facturacion_externa_ime';
@@ -193,23 +194,25 @@ BEGIN
               where mon.codigo_internacional = v_parametros.moneda;
 
               /*Aqui hacemos la conversion si los precios del servicio estan en dolares*/
-              if (v_id_moneda = 2) then
+
+              /*if (v_id_moneda = 2) then
               	  v_exento = (v_parametros.exento*v_tipo_cambio);
               else
                   v_exento = v_parametros.exento;
-              end if;
+              end if;*/
 
 
 
-        	  if (v_id_moneda is null) then
+        	 /* if (v_id_moneda is null) then
               	raise exception 'El codigo de moneda: % no existe favor consulte con el area de sistemas.',v_parametros.moneda;
-             else
+             else*/
 
              /*Recuperamos el tipo de Cambio para hacer la inserccion*/
              /*Verificamos que el tipo de cambio no exista para la fecha actual*/
-             select count(*) into v_existe_tc
+             /*select count(*) into v_existe_tc
              from param.ttipo_cambio cam
              where cam.fecha = now()::date and cam.id_moneda = 2;
+
              /*Si no se tiene registro del tipo de cambio entonces insertamos*/
              IF (v_existe_tc = 0) then
              insert into param.ttipo_cambio(
@@ -237,7 +240,7 @@ BEGIN
               null,
               null
               );
-             end if;
+             end if;*/
              /*******************************************************/
 
 
@@ -260,7 +263,7 @@ BEGIN
                      v_id_sucursal
                 from vef.tpunto_venta pt
                 inner join vef.tsucursal su on su.id_sucursal = pt.id_sucursal
-                where pt.nombre = upper(v_parametros.punto_venta) and su.id_entidad = v_id_entidad;
+                where trim(pt.nombre) = trim(upper(v_parametros.punto_venta)) and su.id_entidad = v_id_entidad;
 
                 if (v_id_punto_venta IS NOT NULL) then
                       select pv.codigo into v_codigo_tabla
@@ -387,7 +390,8 @@ BEGIN
                       id_cliente_destino,
                       hora_estimada_entrega,
                       tiene_formula,
-                      forma_pedido
+                      forma_pedido,
+                      id_usuario_cajero
 /*                      correo_electronico*/
 
 
@@ -418,7 +422,7 @@ BEGIN
                       now(),
                       NULL,
                       null,
-                      v_exento,--Excento por el momento 0
+                      v_parametros.exento,--Excento por el momento 0
                       v_id_moneda,
                       0,
                       0,
@@ -426,7 +430,7 @@ BEGIN
                       0,
                       0,
                       0,
-                      0,
+                      v_parametros.tipo_cambio,
                       0,
                       '',
                       REPLACE(v_parametros.nit_cliente,' ',''),
@@ -434,7 +438,8 @@ BEGIN
                       NULL,
                       v_hora_estimada,
                       'no',
-                      'externa'
+                      'externa',
+                      p_id_usuario
 /*                      v_parametros.correo_electronico*/
 
                     );
@@ -446,26 +451,26 @@ BEGIN
 
 
                   /*Aqui hacemos la conversion para que calcule con el tipo de cambio*/
-                  v_precio_unitario_convertido = (v_registros.precio_unitario/100);
+                  v_precio_unitario_convertido = v_registros.precio_unitario; --(v_registros.precio_unitario/100);
 
-                   if (v_id_moneda = 2) then
-                      v_precio_unitario = (v_precio_unitario_convertido*v_tipo_cambio);
-                  else
+                  --if (v_id_moneda = 2) then
+                    --  v_precio_unitario = (v_precio_unitario_convertido*v_tipo_cambio);
+                  --else
                       v_precio_unitario = v_precio_unitario_convertido;
-                  end if;
+                  --end if;
                   /*******************************************************************/
 
 
                   /*Verificamos si el concepto aplica a descuento*/
-                  if ((upper(v_registros.aplica_descuento) = 'S') and ((v_registros.porcentaje_descuento/100) > 0)) then
+                  /*if ((upper(v_registros.aplica_descuento) = 'S') and ((v_registros.porcentaje_descuento/100) > 0)) then
                   		v_precio_original = ((v_precio_unitario * 100)/(100-(v_registros.porcentaje_descuento/100)));
                   else
                   		v_precio_original = v_precio_unitario;
-                  end if;
+                  end if;*/
                   /***********************************************/
 
                   /*Aqui calculamos el total que se desconto*/
-                  	v_total_descuento = ((v_registros.cantidad/100)*(v_precio_original - v_precio_unitario));
+                  	--v_total_descuento = ((v_registros.cantidad/100)*(v_precio_original - v_precio_unitario));
                   /******************************************/
 
                  insert into vef.tventa_detalle(
@@ -475,34 +480,34 @@ BEGIN
                   tipo,
                   estado_reg,
                   id_producto,
-                  id_item,
+                  --id_item,
                   --id_sucursal_producto,
                   precio,
                   id_usuario_reg,
                   fecha_reg,
                   porcentaje_descuento,
                   precio_sin_descuento,
-                  obs,
-                  monto_descuento
+                  obs
+                 -- monto_descuento
 /*                  ,llave_unica*/
 
                   ) values(
                   v_id_venta,
-                  upper(v_registros.descripcion),
+                  '',--upper(v_registros.descripcion),
 /*                  (v_registros.cantidad/100),*/
 				   v_registros.cantidad,
                   'servicio',
                   'activo',
                   v_registros.id_concepto,
-                  v_registros.id_concepto,
+                  --v_registros.id_concepto,
                   --v_parametros.id_producto,
                   v_precio_unitario,
                   p_id_usuario,
                   now(),
-                  (v_registros.porcentaje_descuento/100),
-                  v_precio_original,
-                  upper(v_registros.aplica_descuento),
-                  v_total_descuento
+                  0,
+                  v_precio_unitario,
+                  null
+                 -- v_total_descuento
 /*                  ,v_registros.llave_unica*/
 
                   )RETURNING id_venta_detalle into v_id_venta_detalle;
@@ -663,6 +668,10 @@ BEGIN
                                     where d.estado_reg = 'activo' and d.fecha_inicio_emi <= v_venta.fecha and
                                           d.fecha_limite >= v_venta.fecha and d.tipo = 'F' and d.tipo_generacion = 'computarizada' and
                                           d.id_sucursal = v_venta.id_sucursal and
+                                          d.nombre_sistema = 'SISTEMAFACTURACIONBOA' and
+                                          /*Aqui para tomar en cuenta la dosificacion diferenciando por el titulo*/
+                                          d.titulo = 'FACTURA' AND
+                                          /***********************************************************************/
                                           d.id_activida_economica @> v_id_actividad_economica FOR UPDATE;
 
                                     v_nro_factura = v_dosificacion.nro_siguiente;
@@ -735,6 +744,15 @@ BEGIN
                       where ven.id_venta = v_venta.id_venta;
 
 
+                      /*Aqui para la conversion a dolar del total*/
+                      select tc.oficial
+                             into
+                             v_tc_erp
+                      from param.ttipo_cambio tc
+                      where tc.fecha = now()::date and tc.id_moneda = 2;
+                      /*******************************************/
+
+
                       insert into vef.tventa_forma_pago(
                                                         usuario_ai,
                                                         fecha_reg,
@@ -753,7 +771,8 @@ BEGIN
                                                         tipo_tarjeta,
                                                         /*Aumentamos el id_instancia*/
                                                         id_medio_pago,
-                                                        id_moneda
+                                                        id_moneda,
+                                                        monto_dolar_efectivo
                                                         /****************************/
                                                       )
                                                       values(
@@ -774,7 +793,8 @@ BEGIN
                                                         NULL,
                                                         /*Aumentamos el id_instancia y el id_moneda*/
                                                         20,
-                                                        1
+                                                        1,
+                                                        round((v_total_venta/v_tc_erp),2)
                                                         /****************************/
                                                       );
 
@@ -826,7 +846,7 @@ BEGIN
                  end if;*/
 
 
-            end if;
+           -- end if;
 
             if (pxp.f_existe_parametro(p_tabla,'id_liquidacion')) then
             	if (v_parametros.id_liquidacion is not null) then
