@@ -80,8 +80,8 @@ BEGIN
             v_consulta = 'select
                                 initcap(lu.nombre)::varchar,
                                 (to_char(ven.fecha,''DD'')::integer || '' de '' ||initcap (param.f_literal_periodo((to_char(ven.fecha,''MM'')::integer+1))) || '' de '' || to_char(ven.fecha,''YYYY''))::varchar as fecha_literal,
-                                INITCAP (ven.nombre_factura)::VARCHAR,
-                                INITCAP (ven.direccion_cliente)::VARCHAR,
+                                (ven.nombre_factura)::VARCHAR,
+                                (ven.direccion_cliente)::VARCHAR,
                                 ven.nit,
                                 ven.observaciones::varchar,
                                 mon.moneda::varchar,
@@ -154,11 +154,11 @@ BEGIN
 
                                           THEN
 
-                                          (initcap(ing.desc_ingas)||'' - ''|| initcap (det.descripcion) )
+                                          ((ing.desc_ingas)||'' - ''|| (det.descripcion) )
 
                                           ELSE
 
-                                          initcap(ing.desc_ingas)
+                                          (ing.desc_ingas)
 
 
                                     END )::varchar as descripcion_reporte,
@@ -244,23 +244,23 @@ BEGIN
                                 CASE
                                       WHEN ven.id_moneda != 2  THEN
 
-                                     	INITCAP( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
+                                     	( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
 
 
                                       WHEN ven.id_moneda = 2 THEN
 
-                                       INITCAP ( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) * '||v_tipo_cambio::numeric||'))
+                                        ( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) * '||v_tipo_cambio::numeric||'))
 
                                 END::varchar as total_literal_local,
 
                                 CASE
                                       WHEN ven.id_moneda != 2  THEN
 
-                                       INITCAP( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) / '||v_tipo_cambio::numeric||'))
+                                       ( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) / '||v_tipo_cambio::numeric||'))
 
                                       WHEN ven.id_moneda = 2 THEN
 
-                                      	INITCAP (pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
+                                      	(pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
 
 
                                 END::varchar as total_literal_extranjera

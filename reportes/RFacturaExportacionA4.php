@@ -12,10 +12,11 @@ class RFacturaExportacionA4 extends  ReportePDF{
 
     function Header() {
         //var_dump("cabecera llega",$this->datos);
+
+
         $this->SetMargins(11,60,5);
         $this->SetFont('','B',14);
-        $this->Image($this->datos['logo'],15,6,40,20);
-
+        $this->Image('../../../lib/imagenes/logos/LOGOBN.jpg',15,6,40,20);
 
 
     		$this->SetFont('','B',9);
