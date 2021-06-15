@@ -244,23 +244,23 @@ BEGIN
                                 CASE
                                       WHEN ven.id_moneda != 2  THEN
 
-                                     	( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
+                                     	INITCAP( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
 
 
                                       WHEN ven.id_moneda = 2 THEN
 
-                                        ( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) * '||v_tipo_cambio::numeric||'))
+                                       INITCAP ( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) * '||v_tipo_cambio::numeric||'))
 
                                 END::varchar as total_literal_local,
 
                                 CASE
                                       WHEN ven.id_moneda != 2  THEN
 
-                                       ( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) / '||v_tipo_cambio::numeric||'))
+                                       INITCAP( pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio)) / '||v_tipo_cambio::numeric||'))
 
                                       WHEN ven.id_moneda = 2 THEN
 
-                                      	(pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
+                                      	INITCAP (pxp.f_convertir_num_a_letra(sum((det.cantidad * det.precio))))
 
 
                                 END::varchar as total_literal_extranjera

@@ -186,7 +186,7 @@ class RFacturaExportacionA4 extends  ReportePDF{
       if ($this->cabecera_factura['moneda_venta'] == 'Dólares Americanos') {
         $this->SetFont('','',$size_font+1);
         $this->setX(165);
-        $this->Cell(15,$textypos,'1'.$this->totales['codigo_moneda_extranjera'].': '.$this->cabecera_factura['tipo_cambio_venta'].$this->totales['codigo_moneda_local'],0,1/*,'T'*/);
+      $this->Cell(15,$textypos,'1 '.$this->totales['codigo_moneda_extranjera'].': '.$this->cabecera_factura['tipo_cambio_venta'].' '.$this->totales['codigo_moneda_local'],0,1/*,'T'*/);
 
       } else {
         $this->SetFont('','',$size_font+1);
