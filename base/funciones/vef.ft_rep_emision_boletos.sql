@@ -380,7 +380,7 @@ BEGIN
                               from obingresos.tboleto_stage bol
                               inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                               inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                               where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                               and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                               /********************************************/
@@ -539,7 +539,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -660,7 +660,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -870,7 +870,7 @@ BEGIN
                               from obingresos.tboleto_stage bol
                               inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                               inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                               where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                               and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                               /********************************************/
@@ -1032,7 +1032,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -1153,7 +1153,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -1694,7 +1694,7 @@ BEGIN
                 from obingresos.tboleto_stage bol
                 inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                 inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                 where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                 and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                 /********************************************/
@@ -1852,7 +1852,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -2024,7 +2024,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -2352,7 +2352,7 @@ BEGIN
                 from obingresos.tboleto_stage bol
                 inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                 inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                 where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                 and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                 /********************************************/
@@ -2508,7 +2508,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -2675,7 +2675,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -2954,7 +2954,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                         /********************************************/
@@ -3118,7 +3118,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -3241,7 +3241,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -3466,7 +3466,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta;
@@ -3632,7 +3632,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -3754,7 +3754,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -4260,7 +4260,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta;
@@ -4458,7 +4458,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -4626,7 +4626,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -4926,7 +4926,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta;
@@ -5125,7 +5125,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -5294,7 +5294,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -5660,7 +5660,7 @@ BEGIN
                                           from obingresos.tboleto_stage bol
                                           inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                           inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                           where bol.estado_reg = ''activo'' and bol.voided = ''no'' and bolfp.id_auxiliar is not null
                                           and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
                                           and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol_externa||')
@@ -6142,7 +6142,7 @@ BEGIN
                               from obingresos.tboleto_stage bol
                               inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                               inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                               where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                               and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                               /********************************************/
@@ -6301,7 +6301,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -6422,7 +6422,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -6632,7 +6632,7 @@ BEGIN
                               from obingresos.tboleto_stage bol
                               inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                               inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                              inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                               where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                               and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                               /********************************************/
@@ -6794,7 +6794,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -6915,7 +6915,7 @@ BEGIN
                                       from obingresos.tboleto_stage bol
                                       inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                       inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                      inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                       where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                                       and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                                       /***************************************************************************/
@@ -7456,7 +7456,7 @@ BEGIN
                 from obingresos.tboleto_stage bol
                 inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                 inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                 where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                 and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                 /********************************************/
@@ -7614,7 +7614,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -7786,7 +7786,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -8114,7 +8114,7 @@ BEGIN
                 from obingresos.tboleto_stage bol
                 inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                 inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                 where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                 and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                 /********************************************/
@@ -8270,7 +8270,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -8437,7 +8437,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date)
                         /***************************************************************************/
@@ -8716,7 +8716,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date;
                         /********************************************/
@@ -8880,7 +8880,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -9003,7 +9003,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -9228,7 +9228,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta;
@@ -9394,7 +9394,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -9516,7 +9516,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -10022,7 +10022,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta;
@@ -10220,7 +10220,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -10388,7 +10388,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -10688,7 +10688,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta;
@@ -10887,7 +10887,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -11056,7 +11056,7 @@ BEGIN
                         from obingresos.tboleto_stage bol
                         inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                         inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                        inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                         where bol.estado_reg = 'activo' and bol.voided = 'no' and bolfp.id_auxiliar is not null
                         and aux.codigo_auxiliar = v_parametros.codigo_auxiliar and bol.fecha_emision between v_parametros.desde::date and v_parametros.hasta::date
                         and bol.id_agencia = v_parametros.id_punto_venta)
@@ -11393,7 +11393,7 @@ BEGIN
                                           from obingresos.tboleto_stage bol
                                           inner join obingresos.tboleto_forma_pago_stage bolfp on bolfp.id_boleto = bol.id_boleto
                                           inner join conta.tauxiliar aux on aux.id_auxiliar = bolfp.id_auxiliar
-                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_agencia
+                                          inner join vef.tpunto_venta pv on pv.id_punto_venta = bol.id_punto_venta
                                           where bol.estado_reg = ''activo'' and bol.voided = ''no'' and bolfp.id_auxiliar is not null
                                           and bol.fecha_emision between '''||v_parametros.desde::date||''' and '''||v_parametros.hasta::date||'''
                                           and '||v_codigo_auxiliar_venta||' and '||v_punto_venta_bol_externa||')';
