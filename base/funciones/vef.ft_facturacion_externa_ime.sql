@@ -115,6 +115,12 @@ DECLARE
     v_tipo_pv		VARCHAR;
     v_consulta	varchar;
     v_res_cone	varchar;
+
+    v_fecha_ini				varchar;
+    v_fecha_fin 			varchar;
+    v_estado_periodo		varchar;
+    v_existencia			numeric;
+    v_consulta_inser 		varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_facturacion_externa_ime';
@@ -1046,6 +1052,297 @@ BEGIN
                 return v_resp;
 
             end;
+	/*********************************
+ 	#TRANSACCION:  'VEF_ANU_FAC_LIQ_EXT'
+ 	#DESCRIPCION:	Funcion para anular Venta
+ 	#AUTOR:		Ismael Valdivia
+ 	#FECHA:		16-06-2020 15:10:00
+	***********************************/
+
+    elseif(p_transaccion='VEF_ANU_FAC_LIQ_EXT')then
+      begin
+
+     	select * into v_venta
+        from vef.tventa v
+        where v.id_proceso_wf = v_parametros.id_proceso_wf;
+
+
+        /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+        select
+               per.fecha_ini,
+               per.fecha_fin,
+               cp.estado
+               into
+               v_fecha_ini,
+               v_fecha_fin,
+               v_estado_periodo
+        from param.tgestion ges
+        inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+        inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+        where v_venta.fecha between per.fecha_ini and per.fecha_fin
+         and cp.id_depto = (select depo.id_depto
+        from param.tdepto depo
+        where depo.codigo = 'CON');
+        /*********************************************************************/
+
+        if (v_estado_periodo = 'cerrado') then
+        	raise exception 'No se puede Anular la factura debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+        end if;
+
+
+
+       for v_respaldo in  (select *
+                          from vef.tventa ven
+                          inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
+                          inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
+                          inner join vef.tdosificacion dos on dos.id_dosificacion = ven.id_dosificacion
+                          where ven.id_venta = v_venta.id_venta) loop
+
+        		insert into vef.trespaldo_facturas_anuladas (
+                id_venta,
+                nombre_factura,
+                nit,
+                cod_control,
+                num_factura,
+                total_venta,
+                total_venta_msuc,
+                id_sucursal,
+                id_cliente,
+                id_punto_venta,
+                observaciones,
+                id_moneda,
+                excento,
+                fecha,
+                id_sucursal_producto,
+                id_formula,
+                id_producto,
+                cantidad,
+                precio,
+                tipo,
+                descripcion,
+                id_medio_pago,
+                monto,
+                monto_transaccion,
+                monto_mb_efectivo,
+                numero_tarjeta,
+                codigo_tarjeta,
+                tipo_tarjeta,
+                id_auxiliar,
+                fecha_reg,
+                id_usuario_reg,
+                id_dosificacion,
+                nro_autorizacion,
+                nro_mco,
+                id_venta_recibo
+                )
+                VALUES (
+                v_respaldo.id_venta,
+      			v_respaldo.nombre_factura,
+                v_respaldo.nit,
+                v_respaldo.cod_control,
+                v_respaldo.nro_factura,
+                v_respaldo.total_venta,
+                v_respaldo.total_venta_msuc,
+                v_respaldo.id_sucursal,
+                v_respaldo.id_cliente,
+                v_respaldo.id_punto_venta,
+                v_respaldo.observaciones,
+                v_respaldo.id_moneda,
+                v_respaldo.excento,
+                v_respaldo.fecha,
+                v_respaldo.id_sucursal_producto,
+                v_respaldo.id_formula,
+                v_respaldo.id_producto,
+                v_respaldo.cantidad,
+                v_respaldo.precio,
+                v_respaldo.tipo,
+                v_respaldo.descripcion,
+                v_respaldo.id_medio_pago,
+                v_respaldo.monto,
+                v_respaldo.monto_transaccion,
+                v_respaldo.monto_mb_efectivo,
+                v_respaldo.numero_tarjeta,
+                v_respaldo.codigo_tarjeta,
+                v_respaldo.tipo_tarjeta,
+                v_respaldo.id_auxiliar,
+                now(),
+                p_id_usuario,
+                v_respaldo.id_dosificacion,
+                v_respaldo.nroaut,
+                v_respaldo.nro_mco,
+                v_respaldo.id_venta_recibo
+                );
+
+       END LOOP;
+
+
+
+
+        update vef.tventa_forma_pago set
+        monto_transaccion = 0,
+        monto = 0,
+        cambio = 0,
+        monto_mb_efectivo = 0,
+        id_venta_recibo = NULL,
+        id_auxiliar = null,
+        id_medio_pago = null,
+        id_moneda = null
+        where id_venta = v_venta.id_venta;
+
+        update vef.tventa_detalle set
+        precio = 0,
+        cantidad = 0
+        where id_venta = v_venta.id_venta;
+
+        update vef.tventa set
+        cod_control = Null,
+        total_venta_msuc = 0,
+        nombre_factura = 'ANULADO',
+        nit = '0',
+        total_venta = 0,
+        excento = 0,
+        comision = 0
+        where id_venta = v_venta.id_venta;
+
+
+
+        --obtenemos datos basicos
+        select
+          ven.id_estado_wf,
+          ven.id_proceso_wf,
+          ven.estado,
+          ven.id_venta,
+          ven.nro_tramite
+        into
+          v_registros
+        from vef.tventa ven
+        where ven.id_venta = v_venta.id_venta;
+
+        /*Obtenemos los campos de venta el id_entidad y el tipo_base*/
+        select v.* into v_venta
+        from vef.tventa v
+        where v.id_venta = v_venta.id_venta;
+        /***********************************************************/
+
+        /*Recuperamos el nombre del cajero que esta finalizando la factura*/
+            SELECT per.nombre_completo2 into v_cajero
+            from segu.tusuario usu
+            inner join segu.vpersona2 per on per.id_persona = usu.id_persona
+            where usu.id_usuario = p_id_usuario;
+            /******************************************************************/
+
+
+         v_res = vef.f_anula_venta(p_administrador,p_id_usuario,p_tabla, v_registros.id_proceso_wf,v_registros.id_estado_wf, v_venta.id_venta);
+
+        /*Replicacion a la base de datos DB_FACTURAS 2019*/
+   		/*Para migrar los datos a la nueva base de datos db_facturas_2019*/
+		IF(pxp.f_get_variable_global('migrar_facturas') ='true')THEN
+          /*Establecemos la conexion con la base de datos*/
+            --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+
+
+            v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+                v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
+                v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
+
+
+                select usu.cuenta,
+                       usu.contrasena
+                       into
+                       v_cuenta_usu,
+                       v_pass_usu
+                from segu.tusuario usu
+                where usu.id_usuario = p_id_usuario;
+
+                p_user= 'dbkerp_'||v_cuenta_usu;
+
+
+               -- v_password=pxp.f_get_variable_global('sincronizar_password_facturacion');
+
+
+
+                v_semilla = pxp.f_get_variable_global('semilla_erp');
+
+
+                select md5(v_semilla||v_pass_usu) into v_password;
+
+                v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+
+
+
+
+
+            v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+          /************************************************/
+              v_consulta = 'update sfe.tfactura set
+                            estado_reg = ''inactivo''
+                            where id_origen = '''||v_venta.id_venta||''' and sistema_origen = ''ERP'' and estado <> ''anulado'';';
+
+               select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
+            	into v_id_factura;
+
+              v_consulta_inser = '
+                                INSERT INTO sfe.tfactura(
+                                id_factura,
+                                fecha_factura,
+                                nro_factura,
+                                estado,
+                                nit_ci_cli,
+                                razon_social_cli,
+                                importe_total_venta,
+                                importe_otros_no_suj_iva,
+                                usuario_reg,
+                                tipo_factura,
+                                id_origen,
+                                sistema_origen,
+                                nro_autorizacion
+                                )
+                                values(
+                                '||v_id_factura||',
+                                '''||v_venta.fecha||''',
+                                '''||v_venta.nro_factura::varchar||''',
+                                ''ANULADA'',
+                                ''0'',
+                                ''ANULADA'',
+                                0,
+                                0,
+                                '''||v_cajero||''',
+                                '''||v_venta.tipo_factura||''',
+                                '||v_venta.id_venta||',
+                                ''ERP'',
+                                '||v_respaldo.nroaut||'
+                                );';
+
+
+
+              IF(v_conexion!='OK') THEN
+              		raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
+              ELSE
+                       perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
+
+                       perform dblink_exec(v_cadena_cnx,v_consulta_inser,TRUE);
+
+              	v_res_cone=(select dblink_disconnect());
+
+              END IF;
+
+          end if;
+              /************************************/
+        /*****************************************************************/
+
+
+        /*************************************************/
+
+
+
+        --Definicion de la respuesta
+        v_resp = pxp.f_agrega_clave(v_resp,'mensaje','venta anulada');
+        v_resp = pxp.f_agrega_clave(v_resp,'id_venta',v_venta.id_venta::varchar);
+
+        --Devuelve la respuesta
+        return v_resp;
+
+      end;
 
 	/*********************************
  	#TRANSACCION:  'VEF_INS_FAC_EXT_MOD'

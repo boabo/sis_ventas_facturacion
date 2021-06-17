@@ -79,6 +79,13 @@ class ACTFacturacionExterna extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+
+	function anularVentaFacturaLiquidacion(){
+		$this->objFunc=$this->create('MODFacturacionExterna');
+		$this->res=$this->objFunc->anularVentaFacturaLiquidacion($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
 }
 
 ?>
