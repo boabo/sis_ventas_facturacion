@@ -154,6 +154,8 @@ $body$
 
     v_code_fp				varchar;
     v_code_fp_2				varchar;
+    v_solo_letras			varchar;
+    v_solo_numeros			varchar;
 
   BEGIN
 
@@ -210,19 +212,19 @@ $body$
          v_id_venta_recibo_2 = null;
        end if;
 
-       -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
-        select mop_code into v_code_fp
-        from obingresos.tmedio_pago_pw
-        where id_medio_pago_pw = v_parametros.id_medio_pago;
+       	-- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+         select mop_code into v_code_fp
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago;
 
-        select mop_code into v_code_fp_2
-        from obingresos.tmedio_pago_pw
-        where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+         select mop_code into v_code_fp_2
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago_2;
 
 
-        if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
-           raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
-        end if;
+         if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+            raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
+         end if;
          /****fin**************/
         if (v_parametros.id_medio_pago is not null and v_parametros.id_medio_pago != 0) then
 
@@ -520,6 +522,20 @@ $body$
           v_forma_pedido =NULL;
         end if;
 
+         /*********************Inserccion de cliente si existe o no******************************/
+         /*Validaciones que la razon social no sea solo numeros*/
+
+          select regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g') into v_solo_letras;
+
+          select regexp_replace(trim(v_parametros.nombre_factura), '[^0-9]', '','g') into v_solo_numeros;
+
+
+          if (v_solo_letras = '' and v_solo_numeros != '') then
+           raise exception 'La razón social no puede ser solo números favor verifique';
+          end if;
+
+        /******************************************************/
+
 
         if (pxp.f_existe_parametro(p_tabla,'id_cliente') and pxp.f_is_positive_integer(v_parametros.id_cliente))then
 
@@ -540,7 +556,6 @@ $body$
             --end if;
         -- bvp
         elsif(v_tipo_base = 'recibo' or v_tipo_base = 'recibo_manual')then
-
 
         IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
           raise exception 'La razón social no puede ser vacio verifique los datos';
@@ -1021,48 +1036,48 @@ $body$
 
       begin
 
-          /** control de saldo para medio de pago recibo anticipo si saldos son menores o iguales a 0 no permite el pago
-          breydi.vasquez 06/05/2021***/
-          /******************************************************************************************************************/
+        /** control de saldo para medio de pago recibo anticipo si saldos son menores o iguales a 0 no permite el pago
+        breydi.vasquez 06/05/2021***/
+        /******************************************************************************************************************/
 
-         if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
-           v_id_venta_recibo = v_parametros.id_venta_recibo;
+       if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo')) then
+         v_id_venta_recibo = v_parametros.id_venta_recibo;
 
-           select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
-           if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_parametros.saldo_recibo is not null)) then
-              raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+         select codigo into v_mon_recibo from param.tmoneda where id_moneda = v_parametros.id_moneda;
+         if ((v_parametros.monto_forma_pago > v_parametros.saldo_recibo) or (v_parametros.saldo_recibo <= 0 and v_parametros.saldo_recibo is not null)) then
+            raise 'El saldo del recibo es: % % Falta un monto de % % para la forma de pago recibo anticipo.',v_mon_recibo,v_parametros.saldo_recibo, v_mon_recibo, v_parametros.monto_forma_pago-v_parametros.saldo_recibo;
+         end if;
+
+       else
+         v_id_venta_recibo = null;
+       end if;
+
+       if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
+         	v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
+
+           select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
+           if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_parametros.saldo_recibo_2 is not null)) then
+              raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
            end if;
 
-         else
-           v_id_venta_recibo = null;
+       else
+         v_id_venta_recibo_2 = null;
+       end if;
+
+       	-- control de recibo relacionado al pago, breydi vasquez 08/06/2021
+         select mop_code into v_code_fp
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago;
+
+         select mop_code into v_code_fp_2
+         from obingresos.tmedio_pago_pw
+         where id_medio_pago_pw = v_parametros.id_medio_pago_2;
+
+
+         if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
+            raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
          end if;
-
-         if (pxp.f_existe_parametro(p_tabla,'id_venta_recibo_2')) then
-           	v_id_venta_recibo_2 = v_parametros.id_venta_recibo_2;
-
-             select codigo into v_mon_recibo_2 from param.tmoneda where id_moneda = v_parametros.id_moneda_2;
-             if ((v_parametros.monto_forma_pago_2 > v_parametros.saldo_recibo_2) or (v_parametros.saldo_recibo_2 <= 0 and v_parametros.saldo_recibo_2 is not null)) then
-                raise 'El saldo del recibo es: % % Falta un monto de % % para la segunda forma de pago recibo anticipo.',v_mon_recibo_2,v_parametros.saldo_recibo_2, v_mon_recibo_2, v_parametros.monto_forma_pago_2-v_parametros.saldo_recibo_2;
-             end if;
-
-         else
-           v_id_venta_recibo_2 = null;
-         end if;
-
-         -- control de recibo relacionado al pago, breydi vasquez 08/06/2021
-          select mop_code into v_code_fp
-          from obingresos.tmedio_pago_pw
-          where id_medio_pago_pw = v_parametros.id_medio_pago;
-
-          select mop_code into v_code_fp_2
-          from obingresos.tmedio_pago_pw
-          where id_medio_pago_pw = v_parametros.id_medio_pago_2;
-
-
-          if ((v_code_fp = 'RANT' and v_id_venta_recibo is null ) or (v_code_fp_2 = 'RANT' and v_id_venta_recibo_2 is null)) then
-             raise 'Por favor seleccione un nro de recibo, segun el grupo seleccionado.';
-          end if;
-           /****fin**************/
+         /****fin**************/
 
         select
           v.*
@@ -2397,7 +2412,7 @@ $body$
        -- v_estado_finalizado = (v_id_tipo_estado+1);
         /****************************************/
 
-        /**breydi vasquez 17/05/2021*/
+		/**breydi vasquez 17/05/2021*/
         if (pxp.f_existe_parametro(p_tabla,'ins_edit')) then
         	if (v_parametros.ins_edit='edicion')then
               v_estado_finalizado = (v_id_tipo_estado-2);
@@ -2406,10 +2421,10 @@ $body$
               v_estado_finalizado = (v_id_tipo_estado+1);
               v_anulado =  v_venta.anulado;
             end if;
-         else
+        else
         	v_anulado =  v_venta.anulado;
-         end if;
-         /*****/
+        end if;
+        /*****/
 
         /*Obtenemnos el codigo finalizado*/
         select te.codigo into v_codigo_estado

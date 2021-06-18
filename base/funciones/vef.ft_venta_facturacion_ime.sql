@@ -234,6 +234,8 @@ DECLARE
 
     v_code_fp				varchar;
     v_code_fp_2				varchar;
+    v_solo_letras			varchar;
+    v_solo_numeros			varchar;
 BEGIN
 
     v_nombre_funcion = 'vef.ft_venta_facturacion_ime';
@@ -251,6 +253,20 @@ BEGIN
         begin
 
         /*********************Inserccion de cliente si existe o no******************************/
+        	 /*Validaciones que la razon social no sea solo numeros*/
+
+              select regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g') into v_solo_letras;
+
+              select regexp_replace(trim(v_parametros.nombre_factura), '[^0-9]', '','g') into v_solo_numeros;
+
+
+              if (v_solo_letras = '' and v_solo_numeros != '') then
+               raise exception 'La razón social no puede ser solo números favor verifique';
+              end if;                  
+
+            /******************************************************/
+
+
 
          if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
@@ -259,15 +275,14 @@ BEGIN
           	raise exception 'El nit no puede ser vacio verifique los datos';
           end if;
 
-        IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
+          IF(trim(v_parametros.nombre_factura) = '' or v_parametros.nombre_factura is null)then
           	raise exception 'La razón social no puede ser vacio verifique los datos';
           end if;
 
 
-
           update vef.tcliente
           set nit = trim(v_parametros.nit),
-              nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
+              nombre_factura = trim(v_parametros.nombre_factura)--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -303,11 +318,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
+            trim(v_parametros.nombre_factura),--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
             trim(v_parametros.nit)
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g');
+          v_nombre_factura = trim(v_parametros.nombre_factura);--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g');
 
         end if;
 
@@ -704,7 +719,7 @@ BEGIN
           COALESCE(v_valor_bruto,0),
           COALESCE(v_descripcion_bulto,''),
           trim(v_parametros.nit),
-          upper(regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+          upper(trim(v_nombre_factura)),--regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
           v_id_cliente_destino,
           v_hora_estimada_entrega,
           v_tiene_formula,
@@ -840,7 +855,7 @@ BEGIN
 
                 update vef.tcliente
                 set nit = trim(v_parametros.nit),
-                    nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'))
+                    nombre_factura = upper(trim(v_parametros.nombre_factura))--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'))
                 where id_cliente = v_id_cliente;
 
                 select c.nombre_factura into v_nombre_factura
@@ -862,11 +877,11 @@ BEGIN
                   p_id_usuario,
                   now(),
                   'activo',
-                  upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+                  upper(trim(v_parametros.nombre_factura)),--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
                   trim(v_parametros.nit)
                 ) returning id_cliente into v_id_cliente;
 
-                v_nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'));
+                v_nombre_factura = upper(trim(v_parametros.nombre_factura));--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'));
 
               end if;
 
@@ -880,7 +895,7 @@ BEGIN
 			id_cliente = v_parametros.id_cliente::integer,
 			observaciones = v_parametros.observaciones,
 			nit = trim(v_parametros.nit),
-            nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+            nombre_factura = upper(trim(v_parametros.nombre_factura)),--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
       id_auxiliar_anticipo = v_id_aux_ant
 			where id_venta=v_parametros.id_venta;
 
@@ -1928,6 +1943,19 @@ BEGIN
           v_forma_pedido =NULL;
         end if;
 
+        /*Validaciones que la razon social no sea solo numeros*/
+
+        select regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g') into v_solo_letras;
+
+        select regexp_replace(trim(v_parametros.nombre_factura), '[^0-9]', '','g') into v_solo_numeros;
+
+
+        if (v_solo_letras = '' and v_solo_numeros != '') then
+         raise exception 'La razón social no puede ser solo números favor verifique';
+        end if;
+
+      /******************************************************/
+
 
        if (pxp.f_is_positive_integer(v_parametros.id_cliente)) THEN
           v_id_cliente = v_parametros.id_cliente::integer;
@@ -1942,7 +1970,7 @@ BEGIN
 
           update vef.tcliente
           set nit = trim(v_parametros.nit),
-              nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
+              nombre_factura = trim(v_parametros.nombre_factura)--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -1971,11 +1999,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
+            trim(v_parametros.nombre_factura),--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
             trim(v_parametros.nit)
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g');
+          v_nombre_factura = trim(v_parametros.nombre_factura);--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g');
 
         end if;
 
@@ -2228,7 +2256,7 @@ BEGIN
           COALESCE(v_valor_bruto,0),
           COALESCE(v_descripcion_bulto,''),
           trim(v_parametros.nit),
-          upper(regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+          upper(trim(v_nombre_factura)),--regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
           v_id_cliente_destino,
           v_hora_estimada_entrega,
           v_tiene_formula,
@@ -2676,7 +2704,7 @@ BEGIN
 
           update vef.tcliente
           set nit = trim(v_parametros.nit),
-              nombre_factura = regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
+              nombre_factura = trim(v_parametros.nombre_factura)--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')
           where id_cliente = v_id_cliente;
 
           select c.nombre_factura into v_nombre_factura
@@ -2696,11 +2724,11 @@ BEGIN
             p_id_usuario,
             now(),
             'activo',
-            upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
+            upper(trim(v_parametros.nombre_factura)),--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')),
             trim(v_parametros.nit)
           ) returning id_cliente into v_id_cliente;
 
-          v_nombre_factura = upper(regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'));
+          v_nombre_factura = upper(trim(v_parametros.nombre_factura));--regexp_replace(trim(v_parametros.nombre_factura), '[^a-zA-ZñÑ ]+', '','g'));
         end if;
        /*************************************************************************/
 
@@ -2743,7 +2771,7 @@ BEGIN
           valor_bruto = COALESCE(v_valor_bruto,0),
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
           nit = trim(v_parametros.nit),
-          nombre_factura = upper(regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')) ,
+          nombre_factura = upper(trim(v_nombre_factura)),--regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g')) ,
           id_cliente_destino = v_id_cliente_destino
         where id_venta=v_parametros.id_venta;
 
@@ -3352,7 +3380,7 @@ BEGIN
                             '''||v_dosificacion.nroaut::varchar||''',
                             ''VÁLIDA'',
                             '''||trim(v_venta.nit)::varchar||''',
-                            '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
+                            '''||trim(v_venta.nombre_factura)::varchar /*regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar*/||''',
                             '||v_venta.total_venta::numeric||',
                             '||v_venta.excento||',
                             '''||pxp.f_gen_cod_control(v_dosificacion.llave,
@@ -3833,7 +3861,7 @@ BEGIN
                             '''||v_dosificacion.nroaut::varchar||''',
                             ''VÁLIDA'',
                             '''||trim(v_venta.nit)::varchar||''',
-                            '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
+                            '''||trim(v_venta.nombre_factura)::varchar /*regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar*/||''',
                             '||v_venta.total_venta::numeric||',
                             '||v_venta.excento||',
                             '''||pxp.f_gen_cod_control(v_dosificacion.llave,
@@ -4124,7 +4152,7 @@ BEGIN
                             '''||v_venta.nro_factura::varchar||''',
                             ''CONTINGENCIA'',
                             '''||trim(v_venta.nit)::varchar||''',
-                            '''||regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar||''',
+                            '''||trim(v_venta.nombre_factura)::varchar /*regexp_replace(trim(v_venta.nombre_factura), '[^a-zA-ZñÑ ]+', '','g')::varchar*/||''',
                             '||v_venta.total_venta::numeric||',
                             '||v_venta.excento||',
                             '''||v_cajero||''',
@@ -6760,7 +6788,7 @@ BEGIN
 
                   update vef.tcliente
                   set nit = trim(v_parametros.nit),
-                      nombre_factura = regexp_replace(trim(v_parametros.id_cliente), '[^a-zA-ZñÑ ]+', '','g')
+                      nombre_factura = trim(v_parametros.id_cliente)--regexp_replace(trim(v_parametros.id_cliente), '[^a-zA-ZñÑ ]+', '','g')
                   where id_cliente = v_id_cliente;
 
                   select c.nombre_factura into v_nombre_factura
@@ -6780,7 +6808,7 @@ BEGIN
                     p_id_usuario,
                     now(),
                     'activo',
-                    regexp_replace(trim(v_parametros.id_cliente), '[^a-zA-ZñÑ ]+', '','g'),
+                    trim(v_parametros.id_cliente),--regexp_replace(trim(v_parametros.id_cliente), '[^a-zA-ZñÑ ]+', '','g'),
                     v_parametros.nit
                   ) returning id_cliente into v_id_cliente;
 
@@ -6980,7 +7008,7 @@ BEGIN
                   COALESCE(v_valor_bruto,0),
                   COALESCE(v_descripcion_bulto,''),
                   trim(v_parametros.nit),
-                  regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
+                  trim(v_nombre_factura),--regexp_replace(trim(v_nombre_factura), '[^a-zA-ZñÑ ]+', '','g'),
                   v_id_cliente_destino,
                   v_hora_estimada_entrega,
                   v_tiene_formula,
