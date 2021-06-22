@@ -564,11 +564,15 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 		 if(n){
 			 this.Cmp.nro_pnr.setVisible(true);
 			 this.Cmp.porcentaje_pnr.setVisible(true);
+			 this.Cmp.total_pnr.setVisible(true);
 			  this.Cmp.porcentaje_pnr.setValue(30);
 			 this.Cmp.nro_pnr.allowBlank = false;
 			 this.Cmp.porcentaje_pnr.allowBlank = false;
+			 this.Cmp.nro_pnr.allowBlank = false;
 		 }else{
 			 this.Cmp.nro_pnr.setValue(null);
+			 this.Cmp.total_pnr.setVisible(false);
+			 this.Cmp.total_pnr.setValue(null);
 			 this.Cmp.porcentaje_pnr.setValue(0);
 			 this.Cmp.nro_pnr.setVisible(false);
 			 this.Cmp.porcentaje_pnr.setVisible(false);
@@ -577,7 +581,11 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			 this.Cmp.observaciones.setValue('');
 			 this.Cmp.precio.setValue(null);
 			 this.Cmp.total.setValue(null);
-			 this.Cmp.id_moneda_venta_recibo.setDisabled(false)
+			 this.Cmp.id_moneda_venta_recibo.setDisabled(false);
+			 this.Cmp.monto_exacto.setValue(0);
+			 this.Cmp.data_pnr.setValue('true');
+			 this.Cmp.nro_pnr.allowBlank = true;
+			 this.Cmp.precio.allowBlank = false;
 		 }
 	 },this);
 
@@ -595,9 +603,11 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 		onButtonNew:function () {
 
 			this.Cmp.id_auxiliar_anticipo.triggerConfig.cn[1].src='../../../lib/imagenes/icono_awesome/awe_new.png';
-      this.window.setSize(550, 550);
+      this.window.setSize(550, 600);
 			this.Cmp.monto_exacto.setValue(0);
+			this.Cmp.data_pnr.setValue('true');
 			this.Cmp.nro_pnr.setVisible(false);
+			this.Cmp.id_moneda_venta_recibo.setVisible(true);
 			Phx.vista.VentaFactRecibo.superclass.onButtonNew.call(this);
 			this.Cmp.cantidad.setValue(1);
 			this.window.items.items[0].body.dom.style.background = 'linear-gradient(45deg, #a7cfdf 0%,#a7cfdf 100%,#23538a 100%)';
@@ -653,7 +663,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			this.Cmp.total.setVisible(true);
 			// this.Cmp.nro_pnr.setVisible(false);
 			this.Cmp.anticipo_inicial.setVisible(true);
-			this.Cmp.id_producto.allowBlank = true;
+			// this.Cmp.id_producto.allowBlank = true;
 			this.Cmp.cantidad.allowBlank = true;
 			this.Cmp.precio.allowBlank = true;
 			this.Cmp.total.allowBlank = true;
@@ -894,6 +904,15 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 					labelSeparator:'',
 					inputType:'hidden',
 					name: 'monto_exacto'
+			},
+			type:'NumberField',
+			form:true
+		},
+		{
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'data_pnr'
 			},
 			type:'Field',
 			form:true
@@ -1224,7 +1243,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 					totalProperty: 'total',
 					fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable'],
 					remoteSort: true,
-					baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'RO', emision:'recibo',anticipo_ro_grupo:'si'}
+					baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'', emision:'',anticipo_ro_grupo:'si'}
 			}),
 			valueField: 'id_concepto_ingas',
 			displayField: 'desc_ingas',
@@ -1326,6 +1345,22 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			// selectOnFocus: true,
 			// decimalPrecision:0,
 			valorInicial:1
+		},
+			type:'NumberField',
+			id_grupo:1,
+			grid:false,
+			form:true
+
+	},
+	{
+		config:{
+			name: 'total_pnr',
+			fieldLabel: '<img src="../../../lib/imagenes/facturacion/BolsaDinero.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Total PNR</span>',
+			allowBlank: true,
+			anchor:'100%',
+			gwidth: 130,
+			hidden:true,
+			readOnly :true
 		},
 			type:'NumberField',
 			id_grupo:1,
@@ -1745,24 +1780,29 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 	successPnr: function(res){
 		data = JSON.parse(res.responseText);
 		if (data.exito){
-			this.Cmp.precio.setValue(data.importe_total);
-			this.Cmp.total.setValue(data.importe_total);
+			this.Cmp.precio.setValue(data.importe_desc);
+			this.Cmp.total.setValue(data.importe_desc);
+			this.Cmp.total_pnr.setValue(data.importe_total);
 			this.Cmp.id_moneda_venta_recibo.setValue(data.id_moneda);
 			this.Cmp.id_moneda_venta_recibo.setRawValue(data.moneda);
-			this.Cmp.monto_exacto.setValue(data.importe_total);
+			this.Cmp.monto_exacto.setValue(data.importe_desc);
+			this.Cmp.data_pnr.setValue(data.exito);
 			this.Cmp.id_moneda_venta_recibo.setDisabled(true);
-			var obs_onr = 'ANTICIPO INICIAL DEL '+this.Cmp.porcentaje_pnr.getValue()+'% ASOCIADO AL PNR '+this.Cmp.nro_pnr.getValue();
+			var obs_onr = 'ANTICIPO INICIAL DEL '+this.Cmp.porcentaje_pnr.getValue()+'%, MONTO TOTAL '+this.Cmp.total_pnr.getValue()+' '+data.moneda+' ASOCIADO AL PNR '+this.Cmp.nro_pnr.getValue();
 			this.Cmp.observaciones.setValue(obs_onr);
 		}else{
 			this.Cmp.precio.setValue(0);
 			this.Cmp.total.setValue(null);
+			this.Cmp.total_pnr.setValue(null);
 			this.Cmp.id_moneda_venta_recibo.setValue(null);
 			this.Cmp.id_moneda_venta_recibo.setRawValue(null);
 			this.Cmp.monto_exacto.setValue(0);
+			this.Cmp.data_pnr.setValue(data.exito);
 			this.Cmp.id_moneda_venta_recibo.setDisabled(false);
+			this.Cmp.observaciones.setValue('');
 			Ext.Msg.show({
 					title: 'Alerta',
-					msg: '<p>No se tiene informacion relacionada con el pnr: '+this.Cmp.nro_pnr.getValue().toUpperCase()+', su registro no puede continuar.</p>',
+					msg: '<p>No se tiene informacion relacionada al pnr: '+this.Cmp.nro_pnr.getValue().toUpperCase()+', su registro no puede continuar.</p>',
 					buttons: Ext.Msg.OK,
 					width: 460,
 					icon: Ext.Msg.INFO
