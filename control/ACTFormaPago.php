@@ -12,6 +12,15 @@ class ACTFormaPago extends ACTbase{
 	function listarFormaPago(){
 		$this->objParam->defecto('ordenacion','id_forma_pago');
 
+
+		/*Para recuperar las formas de pago por defecto del BOA KIU Tarjetas*/
+		if($this->objParam->getParametro('boa_kiu') != '') {
+			$this->objParam->addFiltro(" forpa.mop_code = ''" . $this->objParam->getParametro('codigo_fp')."''");
+			//$this->objParam->addFiltro("''".$this->objParam->getParametro('sw_tipo_venta')."''=any(forpa.sw_autorizacion) and ''".$this->objParam->getParametro('regionales')."''=any(forpa.regionales)");
+
+    }
+		/********************************************************************/
+
 		if($this->objParam->getParametro('id_entidad') != '') {
                 $this->objParam->addFiltro(" forpa.id_entidad = " . $this->objParam->getParametro('id_entidad'));
         }
