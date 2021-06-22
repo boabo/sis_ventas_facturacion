@@ -20,15 +20,15 @@ class ACTServicios extends ACTbase{
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales) AND ''".$this->objParam->getParametro('tipo_pv')."''=ANY (ingas.nivel_permiso)");
 			} elseif ($this->objParam->getParametro('emision') == 'recibo') {
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion) AND ''".$this->objParam->getParametro('regionales')."''=ANY (ingas.regionales) AND ''".$this->objParam->getParametro('tipo_pv')."''=ANY (ingas.nivel_permiso)");
-				if ($this->objParam->getParametro('anticipo_ro_grupo')!=''){
-						$this->objParam->addFiltro(" ingas.codigo in (''ROPC'',''ROAC'')");
-				}
 			}
 			elseif ($this->objParam->getParametro('emision') == 'DEVOLUCIONES') {
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.sw_autorizacion)");
 			}elseif ($this->objParam->getParametro('emision') == 'notas_de_cobro'){
 				$this->objParam->addFiltro("''".$this->objParam->getParametro('facturacion')."''=ANY (ingas.nivel_permiso)");
 			}
+		}
+		if($this->objParam->getParametro('anticipo_ro_grupo')!=''){
+								$this->objParam->addFiltro(" ingas.codigo in (''ROPC'',''ROAC'')");
 		}
 
 		/*Listamos los conceptos de acuerdo al tipo seleccionado para los paquetes (Ismael Valdivia)*/

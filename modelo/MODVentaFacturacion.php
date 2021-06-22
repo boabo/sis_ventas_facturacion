@@ -155,6 +155,7 @@ class MODVentaFacturacion extends MODbase{
 			$this->setParametro('id_moneda_venta_recibo','id_moneda_venta_recibo','int4');
 			$this->setParametro('monto_exacto','monto_exacto','numeric');
 			$this->setParametro('id_auxiliar_anticipo','id_auxiliar_anticipo','int4');
+			$this->setParametro('data_pnr','data_pnr','varchar');			
 		}
 
 		//$this->setParametro('nombre_factura','nombre_factura','varchar');
