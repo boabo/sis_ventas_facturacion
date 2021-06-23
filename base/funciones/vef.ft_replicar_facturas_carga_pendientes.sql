@@ -95,6 +95,7 @@ DECLARE
     v_desc_funcionario		varchar;
     v_usuario_nuevo		varchar;
     v_cant_id_usuario_rol_normal numeric;
+    v_id_dosificacion	integer;
     /********************/
 
 BEGIN
@@ -384,6 +385,11 @@ BEGIN
         v_datos_carga.cod_punto_venta
         );
 
+
+        select dosi.id_dosificacion into v_id_dosificacion
+        from vef.tdosificacion dosi
+        where trim(dosi.nroaut) = trim(v_datos_carga.nro_autorizacion::varchar);
+
         /*Se procede a la inserccion del registro en la tabla vef.tventa*/
         insert into vef.tventa(
                       id_venta,--1
@@ -461,7 +467,7 @@ BEGIN
                       'carga',--23
                       v_datos_carga.fecha::date,--24
                       v_datos_carga.nro_factura::integer,--25
-                      null,--26
+                      v_id_dosificacion,--26
                       v_exento,--27--Excento por el momento 0
                       v_id_moneda,--28
                       0,--29
@@ -1037,6 +1043,12 @@ BEGIN
           v_datos_carga.cod_punto_venta
           );
 
+
+          select dosi.id_dosificacion into v_id_dosificacion
+        from vef.tdosificacion dosi
+        where trim(dosi.nroaut) = trim(v_datos_carga.nro_autorizacion::varchar) ;
+
+
           /*Se procede a la inserccion del registro en la tabla vef.tventa*/
           insert into vef.tventa(
                         id_venta,--1
@@ -1114,7 +1126,7 @@ BEGIN
                         'carga',--23
                         v_datos_carga.fecha::date,--24
                         v_datos_carga.nro_factura::integer,--25
-                        null,--26
+                        v_id_dosificacion,--26
                         v_exento,--27--Excento por el momento 0
                         v_id_moneda,--28
                         0,--29
