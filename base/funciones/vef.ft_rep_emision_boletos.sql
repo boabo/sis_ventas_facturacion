@@ -140,7 +140,8 @@ BEGIN
                                                                 tipo_factura varchar,
                                                                 punto_venta varchar,
                                                                 cuenta_auxiliar varchar,
-                                                                observaciones varchar
+                                                                observaciones varchar,
+                                                                nro_ro_pago		varchar
                                                               )on commit drop;
                 CREATE INDEX tfacturas_recibos_temporal_fecha_factura ON facturas_recibos_temporal
                 USING btree (fecha_factura);
@@ -193,7 +194,8 @@ BEGIN
                                                                       tipo_factura,
                                                                       punto_venta,
                                                                       cuenta_auxiliar,
-                                                                      observaciones)
+                                                                      observaciones,
+                                                                      nro_ro_pago)
 
 
                               select  ven.fecha,
@@ -255,7 +257,8 @@ BEGIN
                                       ven.tipo_factura,
                                       pv.nombre,
                                       ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                      UPPER(ven.observaciones)::varchar as observaciones
+                                      UPPER(ven.observaciones)::varchar as observaciones,
+                                      (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                               from vef.tventa ven
                               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -312,7 +315,8 @@ BEGIN
                                                                       tipo_factura,
                                                                       punto_venta,
                                                                       cuenta_auxiliar,
-                                                                      observaciones)
+                                                                      observaciones,
+                                                                      nro_ro_pago)
                               select
                                       bol.fecha_emision,
                                       bol.nro_boleto as nro_factura,
@@ -332,7 +336,8 @@ BEGIN
                                       'boletos'::varchar as tipo_factura,
                                       pv.nombre,
                                       ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                      ''::varchar as observaciones
+                                      ''::varchar as observaciones,
+                                      (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                               from obingresos.tboleto_amadeus bol
                               inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -683,7 +688,8 @@ BEGIN
                                                                       tipo_factura,
                                                                       punto_venta,
                                                                       cuenta_auxiliar,
-                                                                      observaciones)
+                                                                      observaciones,
+                                                                      nro_ro_pago)
 
 
                               select  ven.fecha,
@@ -745,7 +751,8 @@ BEGIN
                                       ven.tipo_factura,
                                       pv.nombre,
                                       ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                      upper(ven.observaciones)::varchar as observaciones
+                                      upper(ven.observaciones)::varchar as observaciones,
+                                      (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                               from vef.tventa ven
                               inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -802,7 +809,8 @@ BEGIN
                                                                       tipo_factura,
                                                                       punto_venta,
                                                                       cuenta_auxiliar,
-                                                                      observaciones)
+                                                                      observaciones,
+                                                                      nro_ro_pago)
                               select
                                       bol.fecha_emision,
                                       bol.nro_boleto as nro_factura,
@@ -822,7 +830,8 @@ BEGIN
                                       'boletos'::varchar as tipo_factura,
                                       pv.nombre,
                                       ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                      ''::varchar as observaciones
+                                      ''::varchar as observaciones,
+                                      (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                               from obingresos.tboleto_amadeus bol
                               inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                               inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -1217,7 +1226,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones
+                                                        observaciones,
+                                                        nro_ro_pago
                                                         )
 
                   select  ven.fecha,
@@ -1231,7 +1241,8 @@ BEGIN
                           ven.tipo_factura,
                           pv.nombre,
                           ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                          upper(ven.observaciones)::varchar as observaciones
+                          upper(ven.observaciones)::varchar as observaciones,
+                          (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1341,7 +1352,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -1353,7 +1365,8 @@ BEGIN
                           ven.tipo_factura,
                           pv.nombre,
                           ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                          upper(ven.observaciones)::varchar as observaciones
+                          upper(ven.observaciones)::varchar as observaciones,
+                          (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1477,7 +1490,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -1489,7 +1503,8 @@ BEGIN
                           ven.tipo_factura,
                           pv.nombre,
                           ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                          upper(ven.observaciones)::varchar as observaciones
+                          upper(ven.observaciones)::varchar as observaciones,
+                          (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -1511,7 +1526,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
 
 
                 select  ven.fecha,
@@ -1570,7 +1586,8 @@ BEGIN
                         ven.tipo_factura,
                         pv.nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                        upper(ven.observaciones)::varchar as observaciones
+                        upper(ven.observaciones)::varchar as observaciones,
+                        (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                 from vef.tventa ven
                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -1627,7 +1644,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
                 select
                         bol.fecha_emision,
                         bol.nro_boleto as nro_factura,
@@ -1646,7 +1664,8 @@ BEGIN
                         'boletos'::varchar as tipo_factura,
                         pv.nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                        ''::varchar as observaciones
+                        ''::varchar as observaciones,
+                        (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                 from obingresos.tboleto_amadeus bol
                 inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2131,7 +2150,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
 
                   select  ven.fecha,
                           ven.nro_factura::varchar as nro_factura,
@@ -2143,7 +2163,8 @@ BEGIN
                           ven.tipo_factura,
                           pv.nombre,
                           ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                          NULL::varchar as observaciones
+                          NULL::varchar as observaciones,
+                          (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                   from vef.tventa ven
                   inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                   inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -2166,7 +2187,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
 
 
                 select  ven.fecha,
@@ -2226,7 +2248,8 @@ BEGIN
                         ven.tipo_factura,
                         pv.nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                        upper(ven.observaciones)::varchar as observaciones
+                        upper(ven.observaciones)::varchar as observaciones,
+                        (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                 from vef.tventa ven
                 inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2283,7 +2306,8 @@ BEGIN
                                                         tipo_factura,
                                                         punto_venta,
                                                         cuenta_auxiliar,
-                                                        observaciones)
+                                                        observaciones,
+                                                        nro_ro_pago)
                 select
                         bol.fecha_emision,
                         bol.nro_boleto as nro_factura,
@@ -2302,7 +2326,8 @@ BEGIN
                         'boletos'::varchar as tipo_factura,
                         pv.nombre,
                         ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                        ''::varchar as observaciones
+                        ''::varchar as observaciones,
+                        (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                 from obingresos.tboleto_amadeus bol
                 inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                 inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -2753,7 +2778,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
 
 
                       select  ven.fecha,
@@ -2824,7 +2850,8 @@ BEGIN
                               ven.tipo_factura,
                               pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              upper(ven.observaciones)::varchar as observaciones
+                              upper(ven.observaciones)::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -2884,7 +2911,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -2903,7 +2931,8 @@ BEGIN
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              ''::varchar as observaciones
+                              ''::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -3266,7 +3295,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
 
 
                       select  ven.fecha,
@@ -3337,7 +3367,8 @@ BEGIN
                               ven.tipo_factura,
                               pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              upper(ven.observaciones)::varchar as observaciones
+                              upper(ven.observaciones)::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -3397,7 +3428,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -3416,7 +3448,8 @@ BEGIN
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              ''::varchar as observaciones
+                              ''::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -3812,7 +3845,8 @@ BEGIN
                                                                 tipo_factura,
                                                                 punto_venta,
                                                                 cuenta_auxiliar,
-                                                                observaciones)
+                                                                observaciones,
+                                                                nro_ro_pago)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -3824,7 +3858,8 @@ BEGIN
                                   ven.tipo_factura,
                                   pv.nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                  NULL::varchar as observaciones
+                                  NULL::varchar as observaciones,
+                                  (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -3936,7 +3971,8 @@ BEGIN
                                                                 tipo_factura,
                                                                 punto_venta,
                                                                 cuenta_auxiliar,
-                                                                observaciones)
+                                                                observaciones,
+                                                                nro_ro_pago)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -3948,7 +3984,8 @@ BEGIN
                                   ven.tipo_factura,
                                   pv.nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                  upper(ven.observaciones)::varchar as observaciones
+                                  upper(ven.observaciones)::varchar as observaciones,
+                                  (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -4059,7 +4096,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
 
 
                       select  ven.fecha,
@@ -4130,7 +4168,8 @@ BEGIN
                               ven.tipo_factura,
                               pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              upper(ven.observaciones)::varchar as observaciones
+                              upper(ven.observaciones)::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -4190,7 +4229,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -4209,7 +4249,8 @@ BEGIN
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              ''::varchar as observaciones
+                              ''::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -4277,7 +4318,8 @@ BEGIN
                                                                 tipo_factura,
                                                                 punto_venta,
                                                                 cuenta_auxiliar,
-                                                                observaciones)
+                                                                observaciones,
+                                                                nro_ro_pago)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -4289,7 +4331,8 @@ BEGIN
                                   ven.tipo_factura,
                                   pv.nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                  ''::varchar as observaciones
+                                  ''::varchar as observaciones,
+                                  (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -4725,7 +4768,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
 
 
                       select  ven.fecha,
@@ -4796,7 +4840,8 @@ BEGIN
                               ven.tipo_factura,
                               pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              upper(ven.observaciones)::varchar as observaciones
+                              upper(ven.observaciones)::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                       from vef.tventa ven
                       inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = fp.id_medio_pago
@@ -4856,7 +4901,8 @@ BEGIN
                                                               tipo_factura,
                                                               punto_venta,
                                                               cuenta_auxiliar,
-                                                              observaciones)
+                                                              observaciones,
+                                                              nro_ro_pago)
                       select
                               bol.fecha_emision,
                               bol.nro_boleto as nro_factura,
@@ -4875,7 +4921,8 @@ BEGIN
                               'boletos'::varchar as tipo_factura,
                       		  pv.nombre,
                               ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                              ''::varchar as observaciones
+                              ''::varchar as observaciones,
+                              (select nro_factura from vef.tventa where id_venta = bolfp.id_venta) as nro_ro_pago
                       from obingresos.tboleto_amadeus bol
                       inner join obingresos.tboleto_amadeus_forma_pago bolfp on bolfp.id_boleto_amadeus = bol.id_boleto_amadeus
                       inner join obingresos.tmedio_pago_pw mp on mp.id_medio_pago_pw = bolfp.id_medio_pago
@@ -4943,7 +4990,8 @@ BEGIN
                                                                 tipo_factura,
                                                                 punto_venta,
                                                                 cuenta_auxiliar,
-                                                                observaciones)
+                                                                observaciones,
+                                                                nro_ro_pago)
 
                           select  ven.fecha,
                                   ven.nro_factura::varchar as nro_factura,
@@ -4955,7 +5003,8 @@ BEGIN
                                   ven.tipo_factura,
                                   pv.nombre,
                                   ('('||aux.codigo_auxiliar||') - '||aux.nombre_auxiliar) as cuenta_auxiliar,
-                                  upper(ven.observaciones)::varchar as observaciones
+                                  upper(ven.observaciones)::varchar as observaciones,
+                                  (select nro_factura from vef.tventa where id_venta = fp.id_venta_recibo) as nro_ro_pago
                           from vef.tventa ven
                           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
                           inner join conta.tauxiliar aux on aux.id_auxiliar = ven.id_auxiliar_anticipo
@@ -5368,7 +5417,8 @@ BEGIN
                                         tipo_factura,
                                         punto_venta,
                                         cuenta_auxiliar,
-                                        observaciones
+                                        observaciones,
+                                        nro_ro_pago
             			   from facturas_recibos_temporal
                            ORDER BY punto_venta DESC,tipo_factura ASC NULLS FIRST, fecha_factura DESC )
 
@@ -5386,7 +5436,8 @@ BEGIN
                           ''total_pv''::varchar as tipo_factura,
                           punto_venta,
                           NULL::varchar as cuenta_auxiliar,
-                          NULL::varchar as observaciones
+                          NULL::varchar as observaciones,
+                          NULL::varchar as nro_ro_pago
                           from facturas_recibos_temporal
                           group by punto_venta)
 
@@ -5832,7 +5883,8 @@ BEGIN
                                           ''totalizado''::VARCHAR as tipo_factura,
                                           NULL::varchar as punto_venta,
                                           cuenta_auxiliar,
-                                          NULL::varchar as observaciones
+                                          NULL::varchar as observaciones,
+                                          NULL::varchar as nro_ro_pago
                                     from reporte_resumen_totalizado_cta_cte
                                     group by cuenta_auxiliar';
 
@@ -5848,7 +5900,8 @@ BEGIN
                                           ''totalizado''::VARCHAR as tipo_factura,
                                           punto_venta,
                                           cuenta_auxiliar,
-                                          NULL::varchar as observaciones
+                                          NULL::varchar as observaciones,
+                                          NULL::varchar as nro_ro_pago
                                     from reporte_resumen_totalizado_cta_cte
                                     group by cuenta_auxiliar,punto_venta';
 
