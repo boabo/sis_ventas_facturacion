@@ -605,7 +605,7 @@ BEGIN
                         v_desc_sistema = 'SISTEMA AMADEUS';
                     end if;
 
-                   insert into temporal_comisionistas (
+                   insert into temporal_comisionistas_detalle (
                                                       fecha_factura,
                                                       desc_ruta ,
                                                       sistema_origen,
@@ -638,7 +638,7 @@ BEGIN
                 select sum(comi.precio_total)::numeric
                 		into
                        v_total_general
-                from temporal_comisionistas comi
+                from temporal_comisionistas_detalle comi
                 where comi.razon_social = 'total';
 				/*************************************************/
 
@@ -663,7 +663,7 @@ BEGIN
                                       '''||v_literal_mes_inicio||'''::varchar as periodo_literal_inicio,
                                       '''||v_literal_mes_final||'''::varchar as periodo_literal_fin,
                                       '||v_total_general||'::numeric as total_general
-                               from temporal_comisionistas
+                               from temporal_comisionistas_detalle
                                where nit::numeric not in (
                                         select nc.nit_ci::numeric
                                         from vef.tnits_no_considerados nc
