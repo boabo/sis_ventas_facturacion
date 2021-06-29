@@ -310,6 +310,7 @@ header("content-type: text/javascript; charset=UTF-8");
               text: '<center>Reporte Resumen <br> y Detallado</center>',
               iconCls: 'bexcel',
               disabled: false,
+              hidden: true,
               handler: this.ReporteResumenDetalle,
               tooltip: '<b>Generar Reporte Excel'
             });
@@ -365,6 +366,16 @@ header("content-type: text/javascript; charset=UTF-8");
             //Se obtiene la gestión en función de la fecha del comprobante para filtrar partidas, cuentas, etc.
             var me = this;
             this.initFiltro(param);
+
+            console.log("aqui llega el boton",this.getBoton('btnReporteResuDet'));
+
+            if (this.store.baseParams.nombre_pv == 'Todos') {
+              /*Mostrar el boton de reporte general*/
+              this.getBoton('btnReporteResuDet').setVisible(true);
+
+            } else {
+              this.getBoton('btnReporteResuDet').setVisible(false);
+            }
 
             if (this.store.baseParams.formato_reporte == 'RESUMEN CTA/CTE TOTALIZADO') {
               this.cm.setHidden(0, true);

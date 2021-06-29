@@ -332,7 +332,7 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
                      totalProperty: 'total',
                      fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable','boleto_asociado','nombre_actividad','comision'],
                      remoteSort: true,
-                     baseParams: {par_filtro: 'ingas.desc_ingas'}
+                     baseParams: {par_filtro: 'ingas.desc_ingas', ListaConceptos: 'ventas'}
                  }),
                  valueField: 'id_concepto_ingas',
                  displayField: 'desc_ingas',
@@ -463,6 +463,7 @@ Phx.vista.FormFiltroReporteFacturacion=Ext.extend(Phx.frmInterfaz,{
       /*Aumentando para controlar los conceptos dependiendo del tipo de documento (Ismael Valdivia 24/03/2021)*/
       this.Cmp.tipo_documento.on('select',function(a,b,c) {
         this.Cmp.id_concepto.store.baseParams.tipo_documento = b.data.valor;
+        this.Cmp.id_concepto.reset();
       },this);
       /********************************************************************************************************/
 
