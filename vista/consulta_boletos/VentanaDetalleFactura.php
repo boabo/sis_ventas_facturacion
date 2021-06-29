@@ -439,29 +439,35 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                      <th>Razon</th>
                                      <th>Nit</th>
                                      <th>N° Documento</th>
-                                     <th>Moneda</th>
-                                     <th>Total Venta</th>
+                                     <th>Moneda Forma Pago</th>
+                                     <th>Monto Forma Pago</th>
+                                     <th>Moneda Venta</th>
+                                     <th>Monto Venta</th>
                                      <th>Fecha</th>
                                      <th>Tipo Documento</th>
                                    </tr>
                                    `;
                                pagos_con_recibo.forEach( e => {
                                  var mon_ro=`<span>${e.mon_fp_ro}</span>`;
+                                 var mon_ven=`<span>${e.mone_venta}</span>`;
                                  if (e.mon_fp_ro!='BOB'){mon_ro=`<span style="color:blue;">${e.mon_fp_ro}</span>`}
-                                 total_ros = total_ros + e.total_venta;
+                                 if (e.mon_fp_ro!='BOB'){mon_ro=`<span style="color:blue;">${e.mon_fp_ro}</span>`}
+                                 total_ros = total_ros + e.monto_ro_forma_pago;
                                  info += `
                                  <tr>
                                      <td align="left">${e.nombre_factura}</td>
                                      <td align="center">${(e.nit == null)?'':e.nit}</td>
                                      <td align="center">${e.nro_factura}</td>
                                      <td align="center">${mon_ro}</td>
-                                     <td align="center">${Ext.util.Format.number(e.total_venta,'0.000,00/i')}</td>
+                                     <td align="center">${Ext.util.Format.number(e.monto_ro_forma_pago,'0.000,00/i')}</td>
+                                     <td align="center">${mon_ven}</td>
+                                     <td align="center">${Ext.util.Format.number(e.total_venta,'0.000,00/i') }</td>
                                      <td align="center">${(e.fecha==null)?'':e.fecha.split("-").reverse().join("/")}</td>
                                      <td align="center">${e.tipo_factura}</td>
                                  </tr>
                                  `;
                                  });
-                               info += `<tr><td colspan="4" align="center"><b>TOTAL RECIBOS</b></td><td align="center"><b>${Ext.util.Format.number(total_ros,'0.000,00/i')}</b></td><td align="center"><b>SALDO GRUPO</b></td><td align="center"><b>${Ext.util.Format.number(obj.total_venta-total_ros,'0.000,00/i')}</b></td></tr>`
+                               info += `<tr><td colspan="4" align="center"><b>TOTAL RECIBOS</b></td><td align="center"><b>${Ext.util.Format.number(total_ros,'0.000,00/i')}</b></td><td align="center"><b>SALDO GRUPO</b></td><td align="center" colspan="3"><b>${Ext.util.Format.number(obj.total_venta-total_ros,'0.000,00/i')}</b></td></tr>`
                                info += `</table>
                                 </td>
                               </tr>`;
@@ -496,7 +502,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
       if(id_venta!=null){
         Phx.CP.loadWindows('../../../sis_ventas_facturacion/vista/consulta_boletos/VentanaDetalleFactura.php',
         '<span style="font-size:14pt;padding-left: 35%;letter-spacing: 12px;">DETALLE RECIBO GRUPO</span>', {
-          width:'90%',
+          width:'91%',
           height:'80%'
           }, {
             id_venta: id_venta,
