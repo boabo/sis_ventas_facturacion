@@ -428,15 +428,32 @@ BEGIN
                                               vpr.nro_factura::varchar,
                                               vpr.fecha,
                                               case when mon.codigo_internacional = ''USD'' then
-                                              	param.f_convertir_moneda(1, rvfp.id_moneda, vpr.total_venta, vpr.fecha, ''O'', 50)
+                                                param.f_convertir_moneda(1, rvfp.id_moneda, rvfp.monto_mb_efectivo, vpr.fecha, ''O'', 50)
+                                              else
+                                                rvfp.monto_mb_efectivo
+                                              end monto_ro_forma_pago,
+                                              case when monb.codigo_internacional = ''USD'' then
+                                              	param.f_convertir_moneda(1, vpr.id_moneda, vpr.total_venta, vpr.fecha, ''O'', 50)
                                               else
                                               	vpr.total_venta
                                               end total_venta,
-                                              vpr.tipo_factura,
-                                              mon.codigo_internacional as mon_fp_ro
+                                              case when vpr.tipo_factura = ''recibo'' then
+                                                ''Recibo''
+                                               when vpr.tipo_factura = ''recibo_manual'' then
+                                                ''Recibo Manual''
+                                               when vpr.tipo_factura = ''computarizada'' then
+                                                ''Factura Computarizada''
+                                               when vpr.tipo_factura = ''manual'' then
+                                                ''Factura Manual''
+                                               when vpr.tipo_factura = ''carga'' then
+                                                ''Factura Carga''
+                                                end tipo_factura,
+                                              mon.codigo_internacional as mon_fp_ro,
+                                              monb.codigo_internacional as mone_venta
                                         FROM vef.tventa_forma_pago rvfp
                                         INNER join vef.tventa vpr on vpr.id_venta = rvfp.id_venta
                                         INNER join param.tmoneda mon on mon.id_moneda = rvfp.id_moneda
+                                        INNER join param.tmoneda monb on monb.id_moneda = vpr.id_moneda
                                         WHERE rvfp.id_venta_recibo = v.id_venta
                                         ORDER BY vpr.nombre_factura ASC)
 
@@ -449,16 +466,23 @@ BEGIN
                                              boam.nro_boleto,
                                              boam.fecha_emision,
                                              case when mon.codigo_internacional = ''USD'' then
-                                                param.f_convertir_moneda(1, bfp.id_moneda, boam.total, boam.fecha_emision, ''O'', 50)
+                                                param.f_convertir_moneda(1, bfp.id_moneda, bfp.importe, boam.fecha_emision, ''O'', 50)
+                                             else
+	                                             bfp.importe
+                                             end monto_ro_forma_pago,
+                                             case when monb.codigo_internacional = ''USD'' then
+                                                param.f_convertir_moneda(1, boam.id_moneda_boleto, boam.total, boam.fecha_emision, ''O'', 50)
                                              else
 	                                             boam.total
                                              end total_venta,
                                              ''Boleto'',
-                                             mon.codigo_internacional as mon_fp_ro
+                                             mon.codigo_internacional as mon_fp_ro,
+                                             monb.codigo_internacional as mone_venta
 
                                         FROM obingresos.tboleto_amadeus_forma_pago bfp
                                         INNER join obingresos.tboleto_amadeus boam on boam.id_boleto_amadeus = bfp.id_boleto_amadeus
                                         INNER join param.tmoneda mon on mon.id_moneda = bfp.id_moneda
+                                        INNER join param.tmoneda monb on monb.id_moneda = boam.id_moneda_boleto
                                         WHERE bfp.id_venta = v.id_venta
                                         ORDER BY boam.pasajero ASC)
                                       ) doc_pag_c_rec
