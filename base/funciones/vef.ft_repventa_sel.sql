@@ -1691,7 +1691,8 @@ $body$
                                                                 estado varchar,
                                                                 tipo_factura varchar,
                                                                 cajero varchar,
-                                                                cod_control varchar
+                                                                cod_control varchar,
+                                                                total_detalle varchar
                                                               )on commit drop;
 
                 CREATE INDEX treporte_facturacion_computarizada_id_venta ON reporte_facturacion_computarizada
@@ -1730,7 +1731,8 @@ $body$
                                                     estado,
                                                     tipo_factura,
                                                     cajero,
-                                                    cod_control
+                                                    cod_control,
+                                                    total_detalle
         								)
                                         (WITH  cabecera AS (select vent.id_venta,
                                                  vent.total_venta,
@@ -1740,7 +1742,7 @@ $body$
                                                  pv.codigo,
                                                  vent.observaciones,
                                                  vent.nro_factura,
-                                                 list (det.cantidad::Varchar) cantidad,
+                                                 list (det.cantidad::varchar) cantidad,
                                                  list (det.precio::varchar) as precio,
                                                  vent.excento::varchar as exento,
                                                  vent.comision::varchar as comision,
@@ -1750,7 +1752,8 @@ $body$
                                                  vent.estado,
                                                  vent.tipo_factura,
                                                  usu.desc_persona,
-                                                 vent.cod_control
+                                                 vent.cod_control,
+                                                 sum(det.cantidad*det.precio) as total_detalle
                                           from vef.tventa vent
                                           left join vef.tventa_detalle det on det.id_venta = vent.id_venta
                                           left join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
@@ -1831,12 +1834,13 @@ $body$
                                                   ''Facturación Carga Computarizada''
                                                END)::varchar as tipo_factura,
                                                ca.desc_persona,
-                                               ca.cod_control
+                                               ca.cod_control,
+                                                ca.total_detalle
                                         from cabecera ca
                                         inner join detalle det on det.id_venta = ca.id_venta
                                         inner join param.tlugar lug on lug.id_lugar = ca.id_lugar_fk
                                         order by nombre, nro_factura ASC)';
-        execute v_consulta_insertar_reporte;
+       execute v_consulta_insertar_reporte;
 
         v_consulta:='((select 	id_venta,
                                 total_venta,
@@ -2000,7 +2004,8 @@ $body$
                                                                 estado varchar,
                                                                 tipo_factura varchar,
                                                                 cajero varchar,
-                                                                cod_control varchar
+                                                                cod_control varchar,
+                                                                total_detalle varchar
                                                               )on commit drop;
 
                 CREATE INDEX treporte_facturacion_computarizada_id_venta ON reporte_facturacion_computarizada
@@ -2039,7 +2044,8 @@ $body$
                                                     estado,
                                                     tipo_factura,
                                                     cajero,
-                                                    cod_control
+                                                    cod_control,
+                                                    total_detalle
         								)
                                         (WITH  cabecera AS (select vent.id_venta,
                                                  vent.total_venta,
@@ -2059,7 +2065,8 @@ $body$
                                                  vent.estado,
                                                  vent.tipo_factura,
                                                  usu.desc_persona,
-                                                 vent.cod_control
+                                                 vent.cod_control,
+                                                 sum(det.cantidad*det.precio) as total_detalle
                                           from vef.tventa vent
                                           left join vef.tventa_detalle det on det.id_venta = vent.id_venta
                                           left join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
@@ -2140,7 +2147,8 @@ $body$
                                                   ''Facturación Carga Computarizada''
                                                END)::varchar as tipo_factura,
                                                ca.desc_persona,
-                                               ca.cod_control
+                                               ca.cod_control,
+                                               ca.total_detalle
                                         from cabecera ca
                                         inner join detalle det on det.id_venta = ca.id_venta
                                         inner join param.tlugar lug on lug.id_lugar = ca.id_lugar_fk
@@ -2151,7 +2159,8 @@ $body$
         v_consulta:='select 	count (id_venta),
         				       sum (COALESCE (comision::numeric,0)) as totales_comision,
                                sum (COALESCE(exento::numeric,0)) as totales_exento,
-                               sum (COALESCE (total_venta::numeric,0)) as totales_venta
+                               sum (COALESCE (total_venta::numeric,0)) as totales_venta,
+                               sum ( COALESCE(total_detalle::numeric,0) ) as total_detalle
         			from reporte_facturacion_computarizada
                     where ';
 
@@ -2300,7 +2309,8 @@ $body$
                             ''RO Manual''
                             WHEN vent.tipo_factura = ''carga''  THEN
                             ''Facturación Carga Computarizada''
-                         END)::varchar as tipo_factura
+                         END)::varchar as tipo_factura,
+                         vent.total_venta
                       from vef.tventa vent
                       inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
                       inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto
@@ -2324,7 +2334,8 @@ $body$
                          ''cabecera''::varchar as desc_persona,
                          pv.codigo,
                          NULL::varchar as tipo_factura,
-     					 NULL::varchar as estado
+     					 NULL::varchar as estado,
+                         NULL::numeric as total_venta
                       from vef.tventa vent
                       inner join vef.tventa_detalle det on det.id_venta = vent.id_venta
                       inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = det.id_producto

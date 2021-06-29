@@ -159,9 +159,9 @@ class RReporteFacturasConcepto
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,3,'Fecha: '.$fechaGeneracion);
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,4,'Hora: '.$horaGeneracion);
 
-          $this->docexcel->getActiveSheet()->getStyle('A1:H2')->applyFromArray($styleTitulos1);
-          $this->docexcel->getActiveSheet()->getStyle('A3:H4')->applyFromArray($styleTitulosPrincipal);
-          $this->docexcel->getActiveSheet()->getStyle('A5:H6')->applyFromArray($styleTitulos1);
+          $this->docexcel->getActiveSheet()->getStyle('A1:I2')->applyFromArray($styleTitulos1);
+          $this->docexcel->getActiveSheet()->getStyle('A3:I4')->applyFromArray($styleTitulosPrincipal);
+          $this->docexcel->getActiveSheet()->getStyle('A5:I6')->applyFromArray($styleTitulos1);
 
 
           $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
@@ -169,10 +169,10 @@ class RReporteFacturasConcepto
           $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
           $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(25);
           $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(35);
-          $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(40);
+          $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(25);
           $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(35);
           $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(35);
-          $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+          $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(35);
           $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
           $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(15);
           $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(35);
@@ -181,22 +181,22 @@ class RReporteFacturasConcepto
             $this->docexcel->getActiveSheet()->setCellValue('A6','Fecha');
             $this->docexcel->getActiveSheet()->setCellValue('B6','Nro. Autorización');
             $this->docexcel->getActiveSheet()->setCellValue('C6','Nro. Factura');
-            $this->docexcel->getActiveSheet()->setCellValue('D6','Importe M/L');
-            $this->docexcel->getActiveSheet()->setCellValue('E6','Concepto');
+            $this->docexcel->getActiveSheet()->setCellValue('D6','Concepto');
+            $this->docexcel->getActiveSheet()->setCellValue('E6','Importe Concepto M/L');
             $this->docexcel->getActiveSheet()->setCellValue('F6','Estado Factura');
             $this->docexcel->getActiveSheet()->setCellValue('G6','Tipo Factura');
             $this->docexcel->getActiveSheet()->setCellValue('H6','Cajero');
           } elseif ($this->objParam->getParametro('tipo_documento') == 'recibo') {
             $this->docexcel->getActiveSheet()->setCellValue('A6','Fecha');
             $this->docexcel->getActiveSheet()->setCellValue('B6','Nro. Recibo');
-            $this->docexcel->getActiveSheet()->setCellValue('C6','Importe M/L');
-            $this->docexcel->getActiveSheet()->setCellValue('D6','Concepto');
+            $this->docexcel->getActiveSheet()->setCellValue('C6','Concepto');
+            $this->docexcel->getActiveSheet()->setCellValue('D6','Importe Concepto M/L');
             $this->docexcel->getActiveSheet()->setCellValue('E6','Estado Recibo');
             $this->docexcel->getActiveSheet()->setCellValue('F6','Tipo Recibo');
             $this->docexcel->getActiveSheet()->setCellValue('G6','Cajero');
           }
 
-          $this->docexcel->getActiveSheet()->getStyle('A6:H6')->applyFromArray($styleSubtitulos);
+          $this->docexcel->getActiveSheet()->getStyle('A6:I6')->applyFromArray($styleSubtitulos);
 
 
 
@@ -401,33 +401,40 @@ class RReporteFacturasConcepto
 
 
         if ($this->objParam->getParametro('tipo_documento') == 'factura') {
+
+          $id_venta = '';
+
           foreach ($datos as $value) {
+
 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['fecha']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nroaut']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_factura']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['total_precio']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['concepto']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['concepto']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['total_precio']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['tipo_factura']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['estado']);
             $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($style_datos);
 
+
+
             if ($value['desc_persona'] == 'cabecera') {
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'AGENCIA: ('.$value['codigo'].') '.$value['nombre']);
               //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila,$value['concepto']);
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleCabeza);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleCabeza);
               $this->docexcel->getActiveSheet()->mergeCells("A$fila:D$fila");
             } else {
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['desc_persona']);
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_datos);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_datos);
             }
 
             if ($value['estado'] == 'ANULADA') {
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleAnulada);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleAnulada);
             }
 
 
-          $this->docexcel->getActiveSheet()->getStyle("B$fila:D$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+            $this->docexcel->getActiveSheet()->getStyle("B$fila:B$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("E$fila:E$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
           $fila++;
@@ -435,11 +442,13 @@ class RReporteFacturasConcepto
         } elseif ($this->objParam->getParametro('tipo_documento') == 'recibo') {
           foreach ($datos as $value) {
 
+
+
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['fecha']);
             //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nroaut']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nro_factura']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['total_precio']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['concepto']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['concepto']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['total_precio']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['tipo_factura']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['estado']);
             $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($style_datos);
@@ -447,21 +456,21 @@ class RReporteFacturasConcepto
             if ($value['desc_persona'] == 'cabecera') {
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila,'AGENCIA: ('.$value['codigo'].') '.$value['nombre']);
               //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila,$value['concepto']);
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleCabeza);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleCabeza);
               $this->docexcel->getActiveSheet()->mergeCells("A$fila:D$fila");
             } else {
               $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['desc_persona']);
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_datos);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_datos);
             }
 
 
             if ($value['estado'] == 'ANULADA') {
-              $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($styleAnulada);
+              $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($styleAnulada);
             }
 
 
-          $this->docexcel->getActiveSheet()->getStyle("B$fila:C$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
-
+            $this->docexcel->getActiveSheet()->getStyle("D$fila:D$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          //$this->docexcel->getActiveSheet()->getStyle("B$fila:C$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
           $fila++;
           }
@@ -503,31 +512,39 @@ class RReporteFacturasConcepto
 
         if ($this->objParam->getParametro('tipo_documento') == 'factura') {
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'Total AGT');
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, "=SUM(D$inicial:D$final)");
-          $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_totales_pv);
-          $this->docexcel->getActiveSheet()->getStyle("D$fila:D$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, "=SUM(D$inicial:D$final)");
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, "=SUM(E$inicial:E$final)");
+          $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_totales_pv);
+          //$this->docexcel->getActiveSheet()->getStyle("D$fila:D$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("E$fila:E$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
 
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $totales_gen, 'TOTALES');
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $totales_gen, "=SUM(D$inicial:D$final)");
+          // $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $totales_gen, "=SUM(D$inicial:D$final)");
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $totales_gen, "=SUM(E$inicial:E$final)");
 
-          $this->docexcel->getActiveSheet()->getStyle("A$totales_gen:H$totales_gen")->applyFromArray($style_totales_general);
-          $this->docexcel->getActiveSheet()->getStyle("D$totales_gen:D$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("A$totales_gen:I$totales_gen")->applyFromArray($style_totales_general);
+          //$this->docexcel->getActiveSheet()->getStyle("D$totales_gen:D$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("E$totales_gen:E$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
         } elseif ($this->objParam->getParametro('tipo_documento') == 'recibo') {
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, 'Total AGT');
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, "=SUM(C$inicial:C$final)");
-          $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($style_totales_pv);
+          //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, "=SUM(C$inicial:C$final)");
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, "=SUM(D$inicial:D$final)");
+          $this->docexcel->getActiveSheet()->getStyle("A$fila:I$fila")->applyFromArray($style_totales_pv);
           $this->docexcel->getActiveSheet()->getStyle("C$fila:C$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("E$fila:E$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
 
           $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $totales_gen, 'TOTALES');
-          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $totales_gen, "=SUM(C$inicial:C$final)");
+          //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $totales_gen, "=SUM(C$inicial:C$final)");
+          $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $totales_gen, "=SUM(D$inicial:D$final)");
 
-          $this->docexcel->getActiveSheet()->getStyle("A$totales_gen:H$totales_gen")->applyFromArray($style_totales_general);
-          $this->docexcel->getActiveSheet()->getStyle("C$totales_gen:C$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("A$totales_gen:I$totales_gen")->applyFromArray($style_totales_general);
+          //$this->docexcel->getActiveSheet()->getStyle("C$totales_gen:C$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+          $this->docexcel->getActiveSheet()->getStyle("D$totales_gen:D$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
         }
 

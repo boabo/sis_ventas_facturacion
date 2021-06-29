@@ -208,6 +208,7 @@ class MODReportesVentas extends MODbase{
 		$this->capturaCount('totales_comision', 'numeric');
 		$this->capturaCount('totales_exento', 'numeric');
 		$this->capturaCount('totales_venta', 'numeric');
+		$this->capturaCount('total_detalle', 'numeric');
 
 
 		$this->captura('id_venta','integer');
@@ -301,6 +302,7 @@ class MODReportesVentas extends MODbase{
 		$this->captura('codigo','varchar');
 		$this->captura('tipo_factura','varchar');
 		$this->captura('estado','varchar');
+		$this->captura('total_venta','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

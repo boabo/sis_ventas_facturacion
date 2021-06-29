@@ -307,7 +307,8 @@ header("content-type: text/javascript; charset=UTF-8");
                               info += `</table>`;
                               return info;
                           } else {
-                            return '';
+                            return  String.format('<div style="font-size:15px; text-align:right; color:green;"><b>{0}<b></div>', Ext.util.Format.number(record.data.total_detalle,'0,000.00'));
+
                           }
 
 
@@ -491,6 +492,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name:'totales_comision', type: 'numeric'},
             {name:'totales_exento', type: 'numeric'},
             {name:'totales_venta', type: 'numeric'},
+            {name:'total_detalle', type: 'numeric'},
             {name:'cod_control', type: 'numeric'},
         ],
 

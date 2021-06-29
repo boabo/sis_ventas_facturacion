@@ -417,8 +417,9 @@ class RReporteResumenFacturasConcepto
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, "=SUM(B$inicial:B$final)");
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, "=SUM(C$inicial:C$final)");
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, "=SUM(D$inicial:D$final)");
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, "=SUM(E$inicial:E$final)");
         $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($style_totales_pv);
-        $this->docexcel->getActiveSheet()->getStyle("B$fila:D$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+        $this->docexcel->getActiveSheet()->getStyle("B$fila:E$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
 
@@ -426,9 +427,10 @@ class RReporteResumenFacturasConcepto
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $totales_gen, "=SUM(B$inicial:B$final)");
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $totales_gen, "=SUM(C$inicial:C$final)");
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $totales_gen, "=SUM(D$inicial:D$final)");
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $totales_gen, "=SUM(E$inicial:E$final)");
 
         $this->docexcel->getActiveSheet()->getStyle("A$totales_gen:F$totales_gen")->applyFromArray($style_totales_general);
-        $this->docexcel->getActiveSheet()->getStyle("B$totales_gen:D$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+        $this->docexcel->getActiveSheet()->getStyle("B$totales_gen:E$totales_gen")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
 

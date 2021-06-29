@@ -157,6 +157,7 @@ class ACTReportesVentas extends ACTbase{
 			$temp['totales_comision'] = $this->res->extraData['totales_comision'];
 			$temp['totales_exento'] = $this->res->extraData['totales_exento'];
 			$temp['totales_venta'] = $this->res->extraData['totales_venta'];
+			$temp['total_detalle'] = $this->res->extraData['total_detalle'];
 			$temp['tipo_reg'] = 'summary';
 
 			$this->res->total++;
