@@ -275,7 +275,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         name: 'conceptos',
                         fieldLabel: 'Detalle Conceptos',
                         allowBlank: true,
-                        gwidth: 900,
+                        gwidth: 600,
                         maxLength: 100,
                         renderer: function (value, p, record) {
 

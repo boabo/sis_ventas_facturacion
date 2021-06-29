@@ -180,7 +180,7 @@ class RReporteResumenFacturasConcepto
           $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(35);
 
           $this->docexcel->getActiveSheet()->setCellValue('A6','Descripción de Concepto');
-          $this->docexcel->getActiveSheet()->setCellValue('B6','Importe-M/L');
+          $this->docexcel->getActiveSheet()->setCellValue('B6','Importe Concepto M/L');
           $this->docexcel->getActiveSheet()->setCellValue('C6','Exento-M/L');
           $this->docexcel->getActiveSheet()->setCellValue('D6','Importe-USD');
           $this->docexcel->getActiveSheet()->setCellValue('E6','Exento-USD');
