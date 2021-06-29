@@ -267,40 +267,43 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			// console.log("llega aqui select",rec);
 
       if (rec.data.tipo_factura == 'carga') {
-        //this.getBoton('completar_pago').setVisible(false);
         this.getBoton('btnImprimir').setVisible(false);
         this.getBoton('btnChequeoDocumentosWf').setVisible(false);
         this.getBoton('anular_fact').setVisible(false)
-        //this.getBoton('completar_pago_2').setVisible(false);
-        //this.getBoton('ant_estado').setVisible(false);
         this.getBoton('asociar_boletos').setVisible(false);
 
-        //this.getBoton('completar_pago').disable();
         this.getBoton('btnImprimir').disable();
         this.getBoton('btnChequeoDocumentosWf').disable();
         this.getBoton('anular_fact').disable();
-        //this.getBoton('completar_pago_2').disable();
-        //this.getBoton('ant_estado').disable();
         this.getBoton('asociar_boletos').disable();
       } else {
-        //this.getBoton('completar_pago').setVisible(true);
-        this.getBoton('btnImprimir').setVisible(true);
-        this.getBoton('btnChequeoDocumentosWf').setVisible(true);
-        this.getBoton('anular_fact').setVisible(true);
-        //this.getBoton('completar_pago_2').setVisible(true);
-        //this.getBoton('ant_estado').setVisible(true);
-        this.getBoton('asociar_boletos').setVisible(true);
 
-        //this.getBoton('completar_pago').enable();
-        this.getBoton('btnImprimir').enable();
-        this.getBoton('btnChequeoDocumentosWf').enable();
-        this.getBoton('anular_fact').enable();
-        //this.getBoton('completar_pago_2').enable();
-        //this.getBoton('ant_estado').enable();
-        this.getBoton('asociar_boletos').enable();
-      }
+        console.log("aqui para los botones",this.store.baseParams.pes_estado);
+        if (this.store.baseParams.pes_estado == 'finalizado') {
+          this.getBoton('btnImprimir').setVisible(true);
+          this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+          this.getBoton('anular_fact').setVisible(true)
+          this.getBoton('asociar_boletos').setVisible(true);
+        } else if (this.store.baseParams.pes_estado == 'anulado') {
+          this.getBoton('btnImprimir').setVisible(true);
+          this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+        }
+
+        // this.getBoton('btnImprimir').setVisible(true);
+        // this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+        // this.getBoton('anular_fact').setVisible(true);
+        // this.getBoton('asociar_boletos').setVisible(true);
+        //
+        // this.getBoton('btnImprimir').enable();
+        // this.getBoton('btnChequeoDocumentosWf').enable();
+        // this.getBoton('anular_fact').enable();
+        // this.getBoton('asociar_boletos').enable();
 
 
+      this.getBoton('btnImprimir').enable();
+      this.getBoton('btnChequeoDocumentosWf').enable();
+      this.getBoton('anular_fact').enable();
+      this.getBoton('asociar_boletos').enable();
 
 			 this.getBoton('completar_pago').enable();
 			// this.getBoton('btnImprimir').enable();
@@ -310,14 +313,14 @@ Phx.vista.Cajero=Ext.extend(Phx.gridInterfaz,{
 			 this.getBoton('ant_estado').enable();
 			// this.getBoton('asociar_boletos').enable();
 
-			if (rec.data.formato_factura_emitida == 'Carta') {
-				this.getBoton('btnChequeoDocumentosWf').setVisible(true);
-				this.getBoton('btnImprimir').setVisible(false);
-			} else if (rec.data.formato_factura_emitida == 'Rollo') {
-				this.getBoton('btnChequeoDocumentosWf').setVisible(false);
-				this.getBoton('btnImprimir').setVisible(true);
-			}
-
+  			if (rec.data.formato_factura_emitida == 'Carta') {
+  				this.getBoton('btnChequeoDocumentosWf').setVisible(true);
+  				this.getBoton('btnImprimir').setVisible(false);
+  			} else if (rec.data.formato_factura_emitida == 'Rollo') {
+  				this.getBoton('btnChequeoDocumentosWf').setVisible(false);
+  				this.getBoton('btnImprimir').setVisible(true);
+  			}
+      }
 
 			Phx.vista.Cajero.superclass.preparaMenu.call(this);
 		},
