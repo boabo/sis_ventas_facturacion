@@ -260,15 +260,17 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                           </td>
                                           `;
                                         }
-                                      if(obj.us_cajero_fp != ''){
-                                          info += `<tr><td></td><td></td><td><br><b>Usuario Cajero: </b><span class="emisor_cajero">${obj.us_cajero_fp}</span></td></tr>`;
-                                      }
+
                                       if (obj.nombre_auxiliar != '' && obj.nombre_auxiliar != null){
                                           if(obj.us_cajero_fp != ''){
                                               info += `<tr><td style="font-size:14px;" colspan="2"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span></td><td><br><b>Usuario Cajero: </b><span class="emisor_cajero">${obj.us_cajero_fp}</span></td></tr>`;
                                           }else{
                                               info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span></td></tr>`;
                                           }
+                                      }else{
+                                        if(obj.us_cajero_fp != ''){
+                                            info += `<tr><td></td><td></td><td><br><b>Usuario Cajero: </b><span class="emisor_cajero">${obj.us_cajero_fp}</span></td></tr>`;
+                                        }
                                       }
 
                           info +=`  </tr>
