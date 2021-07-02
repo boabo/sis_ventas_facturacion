@@ -1332,17 +1332,74 @@ $body$
           valor_bruto = COALESCE(v_valor_bruto,0),
           descripcion_bulto = COALESCE(v_descripcion_bulto,''),
           nit = v_parametros.nit,
-              nombre_factura = v_nombre_factura ,
+              nombre_factura = upper(trim(v_nombre_factura)),
               id_cliente_destino = v_id_cliente_destino
         where id_venta=v_parametros.id_venta;
 
+        /*Aqui aumentaremos la condcion para registrar los depositos*/
+       if (pxp.f_existe_parametro(p_tabla,'nro_deposito')) then
+           IF (v_parametros.nro_deposito != '') then
+                select acc.id_apertura_cierre_caja into v_id_apertura_cierre_caja
+                from vef.tapertura_cierre_caja acc
+                where acc.fecha_apertura_cierre = v_fecha and
+                      acc.estado_reg = 'activo' and acc.estado = 'abierto' and
+                      acc.id_punto_venta = v_parametros.id_punto_venta and acc.id_usuario_cajero = p_id_usuario;
+              insert into obingresos.tdeposito(
+                             id_usuario_reg,
+                             fecha_reg,
+                             estado_reg,
+                             nro_deposito,
+                             monto_deposito,
+                             fecha,
+                             tipo,
+                             monto_total,
+                             estado,
+                             id_moneda_deposito,
+                             id_apertura_cierre_caja
+                           ) values(
+                             p_id_usuario,
+                             now(),
+                             'activo',
+                             v_parametros.nro_deposito,
+                             v_parametros.monto_deposito,
+                             v_parametros.fecha_deposito::date,
+                             'cuenta_corriente',
+                             v_parametros.monto_deposito,
+                             'borrador',
+                             v_parametros.id_moneda,
+                             v_id_apertura_cierre_caja
+                           )returning id_deposito into v_id_deposito;
+
+               update vef.tventa set
+               id_deposito = v_id_deposito
+               where id_venta = v_parametros.id_venta;
+
+
+           end if;
+           /********************************************************/
+
+      end if;
 
 		/*Comentamos y aumentamos instancia de pago*/
        -- if (v_parametros.id_forma_pago != 0 ) then
-	      if (v_parametros.id_medio_pago != 0 ) then
+	      if (v_parametros.id_medio_pago is not null ) then
 
           delete from vef.tventa_forma_pago
           where id_venta = v_parametros.id_venta;
+
+          if (v_parametros.id_medio_pago = 0 ) then
+
+            select
+              mppw.id_medio_pago_pw
+              into
+              v_id_medio_pago
+            from obingresos.tmedio_pago_pw mppw
+            inner join obingresos.tforma_pago_pw fp on fp.id_forma_pago_pw = mppw.forma_pago_id
+            where   mppw.mop_code = 'CASH';
+
+          else
+            v_id_medio_pago = v_parametros.id_medio_pago;
+          end if;
 
           insert into vef.tventa_forma_pago(
             usuario_ai,
@@ -1384,7 +1441,7 @@ $body$
             v_parametros.id_auxiliar,
             v_parametros.tipo_tarjeta,
             /*Aumentando instancia de pago y id_moneda*/
-            v_parametros.id_medio_pago,
+            v_id_medio_pago,
             v_parametros.id_moneda,
             v_parametros.mco,
             v_id_venta_recibo
@@ -1394,7 +1451,7 @@ $body$
            --raise exception 'llega aqui para la insercion %',v_parametros.id_forma_pago_2;
           	/*Comentando y aumentado la instancia de pago*/
             -- if (v_parametros.id_forma_pago_2 is not null and v_parametros.id_forma_pago_2 != 0 ) then
-           	if (v_parametros.id_medio_pago_2 is not null and v_parametros.id_medio_pago_2 != 0 ) then
+           	if (v_parametros.id_medio_pago_2 is not null) then
 
             select mp.mop_code, fp.fop_code into v_codigo_tarjeta, v_codigo_fp
                   from obingresos.tmedio_pago_pw mp
