@@ -137,6 +137,11 @@
   color: #1F3656;
   font-weight: bold;
 }
+.emisor_cajero{
+  color: #166fe5;
+  font-weight: bold;
+  font-size: 13px;
+}
 .grupoAnticipo:hover {
   background-color: #91FF81;
   font-size: 20px;
@@ -207,7 +212,7 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                               <b>Fecha: </b><span class="f_text">${obj.fecha_factura.split("-").reverse().join("/")}</span>
                                               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<b>Estado: </b> ${(obj.estado=='anulado')?'<span class="f_text" style="background:#E74C3C;color:white;">ANULADO</span>':'<span class="f_text" style="background:#28B463;color:white;">VALIDA</span>'}
                                               <br><br>
-                                              <b>Usuario Emisor: </b><span class="f_text">${obj.desc_persona}</span>
+                                              <b>Usuario Registro: </b><span class="f_text">${obj.desc_persona}</span>
                                               <br><br>
                                               <b>P-Venta/Agencia: </b><span class="f_text">${obj.punto_venta}</span></td>
 
@@ -249,15 +254,21 @@ Phx.vista.VentanaDetalleFactura=Ext.extend(Phx.gridInterfaz,{
                                               <br><br>
                                               <b>Importe Base Para Credito Fiscal: </b> <span class="f_text">${Ext.util.Format.number((obj.total_venta - obj.excento),'0.000,00/i')}</span>
                                               <br><br>
-                                              <b>Usuario Emisor: </b><span class="f_text">${obj.desc_persona}</span>
+                                              <b>Usuario Registro: </b><span class="f_text">${obj.desc_persona}</span>
                                               <br><br>
                                               <b>Observaciones: </b><span style="font-size:10pt;">${(obj.observaciones == null || obj.observaciones=='')?'':obj.observaciones.toLowerCase()}</span>
                                           </td>
                                           `;
                                         }
-
+                                      if(obj.us_cajero_fp != ''){
+                                          info += `<tr><td></td><td></td><td><br><b>Usuario Cajero: </b><span class="emisor_cajero">${obj.us_cajero_fp}</span></td></tr>`;
+                                      }
                                       if (obj.nombre_auxiliar != '' && obj.nombre_auxiliar != null){
-                                          info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span></td></tr>`;
+                                          if(obj.us_cajero_fp != ''){
+                                              info += `<tr><td style="font-size:14px;" colspan="2"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span></td><td><br><b>Usuario Cajero: </b><span class="emisor_cajero">${obj.us_cajero_fp}</span></td></tr>`;
+                                          }else{
+                                              info += `<tr><td style="font-size:14px;" colspan="3"><br><b>Grupo: </b><span class="f_text">${obj.nombre_auxiliar}</span></td></tr>`;
+                                          }
                                       }
 
                           info +=`  </tr>

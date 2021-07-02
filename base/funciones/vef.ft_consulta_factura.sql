@@ -329,6 +329,11 @@ BEGIN
                                     end tit_fac,
                               pv.nombre ||''-''|| pv.codigo as punto_venta,
                               us.desc_persona,
+                              case when v.id_usuario_cajero != v.id_usuario_reg then
+                               us1.desc_persona
+                              else
+                               ''''::varchar
+                              end as us_cajero_fp,
                               su.codigo ||''-''|| su.nombre as sucursal,
                               '||v_nroaut||',
                               vemon.codigo_internacional as moneda_venta,
@@ -490,6 +495,7 @@ BEGIN
                                 from vef.tventa v
                                 inner join segu.vusuario us on us.id_usuario = v.id_usuario_reg
                                 inner join vef.tpunto_venta pv on pv.id_punto_venta = v.id_punto_venta
+                                inner join segu.vusuario us1 on us1.id_usuario = v.id_usuario_cajero
                                 left join vef.tsucursal su on su.id_sucursal = pv.id_sucursal
                                 left join conta.tauxiliar aux on aux.id_auxiliar = v.id_auxiliar_anticipo
                                 inner join param.tmoneda vemon on vemon.id_moneda = v.id_moneda
