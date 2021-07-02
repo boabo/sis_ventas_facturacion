@@ -87,8 +87,12 @@ BEGIN
                 if (v_parametros.tipo_usuario = 'vendedor') then
                   v_filtro = ' (ven.id_usuario_reg='||p_id_usuario::varchar||') and ';
                 elsif (v_parametros.tipo_usuario = 'cajero') THEN
-                  --v_filtro = ' (ewf.id_funcionario='||v_id_funcionario_usuario::varchar||') and ';
-                  v_filtro = ' (ven.id_usuario_cajero='||p_id_usuario::varchar||') and ';
+                  if v_parametros.pes_estado='caja' then
+                    v_filtro = ' 0 = 0 and ';
+                  else
+                    --v_filtro = ' (ewf.id_funcionario='||v_id_funcionario_usuario::varchar||') and ';
+                    v_filtro = ' (ven.id_usuario_cajero='||p_id_usuario::varchar||') and ';
+                  end if;
                 ELSE
                   v_filtro = ' 0 = 0 and ';
                 end if;
@@ -745,9 +749,9 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='
                         select
-						(case when vedet.id_item is not null then
-							item.nombre
-						when vedet.id_sucursal_producto is not null then
+						--(case when vedet.id_item is not null then
+							--item.nombre
+						(case when vedet.id_sucursal_producto is not null then
 							cig.desc_ingas
 						when vedet.id_producto is not null then
                                 cig2.desc_ingas
@@ -766,7 +770,7 @@ BEGIN
 						from vef.tventa_detalle vedet
 						left join vef.tsucursal_producto sprod on sprod.id_sucursal_producto = vedet.id_sucursal_producto
 						left join vef.tformula form on form.id_formula = vedet.id_formula
-						left join alm.titem item on item.id_item = vedet.id_item
+						--left join alm.titem item on item.id_item = vedet.id_item
                         left join param.tconcepto_ingas cig2 on cig2.id_concepto_ingas = vedet.id_producto
                         left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sprod.id_concepto_ingas
                         left join param.tunidad_medida um on um.id_unidad_medida = vedet.id_unidad_medida

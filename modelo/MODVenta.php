@@ -63,6 +63,7 @@ class MODVenta extends MODbase{
 		$this->setParametro('id_sucursal','id_sucursal','integer');
 		$this->setParametro('id_punto_venta','id_punto_venta','integer');
     $this->setParametro('tipo_usuario','tipo_usuario','varchar');
+		$this->setParametro('pes_estado','pes_estado','varchar');
 
 
 		//Definicion de la lista del resultado del query
