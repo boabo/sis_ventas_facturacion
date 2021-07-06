@@ -125,6 +125,10 @@ DECLARE
     v_id_moneda_base	integer;
     v_existe_apertura	numeric;
     v_id_dosificacion	integer;
+
+    v_json_data_detalle	varchar;
+    v_detalle_carga 	record;
+    v_id_concepto		integer;
     /********************/
 
 BEGIN
@@ -942,6 +946,78 @@ BEGIN
           /************************************/
 
 
+          /*Aumentando para Insertar el detalle de la venta de Carga 29/06/2021 (Ismael Valdivia)*/
+
+           v_json_data_detalle = '['||v_parametros.json_venta_detalle_carga||']';
+
+           for v_detalle_carga in (select *
+                              from json_populate_recordset(null::vef.detalle_venta_carga,v_json_data_detalle::json))loop
+
+           		/*Recuperamos el Id Concepto del Detalle*/
+                if (v_detalle_carga.concepto = 'Carga') then
+                	v_id_concepto = pxp.f_get_variable_global('id_carga_concepto_carga');
+
+                elsif (v_detalle_carga.concepto = 'Correo') then
+                	v_id_concepto = pxp.f_get_variable_global('id_carga_concepto_correo');
+                end if;
+
+                /************************************************/
+
+                /*Insertamos el concepto*/
+                insert into vef.tventa_detalle(
+                id_venta,
+                id_item,
+                --id_sucursal_producto,
+                id_formula,
+                tipo,
+                estado_reg,
+                cantidad,
+                precio,
+                fecha_reg,
+                id_usuario_reg,
+                id_usuario_mod,
+                fecha_mod,
+                precio_sin_descuento,
+                porcentaje_descuento,
+                id_vendedor,
+                id_medico,
+                descripcion,
+                bruto,
+                ley,
+                kg_fino,
+                id_unidad_medida,
+                id_producto
+                ) values(
+                  v_id_venta,
+                  null,
+                  --v_id_sucursal_producto,
+                  null,
+                  'servicio',
+                  'activo',
+                  v_detalle_carga.cantidad,
+                  round(v_detalle_carga.precio_unitario,2),
+                  now(),
+                  p_id_usuario,
+                  null,
+                  null,
+                  v_detalle_carga.precio_unitario,
+                  0,
+                  null,
+                  null,
+                  '',
+                  0,
+                  0,
+                  0,
+                  null,
+                  v_id_concepto
+                );
+                /*****************************/
+
+           end loop;
+
+           /********************************************************************************************************/
+
+
           /*Aqui Insertamos los Medios de Pago que nos enviara Carga*/
           v_acumulado_fp = 0;
 
@@ -1073,7 +1149,6 @@ BEGIN
         v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
         v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
         v_semilla = pxp.f_get_variable_global('semilla_erp');
-
 
 
         select usu.cuenta,
@@ -1404,6 +1479,7 @@ BEGIN
           /*Aqui recuperaremos la Factura insertada en la tabla tventa*/
           select 	* into v_respaldo
           from vef.tventa ven
+          inner join vef.tventa_detalle vendet on vendet.id_venta = ven.id_venta
           inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
           where ven.id_sistema_origen = v_parametros.id_origen::integer and ven.tipo_factura = 'carga';
           /************************************************************/
@@ -1432,13 +1508,13 @@ BEGIN
                                                                 excento,--13
                                                                 fecha,--14
 
-                                                                /*id_sucursal_producto,--15
+                                                                id_sucursal_producto,--15
                                                                 id_formula,--16
                                                                 id_producto,--17
                                                                 cantidad,--18
                                                                 precio,--19
                                                                 tipo,--20
-                                                                descripcion,--21*/
+                                                                descripcion,--21
 
                                                                 id_medio_pago,--22
                                                                 monto,--23
@@ -1469,13 +1545,13 @@ BEGIN
                                                                 v_respaldo.excento,--13
                                                                 v_respaldo.fecha,--14
                                                                 ---Aqui recupera el detalle
-                                                               /* v_respaldo.id_sucursal_producto,--15
+                                                                v_respaldo.id_sucursal_producto,--15
                                                                 v_respaldo.id_formula,--16
                                                                 v_respaldo.id_producto,--17
                                                                 v_respaldo.cantidad,--18
                                                                 v_respaldo.precio,--19
                                                                 v_respaldo.tipo,--20
-                                                                v_respaldo.descripcion,--21*/
+                                                                v_respaldo.descripcion,--21
                                                                 ----------------------------
                                                                 --Aqui el medio de pago----
                                                                 v_respaldo.id_medio_pago,--22
@@ -1503,9 +1579,17 @@ BEGIN
               monto_transaccion = 0,
               monto = 0,
               cambio = 0,
-              monto_mb_efectivo = 0
+              monto_mb_efectivo = 0,
+              id_auxiliar = null
               where id_venta = v_venta.id_venta;
             /*********************************************/
+
+              /*Actualizamos el detalle*/
+            update vef.tventa_detalle set
+            precio = 0,
+            cantidad = 0
+            where id_venta = v_venta.id_venta;
+            /*****************************/
 
             /*Cambiamos La factura a Razon Social Anulada*/
               update vef.tventa set

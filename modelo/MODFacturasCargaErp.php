@@ -37,6 +37,8 @@ class MODFacturasCargaErp extends MODbase{
 		$this->setParametro('id_funcionario','id_funcionario','int4');//Mandar el codigo del punto de venta
     $this->setParametro('observaciones','observaciones','varchar');//Registraremos las observaciones de la factura carga
 		$this->setParametro('json_venta_forma_pago','json_venta_forma_pago','text');
+		/*Aumentando para registrar el detalle de Carga (29/06/2021)*/
+		$this->setParametro('json_venta_detalle_carga','json_venta_detalle_carga','text');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

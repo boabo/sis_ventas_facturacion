@@ -1925,3 +1925,12 @@ ALTER TYPE vef.detalle_venta
   ADD ATTRIBUTE desc_ingas TEXT,
   ADD ATTRIBUTE id_liquidacion INTEGER;
 /***********************************F-SCP-IRVA-VEF-0-14/06/2021****************************************/
+
+
+/***********************************I-SCP-IRVA-VEF-0-30/06/2021****************************************/
+CREATE TYPE vef.detalle_venta_carga AS (
+ cantidad NUMERIC,
+ precio_unitario NUMERIC(18,2),
+ concepto VARCHAR(200)
+);
+/***********************************F-SCP-IRVA-VEF-0-30/06/2021****************************************/
