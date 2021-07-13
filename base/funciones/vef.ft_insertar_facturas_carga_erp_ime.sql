@@ -147,6 +147,9 @@ BEGIN
 
         begin
 
+		 v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+         v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+
         /*Inserccion de los datos recibidos por el servicio*/
         INSERT INTO vef.tdatos_carga_recibido
                 (
@@ -1145,28 +1148,28 @@ BEGIN
         /*Establecemos la conexion con la base de datos*/
           --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
 
-        v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
+        /*v_host=pxp.f_get_variable_global('sincroniza_ip_facturacion');
         v_puerto=pxp.f_get_variable_global('sincroniza_puerto_facturacion');
         v_dbname=pxp.f_get_variable_global('sincronizar_base_facturacion');
-        v_semilla = pxp.f_get_variable_global('semilla_erp');
+        v_semilla = pxp.f_get_variable_global('semilla_erp');*/
 
 
-        select usu.cuenta,
+        /*select usu.cuenta,
                usu.contrasena
                into
                v_cuenta_usu,
                v_pass_usu
         from segu.tusuario usu
         where usu.id_usuario = v_id_usuario;
-        p_user= 'dbkerp_'||v_cuenta_usu;
+        p_user= 'dbkerp_'||v_cuenta_usu;*/
 
 
-        select md5(v_semilla||v_pass_usu) into v_password;
+        --select md5(v_semilla||v_pass_usu) into v_password;
 
-        v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
+        --v_cadena_cnx = 'hostaddr='||v_host||' port='||v_puerto||' dbname='||v_dbname||' user='||p_user||' password='||v_password;
 
         -- raise exception 'v_cadena_cnx %',v_cadena_cnx;
-         v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+        -- v_conexion = (SELECT dblink_connect(v_cadena_cnx));
         /*************************************************/
 
           select * FROM dblink(v_cadena_cnx,'select nextval(''sfe.tfactura_id_factura_seq'')',TRUE)AS t1(resp integer)
@@ -1214,12 +1217,13 @@ BEGIN
 
               	perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
 
-              	v_res_cone=(select dblink_disconnect());
+              	--v_res_cone=(select dblink_disconnect());
 
               END IF;
 
               /************************************/
         	  /*****************************************************************/
+			  v_res_cone=(select dblink_disconnect());
 
               --Definicion de la respuesta
               v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Factura Registrada con con exito');
@@ -1472,6 +1476,8 @@ BEGIN
         inner join vef.tventa_forma_pago fp on fp.id_venta = ven.id_venta
         where ven.id_sistema_origen = v_parametros.id_origen::integer and ven.tipo_factura = 'carga';
 
+        v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
+        v_conexion = (SELECT dblink_connect(v_cadena_cnx));
 
           if (v_existe_venta > 0) then
 
@@ -1670,7 +1676,7 @@ BEGIN
 
             /*Establecemos la conexion con la base de datos*/
               --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
-              v_conexion = (SELECT dblink_connect(v_cadena_cnx));
+              --v_conexion = (SELECT dblink_connect(v_cadena_cnx));
 
               /************************************************/
                   select * FROM dblink(v_cadena_cnx,'
@@ -1751,26 +1757,8 @@ BEGIN
 
                          perform dblink_exec(v_cadena_cnx,v_consulta_inser,TRUE);
 
-                  v_res_cone=(select dblink_disconnect());
-
                 END IF;
 
-            /*Establecemos la conexion con la base de datos*/
-              --v_cadena_cnx = vef.f_obtener_cadena_conexion_facturacion();
-              v_conexion = (SELECT dblink_connect(v_cadena_cnx));
-            /************************************************/
-
-
-
-                IF(v_conexion!='OK') THEN
-                      raise exception 'ERROR DE CONEXION A LA BASE DE DATOS CON DBLINK';
-                  ELSE
-                     perform dblink_exec(v_cadena_cnx,v_consulta,TRUE);
-
-                  v_res_cone=(select dblink_disconnect());
-
-                END IF;
-                /************************************/
           /*****************************************************************/
 
 
@@ -1781,6 +1769,8 @@ BEGIN
               --Devuelve la respuesta
               return v_resp;
           end if;
+
+          v_res_cone=(select dblink_disconnect());
 
 		end;
 
