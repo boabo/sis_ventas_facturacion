@@ -559,35 +559,35 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 
 	 },this);
 
-	 this.Cmp.anticipo_inicial.on('check',function(f,n){
-
-		 if(n){
-			 this.Cmp.nro_pnr.setVisible(true);
-			 this.Cmp.porcentaje_pnr.setVisible(true);
-			 this.Cmp.total_pnr.setVisible(true);
-			  this.Cmp.porcentaje_pnr.setValue(30);
-			 this.Cmp.nro_pnr.allowBlank = false;
-			 this.Cmp.porcentaje_pnr.allowBlank = false;
-			 this.Cmp.nro_pnr.allowBlank = false;
-		 }else{
-			 this.Cmp.nro_pnr.setValue(null);
-			 this.Cmp.total_pnr.setVisible(false);
-			 this.Cmp.total_pnr.setValue(null);
-			 this.Cmp.porcentaje_pnr.setValue(0);
-			 this.Cmp.nro_pnr.setVisible(false);
-			 this.Cmp.porcentaje_pnr.setVisible(false);
-			 this.Cmp.nro_pnr.allowBlank = true;
-			 this.Cmp.porcentaje_pnr.allowBlank = true;
-			 this.Cmp.observaciones.setValue('');
-			 this.Cmp.precio.setValue(null);
-			 this.Cmp.total.setValue(null);
-			 this.Cmp.id_moneda_venta_recibo.setDisabled(false);
-			 this.Cmp.monto_exacto.setValue(0);
-			 this.Cmp.data_pnr.setValue('true');
-			 this.Cmp.nro_pnr.allowBlank = true;
-			 this.Cmp.precio.allowBlank = false;
-		 }
-	 },this);
+	 // this.Cmp.anticipo_inicial.on('check',function(f,n){
+	 //
+		//  if(n){
+		// 	 this.Cmp.nro_pnr.setVisible(true);
+		// 	 this.Cmp.porcentaje_pnr.setVisible(true);
+		// 	 this.Cmp.total_pnr.setVisible(true);
+		// 	  this.Cmp.porcentaje_pnr.setValue(30);
+		// 	 this.Cmp.nro_pnr.allowBlank = false;
+		// 	 this.Cmp.porcentaje_pnr.allowBlank = false;
+		// 	 this.Cmp.nro_pnr.allowBlank = false;
+		//  }else{
+		// 	 this.Cmp.nro_pnr.setValue(null);
+		// 	 this.Cmp.total_pnr.setVisible(false);
+		// 	 this.Cmp.total_pnr.setValue(null);
+		// 	 this.Cmp.porcentaje_pnr.setValue(0);
+		// 	 this.Cmp.nro_pnr.setVisible(false);
+		// 	 this.Cmp.porcentaje_pnr.setVisible(false);
+		// 	 this.Cmp.nro_pnr.allowBlank = true;
+		// 	 this.Cmp.porcentaje_pnr.allowBlank = true;
+		// 	 this.Cmp.observaciones.setValue('');
+		// 	 this.Cmp.precio.setValue(null);
+		// 	 this.Cmp.total.setValue(null);
+		// 	 this.Cmp.id_moneda_venta_recibo.setDisabled(false);
+		// 	 this.Cmp.monto_exacto.setValue(0);
+		// 	 this.Cmp.data_pnr.setValue('true');
+		// 	 this.Cmp.nro_pnr.allowBlank = true;
+		// 	 this.Cmp.precio.allowBlank = false;
+		//  }
+	 // },this);
 
 	 this.Cmp.nro_pnr.on('change',function(field,newValue,oldValue){
 		 this.consultPnrData(newValue, this.Cmp.porcentaje_pnr.getValue(),this.Cmp.anticipo_inicial.getValue())
@@ -662,7 +662,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			this.Cmp.precio.setVisible(true);
 			this.Cmp.total.setVisible(true);
 			// this.Cmp.nro_pnr.setVisible(false);
-			this.Cmp.anticipo_inicial.setVisible(true);
+			// this.Cmp.anticipo_inicial.setVisible(true);
 			// this.Cmp.id_producto.allowBlank = true;
 			this.Cmp.cantidad.allowBlank = true;
 			this.Cmp.precio.allowBlank = true;
@@ -730,7 +730,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 				this.Cmp.total.setVisible(false);
 				// this.Cmp.nro_pnr.setVisible(false);
 				// this.Cmp.porcentaje_pnr.setVisible(false);
-				this.Cmp.anticipo_inicial.setVisible(false);
+				// this.Cmp.anticipo_inicial.setVisible(false);
 				this.Cmp.id_moneda_venta_recibo.setVisible(false);
 				this.Cmp.id_producto.allowBlank = true;
 				this.Cmp.descripcion.allowBlank = true;
@@ -991,7 +991,7 @@ Phx.vista.VentaFactRecibo=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'Checkbox',
 				id_grupo: 1,
-				form:true
+				form:false
 		},
 		{
  		config:{
