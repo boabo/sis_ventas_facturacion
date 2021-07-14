@@ -1039,7 +1039,7 @@ BEGIN
            /**********************************************************************/
 
            /*Recuperamos el id auxiliar en base al codigo que nos envia el servicio*/
-           IF (v_medio_pago.cod_auxiliar is not null) then
+           IF (v_medio_pago.cod_auxiliar is not null and v_medio_pago.cod_auxiliar != '') then
              select aux.id_auxiliar into
                     v_id_auxiliar_fp
              from conta.tauxiliar aux

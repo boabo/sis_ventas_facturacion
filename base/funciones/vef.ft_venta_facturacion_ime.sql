@@ -296,19 +296,19 @@ BEGIN
 		    -- incremento de pnr
         	v_pnr = upper(v_parametros.nro_pnr);
 
-          if v_pnr!='' then
-          	if exists (select 1 from vef.tventa where estado_reg='activo' and estado!='anulado' and nro_pnr = v_pnr) then
+            if v_pnr!='' then
+            	if exists (select 1 from vef.tventa where estado_reg='activo' and estado!='anulado' and nro_pnr = v_pnr) then
 
-                select nro_pnr, nombre_factura, fecha into v_inf_pnr
-                from vef.tventa
-                where nro_pnr = v_pnr;
+                  select nro_pnr, nombre_factura, fecha into v_inf_pnr
+                  from vef.tventa
+                  where nro_pnr = v_pnr;
 
-                raise 'Estimado usuario, ya te tiene un registro para el PNR: %, razon social: %, fecha: % ',v_inf_pnr.nro_pnr,v_inf_pnr.nombre_factura,v_inf_pnr.fecha;
+                  raise 'Estimado usuario, ya te tiene un registro para el PNR: %, razon social: %, fecha: % ',v_inf_pnr.nro_pnr,v_inf_pnr.nombre_factura,v_inf_pnr.fecha;
 
-              end if;
-          else
-          	v_pnr = null;
-          end if;
+                end if;
+            else
+            	v_pnr = null;
+            end if;
 
         else
           IF(trim(v_parametros.nit) = '' or trim(v_parametros.nit) is null)then
@@ -823,15 +823,15 @@ BEGIN
             where id_venta = v_id_venta;
           end if;
 
-          elsif (pxp.f_existe_parametro(p_tabla, 'id_producto'))then
+        elsif (pxp.f_existe_parametro(p_tabla, 'id_producto'))then
               if v_parametros.data_pnr='false' then
-                raise 'No se tiene informacion relacionada al pnr: %, su registro no puede continuar.',v_pnr;
+              	raise 'No se tiene informacion relacionada al pnr: %, su registro no puede continuar.',v_pnr;
               end if;
 
               if (v_parametros.precio < v_parametros.monto_exacto) then
               	raise 'El precio unitario: % es menor al total % de la venta recuperada segun el PNR: % ingresado',v_parametros.precio, v_parametros.monto_exacto, v_pnr;
               end if;
-              
+
               update vef.tventa set
               id_moneda_venta_recibo = v_parametros.id_moneda_venta_recibo,
               id_auxiliar_anticipo = v_parametros.id_auxiliar_anticipo
@@ -4978,6 +4978,7 @@ BEGIN
                                 nit_ci_cli,
                                 razon_social_cli,
                                 importe_total_venta,
+                                exportacion_excentas,
                                 importe_otros_no_suj_iva,
                                 usuario_reg,
                                 tipo_factura,
@@ -4992,6 +4993,7 @@ BEGIN
                                 ''ANULADA'',
                                 ''0'',
                                 ''ANULADA'',
+                                0,
                                 0,
                                 0,
                                 '''||v_cajero||''',
