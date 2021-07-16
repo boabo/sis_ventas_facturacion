@@ -2216,7 +2216,7 @@ $body$
                     inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                     inner join vef.tsucursal suc on suc.id_sucursal = vent.id_sucursal
                     inner join param.tlugar lug on lug.id_lugar = suc.id_lugar
-                    where '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
+                    where vent.estado_reg = ''activo'' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||'
                     group by pv.nombre, pv.codigo, lug.nombre, lug.id_lugar_fk';
 		raise notice '%',v_consulta;
         --Devuelve la respuesta
@@ -2317,7 +2317,7 @@ $body$
                       left join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       order by  vent.id_venta, vent.nro_factura DESC)
 
                       UNION ALL
@@ -2342,7 +2342,7 @@ $body$
                       left join vef.tdosificacion dos on dos.id_dosificacion = vent.id_dosificacion
                       inner join vef.tpunto_venta pv on pv.id_punto_venta = vent.id_punto_venta
                       inner join segu.vusuario usu on usu.id_usuario = vent.id_usuario_cajero
-                      where (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
+                      where vent.estado_reg = ''activo'' and (vent.estado = ''finalizado'') and '||v_filtro_id_cajero||' and '||v_filtro_tipo_factura||' and '||v_filtro_fecha_desde||' and '||v_filtro_fecha_hasta||' and '||v_filtro_id_punto_venta||' and '||v_filtro_id_concepto||'
                       group by pv.nombre, pv.codigo, ingas.desc_ingas)
                       )
                       order by nombre ASC, id_venta ASC NULLS FIRST';
